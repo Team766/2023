@@ -8,6 +8,7 @@ public class ExampleSequence extends StateMachine {
 	
 	public ExampleSequence(Robot robot) {
 		m_robot = robot;
+		m_robot.exampleMechanism.takeControl(this);
 		
 		setStartState(new MoveForward());
 	}
