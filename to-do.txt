@@ -1,0 +1,1 @@
+Switch logging serialization to https://github.com/RuedigerMoeller/fast-serialization
