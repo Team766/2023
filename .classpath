@@ -9,6 +9,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="/Users/rcahoon/wpilib/user/java/lib/CTRE_Phoenix.jar"/>
-	<classpathentry kind="lib" path="/Users/rcahoon/wpilib/java/current/lib/ntcore-jni-4.1.0-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
