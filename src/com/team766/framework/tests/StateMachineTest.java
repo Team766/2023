@@ -2,12 +2,11 @@ package com.team766.framework.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
 
 import com.team766.framework.Scheduler;
 import com.team766.framework.StateMachine;
+import com.team766.framework.StateSubmachine;
 
 class StateMachineTest {
 
@@ -16,20 +15,20 @@ class StateMachineTest {
 		TestStateMachine sm = new TestStateMachine();
 		sm.initialize();
 		
-		assertEquals(TestStateMachine.States.START, sm.getCurrentState());
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine.StartState);
 		
 		sm.run();
 		
-		assertEquals(TestStateMachine.States.STATE_1, sm.getCurrentState());		
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine.State1);
 		
 		for (int i = 1; i < 5; ++i) {
 			sm.run();
-			assertEquals(TestStateMachine.States.STATE_1, sm.getCurrentState());
+			assertTrue(sm.getCurrentState() instanceof TestStateMachine.State1);
 		}
 		
 		sm.run();
 		
-		assertEquals(TestStateMachine.States.STATE_2, sm.getCurrentState());
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine.State2);
 		
 		sm.run();
 		
@@ -41,20 +40,20 @@ class StateMachineTest {
 		TestStateMachine2 sm = new TestStateMachine2();
 		sm.start();
 		
-		assertEquals(TestStateMachine2.States.START, sm.getCurrentState());
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine2.StartState);
 		
 		Scheduler.getInstance().run();
 		
-		assertEquals(TestStateMachine2.States.STATE_1, sm.getCurrentState());		
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine2.State1);
 		
 		for (int i = 1; i < 7; ++i) {
 			Scheduler.getInstance().run();
-			assertEquals(TestStateMachine2.States.STATE_1, sm.getCurrentState());
+			assertTrue(sm.getCurrentState() instanceof TestStateMachine2.State1);
 		}
 		
 		Scheduler.getInstance().run();
 		
-		assertEquals(TestStateMachine2.States.STATE_2, sm.getCurrentState());
+		assertTrue(sm.getCurrentState() instanceof TestStateMachine2.State2);
 		
 		Scheduler.getInstance().run();
 		
@@ -63,50 +62,60 @@ class StateMachineTest {
 
 }
 
-class TestStateMachine extends StateMachine<TestStateMachine.States> {
-	enum States {
-		START,
-		STATE_1,
-		STATE_2,
+class TestStateMachine extends StateMachine {
+	class StartState implements State {
+		public State tick() {
+			return new State1();
+		}
 	}
 	
-	public TestStateMachine() {
-		setStartState(States.START);
-		addState(States.START, () -> {
-			return changeState(States.STATE_1);
-		});
-		addState(States.STATE_1, new Supplier<Transition>() {
-			int count = 0;
-			public Transition get() {
-				++count;
-				if (count < 5) {
-					return repeatState();
-				} else {
-					return changeState(States.STATE_2);
-				}
+	class State1 implements State {
+		int count = 0;
+		public State tick() {
+			++count;
+			if (count < 5) {
+				return this;
+			} else {
+				return new State2();
 			}
-		});
-		addState(States.STATE_2, () -> {
-			return finish();
-		});
+		}
+	}
+	
+	class State2 implements State {
+		public State tick() {
+			return DONE;
+		}
+	}
+
+	public TestStateMachine() {
+		setStartState(new StartState());
 	}
 }
 
-class TestStateMachine2 extends StateMachine<TestStateMachine2.States> {
-	enum States {
-		START,
-		STATE_1,
-		STATE_2,
+class TestStateMachine2 extends StateMachine {
+	class StartState implements State {
+		public State tick() {
+			return new State1();
+		}
+	}
+	
+	class State1 extends StateSubmachine {
+		public State1() {
+			super(new TestStateMachine());
+		}
+		
+		public State getExitState() {
+			return new State2();
+		}
+	}
+	
+	class State2 implements State {
+		public State tick() {
+			return DONE;
+		}
 	}
 	
 	public TestStateMachine2() {
-		setStartState(States.START);
-		addState(States.START, () -> {
-			return changeState(States.STATE_1);
-		});
-		addState(States.STATE_1, States.STATE_2, new TestStateMachine());
-		addState(States.STATE_2, () -> {
-			return finish();
-		});
+		setStartState(new StartState());
 	}
 }

@@ -3,31 +3,34 @@ package com.team766.frc2018.sequences;
 import com.team766.framework.StateMachine;
 import com.team766.frc2018.Robot;
 
-public class ExampleSequence extends StateMachine<ExampleSequence.States> {
-	enum States {
-		MOVE_FORWARD,
-		MOVE_BACKWARD,
-	}
+public class ExampleSequence extends StateMachine {
+	private Robot m_robot;
 	
 	public ExampleSequence(Robot robot) {
-		setStartState(States.MOVE_FORWARD);
+		m_robot = robot;
 		
-		addState(States.MOVE_FORWARD, () -> {
-			robot.exampleMechanism.setTargetForward();
-			if (robot.exampleMechanism.atTarget()) {
-				return changeState(States.MOVE_BACKWARD);
+		setStartState(new MoveForward());
+	}
+	
+	private class MoveForward implements State {
+		public State tick() {
+			m_robot.exampleMechanism.setTargetForward();
+			if (m_robot.exampleMechanism.atTarget()) {
+				return new MoveBackward();
 			} else {
-				return repeatState();
+				return this;
 			}
-		});
-		
-		addState(States.MOVE_BACKWARD, () -> {
-			robot.exampleMechanism.setTargetBackward();
-			if (robot.exampleMechanism.atTarget()) {
-				return finish();
+		}
+	}
+	
+	private class MoveBackward implements State {
+		public State tick() {
+			m_robot.exampleMechanism.setTargetBackward();
+			if (m_robot.exampleMechanism.atTarget()) {
+				return DONE;
 			} else {
-				return repeatState();
+				return this;
 			}
-		});
+		}
 	}
 }
