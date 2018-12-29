@@ -4,6 +4,7 @@ import com.team766.hal.AnalogInputReader;
 import com.team766.hal.CANSpeedController;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
+import com.team766.hal.Clock;
 import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
@@ -100,5 +101,11 @@ public class WPIRobotProvider extends RobotProvider{
 		if(relays[index] == null)
 			relays[index] = new Relay(index);
 		return relays[index];
+	}
+	
+	@Override
+	public Clock getClock() {
+		// TODO Auto-generated method stub
+		return SystemClock.instance;
 	}
 }

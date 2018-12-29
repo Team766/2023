@@ -1,4 +1,4 @@
-package com.team766.hal.mock;
+package com.team766.hal.simulator;
 
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.CANSpeedController;
@@ -13,9 +13,8 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
-import com.team766.hal.wpilib.SystemClock;
 
-public class TestRobotProvider extends RobotProvider{
+public class SimulationRobotProvider extends RobotProvider{
 
 	@Override
 	public SpeedController getMotor(int index) {
@@ -69,7 +68,7 @@ public class TestRobotProvider extends RobotProvider{
 	@Override
 	public DigitalInputReader getDigitalInput(int index) {
 		if(digInputs[index] == null)
-			digInputs[index] = new DigitalInput();
+			digInputs[index] = new DigitalInput(index);
 		return digInputs[index];
 	}
 
@@ -81,7 +80,7 @@ public class TestRobotProvider extends RobotProvider{
 	@Override
 	public AnalogInputReader getAnalogInput(int index) {
 		if(angInputs[index] == null)
-			angInputs[index] = new AnalogInput();
+			angInputs[index] = new AnalogInput(index);
 		return angInputs[index];
 	}
 	
@@ -93,7 +92,6 @@ public class TestRobotProvider extends RobotProvider{
 
 	@Override
 	public Clock getClock() {
-		// TODO Replace this with a controlled clock
-		return SystemClock.instance;
+		return SimulationClock.instance;
 	}
 }

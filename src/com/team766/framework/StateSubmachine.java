@@ -2,7 +2,7 @@ package com.team766.framework;
 
 import com.team766.framework.StateMachine.State;
 
-public abstract class StateSubmachine implements StateMachine.State {
+public abstract class StateSubmachine extends StateMachine.State {
 
 	private StateMachine m_submachine;
 	

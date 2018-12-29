@@ -16,7 +16,7 @@ public class ReadPath {
 		Logger logger = Logger.get(Category.TRAJECTORY);
 		logger.logRaw(Severity.INFO, "Reading trajectory from " + filePath);
 		try {
-			reader = new Scanner(new File(new File(ConfigFileReader.getInstance().getString("trajectoryPathRoot")), filePath));				
+			reader = new Scanner(new File(new File(ConfigFileReader.getInstance().getString("trajectoryPathRoot").get()), filePath));				
 		} catch (FileNotFoundException e) {
 			logger.logRaw(Severity.ERROR, "Error: Path file " + filePath + " not opened");
 			throw new RuntimeException(e);

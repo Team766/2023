@@ -3,8 +3,9 @@ package com.team766.framework;
 import java.util.function.BiConsumer;
 
 public class StateMachine implements Command {
-	public interface State {
-		public State tick();
+	public abstract static class State {
+		public void initialize() {} 
+		public abstract State tick();
 	}
 
 	protected static final State DONE = null;
@@ -38,6 +39,7 @@ public class StateMachine implements Command {
 			throw new IllegalStateException("Remember to call setStartState when setting up your state machine");
 		}
 		m_currentState = m_startState;
+		m_currentState.initialize();
 	}
 	
 	public void run() {
@@ -46,8 +48,13 @@ public class StateMachine implements Command {
 		}
 		State prevState = m_currentState;
 		m_currentState = m_currentState.tick();
-		if (m_transitionObserver != null && prevState != m_currentState) {
-			m_transitionObserver.accept(prevState, m_currentState);
+		if (prevState != m_currentState) {
+			if (m_currentState != DONE) {
+				m_currentState.initialize();
+			}
+			if (m_transitionObserver != null) {
+				m_transitionObserver.accept(prevState, m_currentState);
+			}
 		}
 	}
 	

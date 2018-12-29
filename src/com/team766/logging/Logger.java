@@ -11,7 +11,7 @@ public class Logger {
 	
 	static {
 		try {
-			m_logWriter = new LogWriter(ConfigFileReader.getInstance().getString("logFilePath"));
+			m_logWriter = new LogWriter(ConfigFileReader.getInstance().getString("logFilePath").get());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

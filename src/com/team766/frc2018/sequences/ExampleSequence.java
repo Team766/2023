@@ -8,26 +8,26 @@ public class ExampleSequence extends StateMachine {
 	
 	public ExampleSequence(Robot robot) {
 		m_robot = robot;
-		m_robot.exampleMechanism.takeControl(this);
+		m_robot.arm.takeControl(this);
 		
-		setStartState(new MoveForward());
+		setStartState(new MoveUp());
 	}
 	
-	private class MoveForward implements State {
+	private class MoveUp extends State {
 		public State tick() {
-			m_robot.exampleMechanism.setTargetForward();
-			if (m_robot.exampleMechanism.atTarget()) {
-				return new MoveBackward();
+			m_robot.arm.setTargetUp();
+			if (m_robot.arm.atTarget()) {
+				return new MoveDown();
 			} else {
 				return this;
 			}
 		}
 	}
 	
-	private class MoveBackward implements State {
+	private class MoveDown extends State {
 		public State tick() {
-			m_robot.exampleMechanism.setTargetBackward();
-			if (m_robot.exampleMechanism.atTarget()) {
+			m_robot.arm.setTargetDown();
+			if (m_robot.arm.atTarget()) {
 				return DONE;
 			} else {
 				return this;

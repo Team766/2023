@@ -39,36 +39,69 @@ public abstract class RobotProvider {
 	
 	//Config-driven methods
 	public SpeedController getMotor(String configName) {
-		return getMotor(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Motor " + configName + " not found in config file");
+		}
+		return getMotor(port);
 	}
 	public CANSpeedController getCANMotor(String configName) {
-		return getCANMotor(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("CAN Motor " + configName + " not found in config file");
+		}
+		return getCANMotor(port);
 	}
 	public EncoderReader getEncoder(String configName) {
-		int[] ports = ConfigFileReader.getInstance().getInts(configName);
+		Integer[] ports = ConfigFileReader.getInstance().getInts(configName).get();
+		if (ports == null) {
+			throw new IllegalArgumentException("Encoder " + configName + " not found in config file");
+		}
 		if (ports.length != 2) {
 			throw new IllegalArgumentException("Encoder " + configName + " has " + ports.length + " config values, but expected 2");
 		}
 		return getEncoder(ports[0], ports[1]);
 	}
 	public DigitalInputReader getDigitalInput(String configName) {
-		return getDigitalInput(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Digital input " + configName + " not found in config file");
+		}
+		return getDigitalInput(port);
 	}
 	public AnalogInputReader getAnalogInput(String configName) {
-		return getAnalogInput(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Analog input " + configName + " not found in config file");
+		}
+		return getAnalogInput(port);
 	}
 	public RelayOutput getRelay(String configName) {
-		return getRelay(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Relay " + configName + " not found in config file");
+		}
+		return getRelay(port);
 	}
 	public SolenoidController getSolenoid(String configName) {
-		return getSolenoid(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Solenoid " + configName + " not found in config file");
+		}
+		return getSolenoid(port);
 	}
 	public GyroReader getGyro(String configName) {
-		return getGyro(ConfigFileReader.getInstance().getInt(configName));
+		Integer port = ConfigFileReader.getInstance().getInt(configName).get();
+		if (port == null) {
+			throw new IllegalArgumentException("Gyro " + configName + " not found in config file");
+		}
+		return getGyro(port);
 	}
 	
 	//Operator Devices
 	public abstract JoystickReader getJoystick(int index);
 	
 	public abstract CameraInterface getCamServer();
+	
+	public abstract Clock getClock();
 }

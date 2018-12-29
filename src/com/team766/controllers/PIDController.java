@@ -1,6 +1,10 @@
 package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.hal.RobotProvider;
+import com.team766.library.ConstantValueProvider;
+import com.team766.library.MissingValue;
+import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -28,12 +32,12 @@ public class PIDController {
 	private int printCounter = 0;
 	private boolean print = false;
 
-	private double Kp = 0;
-	private double Ki = 0;
-	private double Kd = 0;
-	private double maxoutput_low = -1.0;
-	private double maxoutput_high = 1.0;
-	private double endthreshold = 0;
+	private ValueProvider<Double> Kp;
+	private ValueProvider<Double> Ki;
+	private ValueProvider<Double> Kd;
+	private ValueProvider<Double> maxoutput_low = new MissingValue<Double>();
+	private ValueProvider<Double> maxoutput_high = new MissingValue<Double>();
+	private ValueProvider<Double> endthreshold;
 
 	private double setpoint = 0;
 
@@ -43,26 +47,18 @@ public class PIDController {
 
 	private double output_value = 0;
 	
-	private double lastTimeMillis = System.currentTimeMillis();
+	private double lastTime = RobotProvider.instance.getClock().getTime();
 
 	public static PIDController loadFromConfig(String configPrefix) {
 		if (!configPrefix.endsWith(".")) {
 			configPrefix += ".";
 		}
-		double outputMaxLow = -1;
-		double outputMaxHigh = 1;
-		if (ConfigFileReader.getInstance().containsKey(configPrefix + "outputMaxLow")) {
-			outputMaxLow = ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxLow");
-		}
-		if (ConfigFileReader.getInstance().containsKey(configPrefix + "outputMaxHigh")) {
-			outputMaxHigh = ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxHigh");
-		}
 		return new PIDController(
 				ConfigFileReader.getInstance().getDouble(configPrefix + "pGain"),
 				ConfigFileReader.getInstance().getDouble(configPrefix + "iGain"),
 				ConfigFileReader.getInstance().getDouble(configPrefix + "dGain"),
-				outputMaxLow,
-				outputMaxHigh,
+				ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxLow"),
+				ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxHigh"),
 				ConfigFileReader.getInstance().getDouble(configPrefix + "threshold"));
 	}
 	
@@ -83,6 +79,21 @@ public class PIDController {
 	 */
 	public PIDController(double P, double I, double D, double outputmax_low,
 			double outputmax_high, double threshold) {
+		Kp = new ConstantValueProvider<Double>(P);
+		Ki = new ConstantValueProvider<Double>(I);
+		Kd = new ConstantValueProvider<Double>(D);
+		maxoutput_low = new ConstantValueProvider<Double>(outputmax_low);
+		maxoutput_high = new ConstantValueProvider<Double>(outputmax_high);
+		endthreshold = new ConstantValueProvider<Double>(threshold);
+	}
+	
+	public PIDController(
+			ValueProvider<Double> P,
+			ValueProvider<Double> I,
+			ValueProvider<Double> D,
+			ValueProvider<Double> outputmax_low,
+			ValueProvider<Double> outputmax_high,
+			ValueProvider<Double> threshold) {
 		Kp = P;
 		Ki = I;
 		Kd = D;
@@ -101,12 +112,12 @@ public class PIDController {
 	 * @param threshold the end threshold for declaring the PID 'done'
 	 */
 	public PIDController(double P, double I, double D, double threshold) {
-		Kp = P;
-		Ki = I;
-		Kd = D;
-		maxoutput_low = -1;
-		maxoutput_high = 1;
-		endthreshold = threshold;
+		Kp = new ConstantValueProvider<Double>(P);
+		Ki = new ConstantValueProvider<Double>(I);
+		Kd = new ConstantValueProvider<Double>(D);
+		maxoutput_low = new MissingValue<Double>();
+		maxoutput_high = new MissingValue<Double>();
+		endthreshold = new ConstantValueProvider<Double>(threshold);
 	}
 
 	/**
@@ -129,9 +140,9 @@ public class PIDController {
 	 * @param D Derivative value used in the PID controller
 	 */
 	public void setConstants(double P, double I, double D) {
-		Kp = P;
-		Ki = I;
-		Kd = D;
+		Kp = new ConstantValueProvider<Double>(P);
+		Ki = new ConstantValueProvider<Double>(I);
+		Kd = new ConstantValueProvider<Double>(D);
 	}
 	
 	/** Same as calculate() except that it prints debugging information
@@ -160,21 +171,21 @@ public class PIDController {
 		}
 		*/
 		
-		double delta_time = (System.currentTimeMillis() - lastTimeMillis) * 0.001;
+		double delta_time = RobotProvider.instance.getClock().getTime() - lastTime;
 
 		total_error += cur_error * delta_time;
 
-		if ((total_error * Ki) > 1) {
-			total_error = 1 / Ki;
+		if ((total_error * Ki.get()) > 1) {
+			total_error = 1 / Ki.get();
 		} else {
-			if ((total_error * Ki) < -1)
-				total_error = -1 / Ki;
+			if ((total_error * Ki.get()) < -1)
+				total_error = -1 / Ki.get();
 		}
 
 		double out =
-				Kp * cur_error +
-				Ki * total_error +
-				Kd * ((cur_error - prev_error) / delta_time);
+				Kp.get() * cur_error +
+				Ki.get() * total_error +
+				Kd.get() * ((cur_error - prev_error) / delta_time);
 		prev_error = cur_error;
 
 		pr("Pre-clip output: " + out);
@@ -184,7 +195,7 @@ public class PIDController {
 		else
 			output_value = out;
 
-		lastTimeMillis = System.currentTimeMillis();
+		lastTime = RobotProvider.instance.getClock().getTime();
 		
 		pr("	Total Eror: " + total_error + "		Current Error: " + cur_error
 				+ "	Output: " + output_value + " 	Setpoint: " + setpoint);
@@ -195,7 +206,7 @@ public class PIDController {
 	}
 
 	public boolean isDone() {
-		return Math.abs(cur_error) < endthreshold;
+		return Math.abs(cur_error) < endthreshold.get();
 	}
 
 	/**
@@ -216,10 +227,20 @@ public class PIDController {
 	 */
 	private double clip(double clipped) {
 		double out = clipped;
-		if (out > maxoutput_high)
-			out = maxoutput_high;
-		if (out < maxoutput_low)
-			out = maxoutput_low;
+		double outputMaxLow = -1;
+		double outputMaxHigh = 1;
+		if (maxoutput_low.hasValue()) {
+			outputMaxLow = maxoutput_low.get();
+		}
+		if (maxoutput_high.hasValue()) {
+			outputMaxHigh = maxoutput_high.get();
+		}
+		if (out > outputMaxHigh) {
+			out = outputMaxHigh;
+		}
+		if (out < outputMaxLow) {
+			out = outputMaxLow;
+		}
 		return out;
 	}
 
@@ -232,11 +253,11 @@ public class PIDController {
 	}
 
 	public void setMaxoutputHigh(double in) {
-		maxoutput_high = in;
+		maxoutput_high = new ConstantValueProvider<Double>(in);
 	}
 
 	public void setMaxoutputLow(double in) {
-		maxoutput_low = in;
+		maxoutput_low = new ConstantValueProvider<Double>(in);
 	}
 	
 	public double getSetpoint(){

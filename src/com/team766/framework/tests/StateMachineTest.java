@@ -63,13 +63,13 @@ class StateMachineTest {
 }
 
 class TestStateMachine extends StateMachine {
-	class StartState implements State {
+	class StartState extends State {
 		public State tick() {
 			return new State1();
 		}
 	}
 	
-	class State1 implements State {
+	class State1 extends State {
 		int count = 0;
 		public State tick() {
 			++count;
@@ -81,7 +81,7 @@ class TestStateMachine extends StateMachine {
 		}
 	}
 	
-	class State2 implements State {
+	class State2 extends State {
 		public State tick() {
 			return DONE;
 		}
@@ -93,7 +93,7 @@ class TestStateMachine extends StateMachine {
 }
 
 class TestStateMachine2 extends StateMachine {
-	class StartState implements State {
+	class StartState extends State {
 		public State tick() {
 			return new State1();
 		}
@@ -109,7 +109,7 @@ class TestStateMachine2 extends StateMachine {
 		}
 	}
 	
-	class State2 implements State {
+	class State2 extends State {
 		public State tick() {
 			return DONE;
 		}

@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
+import com.team766.library.ValueProvider;
+
 /**
  * Class for loading in config from the Config file.
  * Constants that need to be tuned / changed
@@ -23,28 +25,40 @@ public class ConfigFileReader {
 	
 	public static ConfigFileReader instance;
 	
+	// This is incremented each time the config file is reloaded to ensure that ConfigValues use the most recent setting.
+	private int generation = 0;
+	
 	private String fileName;
 	private HashMap<String, String> values;
 	
-	public static ConfigFileReader getInstance(){
+	public static ConfigFileReader getInstance() {
 		return instance;
 	}
 	
-	public ConfigFileReader(String fileName){
+	public ConfigFileReader(String fileName) {
 		this.fileName = fileName;
 		
 		reloadConstants();
 	}
 	
-	public void reloadConstants(){
+	public void reloadConstants() {
 		System.out.println("Loading config file: " + fileName);
 		HashMap<String, String> new_values = new HashMap<String, String>();
 		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(fileName));
 			reader.lines().forEach((currLine) -> {
+				String cleanedLine = currLine;
+				int commentBegin = currLine.indexOf('#');
+				if (commentBegin >= 0) {
+					cleanedLine = cleanedLine.substring(0, commentBegin);
+				}
+				cleanedLine = cleanedLine.trim();
 				// Separate the key from the value
-				String[] tokens = currLine.split(",", 2);
+				String[] tokens = cleanedLine.split(",", 2);
+				if (tokens.length < 2) {
+					return;
+				}
 				new_values.put(tokens[0], tokens[1]);
 			});
 			reader.close();
@@ -53,63 +67,42 @@ public class ConfigFileReader {
 			e.printStackTrace();
 		}
 		values = new_values;
+		++generation;
 	}
 	
-	public boolean containsKey(String key) {
+	public int getGeneration() {
+		return generation;
+	}
+	
+	boolean containsKey(String key) {
 		return values.containsKey(key);
 	}
 	
-	private int[] stringToInts(String in){
-		String[] inArr = in.split(",");
-		int[] out = new int[inArr.length];
-		
-		for(int i = 0; i < inArr.length; i++){
-			out[i] = Integer.parseInt(inArr[i]);
-		}
-		return out;
-	}
-
-	private double[] stringToDoubles(String in){
-		String[] inArr = in.split(",");
-		double[] out = new double[inArr.length];
-		
-		for(int i = 0; i < inArr.length; i++){
-			out[i] = Double.parseDouble(inArr[i]);
-		}
-		return out;
+	public ValueProvider<Integer[]> getInts(String key) {
+		return new IntegerConfigMultiValue(key);
 	}
 	
-	public int[] getInts(String key){
-		return stringToInts(getString(key));
+	public ValueProvider<Integer> getInt(String key) {
+		return new IntegerConfigValue(key);
 	}
 	
-	public int getInt(String key){
-		int[] value = getInts(key);
-		if (value.length != 1) {
-			throw new IllegalArgumentException(key + " has " + value.length + " config values, but expected 1");
-		}
-		return value[0];
+	public ValueProvider<Double[]> getDoubles(String key) {
+		return new DoubleConfigMultiValue(key);
 	}
 	
-	public double[] getDoubles(String key){
-		return stringToDoubles(getString(key));
+	public ValueProvider<Double> getDouble(String key) {
+		return new DoubleConfigValue(key);
 	}
 	
-	public double getDouble(String key){
-		double[] value = getDoubles(key);
-		if (value.length != 1) {
-			throw new IllegalArgumentException(key + " has " + value.length + " config values, but expected 1");
-		}
-		return value[0];
+	public ValueProvider<Boolean> getBoolean(String key) {
+		return new BooleanConfigValue(key);
 	}
 	
-	public boolean getBoolean(String key){
-		String in = getString(key);
-		return Boolean.parseBoolean(in);
+	public ValueProvider<String> getString(String key) {
+		return new StringConfigValue(key);
 	}
 	
-	public String getString(String key){
+	String getRawString(String key){
 		return values.get(key);
 	}
-	
 }
