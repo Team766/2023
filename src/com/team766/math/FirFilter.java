@@ -1,27 +1,21 @@
 package com.team766.math;
 
+import java.util.stream.Collectors;
+
+import com.team766.library.CircularBuffer;
+
 public class FirFilter implements Filter {
-	private double[] buffer;
-	private int count = 0;
-	private int headIndex = 0;
+	private CircularBuffer<Double> buffer;
 	
 	public FirFilter(int bufferLength) {
-		buffer = new double[bufferLength];
+		buffer = new CircularBuffer<>(bufferLength);
 	}
 	
 	public void push(double sample) {
-		buffer[headIndex] = sample;
-		headIndex = (headIndex + 1) % buffer.length;
-		if (count < buffer.length) {
-			++count;
-		}
+		buffer.add(sample);
 	}
 	
 	public double getValue() {
-		double accum = 0.0;
-		for (int i = 0; i < count; ++i) {
-			accum += buffer[i] / count;
-		}
-		return accum;
+		return buffer.stream().collect(Collectors.averagingDouble(Double::doubleValue));
 	}
 }
