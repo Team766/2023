@@ -7,7 +7,7 @@ public abstract class Mechanism implements Runnable {
 		Scheduler.getInstance().add(this);
 	}
 	
-	public void takeControl(Command command) {
+	void takeControl(Command command) {
 		if (m_runningCommand != null) {
 			m_runningCommand.stop();
 		}

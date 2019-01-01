@@ -68,6 +68,7 @@ public class LogEntryWithFormat implements LogEntry {
 		return m_category;
 	}
 	
+	@Override
 	public String format(LogReader reader) {
 		return String.format(m_format, m_args);
 	}

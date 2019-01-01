@@ -2,70 +2,14 @@ package com.team766.config;
 
 import java.util.Arrays;
 
-import com.team766.library.ValueProvider;
-
-abstract class AbstractConfigValue<E> implements ValueProvider<E> {
-	protected String m_key;
-	private E m_cachedValue;
-	private boolean m_cachedHasValue;
-	private int m_cachedGeneration = -1;
-	
-	protected AbstractConfigValue(String key) {
-		m_key = key;
-	}
-	
-	private void sync() {
-		if (ConfigFileReader.instance.getGeneration() != m_cachedGeneration) {
-			m_cachedGeneration = ConfigFileReader.instance.getGeneration();
-			m_cachedHasValue = ConfigFileReader.instance.containsKey(m_key);
-			if (m_cachedHasValue) {
-				m_cachedValue = loadValue();
-			} else {
-				m_cachedValue = null;
-			}
-		}
-	}
-	
-	@Override
-	public boolean hasValue() {
-		sync();
-		return m_cachedHasValue;
-	}
-	
-	@Override
-	public E get() {
-		sync();
-		if (!m_cachedHasValue) {
-			throw new IllegalArgumentException(m_key + " not found in the config file");
-		}
-		return m_cachedValue;
-	}
-	
-	protected abstract E loadValue();
-	
-	protected String loadString() {
-		return ConfigFileReader.instance.getRawString(m_key);
-	} 
-}
-
-abstract class AbstractConfigMultiValue<E> extends AbstractConfigValue<E[]> {
-	protected AbstractConfigMultiValue(String key) {
-		super(key);
-	}
-
-	protected String[] loadStrings() {
-		return loadString().split(",");
-	}
-}
-
 class DoubleConfigValue extends AbstractConfigValue<Double> {
 	protected DoubleConfigValue(String key) {
 		super(key);
 	}
 
 	@Override
-	protected Double loadValue() {
-		return Double.valueOf(loadString());
+	public Double parseValue(String configString) {
+		return Double.valueOf(configString);
 	}
 }
 
@@ -75,8 +19,8 @@ class IntegerConfigValue extends AbstractConfigValue<Integer> {
 	}
 
 	@Override
-	protected Integer loadValue() {
-		return Integer.valueOf(loadString());
+	public Integer parseValue(String configString) {
+		return Integer.valueOf(configString);
 	}
 }
 
@@ -86,8 +30,8 @@ class DoubleConfigMultiValue extends AbstractConfigMultiValue<Double> {
 	}
 
 	@Override
-	protected Double[] loadValue() {
-		return (Double[]) Arrays.stream(loadStrings()).map(Double::valueOf).toArray((size) -> new Double[size]);
+	public Double[] parseValue(String configString) {
+		return (Double[]) Arrays.stream(splitConfigString(configString)).map(Double::valueOf).toArray((size) -> new Double[size]);
 	}
 }
 
@@ -97,8 +41,8 @@ class IntegerConfigMultiValue extends AbstractConfigMultiValue<Integer> {
 	}
 
 	@Override
-	protected Integer[] loadValue() {
-		return (Integer[]) Arrays.stream(loadStrings()).map(Integer::valueOf).toArray((size) -> new Integer[size]);
+	public Integer[] parseValue(String configString) {
+		return (Integer[]) Arrays.stream(splitConfigString(configString)).map(Integer::valueOf).toArray((size) -> new Integer[size]);
 	}
 }
 
@@ -108,8 +52,8 @@ class BooleanConfigValue extends AbstractConfigValue<Boolean> {
 	}
 
 	@Override
-	protected Boolean loadValue() {
-		return Boolean.valueOf(loadString());
+	public Boolean parseValue(String configString) {
+		return Boolean.valueOf(configString);
 	}
 }
 
@@ -119,7 +63,7 @@ class StringConfigValue extends AbstractConfigValue<String> {
 	}
 
 	@Override
-	protected String loadValue() {
-		return loadString();
+	public String parseValue(String configString) {
+		return configString;
 	}
 }

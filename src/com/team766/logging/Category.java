@@ -8,7 +8,8 @@ public enum Category {
 	CAMERA,
 	PID_CONTROLLER,
 	TRAJECTORY,
-	AUTONOMOUS;
+	AUTONOMOUS,
+	CONFIGURATION;
 	
 	private static final Category[] VALUES = Category.values();
 	public static Category fromInteger(byte x) {

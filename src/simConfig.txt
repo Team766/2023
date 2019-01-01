@@ -1,3 +1,4 @@
+logFilePath,sim_robot_logs
 drive.leftMotor,6
 drive.rightMotor,4
 drive.leftEncoder,0,1

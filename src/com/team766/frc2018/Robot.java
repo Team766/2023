@@ -7,8 +7,10 @@ import com.team766.frc2018.mechanisms.Wrist;
 import com.team766.frc2018.sequences.ExampleDriveSequence;
 import com.team766.frc2018.sequences.ExampleSequence;
 import com.team766.hal.MyRobot;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import com.team766.web.AutonomousSelector;
+import com.team766.web.ConfigUI;
+import com.team766.web.LogViewer;
+import com.team766.web.WebServer;
 
 public class Robot extends MyRobot {	
 	public Arm arm;
@@ -17,7 +19,8 @@ public class Robot extends MyRobot {
 	
 	private OI m_oi;
 	
-	private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+	private WebServer m_webServer;
+	private AutonomousSelector m_autonSelector;
 	private Command m_autonomous;
 	
 	@Override
@@ -28,13 +31,24 @@ public class Robot extends MyRobot {
 		
 		m_oi = new OI(this);
 		
-		m_chooser.addDefault("Autonomous1", new ExampleDriveSequence(this));
-		m_chooser.addObject("Autonomous2", new ExampleSequence(this));
+		m_webServer = new WebServer();
+		m_webServer.addHandler("/config", new ConfigUI());
+		m_webServer.addHandler("/logs", new LogViewer());
+		m_autonSelector = new AutonomousSelector(AutonomousModes.class);
+		m_webServer.addHandler("/values", m_autonSelector);
+		m_webServer.start();
 	}
 	
 	@Override
 	public void autonomousInit() {
-		m_autonomous = m_chooser.getSelected();
+		switch (m_autonSelector.getSelectedAutonMode(AutonomousModes.class)) {
+		case Autonomous1:
+			m_autonomous = new ExampleDriveSequence(this);
+			break;
+		case Autonomous2:
+			m_autonomous = new ExampleSequence(this);
+			break;
+		}
 		m_autonomous.start();
 	}
 	

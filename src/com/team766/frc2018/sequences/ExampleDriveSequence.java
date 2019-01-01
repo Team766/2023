@@ -1,57 +1,34 @@
 package com.team766.frc2018.sequences;
 
-import com.team766.framework.StateMachine;
+import com.team766.framework.Subroutine;
 import com.team766.frc2018.Robot;
+import com.team766.frc2018.mechanisms.Drive;
 import com.team766.hal.RobotProvider;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 
-public class ExampleDriveSequence extends StateMachine {
-	private Robot m_robot;
+public class ExampleDriveSequence extends Subroutine {
+	private Drive m_drive;
 	
 	public ExampleDriveSequence(Robot robot) {
-		m_robot = robot;
-		m_robot.arm.takeControl(this);
-		
-		setStartState(new MoveForward());
+		m_drive = robot.drive;
+		takeControl(m_drive);
 	}
 	
-	private class MoveForward extends State {
-		private double startTime;
+	protected void subroutine() {
+		Logger.get(Category.AUTONOMOUS).log(Severity.INFO, "Forward movement begins");
+		double forwardStartTime = RobotProvider.instance.getClock().getTime();
+		m_drive.setDrivePower(0.95, 1.0);
+		waitFor(() -> RobotProvider.instance.getClock().getTime() - forwardStartTime > 1.0);
+		Logger.get(Category.AUTONOMOUS).log(Severity.INFO, "Forward movement finished");
 		
-		public void initialize() {
-			startTime = RobotProvider.instance.getClock().getTime();
-		}
+		Logger.get(Category.AUTONOMOUS).log(Severity.INFO, "Reverse movement begins");
+		double reverseStartTime = RobotProvider.instance.getClock().getTime();
+		m_drive.setDrivePower(-1.0, -0.95);
+		waitFor(() -> RobotProvider.instance.getClock().getTime() - reverseStartTime > 1.0);
+		Logger.get(Category.AUTONOMOUS).log(Severity.INFO, "Reverse movement finished");
 		
-		public State tick() {
-			m_robot.drive.setDrivePower(0.95, 1.0);
-			if (RobotProvider.instance.getClock().getTime() - startTime > 1.0) {
-				return new MoveBackward();
-			} else {
-				return this;
-			}
-		}
-	}
-	
-	private class MoveBackward extends State {
-		private double startTime;
-		
-		public void initialize() {
-			startTime = RobotProvider.instance.getClock().getTime();
-		}
-		
-		public State tick() {
-			m_robot.drive.setDrivePower(-1.0, -0.95);
-			if (RobotProvider.instance.getClock().getTime() - startTime > 1.0) {
-				return new Stop();
-			} else {
-				return this;
-			}
-		}
-	}
-	
-	private class Stop extends State {
-		public State tick() {
-			m_robot.drive.setDrivePower(0.0, 0.0);
-			return DONE;
-		}
+		m_drive.setDrivePower(0.0, 0.0);
 	}
 }

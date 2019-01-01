@@ -2,10 +2,15 @@ package com.team766.config;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 
 /**
  * Class for loading in config from the Config file.
@@ -104,5 +109,25 @@ public class ConfigFileReader {
 	
 	String getRawString(String key){
 		return values.get(key);
+	}
+	
+	public void setValues(Map<String, String> changedValues) {
+		values.putAll(changedValues);
+		++generation;
+	}
+	
+	public void saveToFile() throws IOException {
+		FileWriter writer = new FileWriter(fileName);
+		try {
+			for (Map.Entry<String, String> entry : values.entrySet()) {
+				writer.write(entry.getKey());
+				writer.write(',');
+				writer.write(entry.getValue());
+				writer.write('\n');
+			}
+		} finally {
+			writer.close();
+		}
+		Logger.get(Category.CONFIGURATION).logRaw(Severity.INFO, "Config file written to " + fileName);
 	}
 }

@@ -59,7 +59,12 @@ public class RawLogEntry implements LogEntry {
 		return m_category;
 	}
 	
+	@Override
 	public String format(LogReader reader) {
+		return m_message;
+	}
+	
+	public String format() {
 		return m_message;
 	}
 }

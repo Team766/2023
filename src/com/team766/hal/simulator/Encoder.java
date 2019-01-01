@@ -7,7 +7,6 @@ public class Encoder implements EncoderReader{
 	private int ticks = 0;
 	
 	public Encoder(int a, int b){
-		System.out.println("Encoder ports: " + a + "\t" + b);
 	}
 	
 	public int getRaw() {

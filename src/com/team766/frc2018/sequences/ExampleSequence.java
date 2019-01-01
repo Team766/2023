@@ -1,37 +1,21 @@
 package com.team766.frc2018.sequences;
 
-import com.team766.framework.StateMachine;
+import com.team766.framework.Subroutine;
 import com.team766.frc2018.Robot;
+import com.team766.frc2018.mechanisms.Arm;
 
-public class ExampleSequence extends StateMachine {
-	private Robot m_robot;
+public class ExampleSequence extends Subroutine {
+	private Arm m_arm;
 	
 	public ExampleSequence(Robot robot) {
-		m_robot = robot;
-		m_robot.arm.takeControl(this);
-		
-		setStartState(new MoveUp());
+		m_arm = robot.arm;
+		takeControl(m_arm);
 	}
 	
-	private class MoveUp extends State {
-		public State tick() {
-			m_robot.arm.setTargetUp();
-			if (m_robot.arm.atTarget()) {
-				return new MoveDown();
-			} else {
-				return this;
-			}
-		}
-	}
-	
-	private class MoveDown extends State {
-		public State tick() {
-			m_robot.arm.setTargetDown();
-			if (m_robot.arm.atTarget()) {
-				return DONE;
-			} else {
-				return this;
-			}
-		}
+	protected void subroutine() {
+		m_arm.setTargetUp();
+		waitFor(() -> m_arm.atTarget());
+		m_arm.setTargetDown();
+		waitFor(() -> m_arm.atTarget());
 	}
 }
