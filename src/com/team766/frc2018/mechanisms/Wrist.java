@@ -19,7 +19,6 @@ public class Wrist extends Mechanism {
 	public static final ValueProvider<Double> DOWN_POSITION =
 			ConfigFileReader.getInstance().getDouble("wrist.downPosition");
 
-	private Robot m_robot;
 	private PIDController m_controller;
 	private EncoderReader m_encoder;
 	private MotionLockout m_armLockout;
@@ -27,8 +26,7 @@ public class Wrist extends Mechanism {
 	
 	private double m_commandedPosition;
 	
-	public Wrist(Robot robot) {
-		m_robot = robot;
+	public Wrist() {
 		m_controller = PIDController.loadFromConfig("wrist");
 		m_encoder = RobotProvider.instance.getEncoder("wrist.encoder");
 		m_armLockout = MotionLockout.loadFromConfig("wrist.armLockout");
@@ -36,7 +34,7 @@ public class Wrist extends Mechanism {
 	}
 	
 	public void run() {
-		double targetPosition = m_armLockout.filter(m_commandedPosition, m_robot.arm.getPosition());
+		double targetPosition = m_armLockout.filter(m_commandedPosition, Robot.arm.getPosition());
 		m_controller.setSetpoint(targetPosition);
 		m_controller.calculate(getPosition(), true);
 		double command = m_controller.getOutput();

@@ -58,8 +58,8 @@ public class RobotMain extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		try{
-			Scheduler.getInstance().run();
 			robot.disabledPeriodic();
+			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
 			throw e;
@@ -69,8 +69,8 @@ public class RobotMain extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		try{
-			Scheduler.getInstance().run();
 			robot.autonomousPeriodic();
+			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
 			throw e;
@@ -80,8 +80,8 @@ public class RobotMain extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		try{
-			Scheduler.getInstance().run();
 			robot.teleopPeriodic();
+			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
 			throw e;
