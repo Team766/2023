@@ -1,10 +1,8 @@
 package com.team766.frc2018.mechanisms;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.controllers.MotionLockout;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
-import com.team766.frc2018.Robot;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SpeedController;
@@ -21,7 +19,6 @@ public class Arm extends Mechanism {
 
 	private PIDController m_controller;
 	private EncoderReader m_encoder;
-	private MotionLockout m_wristLockout;
 	private SpeedController m_motor;
 	
 	private double m_commandedPosition;
@@ -29,13 +26,11 @@ public class Arm extends Mechanism {
 	public Arm() {
 		m_controller = PIDController.loadFromConfig("arm");
 		m_encoder = RobotProvider.instance.getEncoder("arm.encoder");
-		m_wristLockout = MotionLockout.loadFromConfig("arm.wristLockout");
 		m_motor = RobotProvider.instance.getMotor("arm.motor");
 	}
 	
 	public void run() {
-		double targetPosition = m_wristLockout.filter(m_commandedPosition, Robot.wrist.getPosition());
-		m_controller.setSetpoint(targetPosition);
+		m_controller.setSetpoint(m_commandedPosition);
 		m_controller.calculate(getPosition(), true);
 		double command = m_controller.getOutput();
 		m_motor.set(command);
