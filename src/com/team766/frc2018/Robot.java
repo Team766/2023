@@ -1,8 +1,7 @@
 package com.team766.frc2018;
 
+import com.team766.framework.AutonomousCommandUtils;
 import com.team766.framework.Command;
-import com.team766.frc2018.commands.ExampleDriveSequence;
-import com.team766.frc2018.commands.ExampleSequence;
 import com.team766.frc2018.mechanisms.Arm;
 import com.team766.frc2018.mechanisms.Drive;
 import com.team766.frc2018.mechanisms.Wrist;
@@ -46,14 +45,7 @@ public class Robot extends MyRobot {
 			m_oi.stop();
 		}
 		
-		switch (m_autonSelector.getSelectedAutonMode(AutonomousModes.class)) {
-		case Autonomous1:
-			m_autonomous = new ExampleDriveSequence();
-			break;
-		case Autonomous2:
-			m_autonomous = new ExampleSequence();
-			break;
-		}
+		m_autonomous = AutonomousCommandUtils.getCommand(m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
 		m_autonomous.start();
 	}
 	
