@@ -25,10 +25,17 @@ public class TestRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public CANSpeedController getCANMotor(int index) {
-		if(canMotors[index] == null)
-			canMotors[index] = new Talon(index);
-		return canMotors[index];
+	public CANSpeedController getTalonCANMotor(int index) {
+		if(talonCanMotors[index] == null)
+			talonCanMotors[index] = new Talon(index);
+		return talonCanMotors[index];
+	}
+
+	@Override
+	public CANSpeedController getVictorCANMotor(int index) {
+		if(victorCanMotors[index] == null)
+			victorCanMotors[index] = new Talon(index);
+		return victorCanMotors[index];
 	}
 
 	@Override

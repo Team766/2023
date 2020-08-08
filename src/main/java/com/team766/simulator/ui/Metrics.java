@@ -2,7 +2,6 @@ package com.team766.simulator.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,14 +11,10 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.team766.simulator.Parameters;
 
@@ -32,7 +27,7 @@ import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.ui.InteractivePanel;
 
 @SuppressWarnings("serial")
-public class Plot extends JPanel {
+public class Metrics extends JPanel {
 	// Color palette from http://www.mulinblog.com/a-color-palette-optimized-for-data-visualization/
 	private static final String[] COLORS = {
 			"#4D4D4D", // gray
@@ -93,11 +88,11 @@ public class Plot extends JPanel {
 		public void keyPressed(KeyEvent e) {}
 	}
 	
-	public static JFrame makePlotFrame(Collection<Double[]> series, String[] labels, boolean showControls) {
+	public static JFrame makePlotFrame(Collection<Double[]> series, String[] labels) {
 		JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
-        frame.setContentPane(new Plot(series, labels, showControls));
+        frame.setContentPane(new Metrics(series, labels));
         frame.setVisible(true);
         return frame;
 	}
@@ -108,7 +103,7 @@ public class Plot extends JPanel {
 	JPanel plotPanel;
 	Timer playbackTimer;
 	
-	public Plot(Collection<Double[]> series, String[] labels, boolean showControls) {
+	public Metrics(Collection<Double[]> series, String[] labels) {
         Double[] first = series.iterator().next();
         @SuppressWarnings("unchecked")
 		Class<Double>[] types = new Class[first.length];
@@ -158,62 +153,8 @@ public class Plot extends JPanel {
 		});
         playbackTimer.setRepeats(true);
         
-        if (showControls) {
-	        JPanel controlsPanel = new JPanel();
-	        controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.LINE_AXIS));
-	        slider = new JSlider(0, data.getRowCount() - 1);
-	        slider.setValue(0);
-	        slider.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					Plot.this.repaint();
-				}
-			});
-	        controlsPanel.add(slider);
-	        JButton playButton = new JButton(">");
-	        playButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (playbackTimer.isRunning()) {
-						playbackTimer.stop();
-					} else {
-						playbackTimer.start();
-						if (slider.getValue() == slider.getMaximum()) {
-							slider.setValue(slider.getMinimum());
-						}
-					}
-				}
-			});
-	        controlsPanel.add(playButton);
-	        add(controlsPanel, BorderLayout.SOUTH);
-        }
-        
         Inspector inspector = new Inspector(plot);
         addKeyListener(inspector);
         panel.addMouseListener(inspector);
     }
-	
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		
-		if (slider != null) {
-			int slider_value = slider.getValue();
-			double x = (Double)data.get(0, slider_value);
-			double y = (Double)data.get(1, slider_value);
-			
-			double pixelX = plot.getAxisRenderer(XYPlot.AXIS_X).worldToView(plot.getAxis(XYPlot.AXIS_X), x, false);
-			double pixelY = plot.getAxisRenderer(XYPlot.AXIS_Y).worldToView(plot.getAxis(XYPlot.AXIS_Y), y, false);
-	
-			double plotAreaHeight = plot.getPlotArea().getHeight();
-			double plotAreaX = plot.getPlotArea().getX();
-			double plotAreaY = plot.getPlotArea().getY();
-			
-			pixelX = plotAreaX + pixelX;
-			pixelY = plotAreaY + plotAreaHeight - pixelY;
-			
-			final int SIZE = 25;
-			g.setColor(new Color(128, 128, 255));
-			g.fillOval((int)pixelX - SIZE / 2, (int)pixelY - SIZE / 2, SIZE, SIZE);
-		}
-	}
 }

@@ -55,7 +55,7 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 			++count;
 		} else {
 			buffer[headIndex] = element;
-			++headIndex;
+			headIndex = (headIndex + 1) % buffer.length;
 		}
 		return true;
 	}

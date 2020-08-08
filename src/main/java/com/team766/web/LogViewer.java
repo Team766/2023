@@ -25,7 +25,7 @@ public class LogViewer implements WebServer.Handler {
 		r += "</p></form>\n";
 		r += "<table border=\"1\">\n";
 		for (RawLogEntry entry : logger.recentEntries()) {
-			r += String.format("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", entry.getCategory(), entry.getTime(), entry.getSeverity(), entry.format());
+			r += String.format("<tr><td>%s</td><td>%s</td><td>%s</td><td style=\"white-space: pre\">%s</td></tr>", entry.getCategory(), entry.getTime(), entry.getSeverity(), entry.format());
 		}
 		r += "</table>\n";
 		

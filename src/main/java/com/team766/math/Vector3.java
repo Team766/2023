@@ -1,6 +1,6 @@
 package com.team766.math;
 
-/*public class Vector3 implements Algebraic<Vector3> {
+public class Vector3 implements Algebraic<Vector3> {
 	public static final Vector3 ZERO = new Vector3(0, 0, 0);
 	public static final Vector3 UNIT_X = new Vector3(1, 0, 0);
 	public static final Vector3 UNIT_Y = new Vector3(0, 1, 0);
@@ -57,4 +57,4 @@ package com.team766.math;
 	public String toString() {
 		return String.format("[%s, %s, %s]", x, y, z);
 	}
-}*/
+}

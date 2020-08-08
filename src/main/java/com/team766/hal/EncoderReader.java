@@ -3,14 +3,6 @@ package com.team766.hal;
 public interface EncoderReader {
 
 	/**
-	 * Gets the raw value from the encoder. The raw value is the actual count
-	 * unscaled by the 1x, 2x, or 4x scale factor.
-	 *
-	 * @return Current raw count from the encoder
-	 */
-	public int getRaw();
-
-	/**
 	 * Gets the current count. Returns the current count on the Encoder. This
 	 * method compensates for the decoding type.
 	 *

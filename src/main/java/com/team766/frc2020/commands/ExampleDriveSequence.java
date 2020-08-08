@@ -1,7 +1,7 @@
-package com.team766.frc2018.commands;
+package com.team766.frc2020.commands;
 
 import com.team766.framework.Subroutine;
-import com.team766.frc2018.Robot;
+import com.team766.frc2020.Robot;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;

@@ -1,12 +1,8 @@
-package com.team766.frc2018;
+package com.team766.frc2020;
 
 import com.team766.framework.AutonomousCommand;
-import com.team766.frc2018.commands.ExampleDriveSequence;
-import com.team766.frc2018.commands.ExampleSequence;
+import com.team766.frc2020.commands.ExampleDriveSequence;
 
 public enum AutonomousModes {
-	@AutonomousCommand(commandClass=ExampleDriveSequence.class)
-	Autonomous1,
-	@AutonomousCommand(commandClass=ExampleSequence.class)
-	Autonomous2;
+	@AutonomousCommand(commandClass=ExampleDriveSequence.class) ExampleDriveSequence,
 }

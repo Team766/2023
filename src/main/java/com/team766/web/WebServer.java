@@ -27,7 +27,6 @@ import com.sun.net.httpserver.HttpServer;
  * 	roboRio-766.local:5800/values
  */
 
-@SuppressWarnings("restriction")
 public class WebServer {
 	
 	public interface Handler {
@@ -63,9 +62,9 @@ public class WebServer {
 					}
 					response += "</body></html>";
 					exchange.sendResponseHeaders(200, response.getBytes().length);
-					OutputStream os = exchange.getResponseBody();
-					os.write(response.getBytes());
-					os.close();
+					try (OutputStream os = exchange.getResponseBody()) {
+						os.write(response.getBytes());
+					}
 				}
 			};
 			server.createContext(page.getKey(), httpHandler);

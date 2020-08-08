@@ -5,21 +5,21 @@ public class DoubleSolenoid {
 	SolenoidController forward; 
 	SolenoidController back; 
 	
-	public enum State{
+	public enum State {
 		Forward, Neutral, Backward
 	}
 	
-	public DoubleSolenoid(SolenoidController forward, SolenoidController back){
+	public DoubleSolenoid(SolenoidController forward, SolenoidController back) {
 		this.forward = forward;
 		this.back = back;
 	}
 	
-	public boolean get(){
+	public boolean get() {
 		return forward.get();
 	}
 	
-	public void set(State state){
-		switch(state){
+	public void set(State state) {
+		switch(state) {
 			case Forward:
 				forward.set(true);
 				back.set(false);

@@ -47,7 +47,8 @@ public class PIDController {
 
 	private double output_value = 0;
 	
-	private double lastTime = RobotProvider.instance.getClock().getTime();
+	TimeProviderI timeProvider;
+	private double lastTime;
 
 	public static PIDController loadFromConfig(String configPrefix) {
 		if (!configPrefix.endsWith(".")) {
@@ -78,15 +79,21 @@ public class PIDController {
 	 *            threshold for declaring the PID 'done'
 	 */
 	public PIDController(double P, double I, double D, double outputmax_low,
-			double outputmax_high, double threshold) {
+	                     double outputmax_high, double threshold) {
 		Kp = new ConstantValueProvider<Double>(P);
 		Ki = new ConstantValueProvider<Double>(I);
 		Kd = new ConstantValueProvider<Double>(D);
 		maxoutput_low = new ConstantValueProvider<Double>(outputmax_low);
 		maxoutput_high = new ConstantValueProvider<Double>(outputmax_high);
 		endthreshold = new ConstantValueProvider<Double>(threshold);
+		setTimeProvider(RobotProvider.getTimeProvider(), timeProvider.get());
 	}
-	
+
+	private void setTimeProvider(TimeProviderI timeProvider, double v) {
+		this.timeProvider = timeProvider;
+		lastTime = v;
+	}
+
 	public PIDController(
 			ValueProvider<Double> P,
 			ValueProvider<Double> I,
@@ -100,24 +107,25 @@ public class PIDController {
 		maxoutput_low = outputmax_low;
 		maxoutput_high = outputmax_high;
 		endthreshold = threshold;
+		setTimeProvider(RobotProvider.getTimeProvider(), timeProvider.get());
 	}
 
 	/**
 	 * Constructs a PID controller, with the specified P,I,D values, along with the end threshold.
-	 * 
 	 * @param P Proportional value used in the PID controller
-	 * @param I	Integral value used in the PID controller
+	 * @param I Integral value used in the PID controller
 	 * @param D Derivative value used in the PID controller
-	 * 
 	 * @param threshold the end threshold for declaring the PID 'done'
+	 * @param timeProvider
 	 */
-	public PIDController(double P, double I, double D, double threshold) {
+	public PIDController(double P, double I, double D, double threshold, TimeProviderI timeProvider) {
 		Kp = new ConstantValueProvider<Double>(P);
 		Ki = new ConstantValueProvider<Double>(I);
 		Kd = new ConstantValueProvider<Double>(D);
 		maxoutput_low = new MissingValue<Double>();
 		maxoutput_high = new MissingValue<Double>();
 		endthreshold = new ConstantValueProvider<Double>(threshold);
+		setTimeProvider(timeProvider, timeProvider.get());
 	}
 
 	/**
@@ -171,7 +179,7 @@ public class PIDController {
 		}
 		*/
 		
-		double delta_time = RobotProvider.instance.getClock().getTime() - lastTime;
+		double delta_time = timeProvider.get() - lastTime;
 
 		total_error += cur_error * delta_time;
 
@@ -195,10 +203,10 @@ public class PIDController {
 		else
 			output_value = out;
 
-		lastTime = RobotProvider.instance.getClock().getTime();
+		lastTime = timeProvider.get();
 		
-		pr("	Total Eror: " + total_error + "		Current Error: " + cur_error
-				+ "	Output: " + output_value + " 	Setpoint: " + setpoint);
+		pr("	Total Error: " + total_error + "		Current Error: " + cur_error +
+		   "	Output: " + output_value + " 	Setpoint: " + setpoint);
 	}
 
 	public double getOutput() {

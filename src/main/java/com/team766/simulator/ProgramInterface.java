@@ -69,7 +69,7 @@ public class ProgramInterface {
 		E[] array = (E[]) Array.newInstance(clazz, size);
 		for (int i = 0; i < size; ++i) {
 			try {
-				array[i] = clazz.newInstance();
+				array[i] = clazz.getConstructor().newInstance();
 			} catch (Throwable e) {
 				throw new ExceptionInInitializerError(e);
 			}

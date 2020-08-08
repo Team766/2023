@@ -1,10 +1,11 @@
-package com.team766.hal.mock;
+package com.team766;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.mock.TestRobotProvider;
 
-public class TestCase extends junit.framework.TestCase {
+public abstract class TestCase extends junit.framework.TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -17,5 +18,5 @@ public class TestCase extends junit.framework.TestCase {
 	protected void step(){
 		Scheduler.getInstance().run();
 	}
-	
+
 }

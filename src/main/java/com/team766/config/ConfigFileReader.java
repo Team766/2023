@@ -50,8 +50,7 @@ public class ConfigFileReader {
 		System.out.println("Loading config file: " + fileName);
 		HashMap<String, String> new_values = new HashMap<String, String>();
 		
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			reader.lines().forEach((currLine) -> {
 				String cleanedLine = currLine;
 				int commentBegin = currLine.indexOf('#');
@@ -66,7 +65,6 @@ public class ConfigFileReader {
 				}
 				new_values.put(tokens[0], tokens[1]);
 			});
-			reader.close();
 		} catch (IOException e) {
 			System.err.println("Failed to load config file!");
 			e.printStackTrace();
@@ -79,7 +77,7 @@ public class ConfigFileReader {
 		return generation;
 	}
 	
-	boolean containsKey(String key) {
+	public boolean containsKey(String key) {
 		return values.containsKey(key);
 	}
 	
@@ -117,16 +115,13 @@ public class ConfigFileReader {
 	}
 	
 	public void saveToFile() throws IOException {
-		FileWriter writer = new FileWriter(fileName);
-		try {
+		try(FileWriter writer = new FileWriter(fileName)) {
 			for (Map.Entry<String, String> entry : values.entrySet()) {
 				writer.write(entry.getKey());
 				writer.write(',');
 				writer.write(entry.getValue());
 				writer.write('\n');
 			}
-		} finally {
-			writer.close();
 		}
 		Logger.get(Category.CONFIGURATION).logRaw(Severity.INFO, "Config file written to " + fileName);
 	}

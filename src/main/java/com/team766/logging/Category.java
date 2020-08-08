@@ -9,10 +9,11 @@ public enum Category {
 	PID_CONTROLLER,
 	TRAJECTORY,
 	AUTONOMOUS,
-	CONFIGURATION;
+	CONFIGURATION,
+	COMMANDS;
 	
 	private static final Category[] VALUES = Category.values();
 	public static Category fromInteger(byte x) {
-        return VALUES[x];
-    }
+		return VALUES[x];
+	}
 }

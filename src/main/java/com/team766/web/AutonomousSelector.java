@@ -39,6 +39,7 @@ public class AutonomousSelector implements WebServer.Handler {
 		}
 		
 		String r = "<h1>Autonomous Mode Selector</h1>\n";
+		r += "<h3>Current Mode: " + autonMode + "</h1>\n";
 		r += "<form>\n";
 		r += "<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>\n";
 		r += "<input type=\"submit\" value=\"Submit\"></form>\n";

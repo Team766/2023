@@ -16,6 +16,7 @@ public class LogWriter {
 	
 	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
 		public void uncaughtException(Thread t, Throwable e) {
+			e.printStackTrace();
 			for (LogWriter log : loggers) {
 				log.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, e.toString());
 				log.close();

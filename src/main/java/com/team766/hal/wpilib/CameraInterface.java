@@ -2,7 +2,7 @@ package com.team766.hal.wpilib;
 
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.VideoSource;
-import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.cameraserver.CameraServer;
 
 import org.opencv.core.Mat;
 

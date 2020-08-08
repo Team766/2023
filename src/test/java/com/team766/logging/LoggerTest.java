@@ -1,11 +1,11 @@
-package com.team766.logging.tests;
+package com.team766.logging;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.team766.logging.Category;
@@ -13,9 +13,9 @@ import com.team766.logging.LogReader;
 import com.team766.logging.LogWriter;
 import com.team766.logging.Severity;
 
-class LoggerTest {
+public class LoggerTest {
 	@Test
-	void test() throws IOException {
+	public void test() throws IOException {
 		TemporaryFolder workingDir = new TemporaryFolder();
 		workingDir.create();
 		try {

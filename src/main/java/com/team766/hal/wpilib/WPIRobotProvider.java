@@ -16,7 +16,7 @@ import com.team766.hal.SpeedController;
 
 import edu.wpi.first.wpilibj.SPI;
 
-public class WPIRobotProvider extends RobotProvider{
+public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public SpeedController getMotor(int index) {
@@ -28,12 +28,21 @@ public class WPIRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public CANSpeedController getCANMotor(int index) {
-		if(canMotors[index] == null){
-			canMotors[index] = new CANTalonSpeedController(index);
+	public CANSpeedController getTalonCANMotor(int index) {
+		if (talonCanMotors[index] == null) {
+			talonCanMotors[index] = new CANTalonSpeedController(index);
 		}
 
-		return canMotors[index];
+		return talonCanMotors[index];
+	}
+
+	@Override
+	public CANSpeedController getVictorCANMotor(int index) {
+		if (victorCanMotors[index] == null) {
+			victorCanMotors[index] = new CANVictorSpeedController(index);
+		}
+
+		return victorCanMotors[index];
 	}
 
 	@Override
@@ -84,7 +93,7 @@ public class WPIRobotProvider extends RobotProvider{
 
 	@Override
 	public DigitalInputReader getDigitalInput(int index) {
-		if(digInputs[index] == null)
+		if (digInputs[index] == null)
 			digInputs[index] = new DigitalInput(index);
 		return digInputs[index];
 	}

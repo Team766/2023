@@ -1,25 +1,30 @@
 package com.team766.hal.wpilib;
 
+import com.team766.EntryPoint;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.MyRobot;
 import com.team766.hal.RobotProvider;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.TimedRobot;
 
-public class RobotMain extends IterativeRobot {
+public class RobotMain extends TimedRobot {
 	private MyRobot robot;
+
+	public static void main(String... args) {
+		RobotBase.startRobot(RobotMain::new);
+	}
 
 	@Override
 	public void robotInit() {
-		try{
+		try {
 			ConfigFileReader.instance = new ConfigFileReader("/home/lvuser/robotConfig.txt");
 			RobotProvider.instance = new WPIRobotProvider();
-			
-			robot = new com.team766.frc2018.Robot();
+			robot = EntryPoint.createRobot();
 			
 			robot.robotInit();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}

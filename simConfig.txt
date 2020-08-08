@@ -37,3 +37,11 @@ wrist.dGain,0
 wrist.threshold,0
 arm.upPosition,0
 arm.middlePosition,0
+
+drive.DIST_PER_PULSE,0.04
+elevator.elevatorMotor,1
+elevator.actuatorMotor,1
+elevator.lowerMinLimitSwitch,1
+elevator.lowerMaxLimitSwitch,1
+elevator.upperMinLimitSwitch,1
+elevator.upperMaxLimitSwitch,1

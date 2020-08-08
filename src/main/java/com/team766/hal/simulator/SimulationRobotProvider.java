@@ -24,11 +24,19 @@ public class SimulationRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public CANSpeedController getCANMotor(int index) {
-		if(canMotors[index] == null)
-			canMotors[index] = new Talon(index);
-		return canMotors[index];
+	public CANSpeedController getTalonCANMotor(int index) {
+		if(talonCanMotors[index] == null)
+			talonCanMotors[index] = new Talon(index);
+		return talonCanMotors[index];
 	}
+
+	@Override
+	public CANSpeedController getVictorCANMotor(int index) {
+		if(talonCanMotors[index] == null)
+			talonCanMotors[index] = new Talon(index);
+		return talonCanMotors[index];
+	}
+
 
 	@Override
 	public EncoderReader getEncoder(int index1, int index2) {

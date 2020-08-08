@@ -9,10 +9,6 @@ public class Encoder implements EncoderReader{
 	public Encoder(int a, int b){
 	}
 	
-	public int getRaw() {
-		return ticks;
-	}
-
 	public int get() {
 		return ticks;
 	}
