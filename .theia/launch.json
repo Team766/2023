@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Start 3d simulation mode",
+      "request": "launch",
+      "mainClass": "com.team766.hal.simulator.RobotMain"
+    }
+  ]
+}

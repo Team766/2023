@@ -11,7 +11,7 @@ import com.team766.simulator.mechanisms.WestCoastDrive;
 import com.team766.simulator.ui.Metrics;
 import com.team766.simulator.ui.Trajectory;
 
-public class Simulator {
+public class Simulator implements Runnable {
 	private ElectricalSystem electricalSystem = new ElectricalSystem();
 	private PneumaticsSystem pneumaticsSystem = new PneumaticsSystem();
 	private WestCoastDrive drive = new WestCoastDrive(electricalSystem);
