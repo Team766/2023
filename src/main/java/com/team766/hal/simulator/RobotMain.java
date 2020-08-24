@@ -1,5 +1,7 @@
 package com.team766.hal.simulator;
 
+import java.io.IOException;
+
 import com.team766.EntryPoint;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
@@ -45,11 +47,15 @@ public class RobotMain {
 		}
 		
 		switch (mode) {
-		case Mode.MaroonSim:
+		case MaroonSim:
 			simulator = new Simulator();
 			break;
-		case Mode.VrConnector:
-			simulator = new VrConnector();
+        case VrConnector:
+            try {
+                simulator = new VrConnector();
+            } catch (IOException ex) {
+                throw new RuntimeException("Error initializing communication with 3d Simulator", ex);
+            }
 			break;
 		}
 
@@ -69,13 +75,14 @@ public class RobotMain {
 		case "-maroon_sim":
 			mode = Mode.MaroonSim;
 			break;
-		case "-ve_connector":
+		case "-vr_connector":
 			mode = Mode.VrConnector;
 			break;
 		default:
 			System.err.println("Needs -maroon_sim or -vr_connector");
-			System.exit(1);
+            System.exit(1);
+            return;
 		}
-		new RobotMain().run(mode);
+		new RobotMain(mode).run();
 	}
 }
