@@ -27,6 +27,8 @@ public class ExampleDriveSequence extends Command {
             Robot.drive.setDrivePower(0.1, -0.1);
             context.waitForSeconds(2.3);
             log("Turning movement finished");
+
+            context.startAsync(new Launch());
         }
             
 		Robot.drive.setDrivePower(0.0, 0.0);

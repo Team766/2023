@@ -6,6 +6,11 @@ drive.rightEncoder,2,3
 leftJoy,0
 rightJoy,1
 buttonJoy,2
+
+intake,0
+intakeArm,0
+launch,1
+
 gripperLeft,0
 gripperRight,1
 gripperMotorA,10

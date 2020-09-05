@@ -32,10 +32,11 @@ public class VrConnector implements Runnable {
 
     private static final List<PortMapping> PWM_CHANNELS = Arrays.asList(
         new PortMapping(10, 6), // Left motor
-        new PortMapping(11, 4)  // Right motor
+        new PortMapping(11, 4), // Right motor
+        new PortMapping(12, 0)  // Intake
     );
     private static final List<PortMapping> SOLENOID_CHANNELS = Arrays.asList(
-        new PortMapping(12, 0), // Intake
+        new PortMapping(15, 0), // Intake arm
         new PortMapping(13, 1)  // Catapult launch
     );
     private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
