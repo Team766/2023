@@ -1,6 +1,7 @@
 package com.team766.frc2020;
 
 import com.team766.framework.Command;
+import com.team766.framework.Context;
 import com.team766.frc2020.Robot;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -18,7 +19,7 @@ public class OI extends Command {
 		m_joystick2 = RobotProvider.instance.getJoystick(2);
 	}
 	
-	public void run() {
+	public void run(Context context) {
 		Robot.drive.setArcadeDrive(-m_joystick1.getRawAxis(1), Math.pow(m_joystick2.getRawAxis(0), 3));
 	}
 }

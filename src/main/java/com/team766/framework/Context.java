@@ -1,34 +1,53 @@
 package com.team766.framework;
 
 import java.util.function.BooleanSupplier;
-
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
-public abstract class Subroutine extends Command {
+public final class Context implements Runnable {
 	private static enum ControlOwner {
 		MAIN_THREAD,
 		SUBROUTINE,
-	}
+    }
+    private static enum State {
+        RUNNING,
+        CANCELED,
+        DONE,
+    }
 
+    private RunnableWithContext m_func;
 	private Thread m_thread;
 	private Object m_threadSync;
-	private boolean m_done;
+	private State m_state;
 	private BooleanSupplier m_blockingPredicate;
 	private ControlOwner m_controlOwner;
-	private String m_previousWaitPoint;
-	
-	@Override
-	protected final void initialize() {
+    private String m_previousWaitPoint;
+    
+	public Context(RunnableWithContext func) {
+        m_func = func;
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
-		m_done = false;
+		m_state = State.RUNNING;
 		m_thread = new Thread(this::threadFunction);
-		m_thread.start();
-	}
+        m_thread.start();
+        Scheduler.getInstance().add(this);
+    }
+
+    public Context(Runnable func) {
+        this((context) -> func.run());
+    }
+    
+    public String getContextName() {
+        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
+    }
+
+    @Override
+    public String toString() {
+        return getContextName();
+    }
 
 	private String getExecutionPoint() {
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -44,18 +63,21 @@ public abstract class Subroutine extends Command {
 		if (thisOwner == ControlOwner.SUBROUTINE) {
 			String waitPointTrace = getExecutionPoint();
 			if (waitPointTrace != null && !waitPointTrace.equals(m_previousWaitPoint)) {
-				Logger.get(Category.COMMANDS).logRaw(Severity.INFO, getCommandName() + " is waiting at " + waitPointTrace);
+				Logger.get(Category.COMMANDS).logRaw(Severity.INFO, getContextName() + " is waiting at " + waitPointTrace);
 				m_previousWaitPoint = waitPointTrace;
 			}
 		}
 		synchronized (m_threadSync) {
-			while (m_controlOwner != thisOwner && !m_done) {
+			while (m_controlOwner != thisOwner || m_state == State.DONE) {
 				try {
 					m_threadSync.wait();
 				} catch (InterruptedException e) {
 				}
 			}
-			m_controlOwner = thisOwner;
+            m_controlOwner = thisOwner;
+            if (m_state != State.RUNNING && m_controlOwner == ControlOwner.SUBROUTINE) {
+                throw new ContextStoppedException();
+            }
 		}
 	}
 	
@@ -70,57 +92,66 @@ public abstract class Subroutine extends Command {
 		}
 	}
 	
-	protected abstract void subroutine();
-	
 	private void threadFunction() {
 		waitForControl(ControlOwner.SUBROUTINE);
 		try {
-			subroutine();
+			m_func.run(this);
 		} finally {
 			synchronized (m_threadSync) {
-				m_done = true;
+				m_state = State.DONE;
 				m_threadSync.notifyAll();
 			}
 		}
 	}
 	
-	protected void waitFor(BooleanSupplier predicate) {
-		m_blockingPredicate = predicate;
+	public void waitFor(BooleanSupplier predicate) {
 		while (!predicate.getAsBoolean()) {
+            m_blockingPredicate = predicate;
 			transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 		}
 	}
 
-	protected void yield() {
+	public void yield() {
 		m_blockingPredicate = null;
 		transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 	}
 
-	protected void waitForSubroutine(Subroutine other) {
-		waitFor(() -> other.isDone());
-	}
-
-	protected void waitForSeconds(double seconds) {
+	public void waitForSeconds(double seconds) {
 		double startTime = RobotProvider.instance.getClock().getTime();
 		waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
 	}
 
-	protected void callSubroutine(Subroutine other) {
-		other.start();
-		waitForSubroutine(other);
-	}
-	
+	public void startAsync(RunnableWithContext func) {
+		new Context(func);
+    }
+
+    public void startAsync(Runnable func) {
+        new Context(func);
+    }
+
+    public void stop() {
+        synchronized (m_threadSync) {
+            if (m_state != State.DONE) {
+                m_state = State.CANCELED;
+            }
+        }
+    }
+    
 	public final void run() {
-		if (m_done) {
-			stop();
-			return;
-		}
-		if (m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
-			transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
-		}
-	}
+        if (m_state == State.DONE) {
+            Scheduler.getInstance().cancel(this);
+            return;
+        }
+        if (m_state == State.CANCELED || m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
+            transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+        }
+    }
 
 	public boolean isDone() {
-		return m_done;
+		return m_state != State.RUNNING;
+    }
+    
+    public void takeControl(Mechanism mechanism) {
+        mechanism.takeControl(this);
 	}
 }
