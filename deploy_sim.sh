@@ -9,12 +9,7 @@ server="root@138.68.3.211"
 
 ./gradlew jar
 
-jar_file=(build/libs/*.jar)
-if [ "${#jar_file[@]}" -ne 1 ]; then
-    echo "Could not determine the JAR file to deploy"
-    exit 1
-fi
-
+jar_file=build/libs/project.jar
 version="$(md5sum < "$jar_file" | awk '{ print $1 }')"
 deployed_code="/tmp/project-$(date +%s)-$version"
 
