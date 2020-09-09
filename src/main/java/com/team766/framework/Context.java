@@ -68,7 +68,7 @@ public final class Context implements Runnable {
 			}
 		}
 		synchronized (m_threadSync) {
-			while (m_controlOwner != thisOwner || m_state == State.DONE) {
+			while (m_controlOwner != thisOwner && m_state != State.DONE) {
 				try {
 					m_threadSync.wait();
 				} catch (InterruptedException e) {
@@ -148,7 +148,7 @@ public final class Context implements Runnable {
     }
 
 	public boolean isDone() {
-		return m_state != State.RUNNING;
+		return m_state == State.DONE;
     }
     
     public void takeControl(Mechanism mechanism) {
