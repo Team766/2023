@@ -156,6 +156,7 @@ public class VrConnector implements Runnable {
     }
 
     public void run() {
+        boolean started = false;
         while (true) {
             try {
                 process();
@@ -168,6 +169,10 @@ public class VrConnector implements Runnable {
             if (ProgramInterface.simulationTime == 0) {
                 // Wait for a connection to the simulator before starting to run the robot code.
                 continue;
+            }
+            if (!started) {
+                System.out.println("Starting simulation");
+                started = true;
             }
 			if (ProgramInterface.programStep != null) {
 				ProgramInterface.programStep.run();
