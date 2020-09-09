@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Gradle cache
-.gradle
+/.gradle/
 
 # VSCode generated files
 **/.classpath
@@ -32,4 +32,7 @@ hs_err_pid*
 
 # Mac temp files
 .DS_Store
+
+# Build artifacts
 /bin/
+/build/
