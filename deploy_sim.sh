@@ -5,7 +5,8 @@ set -x
 
 builtin cd "$(dirname -- "${BASH_SOURCE[0]}")"
 
-server="root@138.68.3.211"
+server="sim01.vrsim.team766.com"
+user="root"
 
 ./gradlew jar
 
@@ -20,6 +21,9 @@ cp "$jar_file" "$deployed_code/project.jar"
 cp -R src/main/deploy "$deployed_code"
 cp simConfig.txt "$deployed_code"
 
-scp -r "$deployed_code" "$server":"$deployed_code"
+scp -o "StrictHostKeyChecking=no" -r "$deployed_code" "${user}@${server}":"$deployed_code"
 
-ssh "$server" "launch_robot_code.sh $deployed_code $@"
+ssh -o "StrictHostKeyChecking=no" "${user}@${server}" "launch_robot_code.sh $deployed_code $@"
+
+set +x
+echo -e "\n\nOpen simulation viewer at http://$server"
