@@ -1,11 +1,18 @@
 #!/bin/bash
 
 set -euo pipefail
+
+if [ $# -eq 0 ]; then
+    sleep 1
+    echo "Please supply the URL of the sim robot"
+    exit 1
+fi
+
 set -x
 
 builtin cd "$(dirname -- "${BASH_SOURCE[0]}")"
 
-server="sim01.vrsim.team766.com"
+server="$1"
 user="root"
 
 ./gradlew jar

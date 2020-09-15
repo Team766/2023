@@ -6,8 +6,25 @@
         {
             "label": "Deploy Sim",
             "type": "shell",
-            "command": "./deploy_sim.sh",
-            "problemMatcher": []
+            "command": "./deploy_sim.sh ${input:sim_robot}",
+            "problemMatcher": [],
+            "showOutput": "always",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "sim_robot",
+            "description": "Sim Robot URL",
+            "default": "sim01.vrsim.team766.com",
+            "type": "promptString"
         }
     ]
 }
