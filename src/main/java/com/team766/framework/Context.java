@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -17,7 +18,14 @@ public final class Context implements Runnable {
         DONE,
     }
 
+    private static Context c_currentContext = null;
+
+    static Context currentContext() {
+        return c_currentContext;
+    }
+
     private RunnableWithContext m_func;
+    private Context m_parentContext;
 	private Thread m_thread;
 	private Object m_threadSync;
 	private State m_state;
@@ -25,8 +33,9 @@ public final class Context implements Runnable {
 	private ControlOwner m_controlOwner;
     private String m_previousWaitPoint;
     
-	public Context(RunnableWithContext func) {
+	private Context(RunnableWithContext func, Context parentContext) {
         m_func = func;
+        m_parentContext = parentContext;
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
@@ -35,9 +44,15 @@ public final class Context implements Runnable {
         m_thread.start();
         Scheduler.getInstance().add(this);
     }
+    public Context(RunnableWithContext func) {
+        this(func, null);
+    }
 
-    public Context(Runnable func) {
+    private Context(Runnable func, Context parentContext) {
         this((context) -> func.run());
+    }
+    public Context(Runnable func) {
+        this(func, null);
     }
     
     public String getContextName() {
@@ -86,7 +101,12 @@ public final class Context implements Runnable {
 			if (m_controlOwner != thisOwner) {
 				throw new IllegalStateException("Subroutine had control owner " + m_controlOwner + " but assumed control owner " + thisOwner);
 			}
-			m_controlOwner = desiredOwner;
+            m_controlOwner = desiredOwner;
+            if (m_controlOwner == ControlOwner.SUBROUTINE) {
+                c_currentContext = this;
+            } else {
+                c_currentContext = null;
+            }
 			m_threadSync.notifyAll();
 			waitForControl(thisOwner);
 		}
@@ -109,7 +129,16 @@ public final class Context implements Runnable {
             m_blockingPredicate = predicate;
 			transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 		}
-	}
+    }
+    
+    public void waitFor(Context otherContext) {
+        waitFor(otherContext::isDone);
+    }
+
+    public void waitFor(Context... otherContexts) {
+        Stream<Context> contextStream = Stream.of(otherContexts);
+        waitFor(() -> contextStream.allMatch(Context::isDone));
+    }
 
 	public void yield() {
 		m_blockingPredicate = null;
@@ -121,18 +150,21 @@ public final class Context implements Runnable {
 		waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
 	}
 
-	public void startAsync(RunnableWithContext func) {
-		new Context(func);
+	public Context startAsync(RunnableWithContext func) {
+        return new Context(func, this);
     }
 
-    public void startAsync(Runnable func) {
-        new Context(func);
+    public Context startAsync(Runnable func) {
+        return new Context(func, this);
     }
 
     public void stop() {
         synchronized (m_threadSync) {
             if (m_state != State.DONE) {
                 m_state = State.CANCELED;
+            }
+            if (m_controlOwner == ControlOwner.SUBROUTINE) {
+                throw new ContextStoppedException();
             }
         }
     }
@@ -152,6 +184,6 @@ public final class Context implements Runnable {
     }
     
     public void takeControl(Mechanism mechanism) {
-        mechanism.takeControl(this);
+        mechanism.takeControl(this, m_parentContext);
 	}
 }
