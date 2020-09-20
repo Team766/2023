@@ -2,17 +2,32 @@
 
 set -euo pipefail
 
-if [ $# -eq 0 ]; then
+builtin cd "$(dirname -- "${BASH_SOURCE[0]}")"
+
+if [ $# -gt 0 ]; then
+    server="$1"
+elif [ -f sim_robots.lst ]; then
+    PS3="Which sim robot would you like to use? "
+    COLUMNS=1
+    select name in $(cat sim_robots.lst)
+    do
+        server="${name-"$REPLY"}"
+        break
+    done
+fi
+
+if [ -z "${server-}" ]; then
+    # Sleep here is necessary to allow Theia to finish opening the task terminal
+    # before displaying the error message.
     sleep 1
     echo "Please supply the URL of the sim robot"
     exit 1
 fi
 
+echo "Deploying to $server"
+
 set -x
 
-builtin cd "$(dirname -- "${BASH_SOURCE[0]}")"
-
-server="$1"
 user="root"
 
 ./gradlew jar
