@@ -13,6 +13,9 @@
 # Gradle cache
 /.gradle/
 
+# The list of available sim robots is environment-specific, so it shouldn't be committed
+/sim_robots.lst
+
 # VSCode generated files
 **/.classpath
 **/.project
