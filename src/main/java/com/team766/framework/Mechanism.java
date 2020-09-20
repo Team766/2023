@@ -5,7 +5,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
 public abstract class Mechanism extends Loggable implements Runnable {
-	private Context m_controllingContext = null;
+	private Context m_owningContext = null;
 	
 	public Mechanism() {
 		Scheduler.getInstance().add(this);
@@ -15,25 +15,25 @@ public abstract class Mechanism extends Loggable implements Runnable {
 		return this.getClass().getName();
     }
     
-    protected void checkContextControl() {
-        if (Context.currentContext() != m_controllingContext) {
-            String message = getName() + " tried to be used by " + Context.currentContext().getContextName() + " while controlled by " + m_controllingContext.getContextName();
+    protected void checkContextOwnership() {
+        if (Context.currentContext() != m_owningContext) {
+            String message = getName() + " tried to be used by " + Context.currentContext().getContextName() + " while owned by " + m_owningContext.getContextName();
             Logger.get(Category.PROCEDURES).logRaw(Severity.ERROR, message);
             throw new IllegalStateException(message);
         }
     }
     
-    void takeControl(Context context, Context parentContext) {
-        if (m_controllingContext != null && m_controllingContext == parentContext) {
-            Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is ineriting control of " + getName() + " from " + parentContext.getContextName());
+    void takeOwnership(Context context, Context parentContext) {
+        if (m_owningContext != null && m_owningContext == parentContext) {
+            Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is inheriting ownership of " + getName() + " from " + parentContext.getContextName());
         } else {
-            Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is taking control of " + getName());
-            if (m_controllingContext != null && m_controllingContext != context) {
-                Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_controllingContext.getContextName());
-                m_controllingContext.stop();
+            Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is taking ownership of " + getName());
+            if (m_owningContext != null && m_owningContext != context) {
+                Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_owningContext.getContextName());
+                m_owningContext.stop();
             }
         }
-		m_controllingContext = context;
+		m_owningContext = context;
     }
 
 	@Override

@@ -183,7 +183,7 @@ public final class Context implements Runnable {
 		return m_state == State.DONE;
     }
     
-    public void takeControl(Mechanism mechanism) {
-        mechanism.takeControl(this, m_parentContext);
+    public void takeOwnership(Mechanism mechanism) {
+        mechanism.takeOwnership(this, m_parentContext);
 	}
 }
