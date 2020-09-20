@@ -5,7 +5,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
 public abstract class Loggable {
-    protected Category loggerCategory = Category.COMMANDS;
+    protected Category loggerCategory = Category.PROCEDURES;
 
     public abstract String getName();
 

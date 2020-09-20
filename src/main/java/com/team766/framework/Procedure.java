@@ -1,6 +1,6 @@
 package com.team766.framework;
 
-public abstract class Command extends Loggable implements RunnableWithContext {
+public abstract class Procedure extends Loggable implements RunnableWithContext {
     private static int c_idCounter = 0;
 
 	private static synchronized int createNewId() {
@@ -9,7 +9,7 @@ public abstract class Command extends Loggable implements RunnableWithContext {
 	
 	protected final int m_id;
 
-	public Command() {
+	public Procedure() {
 		m_id = createNewId();
 	}
 

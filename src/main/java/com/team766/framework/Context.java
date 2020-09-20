@@ -63,7 +63,7 @@ public final class Context implements Runnable {
 		if (thisOwner == ControlOwner.SUBROUTINE) {
 			String waitPointTrace = getExecutionPoint();
 			if (waitPointTrace != null && !waitPointTrace.equals(m_previousWaitPoint)) {
-				Logger.get(Category.COMMANDS).logRaw(Severity.INFO, getContextName() + " is waiting at " + waitPointTrace);
+				Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, getContextName() + " is waiting at " + waitPointTrace);
 				m_previousWaitPoint = waitPointTrace;
 			}
 		}

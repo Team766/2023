@@ -10,7 +10,7 @@ public enum Category {
 	TRAJECTORY,
 	AUTONOMOUS,
 	CONFIGURATION,
-	COMMANDS;
+	PROCEDURES;
 	
 	private static final Category[] VALUES = Category.values();
 	public static Category fromInteger(byte x) {

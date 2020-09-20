@@ -16,9 +16,9 @@ public abstract class Mechanism extends Loggable implements Runnable {
 	}
 	
 	void takeControl(Context context) {
-		Logger.get(Category.COMMANDS).logRaw(Severity.INFO, context.getContextName() + " is taking control of " + getName());
+		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is taking control of " + getName());
 		if (m_controllingContext != null && m_controllingContext != context) {
-			Logger.get(Category.COMMANDS).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_controllingContext.getContextName());
+			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_controllingContext.getContextName());
 			m_controllingContext.stop();
 		}
 		m_controllingContext = context;

@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface AutonomousCommand {
-	Class<? extends Command> commandClass();
+public @interface AutonomousProcedure {
+	Class<? extends Procedure> procedureClass();
 }

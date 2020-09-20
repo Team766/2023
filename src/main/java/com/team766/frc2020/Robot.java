@@ -1,7 +1,7 @@
 package com.team766.frc2020;
 
-import com.team766.framework.AutonomousCommandUtils;
-import com.team766.framework.Command;
+import com.team766.framework.AutonomousProcedureUtils;
+import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.frc2020.mechanisms.*;
 import com.team766.hal.MyRobot;
@@ -48,8 +48,8 @@ public class Robot extends MyRobot {
 			m_oiContext.stop();
 		}
 		
-		Command autonomousCommand = AutonomousCommandUtils.getCommand(m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
-		m_autonomous = new Context(autonomousCommand);
+		Procedure autonomousProcedure = AutonomousProcedureUtils.getProcedure(m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
+		m_autonomous = new Context(autonomousProcedure);
 	}
 	
 	@Override
