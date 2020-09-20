@@ -9,11 +9,16 @@ if [ $# -gt 0 ]; then
 elif [ -f sim_robots.lst ]; then
     PS3="Which sim robot would you like to use? "
     COLUMNS=1
-    select name in $(cat sim_robots.lst)
+    cancel_option="Cancel Deployment"
+    select name in $(cat sim_robots.lst) "$cancel_option"
     do
         server="${name-"$REPLY"}"
         break
     done
+    if [ "$server" == "$cancel_option" ]; then
+        echo "Canceled"
+        exit
+    fi
 fi
 
 if [ -z "${server-}" ]; then
@@ -25,6 +30,9 @@ if [ -z "${server-}" ]; then
 fi
 
 echo "Deploying to $server"
+echo -e "\n\nOpen simulation viewer at http://$server\n"
+read -r -p "Press enter when you're ready to run your code" key
+echo
 
 set -x
 
@@ -47,5 +55,4 @@ scp -o "StrictHostKeyChecking=no" -r "$deployed_code" "${user}@${server}":"$depl
 
 ssh -o "StrictHostKeyChecking=no" "${user}@${server}" "launch_robot_code.sh $deployed_code $@"
 
-set +x
-echo -e "\n\nOpen simulation viewer at http://$server"
+echo -e "\nDeploy finished. Your code is running"
