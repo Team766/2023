@@ -12,13 +12,13 @@ import com.team766.hal.RobotProvider;
  */
 public class OI extends Procedure {
 	private JoystickReader m_joystick1;
-    private JoystickReader m_joystick2;
-    private JoystickReader m_joystick3;
+	private JoystickReader m_joystick2;
+	private JoystickReader m_joystick3;
 	
 	public OI() {
 		m_joystick1 = RobotProvider.instance.getJoystick(1);
-        m_joystick2 = RobotProvider.instance.getJoystick(2);
-        m_joystick2 = RobotProvider.instance.getJoystick(3);
+		m_joystick2 = RobotProvider.instance.getJoystick(2);
+		m_joystick2 = RobotProvider.instance.getJoystick(3);
 	}
 	
 	public void run(Context context) {

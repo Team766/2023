@@ -13,8 +13,8 @@ public class LogReader {
 
 	public LogReader(String filename) throws IOException {
 		m_fileStream = new FileInputStream(filename);
-        m_objectStream = new ObjectInputStream(m_fileStream);
-        m_formatStrings = new ArrayList<String>();
+		m_objectStream = new ObjectInputStream(m_fileStream);
+		m_formatStrings = new ArrayList<String>();
 	}
 	
 	public LogEntry readNext() throws IOException {

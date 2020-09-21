@@ -19,7 +19,7 @@ public class AutonomousSelector implements WebServer.Handler {
 			AUTONS[i] = states[i].toString();
 		}
 		autonMode = AUTONS[0];
-    }
+	}
 	
 	public String getSelectedAutonModeString() {
 		return autonMode;

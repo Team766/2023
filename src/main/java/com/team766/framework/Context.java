@@ -11,58 +11,58 @@ public final class Context implements Runnable {
 	private static enum ControlOwner {
 		MAIN_THREAD,
 		SUBROUTINE,
-    }
-    private static enum State {
-        RUNNING,
-        CANCELED,
-        DONE,
-    }
+	}
+	private static enum State {
+		RUNNING,
+		CANCELED,
+		DONE,
+	}
 
-    private static Context c_currentContext = null;
+	private static Context c_currentContext = null;
 
-    static Context currentContext() {
-        return c_currentContext;
-    }
+	static Context currentContext() {
+		return c_currentContext;
+	}
 
-    private RunnableWithContext m_func;
-    private Context m_parentContext;
+	private RunnableWithContext m_func;
+	private Context m_parentContext;
 	private Thread m_thread;
 	private Object m_threadSync;
 	private State m_state;
 	private BooleanSupplier m_blockingPredicate;
 	private ControlOwner m_controlOwner;
-    private String m_previousWaitPoint;
-    
+	private String m_previousWaitPoint;
+	
 	private Context(RunnableWithContext func, Context parentContext) {
-        m_func = func;
-        m_parentContext = parentContext;
+		m_func = func;
+		m_parentContext = parentContext;
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
 		m_state = State.RUNNING;
 		m_thread = new Thread(this::threadFunction);
-        m_thread.start();
-        Scheduler.getInstance().add(this);
-    }
-    public Context(RunnableWithContext func) {
-        this(func, null);
-    }
+		m_thread.start();
+		Scheduler.getInstance().add(this);
+	}
+	public Context(RunnableWithContext func) {
+		this(func, null);
+	}
 
-    private Context(Runnable func, Context parentContext) {
-        this((context) -> func.run());
-    }
-    public Context(Runnable func) {
-        this(func, null);
-    }
-    
-    public String getContextName() {
-        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
-    }
+	private Context(Runnable func, Context parentContext) {
+		this((context) -> func.run());
+	}
+	public Context(Runnable func) {
+		this(func, null);
+	}
+	
+	public String getContextName() {
+		return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
+	}
 
-    @Override
-    public String toString() {
-        return getContextName();
-    }
+	@Override
+	public String toString() {
+		return getContextName();
+	}
 
 	private String getExecutionPoint() {
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -89,10 +89,10 @@ public final class Context implements Runnable {
 				} catch (InterruptedException e) {
 				}
 			}
-            m_controlOwner = thisOwner;
-            if (m_state != State.RUNNING && m_controlOwner == ControlOwner.SUBROUTINE) {
-                throw new ContextStoppedException();
-            }
+			m_controlOwner = thisOwner;
+			if (m_state != State.RUNNING && m_controlOwner == ControlOwner.SUBROUTINE) {
+				throw new ContextStoppedException();
+			}
 		}
 	}
 	
@@ -101,12 +101,12 @@ public final class Context implements Runnable {
 			if (m_controlOwner != thisOwner) {
 				throw new IllegalStateException("Subroutine had control owner " + m_controlOwner + " but assumed control owner " + thisOwner);
 			}
-            m_controlOwner = desiredOwner;
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                c_currentContext = this;
-            } else {
-                c_currentContext = null;
-            }
+			m_controlOwner = desiredOwner;
+			if (m_controlOwner == ControlOwner.SUBROUTINE) {
+				c_currentContext = this;
+			} else {
+				c_currentContext = null;
+			}
 			m_threadSync.notifyAll();
 			waitForControl(thisOwner);
 		}
@@ -126,19 +126,19 @@ public final class Context implements Runnable {
 	
 	public void waitFor(BooleanSupplier predicate) {
 		while (!predicate.getAsBoolean()) {
-            m_blockingPredicate = predicate;
+			m_blockingPredicate = predicate;
 			transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 		}
-    }
-    
-    public void waitFor(Context otherContext) {
-        waitFor(otherContext::isDone);
-    }
+	}
+	
+	public void waitFor(Context otherContext) {
+		waitFor(otherContext::isDone);
+	}
 
-    public void waitFor(Context... otherContexts) {
-        Stream<Context> contextStream = Stream.of(otherContexts);
-        waitFor(() -> contextStream.allMatch(Context::isDone));
-    }
+	public void waitFor(Context... otherContexts) {
+		Stream<Context> contextStream = Stream.of(otherContexts);
+		waitFor(() -> contextStream.allMatch(Context::isDone));
+	}
 
 	public void yield() {
 		m_blockingPredicate = null;
@@ -151,39 +151,39 @@ public final class Context implements Runnable {
 	}
 
 	public Context startAsync(RunnableWithContext func) {
-        return new Context(func, this);
-    }
+		return new Context(func, this);
+	}
 
-    public Context startAsync(Runnable func) {
-        return new Context(func, this);
-    }
+	public Context startAsync(Runnable func) {
+		return new Context(func, this);
+	}
 
-    public void stop() {
-        synchronized (m_threadSync) {
-            if (m_state != State.DONE) {
-                m_state = State.CANCELED;
-            }
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                throw new ContextStoppedException();
-            }
-        }
-    }
-    
+	public void stop() {
+		synchronized (m_threadSync) {
+			if (m_state != State.DONE) {
+				m_state = State.CANCELED;
+			}
+			if (m_controlOwner == ControlOwner.SUBROUTINE) {
+				throw new ContextStoppedException();
+			}
+		}
+	}
+	
 	public final void run() {
-        if (m_state == State.DONE) {
-            Scheduler.getInstance().cancel(this);
-            return;
-        }
-        if (m_state == State.CANCELED || m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
-            transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
-        }
-    }
+		if (m_state == State.DONE) {
+			Scheduler.getInstance().cancel(this);
+			return;
+		}
+		if (m_state == State.CANCELED || m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
+			transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+		}
+	}
 
 	public boolean isDone() {
 		return m_state == State.DONE;
-    }
-    
-    public void takeOwnership(Mechanism mechanism) {
-        mechanism.takeOwnership(this, m_parentContext);
+	}
+	
+	public void takeOwnership(Mechanism mechanism) {
+		mechanism.takeOwnership(this, m_parentContext);
 	}
 }

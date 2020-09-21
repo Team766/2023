@@ -30,11 +30,11 @@ import de.erichseifert.gral.ui.InteractivePanel;
 public class Trajectory extends JPanel {
 	public static JFrame makePlotFrame(Collection<Double[]> series) {
 		JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setContentPane(new Trajectory(series));
-        frame.setVisible(true);
-        return frame;
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(800, 600);
+		frame.setContentPane(new Trajectory(series));
+		frame.setVisible(true);
+		return frame;
 	}
 	
 	XYPlot plot;
@@ -44,28 +44,28 @@ public class Trajectory extends JPanel {
 	Timer playbackTimer;
 	
 	public Trajectory(Collection<Double[]> series) {
-        Double[] first = series.iterator().next();
-        @SuppressWarnings("unchecked")
+		Double[] first = series.iterator().next();
+		@SuppressWarnings("unchecked")
 		Class<Double>[] types = new Class[first.length];
-        Arrays.fill(types, Double.class);
-        data = new DataTable(types);
-        for (Double[] values : series) {
-        	if (first.length != values.length) {
-        		throw new IllegalArgumentException("Data values must be the same length");
-        	}
-            data.add(values);
-        }
+		Arrays.fill(types, Double.class);
+		data = new DataTable(types);
+		for (Double[] values : series) {
+			if (first.length != values.length) {
+				throw new IllegalArgumentException("Data values must be the same length");
+			}
+			data.add(values);
+		}
 		plot = new XYPlot(new DataSeries("Trajectory", data, 0, 1));
 		plot.getAxis(XYPlot.AXIS_X).setRange(-10.0, 10.0);
 		plot.getAxis(XYPlot.AXIS_Y).setRange(-10.0, 10.0);
-        
-        InteractivePanel panel = new InteractivePanel(plot);
-        plotPanel = panel;
-        setLayout(new BorderLayout());
-        add(panel, BorderLayout.CENTER);
-        
-        final int TIMER_PERIOD_MS = 50;
-        playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
+		
+		InteractivePanel panel = new InteractivePanel(plot);
+		plotPanel = panel;
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.CENTER);
+		
+		final int TIMER_PERIOD_MS = 50;
+		playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				double deltaSteps = (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
@@ -77,8 +77,8 @@ public class Trajectory extends JPanel {
 				slider.setValue(newValue);
 			}
 		});
-        playbackTimer.setRepeats(true);
-        
+		playbackTimer.setRepeats(true);
+		
 		JPanel controlsPanel = new JPanel();
 		controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.LINE_AXIS));
 		slider = new JSlider(0, data.getRowCount() - 1);
@@ -105,7 +105,7 @@ public class Trajectory extends JPanel {
 		});
 		controlsPanel.add(playButton);
 		add(controlsPanel, BorderLayout.SOUTH);
-    }
+	}
 	
 	@Override
 	public void paint(Graphics g) {

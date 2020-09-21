@@ -43,8 +43,8 @@ public class LogWriter {
 	public LogWriter(String filename) throws IOException {
 		m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
 		m_fileStream = new FileOutputStream(filename);
-        m_objectStream = new ObjectOutputStream(m_fileStream);
-        m_workerThread = new Thread(new Runnable() {
+		m_objectStream = new ObjectOutputStream(m_fileStream);
+		m_workerThread = new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					LogEntry entry;
@@ -61,7 +61,7 @@ public class LogWriter {
 				}
 			}
 		});
-        m_workerThread.start();
+		m_workerThread.start();
 	}
 
 	public void close() {

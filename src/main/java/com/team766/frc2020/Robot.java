@@ -12,23 +12,23 @@ import com.team766.web.LogViewer;
 import com.team766.web.WebServer;
 
 public class Robot extends MyRobot {
-    // Declare mechanisms here
-    
+	// Declare mechanisms here
+	
 	
 	public static OI m_oi;
 	
 	private WebServer m_webServer;
 	private AutonomousSelector m_autonSelector;
-    private Context m_autonomous;
-    private Context m_oiContext;
+	private Context m_autonomous;
+	private Context m_oiContext;
 
 	
 	@Override
 	public void robotInit() {
 		// Initialize mechanisms here
-        
-        
-        m_oi = new OI();
+		
+		
+		m_oi = new OI();
 
 		// Auton picker
 		m_webServer = new WebServer();

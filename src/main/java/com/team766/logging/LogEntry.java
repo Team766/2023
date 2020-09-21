@@ -57,6 +57,6 @@ enum StreamTags {
 	
 	private static final StreamTags[] VALUES = StreamTags.values();
 	public static StreamTags fromInteger(byte x) {
-        return VALUES[x];
-    }
+		return VALUES[x];
+	}
 }

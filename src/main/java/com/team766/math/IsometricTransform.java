@@ -31,7 +31,7 @@ public class IsometricTransform {
 	
 	IsometricTransform composeInverse(IsometricTransform other) {
 		return new IsometricTransform(rotation.composeInverse(other.rotation, RotationConvention.VECTOR_OPERATOR),
-				                      rotation.applyInverseTo(other.translation).subtract(translation));
+		                              rotation.applyInverseTo(other.translation).subtract(translation));
 	}
 	
 	IsometricTransform invert() {

@@ -9,6 +9,6 @@ public enum Severity {
 	
 	private static final Severity[] VALUES = Severity.values();
 	public static Severity fromInteger(byte x) {
-        return VALUES[x];
-    }
+		return VALUES[x];
+	}
 }

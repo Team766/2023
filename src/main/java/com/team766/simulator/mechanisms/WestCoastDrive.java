@@ -111,12 +111,12 @@ public class WestCoastDrive extends DriveBase {
 		angularVelocity = angularVelocity.add(angularAcceleration.scalarMultiply(Parameters.TIME_STEP));
 		Vector3D angularDelta = angularVelocity.scalarMultiply(Parameters.TIME_STEP);
 		robotRotation = robotRotation.compose(
-				new Rotation(RotationOrder.XYZ,
-						     RotationConvention.VECTOR_OPERATOR,
-						     angularDelta.getX(),
-						     angularDelta.getY(),
-						     angularDelta.getZ()),
-				RotationConvention.VECTOR_OPERATOR);
+			new Rotation(RotationOrder.XYZ,
+			             RotationConvention.VECTOR_OPERATOR,
+			             angularDelta.getX(),
+			             angularDelta.getY(),
+			             angularDelta.getZ()),
+			RotationConvention.VECTOR_OPERATOR);
 	}
 	
 	public Vector3D getPosition() {

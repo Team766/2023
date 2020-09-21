@@ -50,12 +50,12 @@ public class RobotMain {
 		case MaroonSim:
 			simulator = new Simulator();
 			break;
-        case VrConnector:
-            try {
-                simulator = new VrConnector();
-            } catch (IOException ex) {
-                throw new RuntimeException("Error initializing communication with 3d Simulator", ex);
-            }
+		case VrConnector:
+			try {
+				simulator = new VrConnector();
+			} catch (IOException ex) {
+				throw new RuntimeException("Error initializing communication with 3d Simulator", ex);
+			}
 			break;
 		}
 
@@ -80,8 +80,8 @@ public class RobotMain {
 			break;
 		default:
 			System.err.println("Needs -maroon_sim or -vr_connector");
-            System.exit(1);
-            return;
+			System.exit(1);
+			return;
 		}
 		new RobotMain(mode).run();
 	}

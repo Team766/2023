@@ -42,25 +42,25 @@ public class Metrics extends JPanel {
 		};
 	
 	private static class Inspector extends MouseAdapter implements KeyListener {
-    	private int sourceIndex = 0;
-    	private double selectedTime = Double.NaN;
-    	private XYPlot plot;
-    	
-    	public Inspector(XYPlot plot) {
-    		this.plot = plot;
-    	}
-    	
-    	void update() {
-    		if (!Double.isNaN(selectedTime)) {
-    			DataSource source = plot.getData().get(sourceIndex);
+		private int sourceIndex = 0;
+		private double selectedTime = Double.NaN;
+		private XYPlot plot;
+		
+		public Inspector(XYPlot plot) {
+			this.plot = plot;
+		}
+		
+		void update() {
+			if (!Double.isNaN(selectedTime)) {
+				DataSource source = plot.getData().get(sourceIndex);
 				int index = Arrays.binarySearch(source.getColumn(0).toArray(null), selectedTime);
 				if (index < 0) {
 					index = -index - 1;
 				}
 				System.out.println(String.format("(%s, %f): %f", source.getName(), selectedTime, source.get(1, index)));
 			}
-    	}
-    	
+		}
+		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			double x = e.getX() - plot.getPlotArea().getX();
@@ -90,11 +90,11 @@ public class Metrics extends JPanel {
 	
 	public static JFrame makePlotFrame(Collection<Double[]> series, String[] labels) {
 		JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setContentPane(new Metrics(series, labels));
-        frame.setVisible(true);
-        return frame;
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(800, 600);
+		frame.setContentPane(new Metrics(series, labels));
+		frame.setVisible(true);
+		return frame;
 	}
 	
 	XYPlot plot;
@@ -104,42 +104,42 @@ public class Metrics extends JPanel {
 	Timer playbackTimer;
 	
 	public Metrics(Collection<Double[]> series, String[] labels) {
-        Double[] first = series.iterator().next();
-        @SuppressWarnings("unchecked")
+		Double[] first = series.iterator().next();
+		@SuppressWarnings("unchecked")
 		Class<Double>[] types = new Class[first.length];
-        Arrays.fill(types, Double.class);
-        data = new DataTable(types);
-        for (Double[] values : series) {
-        	if (first.length != values.length) {
-        		throw new IllegalArgumentException("Data values must be the same length");
-        	}
-            data.add(values);
-        }
-        if (first.length - 1 != labels.length) {
-    		throw new IllegalArgumentException("Number of labels does not match the size of data values");
-    	}
-        DataSource[] sources = new DataSource[labels.length];
-        for (int i = 0; i < labels.length; ++i) {
-        	sources[i] = new DataSeries(labels[i], data, 0, i + 1);
-        }
-        plot = new XYPlot(sources);
-        int colorIndex = 0;
-        for (DataSource source : sources) {
-        	LineRenderer lines = new DefaultLineRenderer2D();
-        	plot.setLineRenderers(source, lines);
-        	Color color = Color.decode(COLORS[colorIndex++ % COLORS.length]);
-        	plot.getPointRenderers(source).get(0).setColor(color);
-            plot.getLineRenderers(source).get(0).setColor(color);
-        }
-        plot.setLegendVisible(true);
-        
-        InteractivePanel panel = new InteractivePanel(plot);
-        plotPanel = panel;
-        setLayout(new BorderLayout());
-        add(panel, BorderLayout.CENTER);
-        
-        final int TIMER_PERIOD_MS = 50;
-        playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
+		Arrays.fill(types, Double.class);
+		data = new DataTable(types);
+		for (Double[] values : series) {
+			if (first.length != values.length) {
+				throw new IllegalArgumentException("Data values must be the same length");
+			}
+			data.add(values);
+		}
+		if (first.length - 1 != labels.length) {
+			throw new IllegalArgumentException("Number of labels does not match the size of data values");
+		}
+		DataSource[] sources = new DataSource[labels.length];
+		for (int i = 0; i < labels.length; ++i) {
+			sources[i] = new DataSeries(labels[i], data, 0, i + 1);
+		}
+		plot = new XYPlot(sources);
+		int colorIndex = 0;
+		for (DataSource source : sources) {
+			LineRenderer lines = new DefaultLineRenderer2D();
+			plot.setLineRenderers(source, lines);
+			Color color = Color.decode(COLORS[colorIndex++ % COLORS.length]);
+			plot.getPointRenderers(source).get(0).setColor(color);
+			plot.getLineRenderers(source).get(0).setColor(color);
+		}
+		plot.setLegendVisible(true);
+		
+		InteractivePanel panel = new InteractivePanel(plot);
+		plotPanel = panel;
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.CENTER);
+		
+		final int TIMER_PERIOD_MS = 50;
+		playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				double deltaSteps = (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
@@ -151,10 +151,10 @@ public class Metrics extends JPanel {
 				slider.setValue(newValue);
 			}
 		});
-        playbackTimer.setRepeats(true);
-        
-        Inspector inspector = new Inspector(plot);
-        addKeyListener(inspector);
-        panel.addMouseListener(inspector);
-    }
+		playbackTimer.setRepeats(true);
+		
+		Inspector inspector = new Inspector(plot);
+		addKeyListener(inspector);
+		panel.addMouseListener(inspector);
+	}
 }
