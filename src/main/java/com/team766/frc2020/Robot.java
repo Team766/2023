@@ -46,6 +46,7 @@ public class Robot extends MyRobot {
 		}
 		if (m_oiContext != null) {
 			m_oiContext.stop();
+			m_oiContext = null;
 		}
 		
 		Procedure autonomousProcedure = AutonomousProcedureUtils.getProcedure(m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
@@ -56,6 +57,7 @@ public class Robot extends MyRobot {
 	public void teleopInit() {
 		if (m_autonomous != null) {
 			m_autonomous.stop();
+			m_autonomous = null;
 		}
 		
 		if (m_oiContext == null) {
