@@ -18,7 +18,7 @@ public class OI extends Procedure {
 	public OI() {
 		m_joystick1 = RobotProvider.instance.getJoystick(1);
 		m_joystick2 = RobotProvider.instance.getJoystick(2);
-		m_joystick2 = RobotProvider.instance.getJoystick(3);
+		m_joystick3 = RobotProvider.instance.getJoystick(3);
 	}
 	
 	public void run(Context context) {
