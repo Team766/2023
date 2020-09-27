@@ -11,14 +11,14 @@ import com.team766.hal.RobotProvider;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
+	private JoystickReader m_joystick0;
 	private JoystickReader m_joystick1;
 	private JoystickReader m_joystick2;
-	private JoystickReader m_joystick3;
 	
 	public OI() {
+		m_joystick0 = RobotProvider.instance.getJoystick(0);
 		m_joystick1 = RobotProvider.instance.getJoystick(1);
 		m_joystick2 = RobotProvider.instance.getJoystick(2);
-		m_joystick3 = RobotProvider.instance.getJoystick(3);
 	}
 	
 	public void run(Context context) {
