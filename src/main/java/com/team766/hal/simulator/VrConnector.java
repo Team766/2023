@@ -10,7 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 import com.team766.simulator.ProgramInterface;
 
 public class VrConnector implements Runnable {
@@ -45,6 +45,13 @@ public class VrConnector implements Runnable {
 
 	private static final int TIMESTAMP_CHANNEL = 5;
 
+	private static final int ROBOT_MODE_CHANNEL = 3;
+	private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES = Map.of(
+		0, ProgramInterface.RobotMode.DISABLED,
+		1, ProgramInterface.RobotMode.AUTON,
+    	2, ProgramInterface.RobotMode.TELEOP
+	);
+
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
 		new PortMapping(10, 0), // Left encoder
 		new PortMapping(11, 2)  // Right encoder
@@ -55,6 +62,12 @@ public class VrConnector implements Runnable {
 		new PortMapping(14, 1)  // Ball presence
 	);
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
+
+	private static final int NUM_JOYSTICK = 4;
+    private static final int JOYSTICK_AXIS_START = 20;
+    private static final int AXES_PER_JOYSTICK = 4;
+    private static final int JOYSTICK_BUTTON_START = 40;
+    private static final int BUTTONS_PER_JOYSTICK = 8;
 
 	/// Socket Communication
 
@@ -141,6 +154,8 @@ public class VrConnector implements Runnable {
 			// Time is sent in milliseconds
 			ProgramInterface.simulationTime = getFeedback(TIMESTAMP_CHANNEL) * 0.001;
 
+			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
+
 			ProgramInterface.gyro.angle = getFeedback(GYRO_CHANNEL);
 
 			for (PortMapping m : ENCODER_CHANNELS) {
@@ -151,6 +166,14 @@ public class VrConnector implements Runnable {
 			}
 			for (PortMapping m : ANALOG_CHANNELS) {
 				ProgramInterface.analogChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
+			}
+			for (int j = 0; j < NUM_JOYSTICK; ++j) {
+				for (int a = 0; a < AXES_PER_JOYSTICK; ++a) {
+					ProgramInterface.joystickChannels[j].axisValues[a] = getFeedback(j * AXES_PER_JOYSTICK + a + JOYSTICK_AXIS_START) / 100.0;
+				}
+				for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
+					ProgramInterface.joystickChannels[j].buttonValues[b] = getFeedback(j * BUTTONS_PER_JOYSTICK + b + JOYSTICK_BUTTON_START) > 0;
+				}
 			}
 		}
 	}

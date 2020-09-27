@@ -6,6 +6,12 @@ public class ProgramInterface {
 	public static Runnable programStep;
 	
 	public static double simulationTime;
+
+	public static enum RobotMode {
+		DISABLED, AUTON, TELEOP
+	}
+
+	public static RobotMode robotMode = Parameters.INITIAL_ROBOT_MODE;
 	
 	public static final double[] pwmChannels = new double[20];
 	
@@ -55,8 +61,8 @@ public class ProgramInterface {
 	public static final GyroCommunication gyro = new GyroCommunication();
 	
 	public static class JoystickCommunication {
-		public double[] axisValues;
-		public boolean[] buttonValues;
+		public final double[] axisValues = new double[4];
+		public final boolean[] buttonValues = new boolean[12];
 		public int povValue;
 	}
 	
