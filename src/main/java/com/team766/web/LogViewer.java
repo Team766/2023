@@ -63,7 +63,7 @@ public class LogViewer implements WebServer.Handler {
 			"    if (document.getElementById('refresh-enabled').checked) {",
 			"      refresh();",
 			"    }",
-			"  }, 3000);",
+			"  }, 1000);",
 			"</script>",
 		});
 		
