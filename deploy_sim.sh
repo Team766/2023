@@ -29,10 +29,7 @@ if [ -z "${server-}" ]; then
     exit 1
 fi
 
-echo "Deploying to $server"
-echo -e "\n\nOpen simulation viewer at http://$server\n"
-read -r -p "Press enter when you're ready to run your code" key
-echo
+echo -e "Deploying to $server\n"
 
 set -x
 
@@ -55,4 +52,6 @@ scp -o "StrictHostKeyChecking=no" -r "$deployed_code" "${user}@${server}":"$depl
 
 ssh -o "StrictHostKeyChecking=no" "${user}@${server}" "launch_robot_code.sh $deployed_code $@"
 
+set +x
 echo -e "\nDeploy finished. Your code is running"
+echo -e "\nOpen simulation viewer at http://$server"
