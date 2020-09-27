@@ -36,6 +36,7 @@ public final class Context implements Runnable {
 	private Context(RunnableWithContext func, Context parentContext) {
 		m_func = func;
 		m_parentContext = parentContext;
+		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Starting context " + getContextName() + " for " + func.toString());
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
@@ -78,7 +79,7 @@ public final class Context implements Runnable {
 		if (thisOwner == ControlOwner.SUBROUTINE) {
 			String waitPointTrace = getExecutionPoint();
 			if (waitPointTrace != null && !waitPointTrace.equals(m_previousWaitPoint)) {
-				Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, getContextName() + " is waiting at " + waitPointTrace);
+				Logger.get(Category.PROCEDURES).logRaw(Severity.DEBUG, getContextName() + " is waiting at " + waitPointTrace);
 				m_previousWaitPoint = waitPointTrace;
 			}
 		}
@@ -116,6 +117,8 @@ public final class Context implements Runnable {
 		waitForControl(ControlOwner.SUBROUTINE);
 		try {
 			m_func.run(this);
+		} catch (ContextStoppedException ex) {
+			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, getContextName() + " was stopped");
 		} finally {
 			synchronized (m_threadSync) {
 				m_state = State.DONE;
