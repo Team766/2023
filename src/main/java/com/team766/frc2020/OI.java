@@ -22,6 +22,12 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		while (true) {
+			// Add driver controls here - make sure to take/release ownership
+			// of mechanisms when appropriate.
+			
 
+			context.yield();
+		}
 	}
 }
