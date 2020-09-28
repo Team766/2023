@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.logging.ExceptionUtils;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
@@ -69,8 +70,14 @@ public final class Context implements Runnable {
 
 	private String getExecutionPoint() {
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-		for (int i = 0; i < stack.length; ++i) {
+		int i = 0;
+		for (; i < stack.length; ++i) {
 			if (stack[i].getClassName() == this.getClass().getName()) {
+				break;
+			}
+		}
+		for (; i < stack.length; ++i) {
+			if (stack[i].getClassName() != this.getClass().getName()) {
 				return stack[i].toString();
 			}
 		}
@@ -122,6 +129,8 @@ public final class Context implements Runnable {
 			Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Context " + getContextName() + " finished");
 		} catch (ContextStoppedException ex) {
 			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, getContextName() + " was stopped");
+		} catch (Throwable ex) {
+			Logger.get(Category.JAVA_EXCEPTION).logRaw(Severity.ERROR, "Uncaught exception: " + ExceptionUtils.exceptionToString(ex));
 		} finally {
 			synchronized (m_threadSync) {
 				m_state = State.DONE;
