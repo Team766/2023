@@ -13,7 +13,7 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
@@ -114,7 +114,11 @@ public class WPIRobotProvider extends RobotProvider {
 	
 	@Override
 	public Clock getClock() {
-		// TODO Auto-generated method stub
 		return SystemClock.instance;
+	}
+
+	@Override
+	public boolean hasNewDriverStationData() {
+		return DriverStation.getInstance().isNewControlData();
 	}
 }

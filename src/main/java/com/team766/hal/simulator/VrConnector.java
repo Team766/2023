@@ -169,12 +169,14 @@ public class VrConnector implements Runnable {
 			}
 			for (int j = 0; j < NUM_JOYSTICK; ++j) {
 				for (int a = 0; a < AXES_PER_JOYSTICK; ++a) {
-					ProgramInterface.joystickChannels[j].axisValues[a] = getFeedback(j * AXES_PER_JOYSTICK + a + JOYSTICK_AXIS_START) / 100.0;
+					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * AXES_PER_JOYSTICK + a + JOYSTICK_AXIS_START) / 100.0);
 				}
 				for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-					ProgramInterface.joystickChannels[j].buttonValues[b] = getFeedback(j * BUTTONS_PER_JOYSTICK + b + JOYSTICK_BUTTON_START) > 0;
+					ProgramInterface.joystickChannels[j].setButton(b, getFeedback(j * BUTTONS_PER_JOYSTICK + b + JOYSTICK_BUTTON_START) > 0);
 				}
 			}
+
+			++ProgramInterface.driverStationUpdateNumber;
 		}
 	}
 

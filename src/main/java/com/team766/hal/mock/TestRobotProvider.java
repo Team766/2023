@@ -17,6 +17,8 @@ import com.team766.hal.wpilib.SystemClock;
 
 public class TestRobotProvider extends RobotProvider{
 
+	private boolean m_hasDriverStationUpdate = false;
+
 	@Override
 	public SpeedController getMotor(int index) {
 		if(motors[index] == null)
@@ -69,7 +71,7 @@ public class TestRobotProvider extends RobotProvider{
 	@Override
 	public JoystickReader getJoystick(int index) {
 		if(joysticks[index] == null)
-			joysticks[index] = new Joystick(index);
+			joysticks[index] = new Joystick();
 		return joysticks[index];
 	}
 	
@@ -102,5 +104,16 @@ public class TestRobotProvider extends RobotProvider{
 	public Clock getClock() {
 		// TODO Replace this with a controlled clock
 		return SystemClock.instance;
+	}
+
+	@Override
+	public boolean hasNewDriverStationData() {
+		boolean result = m_hasDriverStationUpdate;
+		m_hasDriverStationUpdate = false;
+		return result;
+	}
+
+	public void setHasNewDriverStationData() {
+		m_hasDriverStationUpdate = true;
 	}
 }

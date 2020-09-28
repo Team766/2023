@@ -13,8 +13,11 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
+import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider{
+
+	private int m_dsUpdateNumber = 0;
 
 	@Override
 	public SpeedController getMotor(int index) {
@@ -68,9 +71,7 @@ public class SimulationRobotProvider extends RobotProvider{
 
 	@Override
 	public JoystickReader getJoystick(int index) {
-		if(joysticks[index] == null)
-			joysticks[index] = new Joystick(index);
-		return joysticks[index];
+		return ProgramInterface.joystickChannels[index];
 	}
 	
 	@Override
@@ -101,5 +102,13 @@ public class SimulationRobotProvider extends RobotProvider{
 	@Override
 	public Clock getClock() {
 		return SimulationClock.instance;
+	}
+
+	@Override
+	public boolean hasNewDriverStationData() {
+		int newUpdateNumber = ProgramInterface.driverStationUpdateNumber;
+		boolean result = m_dsUpdateNumber != newUpdateNumber;
+		m_dsUpdateNumber = newUpdateNumber;
+		return result;
 	}
 }

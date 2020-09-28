@@ -27,7 +27,7 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			
 
-			context.yield();
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
 }

@@ -137,7 +137,7 @@ public final class Context implements Runnable {
 	}
 	
 	public void waitFor(BooleanSupplier predicate) {
-		while (!predicate.getAsBoolean()) {
+		if (!predicate.getAsBoolean()) {
 			m_blockingPredicate = predicate;
 			transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 		}

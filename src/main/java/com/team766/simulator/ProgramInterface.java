@@ -1,11 +1,14 @@
 package com.team766.simulator;
 
 import java.lang.reflect.Array;
+import com.team766.hal.mock.Joystick;
 
 public class ProgramInterface {
 	public static Runnable programStep;
 	
 	public static double simulationTime;
+
+	public static int driverStationUpdateNumber = 0;
 
 	public static enum RobotMode {
 		DISABLED, AUTON, TELEOP
@@ -60,14 +63,8 @@ public class ProgramInterface {
 	
 	public static final GyroCommunication gyro = new GyroCommunication();
 	
-	public static class JoystickCommunication {
-		public final double[] axisValues = new double[4];
-		public final boolean[] buttonValues = new boolean[12];
-		public int povValue;
-	}
-	
-	public static final JoystickCommunication[] joystickChannels =
-			initializeArray(4, JoystickCommunication.class);
+	public static final Joystick[] joystickChannels =
+			initializeArray(4, Joystick.class);
 	
 	
 	private static <E> E[] initializeArray(int size, Class<E> clazz) {

@@ -138,4 +138,6 @@ public abstract class RobotProvider {
 	public abstract CameraInterface getCamServer();
 	
 	public abstract Clock getClock();
+
+	public abstract boolean hasNewDriverStationData();
 }

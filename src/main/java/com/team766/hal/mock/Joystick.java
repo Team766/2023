@@ -2,26 +2,26 @@ package com.team766.hal.mock;
 
 import com.team766.hal.JoystickReader;
 
-public class Joystick implements JoystickReader{
+public class Joystick implements JoystickReader {
 	
 	private double[] axisValues;
 	private boolean[] buttonValues;
-	private boolean previousTriggerValue;
+	private boolean[] prevButtonValues;
 	private int povValue;
 	
-	public Joystick(int index){
-		axisValues = new double[4];	//Fix size to reflect actual joysticks
-		buttonValues = new boolean[20];	//Fix size to reflect actual joysticks
-		previousTriggerValue = false;
+	public Joystick(){
+		axisValues = new double[4];
+		buttonValues = new boolean[20];
+		prevButtonValues = new boolean[20];
 	}
 	
 	@Override
-	public double getRawAxis(int axis) {
+	public double getAxis(int axis) {
 		return axisValues[axis];
 	}
 
 	@Override
-	public boolean getRawButton(int button) {
+	public boolean getButton(int button) {
 		return buttonValues[button];
 	}
 	
@@ -30,6 +30,7 @@ public class Joystick implements JoystickReader{
 	}
 	
 	public void setButton(int button, boolean val){
+		prevButtonValues[button] = buttonValues[button];
 		buttonValues[button] = val;
 	}
 
@@ -43,16 +44,13 @@ public class Joystick implements JoystickReader{
 	}
 
 	@Override
-	public boolean getTrigger() {
-		return getRawButton(0);
+	public boolean getButtonPressed(int button) {
+		return buttonValues[button] && !prevButtonValues[button];
 	}
 
 	@Override
-	public boolean getTriggerPressed() {
-		boolean currentValue = getTrigger();
-		boolean pressed = currentValue && !previousTriggerValue;
-		previousTriggerValue = currentValue;
-		return pressed;
+	public boolean getButtonReleased(int button) {
+		return !buttonValues[button] && prevButtonValues[button];
 	}
 
 }
