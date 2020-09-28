@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import java.util.HashSet;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 import com.team766.hal.RobotProvider;
@@ -32,6 +33,7 @@ public final class Context implements Runnable {
 	private BooleanSupplier m_blockingPredicate;
 	private ControlOwner m_controlOwner;
 	private String m_previousWaitPoint;
+	private HashSet<Mechanism> m_ownedMechanisms = new HashSet<Mechanism>();
 	
 	private Context(RunnableWithContext func, Context parentContext) {
 		m_func = func;
@@ -117,6 +119,7 @@ public final class Context implements Runnable {
 		waitForControl(ControlOwner.SUBROUTINE);
 		try {
 			m_func.run(this);
+			Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Context " + getContextName() + " finished");
 		} catch (ContextStoppedException ex) {
 			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, getContextName() + " was stopped");
 		} finally {
@@ -124,6 +127,12 @@ public final class Context implements Runnable {
 				m_state = State.DONE;
 				m_threadSync.notifyAll();
 			}
+			for (Mechanism m : m_ownedMechanisms) {
+				// Don't use this.releaseOwnership here, because that would cause a
+				// ConcurrentModificationException since we're iterating over m_ownedMechanisms
+				m.releaseOwnership(this);
+			}
+			m_ownedMechanisms.clear();
 		}
 	}
 	
@@ -188,5 +197,11 @@ public final class Context implements Runnable {
 	
 	public void takeOwnership(Mechanism mechanism) {
 		mechanism.takeOwnership(this, m_parentContext);
+		m_ownedMechanisms.add(mechanism);
+	}
+
+	public void releaseOwnership(Mechanism mechanism) {
+		mechanism.releaseOwnership(this);
+		m_ownedMechanisms.remove(mechanism);
 	}
 }

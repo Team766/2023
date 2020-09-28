@@ -36,6 +36,15 @@ public abstract class Mechanism extends Loggable implements Runnable {
 		m_owningContext = context;
 	}
 
+	void releaseOwnership(Context context) {
+		if (m_owningContext != context) {
+			Logger.get(Category.PROCEDURES).logRaw(Severity.ERROR, context.getContextName() + " tried to release ownership of " + getName() + " but it doesn't own it");
+			return;
+		}
+		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is releasing ownership of " + getName());
+		m_owningContext = null;
+	}
+
 	@Override
 	public void run () {}
 }
