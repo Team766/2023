@@ -16,6 +16,10 @@ public class RobotMain extends TimedRobot {
 		RobotBase.startRobot(RobotMain::new);
 	}
 
+	public RobotMain() {
+		super(0.005);
+	}
+
 	@Override
 	public void robotInit() {
 		try {
