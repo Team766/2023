@@ -22,7 +22,11 @@ public class Joystick implements JoystickReader {
 
 	@Override
 	public boolean getButton(int button) {
-		return buttonValues[button];
+		// Button indexes begin at 1 in WPILib, so match that here
+		if (button <= 0) {
+			return false;
+		}
+		return buttonValues[button - 1];
 	}
 	
 	public void setAxisValue(int axis, double value){
@@ -30,8 +34,9 @@ public class Joystick implements JoystickReader {
 	}
 	
 	public void setButton(int button, boolean val){
-		prevButtonValues[button] = buttonValues[button];
-		buttonValues[button] = val;
+		// Button indexes begin at 1 in WPILib, so match that here
+		prevButtonValues[button - 1] = buttonValues[button - 1];
+		buttonValues[button - 1] = val;
 	}
 
 	@Override
@@ -45,12 +50,20 @@ public class Joystick implements JoystickReader {
 
 	@Override
 	public boolean getButtonPressed(int button) {
-		return buttonValues[button] && !prevButtonValues[button];
+		// Button indexes begin at 1 in WPILib, so match that here
+		if (button <= 0) {
+			return false;
+		}
+		return buttonValues[button - 1] && !prevButtonValues[button - 1];
 	}
 
 	@Override
 	public boolean getButtonReleased(int button) {
-		return !buttonValues[button] && prevButtonValues[button];
+		// Button indexes begin at 1 in WPILib, so match that here
+		if (button <= 0) {
+			return false;
+		}
+		return !buttonValues[button - 1] && prevButtonValues[button - 1];
 	}
 
 }
