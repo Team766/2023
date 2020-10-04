@@ -11,6 +11,7 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
 
 public class VrConnector implements Runnable {
@@ -187,6 +188,7 @@ public class VrConnector implements Runnable {
 				process();
 			} catch (Exception e) {
 				e.printStackTrace();
+				LoggerExceptionUtils.logException(e);
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e1) {}

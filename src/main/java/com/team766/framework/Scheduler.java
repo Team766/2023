@@ -1,10 +1,7 @@
 package com.team766.framework;
 
 import java.util.LinkedList;
-import com.team766.logging.Category;
-import com.team766.logging.ExceptionUtils;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
+import com.team766.logging.LoggerExceptionUtils;
 
 public class Scheduler implements Runnable {
 	private static Scheduler m_instance = new Scheduler();
@@ -31,8 +28,9 @@ public class Scheduler implements Runnable {
 		for (Runnable runnable : new LinkedList<Runnable>(m_runnables)) {
 			try {
 				runnable.run();
-			} catch (Throwable ex) {
-				Logger.get(Category.JAVA_EXCEPTION).logRaw(Severity.ERROR, "Uncaught exception: " + ExceptionUtils.exceptionToString(ex));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				LoggerExceptionUtils.logException(ex);
 			}
 		}
 	}

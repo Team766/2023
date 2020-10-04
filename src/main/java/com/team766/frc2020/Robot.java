@@ -30,6 +30,14 @@ public class Robot extends MyRobot {
 	private static final double RESET_IN_DISABLED_PERIOD = 10.0;
 	private double m_disabledModeStartTime;
 
+	public Robot() {
+		m_webServer = new WebServer();
+		m_webServer.addHandler("/config", new ConfigUI());
+		m_webServer.addHandler("/logs", new LogViewer());
+		m_autonSelector = new AutonomousSelector(AutonomousModes.class);
+		m_webServer.addHandler("/values", m_autonSelector);
+		m_webServer.start();
+	}
 
 	@Override
 	public void robotInit() {
@@ -37,14 +45,6 @@ public class Robot extends MyRobot {
 		
 		
 		m_oi = new OI();
-
-		// Auton picker
-		m_webServer = new WebServer();
-		m_webServer.addHandler("/config", new ConfigUI());
-		m_webServer.addHandler("/logs", new LogViewer());
-		m_autonSelector = new AutonomousSelector(AutonomousModes.class);
-		m_webServer.addHandler("/values", m_autonSelector);
-		m_webServer.start();
 	}
 	
 	@Override

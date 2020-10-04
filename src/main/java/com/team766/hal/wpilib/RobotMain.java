@@ -1,11 +1,12 @@
 package com.team766.hal.wpilib;
 
+import java.util.function.Supplier;
 import com.team766.EntryPoint;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.MyRobot;
 import com.team766.hal.RobotProvider;
-
+import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -13,7 +14,22 @@ public class RobotMain extends TimedRobot {
 	private MyRobot robot;
 
 	public static void main(String... args) {
-		RobotBase.startRobot(RobotMain::new);
+		Supplier<RobotMain> supplier = new Supplier<RobotMain>() {
+			RobotMain instance;
+			@Override
+			public RobotMain get() {
+				if (instance == null) {
+					instance = new RobotMain();
+				}
+				return instance;
+			}
+		};
+		try {
+			RobotBase.startRobot(supplier);
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+			LoggerExceptionUtils.logException(ex);
+		}
 	}
 
 	public RobotMain() {
@@ -30,6 +46,7 @@ public class RobotMain extends TimedRobot {
 			robot.robotInit();
 		} catch (Exception e) {
 			e.printStackTrace();
+			LoggerExceptionUtils.logException(e);
 			throw e;
 		}
 	}
@@ -40,7 +57,7 @@ public class RobotMain extends TimedRobot {
 			robot.disabledInit();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 	
@@ -50,7 +67,7 @@ public class RobotMain extends TimedRobot {
 			robot.autonomousInit();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 
@@ -60,7 +77,7 @@ public class RobotMain extends TimedRobot {
 			robot.teleopInit();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 
@@ -71,7 +88,7 @@ public class RobotMain extends TimedRobot {
 			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 
@@ -82,7 +99,7 @@ public class RobotMain extends TimedRobot {
 			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 
@@ -93,7 +110,7 @@ public class RobotMain extends TimedRobot {
 			Scheduler.getInstance().run();
 		}catch (Exception e){
 			e.printStackTrace();
-			throw e;
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 }

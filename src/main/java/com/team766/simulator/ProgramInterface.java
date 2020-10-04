@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import com.team766.hal.mock.Joystick;
 
 public class ProgramInterface {
-	public static Runnable programStep;
+	public static Runnable programStep = () -> {};
 	
 	public static double simulationTime;
 
