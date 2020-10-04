@@ -17,7 +17,12 @@ public abstract class Mechanism extends Loggable implements Runnable {
 	
 	protected void checkContextOwnership() {
 		if (Context.currentContext() != m_owningContext) {
-			String message = getName() + " tried to be used by " + Context.currentContext().getContextName() + " while owned by " + m_owningContext.getContextName();
+			String message = getName() + " tried to be used by " + Context.currentContext().getContextName();
+			if (m_owningContext != null) {
+				message += " while owned by " + m_owningContext.getContextName();
+			} else {
+				message += " without taking ownership of it";
+			}
 			Logger.get(Category.PROCEDURES).logRaw(Severity.ERROR, message);
 			throw new IllegalStateException(message);
 		}
