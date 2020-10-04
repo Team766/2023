@@ -5,6 +5,6 @@ drive.leftEncoder,0,1
 drive.rightEncoder,2,3
 drive.gyro,12
 
-intake,0
+intakeWheels,0
 intakeArm,0
 launch,1
