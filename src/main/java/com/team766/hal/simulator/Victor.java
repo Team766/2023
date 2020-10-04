@@ -2,6 +2,7 @@ package com.team766.hal.simulator;
 
 import com.team766.hal.SpeedController;
 import com.team766.simulator.ProgramInterface;
+import static com.team766.math.Math.clamp;
 
 public class Victor implements SpeedController{
 
@@ -18,7 +19,7 @@ public class Victor implements SpeedController{
 
 	@Override
 	public void set(double speed) {
-		ProgramInterface.pwmChannels[channel] = speed;
+		ProgramInterface.pwmChannels[channel] = clamp(speed, -1.0, 1.0);
 	}
 
 	@Override

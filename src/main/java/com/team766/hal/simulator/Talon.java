@@ -21,6 +21,7 @@ public class Talon implements CANSpeedController {
 	
 	@Override
 	public void set(double speed) {
+		// TODO: clamp to -1..1 when in PercentOutput mode
 		channel.command.output = speed;
 	}
 
