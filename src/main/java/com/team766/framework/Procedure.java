@@ -1,6 +1,14 @@
 package com.team766.framework;
 
 public abstract class Procedure extends Loggable implements RunnableWithContext {
+	// A reusable Procedure that does nothing.
+	private static final class NoOpProcedure extends Procedure {
+		@Override
+		public void run(Context context) {
+		}
+	}
+	public static final Procedure NO_OP = new NoOpProcedure();
+
 	private static int c_idCounter = 0;
 
 	private static synchronized int createNewId() {

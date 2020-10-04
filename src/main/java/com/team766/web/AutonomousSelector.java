@@ -2,6 +2,10 @@ package com.team766.web;
 
 import java.util.Arrays;
 import java.util.Map;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 
 public class AutonomousSelector implements WebServer.Handler {
 	private String[] AUTONS;
@@ -18,7 +22,12 @@ public class AutonomousSelector implements WebServer.Handler {
 		for (int i = 0; i < states.length; ++i) {
 			AUTONS[i] = states[i].toString();
 		}
-		autonMode = AUTONS[0];
+		if (AUTONS.length > 0) {
+			autonMode = AUTONS[0];
+		} else {
+			Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous modes were declared in AutonomousModes.java");
+			autonMode = null;
+		}
 	}
 	
 	public String getSelectedAutonModeString() {
@@ -26,7 +35,13 @@ public class AutonomousSelector implements WebServer.Handler {
 	}
 	
 	public <E extends Enum<E>> E getSelectedAutonMode(Class<E> clazz) {
-		return Enum.valueOf(clazz, autonMode);
+		try {
+			return Enum.valueOf(clazz, autonMode);
+		} catch (IllegalArgumentException | NullPointerException ex) {
+			ex.printStackTrace();
+			LoggerExceptionUtils.logException(ex);
+			return null;
+		}
 	}
 	
 	@Override
@@ -39,7 +54,7 @@ public class AutonomousSelector implements WebServer.Handler {
 		}
 		
 		String r = "<h1>Autonomous Mode Selector</h1>\n";
-		r += "<h3>Current Mode: " + autonMode + "</h1>\n";
+		r += "<h3>Current Mode: " + String.valueOf(autonMode) + "</h1>\n";
 		r += "<form>\n";
 		r += "<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>\n";
 		r += "<input type=\"submit\" value=\"Submit\"></form>\n";

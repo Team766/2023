@@ -2,9 +2,17 @@ package com.team766.framework;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 
 public class AutonomousProcedureUtils {
 	public static Procedure getProcedure(Enum<?> autonomousModesEnum) {
+		if (autonomousModesEnum == null) {
+			Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
+			return Procedure.NO_OP;
+		}
 		Field f;
 		try {
 			f = autonomousModesEnum.getClass().getField(autonomousModesEnum.name());
@@ -18,7 +26,10 @@ public class AutonomousProcedureUtils {
 				throw new RuntimeException(ex);
 			}
 		} catch (NoSuchFieldException | SecurityException ex) {
-			throw new RuntimeException(ex);
+			Logger.get(Category.AUTONOMOUS).logRaw(Severity.ERROR, "Exception while selecting autonomous mode: " + ex);
+			ex.printStackTrace();
+			LoggerExceptionUtils.logException(ex);
+			return Procedure.NO_OP;
 		}
 	}
 }
