@@ -3,6 +3,7 @@ package com.team766.frc2020;
 import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.frc2020.Robot;
+import com.team766.frc2020.procedures.*;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
