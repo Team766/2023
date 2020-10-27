@@ -57,7 +57,8 @@ public class VrConnector implements Runnable {
 		new PortMapping(10, 0), // Left encoder
 		new PortMapping(11, 2)  // Right encoder
 	);
-	private static final int GYRO_CHANNEL = 12;
+	private static final int GYRO_CHANNEL = 15;
+	private static final int GYRO_RATE_CHANNEL = 16;
 	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
 		new PortMapping(13, 0), // Intake state
 		new PortMapping(14, 1)  // Ball presence
@@ -80,6 +81,8 @@ public class VrConnector implements Runnable {
 	InetSocketAddress sendAddr;
 	ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
 	ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
+
+	private double lastGyroValue = Double.NaN;
 
 	private int getFeedback(int index) {
 		return feedback.getInt(index * 4);
@@ -157,7 +160,14 @@ public class VrConnector implements Runnable {
 
 			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
 
-			ProgramInterface.gyro.angle = getFeedback(GYRO_CHANNEL);
+			double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
+			if (Double.isNaN(lastGyroValue)) {
+				lastGyroValue = gyroValue;
+			}
+			ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
+			lastGyroValue = gyroValue;
+
+			ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
 
 			for (PortMapping m : ENCODER_CHANNELS) {
 				ProgramInterface.encoderChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex);
