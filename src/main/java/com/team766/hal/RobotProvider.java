@@ -80,7 +80,13 @@ public abstract class RobotProvider {
 				System.out.println("Encoder " + configName + " has " + ports.length + " config values, but expected 2");
 				return new Encoder(0, 0);
 			}
-			return getEncoder(ports[0], ports[1]);
+			EncoderReader reader = getEncoder(ports[0], ports[1]);
+			String distancePerPulseName = configName + ".distancePerPulse";
+			if (ConfigFileReader.getInstance().containsKey(distancePerPulseName)) {
+				double distancePerPulse = ConfigFileReader.getInstance().getDouble(distancePerPulseName).get();
+				reader.setDistancePerPulse(distancePerPulse);
+			}
+			return reader;
 		} catch (IllegalArgumentException ex) {
 			System.out.println("Encoder " + configName + " not found in config file, using mock encoder instead");
 			return new Encoder(0, 0);

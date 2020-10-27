@@ -2,7 +2,9 @@ logFilePath,sim_robot_logs
 drive.leftMotor,6
 drive.rightMotor,4
 drive.leftEncoder,0,1
+drive.leftEncoder.distancePerPulse,-0.0524
 drive.rightEncoder,2,3
+drive.rightEncoder.distancePerPulse,-0.0524
 drive.gyro,12
 
 intakeWheels,0
