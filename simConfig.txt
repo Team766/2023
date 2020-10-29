@@ -10,3 +10,7 @@ drive.gyro,12
 intakeWheels,0
 intakeArm,0
 launch,1
+
+lineSensorLeft,2
+lineSensorCenter,3
+lineSensorRight,4
