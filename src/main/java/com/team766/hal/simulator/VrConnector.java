@@ -83,6 +83,7 @@ public class VrConnector implements Runnable {
 	ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
 
 	private double lastGyroValue = Double.NaN;
+	private long[] lastEncoderValue = new long[12];
 
 	private int getFeedback(int index) {
 		return feedback.getInt(index * 4);
@@ -170,7 +171,9 @@ public class VrConnector implements Runnable {
 			ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
 
 			for (PortMapping m : ENCODER_CHANNELS) {
-				ProgramInterface.encoderChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex);
+				long value = getFeedback(m.messageDataIndex);
+				ProgramInterface.encoderChannels[m.robotPortIndex] += value - lastEncoderValue[m.robotPortIndex];
+				lastEncoderValue[m.robotPortIndex] = value;
 			}
 			for (PortMapping m : DIGITAL_CHANNELS) {
 				ProgramInterface.digitalChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) > 0;
