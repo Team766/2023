@@ -39,3 +39,6 @@ hs_err_pid*
 # Build artifacts
 /bin/
 /build/
+
+# Settings which shouldn't be committed
+/.settings/org.eclipse.buildship.core.prefs
