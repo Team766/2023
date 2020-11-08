@@ -24,6 +24,14 @@ public class Scheduler implements Runnable {
 		m_runnables.clear();
 	}
 	
+	public LaunchedContext startAsync(RunnableWithContext func) {
+		return new Context(func);
+	}
+
+	public LaunchedContext startAsync(Runnable func) {
+		return new Context(func);
+	}
+
 	public void run() {
 		for (Runnable runnable : new LinkedList<Runnable>(m_runnables)) {
 			try {

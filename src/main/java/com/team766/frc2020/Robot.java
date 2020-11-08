@@ -2,7 +2,8 @@ package com.team766.frc2020;
 
 import com.team766.framework.AutonomousProcedureUtils;
 import com.team766.framework.Procedure;
-import com.team766.framework.Context;
+import com.team766.framework.Scheduler;
+import com.team766.framework.LaunchedContext;
 import com.team766.frc2020.mechanisms.*;
 import com.team766.hal.MyRobot;
 import com.team766.hal.RobotProvider;
@@ -22,8 +23,8 @@ public class Robot extends MyRobot {
 	
 	private WebServer m_webServer;
 	private AutonomousSelector m_autonSelector;
-	private Context m_autonomous;
-	private Context m_oiContext;
+	private LaunchedContext m_autonomous;
+	private LaunchedContext m_oiContext;
 
 	// Reset the autonomous routine if the robot is disabled for more than this
 	// number of seconds.
@@ -90,7 +91,7 @@ public class Robot extends MyRobot {
 		if (m_autonomous == null) {
 			Procedure autonomousProcedure = AutonomousProcedureUtils.getProcedure(
 				m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
-			m_autonomous = new Context(autonomousProcedure);
+			m_autonomous = Scheduler.getInstance().startAsync(autonomousProcedure);
 		}
 	}
 	
@@ -102,14 +103,14 @@ public class Robot extends MyRobot {
 		}
 		
 		if (m_oiContext == null) {
-			m_oiContext = new Context(m_oi);
+			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 		}
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		if (m_oiContext.isDone()) {
-			m_oiContext = new Context(m_oi);
+			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 			Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.WARNING, "Restarting OI context");
 		}
 	}

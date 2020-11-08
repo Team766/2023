@@ -9,7 +9,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public final class Context implements Runnable {
+public final class Context implements Runnable, LaunchedContext {
 	private static enum ControlOwner {
 		MAIN_THREAD,
 		SUBROUTINE,
@@ -48,14 +48,14 @@ public final class Context implements Runnable {
 		m_thread.start();
 		Scheduler.getInstance().add(this);
 	}
-	public Context(RunnableWithContext func) {
+	Context(RunnableWithContext func) {
 		this(func, null);
 	}
 
 	private Context(Runnable func, Context parentContext) {
 		this((context) -> func.run());
 	}
-	public Context(Runnable func) {
+	Context(Runnable func) {
 		this(func, null);
 	}
 	
@@ -153,13 +153,13 @@ public final class Context implements Runnable {
 		}
 	}
 	
-	public void waitFor(Context otherContext) {
+	public void waitFor(LaunchedContext otherContext) {
 		waitFor(otherContext::isDone);
 	}
 
-	public void waitFor(Context... otherContexts) {
-		Stream<Context> contextStream = Stream.of(otherContexts);
-		waitFor(() -> contextStream.allMatch(Context::isDone));
+	public void waitFor(LaunchedContext... otherContexts) {
+		Stream<LaunchedContext> contextStream = Stream.of(otherContexts);
+		waitFor(() -> contextStream.allMatch(LaunchedContext::isDone));
 	}
 
 	public void yield() {
@@ -172,11 +172,11 @@ public final class Context implements Runnable {
 		waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
 	}
 
-	public Context startAsync(RunnableWithContext func) {
+	public LaunchedContext startAsync(RunnableWithContext func) {
 		return new Context(func, this);
 	}
 
-	public Context startAsync(Runnable func) {
+	public LaunchedContext startAsync(Runnable func) {
 		return new Context(func, this);
 	}
 
