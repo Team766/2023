@@ -12,11 +12,9 @@ public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 	private boolean m_cachedHasValue;
 	private int m_cachedGeneration = -1;
 	
-	@SuppressWarnings("rawtypes")
-	private static HashMap<String, AbstractConfigValue> c_accessedValues = new HashMap<String, AbstractConfigValue>();
+	private static HashMap<String, AbstractConfigValue<?>> c_accessedValues = new HashMap<String, AbstractConfigValue<?>>();
 	
-	@SuppressWarnings("rawtypes")
-	public static Map<String, AbstractConfigValue> accessedValues() {
+	static Map<String, AbstractConfigValue<?>> accessedValues() {
 		return Collections.unmodifiableMap(c_accessedValues);
 	}
 	
@@ -30,7 +28,7 @@ public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 			m_cachedGeneration = ConfigFileReader.instance.getGeneration();
 			m_cachedHasValue = ConfigFileReader.instance.containsKey(m_key);
 			if (m_cachedHasValue) {
-				m_cachedValue = parseValue(ConfigFileReader.instance.getRawString(m_key));
+				m_cachedValue = parseJsonValue(ConfigFileReader.instance.getRawValue(m_key));
 			} else {
 				m_cachedValue = null;
 			}
@@ -52,11 +50,11 @@ public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 		return m_cachedValue;
 	}
 	
-	public abstract E parseValue(String configString);
+	protected abstract E parseJsonValue(Object configValue);
 	
 	@Override
 	public String toString() {
-		String str = ConfigFileReader.instance.getRawString(m_key);
+		String str = ConfigFileReader.instance.getRawValue(m_key).toString();
 		if (str == null) {
 			return "";
 		} else {

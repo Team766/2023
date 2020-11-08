@@ -69,16 +69,53 @@ public class WebServer {
 			};
 			server.createContext(page.getKey(), httpHandler);
 		}
+		addLineNumbersSvgHandler();
 		server.start();
 	}
 	
 	protected String buildPageHeader() {
-		String result = "<p>\n";
+		String result = "";
+		result += "<style>\n";
+		result += "textarea {\n";
+		result += "  background: url(/line_numbers.svg);\n";
+		result += "  background-attachment: local;\n";
+		result += "  background-repeat: no-repeat;\n";
+		result += "  padding-left: 45px;\n";
+		result += "  border-color:#ccc;\n";
+		result += "  line-height: 1.15em;\n";
+		result += "  font-size: 14px;\n";
+		result += "  font-family: monospace;\n";
+		result += "}\n";
+		result += "</style>\n";
+		result += "<p>\n";
 		for (Map.Entry<String, Handler> page : pages.entrySet()) {
 			result += String.format("<a href=\"%s\">%s</a><br>\n", page.getKey(), page.getValue().title());
 		}
 		result += "</p>\n";
 		return result;
+	}
+	
+	private void addLineNumbersSvgHandler() {
+		HttpHandler httpHandler = new HttpHandler() {
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				String response = "<?xml version=\"1.0\"?>\n";
+				response += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+				response += "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
+				response += "<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
+				for (int i = 1; i < 1000; ++i) {
+					response += "<tspan x=\"45px\" dy=\"1.143em\">" + i + ".</tspan>\n";
+				}
+				response += "</text>\n";
+				response += "</svg>";
+				exchange.getResponseHeaders().set("Content-Type", "image/svg+xml");
+				exchange.sendResponseHeaders(200, response.getBytes().length);
+				try (OutputStream os = exchange.getResponseBody()) {
+					os.write(response.getBytes());
+				}
+			}
+		};
+		server.createContext("/line_numbers.svg", httpHandler);
 	}
 	
 	public Map<String, Object> parseParams(HttpExchange exchange) throws IOException {

@@ -1,16 +1,40 @@
-logFilePath,sim_robot_logs
-drive.leftMotor,6
-drive.rightMotor,4
-drive.leftEncoder,0,1
-drive.leftEncoder.distancePerPulse,-0.0524
-drive.rightEncoder,2,3
-drive.rightEncoder.distancePerPulse,-0.0524
-drive.gyro,12
-
-intakeWheels,0
-intakeArm,0
-launch,1
-
-lineSensorLeft,2
-lineSensorCenter,3
-lineSensorRight,4
+{
+	"logFilePath": "sim_robot_logs",
+	"drive": {
+		"leftMotor": {
+			"port": 6
+		},
+		"rightMotor": {
+			"port": 4
+		},
+		"leftEncoder": {
+			"ports": [0, 1],
+			"distancePerPulse": -0.0524
+		},
+		"rightEncoder": {
+			"ports": [2, 3],
+			"distancePerPulse": -0.0524
+		},
+		"gyro": {
+			"port": 12
+		}
+	},
+	"intakeWheels": {
+		"port": 0
+	},
+	"intakeArm": {
+		"port": 0
+	},
+	"launch": {
+		"port": 1
+	},
+	"lineSensorLeft": {
+		"port": 2
+	},
+	"lineSensorCenter": {
+		"port": 3
+	},
+	"lineSensorRight": {
+		"port": 4
+	}
+}

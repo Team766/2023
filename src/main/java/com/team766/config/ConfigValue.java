@@ -1,15 +1,13 @@
 package com.team766.config;
 
-import java.util.Arrays;
-
 class DoubleConfigValue extends AbstractConfigValue<Double> {
 	protected DoubleConfigValue(String key) {
 		super(key);
 	}
 
 	@Override
-	public Double parseValue(String configString) {
-		return Double.valueOf(configString);
+	public Double parseJsonValue(Object configValue) {
+		return ((Number)configValue).doubleValue();
 	}
 }
 
@@ -19,30 +17,30 @@ class IntegerConfigValue extends AbstractConfigValue<Integer> {
 	}
 
 	@Override
-	public Integer parseValue(String configString) {
-		return Integer.valueOf(configString);
+	public Integer parseJsonValue(Object configValue) {
+		return ((Number)configValue).intValue();
 	}
 }
 
 class DoubleConfigMultiValue extends AbstractConfigMultiValue<Double> {
 	protected DoubleConfigMultiValue(String key) {
-		super(key);
+		super(key, Double.class);
 	}
 
 	@Override
-	public Double[] parseValue(String configString) {
-		return (Double[]) Arrays.stream(splitConfigString(configString)).map(Double::valueOf).toArray((size) -> new Double[size]);
+	public Double parseJsonElement(Object configElement) {
+		return ((Number)configElement).doubleValue();
 	}
 }
 
 class IntegerConfigMultiValue extends AbstractConfigMultiValue<Integer> {
 	protected IntegerConfigMultiValue(String key) {
-		super(key);
+		super(key, Integer.class);
 	}
 
 	@Override
-	public Integer[] parseValue(String configString) {
-		return (Integer[]) Arrays.stream(splitConfigString(configString)).map(Integer::valueOf).toArray((size) -> new Integer[size]);
+	public Integer parseJsonElement(Object configElement) {
+		return ((Number)configElement).intValue();
 	}
 }
 
@@ -52,8 +50,8 @@ class BooleanConfigValue extends AbstractConfigValue<Boolean> {
 	}
 
 	@Override
-	public Boolean parseValue(String configString) {
-		return Boolean.valueOf(configString);
+	public Boolean parseJsonValue(Object configValue) {
+		return (Boolean)configValue;
 	}
 }
 
@@ -63,7 +61,7 @@ class StringConfigValue extends AbstractConfigValue<String> {
 	}
 
 	@Override
-	public String parseValue(String configString) {
-		return configString;
+	public String parseJsonValue(Object configValue) {
+		return (String)configValue;
 	}
 }

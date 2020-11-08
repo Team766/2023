@@ -13,7 +13,7 @@ public class Logger {
 	private static final int MAX_NUM_RECENT_ENTRIES = 100;
 	
 	private static EnumMap<Category, Logger> m_loggers = new EnumMap<Category, Logger>(Category.class);
-	private static LogWriter m_logWriter;
+	private static LogWriter m_logWriter = null;
 	private CircularBuffer<RawLogEntry> m_recentEntries = new CircularBuffer<RawLogEntry>(MAX_NUM_RECENT_ENTRIES);
 	
 	static {
@@ -27,6 +27,7 @@ public class Logger {
 			get(Category.CONFIGURATION).logRaw(Severity.INFO, "Logging to " + logFilePath);
 		} catch (Exception e) {
 			e.printStackTrace();
+			LoggerExceptionUtils.logException(e);
 		}
 	}
 	
@@ -46,11 +47,15 @@ public class Logger {
 	
 	public void log(Severity severity, String format, Object... args) {
 		m_recentEntries.add(new RawLogEntry(severity, new Date(), m_category, String.format(format, args)));
-		m_logWriter.log(severity, m_category, format, args);
+		if (m_logWriter != null) {
+			m_logWriter.log(severity, m_category, format, args);
+		}
 	}
 	
 	public void logRaw(Severity severity, String message) {
 		m_recentEntries.add(new RawLogEntry(severity, new Date(), m_category, message));
-		m_logWriter.logRaw(severity, m_category, message);
+		if (m_logWriter != null) {
+			m_logWriter.logRaw(severity, m_category, message);
+		}
 	}
 }
