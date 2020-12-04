@@ -25,7 +25,7 @@ public class AutonomousProcedureUtils {
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
-		} catch (NoSuchFieldException | SecurityException ex) {
+		} catch (Exception ex) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.ERROR, "Exception while selecting autonomous mode: " + ex);
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);

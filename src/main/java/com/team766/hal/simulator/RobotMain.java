@@ -86,7 +86,12 @@ public class RobotMain {
 	}
 	
 	public void run(){
-		simulator.run();
+		try {
+			simulator.run();
+		} catch (Exception exc) {
+			exc.printStackTrace();
+			LoggerExceptionUtils.logException(exc);
+		}
 	}
 	
 	public static void main(String[] args) {
