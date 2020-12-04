@@ -55,7 +55,8 @@ public class VrConnector implements Runnable {
 
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
 		new PortMapping(10, 0), // Left encoder
-		new PortMapping(11, 2)  // Right encoder
+		new PortMapping(11, 2), // Right encoder
+		new PortMapping(13, 4)  // Mechanism encoder
 	);
 	private static final int GYRO_CHANNEL = 15;
 	private static final int GYRO_RATE_CHANNEL = 16;
