@@ -9,11 +9,11 @@ public abstract class Loggable {
 
 	public abstract String getName();
 
-	protected void logRaw(String message) {
-		logRaw(Severity.INFO, message);
+	protected void log(String message) {
+		log(Severity.INFO, message);
 	}
 
-	protected void logRaw(Severity severity, String message) {
+	protected void log(Severity severity, String message) {
 		Logger.get(loggerCategory).logRaw(severity, getName() + ": " + message);
 	}
 	
@@ -22,6 +22,6 @@ public abstract class Loggable {
 	}
 
 	protected void log(Severity severity, String format, Object... args) {
-		Logger.get(loggerCategory).log(severity, getName() + ": " + format, args);
+		Logger.get(loggerCategory).logData(severity, getName() + ": " + format, args);
 	}
 }

@@ -19,7 +19,7 @@ public class CameraInterface implements com.team766.hal.CameraInterface {
 		try{
 			CameraServer.getInstance().startAutomaticCapture(VideoSource.enumerateSources()[0]);
 		} catch(Exception e){
-			Logger.get(Category.CAMERA).log(Severity.ERROR, e.toString());
+			Logger.get(Category.CAMERA).logRaw(Severity.ERROR, e.toString());
 		}
 	}
 

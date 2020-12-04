@@ -45,7 +45,7 @@ public class Logger {
 		return Collections.unmodifiableCollection(m_recentEntries);
 	}
 	
-	public void log(Severity severity, String format, Object... args) {
+	public void logData(Severity severity, String format, Object... args) {
 		m_recentEntries.add(new RawLogEntry(severity, new Date(), m_category, String.format(format, args)));
 		if (m_logWriter != null) {
 			m_logWriter.log(severity, m_category, format, args);

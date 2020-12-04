@@ -57,7 +57,7 @@ public class CANTalonSpeedController extends WPI_TalonSRX implements CANSpeedCon
 			break;
 		}
 		if (ctre_mode == null) {
-			Logger.get(Category.HAL).log(
+			Logger.get(Category.HAL).logRaw(
 					Severity.ERROR,
 					"CAN ControlMode is not translatable: " + mode);
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;

@@ -28,7 +28,7 @@ public class Relay extends edu.wpi.first.wpilibj.Relay implements RelayOutput {
 			break;
 		}
 		if (wpi_value == null) {
-			Logger.get(Category.HAL).log(
+			Logger.get(Category.HAL).logRaw(
 					Severity.ERROR,
 					"Relay value is not translatable: " + value);
 			wpi_value = edu.wpi.first.wpilibj.Relay.Value.kOff;
