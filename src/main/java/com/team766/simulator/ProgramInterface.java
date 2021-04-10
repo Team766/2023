@@ -62,6 +62,14 @@ public class ProgramInterface {
 	}
 	
 	public static final GyroCommunication gyro = new GyroCommunication();
+
+	public static class RobotPosition {
+		public double x;
+		public double y;
+		public double heading;
+	}
+
+	public static final RobotPosition robotPosition = new RobotPosition();
 	
 	public static final Joystick[] joystickChannels =
 			initializeArray(4, Joystick.class);

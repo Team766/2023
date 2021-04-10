@@ -25,6 +25,7 @@ public abstract class RobotProvider {
 	protected DigitalInputReader[] digInputs = new DigitalInputReader[8];
 	protected AnalogInputReader[] angInputs = new AnalogInputReader[5];
 	protected RelayOutput[] relays = new RelayOutput[5];
+	protected PositionReader positionSensor = null;
 	
 	//HAL
 	public abstract SpeedController getMotor(int index);
@@ -44,6 +45,8 @@ public abstract class RobotProvider {
 	public abstract GyroReader getGyro(int index);
 	
 	public abstract CameraReader getCamera(String id, String value);
+
+	public abstract PositionReader getPositionSensor();
 
 	public static TimeProviderI getTimeProvider(){
 		return () -> instance.getClock().getTime();

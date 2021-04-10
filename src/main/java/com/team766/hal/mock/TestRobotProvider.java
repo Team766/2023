@@ -9,6 +9,7 @@ import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
+import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
@@ -98,6 +99,13 @@ public class TestRobotProvider extends RobotProvider{
 		if(relays[index] == null)
 			relays[index] = new Relay(index);
 		return relays[index];
+	}
+
+	@Override
+	public PositionReader getPositionSensor() {
+		if (positionSensor == null)
+			positionSensor = new PositionSensor();
+		return positionSensor;
 	}
 
 	@Override

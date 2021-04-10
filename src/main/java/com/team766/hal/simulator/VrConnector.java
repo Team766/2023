@@ -53,6 +53,9 @@ public class VrConnector implements Runnable {
     	2, ProgramInterface.RobotMode.TELEOP
 	);
 
+	private static final int ROBOT_X_CHANNEL = 8;
+	private static final int ROBOT_Y_CHANNEL = 9;
+
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
 		new PortMapping(10, 0), // Left encoder
 		new PortMapping(11, 2), // Right encoder
@@ -165,12 +168,16 @@ public class VrConnector implements Runnable {
 
 			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
 
-			double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
+			final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
 			if (Double.isNaN(lastGyroValue)) {
 				lastGyroValue = gyroValue;
 			}
 			ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
 			lastGyroValue = gyroValue;
+
+			ProgramInterface.robotPosition.x = getFeedback(ROBOT_X_CHANNEL) / 1000.0;
+			ProgramInterface.robotPosition.y = getFeedback(ROBOT_Y_CHANNEL) / 1000.0;
+			ProgramInterface.robotPosition.heading = gyroValue;
 
 			ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
 

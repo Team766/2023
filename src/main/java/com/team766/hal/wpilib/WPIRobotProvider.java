@@ -9,10 +9,16 @@ import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
+import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
+import com.team766.hal.mock.PositionSensor;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -111,7 +117,19 @@ public class WPIRobotProvider extends RobotProvider {
 			relays[index] = new Relay(index);
 		return relays[index];
 	}
-	
+
+	@Override
+	public PositionReader getPositionSensor() {
+		if (positionSensor == null) {
+			positionSensor = new PositionSensor();
+			Logger.get(Category.CONFIGURATION).logData(
+				Severity.ERROR,
+				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
+			);
+		}
+		return null;
+	}
+
 	@Override
 	public Clock getClock() {
 		return SystemClock.instance;
