@@ -1,5 +1,6 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
+    "java.server.launchMode": "Standard",
     "files.exclude": {
         "**/.classpath": true,
         "**/.project": true,
