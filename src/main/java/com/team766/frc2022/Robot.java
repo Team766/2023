@@ -1,10 +1,10 @@
-package com.team766.frc2020;
+package com.team766.frc2022;
 
 import com.team766.framework.AutonomousProcedureUtils;
 import com.team766.framework.Procedure;
 import com.team766.framework.Scheduler;
 import com.team766.framework.LaunchedContext;
-import com.team766.frc2020.mechanisms.*;
+import com.team766.frc2022.mechanisms.*;
 import com.team766.hal.MyRobot;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;

@@ -106,4 +106,14 @@ public class CANVictorSpeedController extends WPI_VictorSPX implements CANSpeedC
 		super.config_kF(slotIdx, value, timeoutMs);
 		return ErrorCode.OK;
 	}
+
+	@Override
+	public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms) {
+		return super.configMotionCruiseVelocity(sensorUnitsPer100ms);
+	}
+
+	@Override
+	public ErrorCode configMotionAcceleration(int sensorunitsPer100msPerSec) {
+		return super.configMotionAcceleration(sensorunitsPer100msPerSec);
+	}
 }
