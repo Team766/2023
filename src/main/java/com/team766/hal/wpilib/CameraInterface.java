@@ -1,7 +1,7 @@
 package com.team766.hal.wpilib;
 
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.VideoSource;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 
 import org.opencv.core.Mat;
@@ -17,7 +17,7 @@ public class CameraInterface implements com.team766.hal.CameraInterface {
 	@Override
 	public void startAutomaticCapture() {
 		try{
-			CameraServer.getInstance().startAutomaticCapture(VideoSource.enumerateSources()[0]);
+			CameraServer.startAutomaticCapture(VideoSource.enumerateSources()[0]);
 		} catch(Exception e){
 			Logger.get(Category.CAMERA).logRaw(Severity.ERROR, e.toString());
 		}
@@ -25,13 +25,13 @@ public class CameraInterface implements com.team766.hal.CameraInterface {
 
 	@Override
 	public void getFrame(Mat img) {
-		CameraServer.getInstance().getVideo().grabFrame(img);
+		CameraServer.getVideo().grabFrame(img);
 	}
 
 	@Override
 	public void putFrame(Mat img){
 		if(vidSource == null){
-			vidSource = CameraServer.getInstance().putVideo("VisionTracking", img.width(), img.height());
+			vidSource = CameraServer.putVideo("VisionTracking", img.width(), img.height());
 		}
 
 		vidSource.putFrame(img);
