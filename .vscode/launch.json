@@ -16,6 +16,13 @@
       "name": "WPILib roboRIO Debug",
       "request": "launch",
       "desktop": false,
+    },
+    {
+      "type": "java",
+      "name": "Start 3d simulation mode",
+      "request": "launch",
+      "mainClass": "com.team766.hal.simulator.RobotMain",
+      "args": ["-vr_connector"]
     }
   ]
 }
