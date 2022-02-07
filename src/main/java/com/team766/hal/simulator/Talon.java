@@ -1,5 +1,7 @@
 package com.team766.hal.simulator;
 
+import static com.team766.math.Math.clamp;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -21,8 +23,7 @@ public class Talon implements CANSpeedController {
 	
 	@Override
 	public void set(double speed) {
-		// TODO: clamp to -1..1 when in PercentOutput mode
-		channel.command.output = speed;
+		set(ControlMode.PercentOutput, speed);
 	}
 
 	@Override
@@ -59,6 +60,9 @@ public class Talon implements CANSpeedController {
 
 	@Override
 	public void set(ControlMode mode, double value) {
+		if (mode == ControlMode.PercentOutput) {
+			value = clamp(value, -1.0, 1.0);
+		}
 		channel.command.output = value;
 		channel.command.controlMode = 
 				ProgramInterface.CANSpeedControllerCommand.ControlMode.valueOf(mode.name());
