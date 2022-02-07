@@ -27,6 +27,21 @@ public class VrConnector implements Runnable {
 		}
 	}
 
+	private static class CANPortMapping {
+		public final int canId;
+		public final int motorCommandMessageDataIndex;
+		public final int sensorFeedbackMessageDataIndex;
+
+		public CANPortMapping(
+				int canId,
+				int motorCommandMessageDataIndex,
+				int sensorFeedbackMessageDataIndex) {
+			this.canId = canId;
+			this.motorCommandMessageDataIndex = motorCommandMessageDataIndex;
+			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex;
+		}
+	}
+
 	/// Command indexes
 
 	private static final int MAX_COMMANDS = 64;
@@ -34,15 +49,21 @@ public class VrConnector implements Runnable {
 	private static final int RESET_SIM_CHANNEL = 0;
 
 	private static final List<PortMapping> PWM_CHANNELS = Arrays.asList(
-		new PortMapping(10, 6), // Left motor
-		new PortMapping(11, 4), // Right motor
-		new PortMapping(12, 0)  // Intake
+		//new PortMapping(10, 6), // Left motor
+		//new PortMapping(11, 4), // Right motor
+		//new PortMapping(12, 0)  // Intake
 	);
 	private static final List<PortMapping> SOLENOID_CHANNELS = Arrays.asList(
 		new PortMapping(15, 0), // Intake arm
 		new PortMapping(13, 1)  // Catapult launch
 	);
 	private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
+
+	private static final List<CANPortMapping> CAN_MOTOR_CHANNELS = Arrays.asList(
+		new CANPortMapping(6, 10, 10),  // Left motor
+		new CANPortMapping(4, 11, 11),  // Right motor
+		new CANPortMapping(10, 12, 13)  // Intake
+	);
 
 	/// Feedback indexes
 
@@ -94,7 +115,8 @@ public class VrConnector implements Runnable {
 	ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
 
 	private double lastGyroValue = Double.NaN;
-	private long[] lastEncoderValue = new long[12];
+	private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
+	private long[] lastCANSensorValue = new long[ProgramInterface.canSpeedControllerChannels.length];
 
 	private int getFeedback(int index) {
 		return feedback.getInt(index * 4);
@@ -144,6 +166,11 @@ public class VrConnector implements Runnable {
 		for (PortMapping m : RELAY_CHANNELS) {
 			putCommandTristate(m.messageDataIndex, ProgramInterface.relayChannels[m.robotPortIndex]);
 		}
+		for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
+			putCommandFloat(
+				m.motorCommandMessageDataIndex,
+				ProgramInterface.canSpeedControllerChannels[m.canId].command.output);
+		}
 
 		selector.selectedKeys().clear();
 		selector.selectNow();
@@ -167,6 +194,7 @@ public class VrConnector implements Runnable {
 		}
 
 		if (newData) {
+			double prevSimTime = ProgramInterface.simulationTime;
 			// Time is sent in milliseconds
 			ProgramInterface.simulationTime = getFeedback(TIMESTAMP_CHANNEL) * 0.001;
 
@@ -191,6 +219,18 @@ public class VrConnector implements Runnable {
 				long value = getFeedback(m.messageDataIndex);
 				ProgramInterface.encoderChannels[m.robotPortIndex] += value - lastEncoderValue[m.robotPortIndex];
 				lastEncoderValue[m.robotPortIndex] = value;
+			}
+			for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
+				var status = ProgramInterface.canSpeedControllerChannels[m.canId].status;
+
+				long value = getFeedback(m.sensorFeedbackMessageDataIndex);
+				long delta = value - lastCANSensorValue[m.canId];
+				lastCANSensorValue[m.canId] = value;
+
+				status.sensorPosition += delta;
+				if (ProgramInterface.simulationTime > prevSimTime) {
+					status.sensorVelocity = delta / (ProgramInterface.simulationTime - prevSimTime);
+				}
 			}
 			for (PortMapping m : DIGITAL_CHANNELS) {
 				ProgramInterface.digitalChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) > 0;

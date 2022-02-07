@@ -2,18 +2,12 @@
 	"logFilePath": "sim_robot_logs",
 	"drive": {
 		"leftMotor": {
-			"port": 6
+			"deviceId": 6,
+			"sensorScale": -0.0524
 		},
 		"rightMotor": {
-			"port": 4
-		},
-		"leftEncoder": {
-			"ports": [0, 1],
-			"distancePerPulse": -0.0524
-		},
-		"rightEncoder": {
-			"ports": [2, 3],
-			"distancePerPulse": -0.0524
+			"deviceId": 4,
+			"sensorScale": -0.0524
 		},
 		"gyro": {
 			"port": 12
@@ -27,6 +21,12 @@
 	},
 	"launch": {
 		"port": 1
+	},
+	"climber": {
+		"elevator": {
+			"deviceId": 10
+		},
+		"arms": {"port": 0}
 	},
 	"lineSensorLeft": {
 		"port": 2
