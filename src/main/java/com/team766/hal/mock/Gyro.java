@@ -6,6 +6,8 @@ public class Gyro implements GyroReader{
 
 	private double angle = 0;
 	private double rate = 0;
+	private double pitch = 0;
+	private double roll = 0;
 	
 	public void calibrate() {
 		reset();
@@ -22,13 +24,29 @@ public class Gyro implements GyroReader{
 	public double getRate() {
 		return rate;
 	}
-	
-	public void setAngle(double ang){
-		angle = ang;
+
+	public double getPitch() {
+		return pitch;
+	}
+
+	public double getRoll() {
+		return roll;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+
+	public void setRate(double rate) {
+		this.rate = rate;
 	}
 	
-	public void setRate(double rat){
-		rate = rat;
+	public void setPitch(double pitch) {
+		this.pitch = pitch;
+	}
+	
+	public void setRoll(double roll) {
+		this.roll = roll;
 	}
 
 }

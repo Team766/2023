@@ -14,4 +14,12 @@ public class ADXRS450_Gyro extends edu.wpi.first.wpilibj.ADXRS450_Gyro implement
 			System.out.println("Gyro is connected!");
 		}
 	}
+
+	public double getPitch() {
+		return 0.0;
+	}
+
+	public double getRoll() {
+		return 0.0;
+	}
 }

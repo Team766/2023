@@ -21,4 +21,12 @@ public class Gyro implements GyroReader{
 		return ProgramInterface.gyro.rate;
 	}
 
+	public double getPitch() {
+		return ProgramInterface.gyro.pitch;
+	}
+
+	public double getRoll() {
+		return ProgramInterface.gyro.roll;
+	}
+
 }

@@ -57,8 +57,10 @@ public class ProgramInterface {
 	public static final long[] encoderChannels = new long[20];
 	
 	public static class GyroCommunication {
-		public double angle;
-		public double rate;
+		public double angle; // Yaw angle (accumulative)
+		public double rate;  // Yaw rate
+		public double pitch;
+		public double roll;
 	}
 	
 	public static final GyroCommunication gyro = new GyroCommunication();
