@@ -160,3 +160,6 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+
+# The list of available sim robots is environment-specific, so it shouldn't be committed
+/sim_robots.lst
