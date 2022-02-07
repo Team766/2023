@@ -127,7 +127,7 @@ public class WPIRobotProvider extends RobotProvider {
 				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
 			);
 		}
-		return null;
+		return positionSensor;
 	}
 
 	@Override
