@@ -4,18 +4,14 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.io.OutputStream;
+import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.team766.logging.Category;
-import com.team766.logging.LogReader;
-import com.team766.logging.LogWriter;
-import com.team766.logging.Severity;
-
 public class LoggerTest {
 	@Test
-	public void test() throws IOException {
+	public void test() throws IOException, InterruptedException {
 		TemporaryFolder workingDir = new TemporaryFolder();
 		workingDir.create();
 		try {
@@ -36,5 +32,29 @@ public class LoggerTest {
 		} finally {
 			workingDir.delete();
 		}
+	}
+
+	@Test
+	public void stressTest() throws IOException, InterruptedException {
+		final long NUM_THREADS = 8;
+		final long RUN_TIME_SECONDS = 3;
+
+		LogWriter writer = new LogWriter(OutputStream.nullOutputStream());
+		ArrayList<Thread> threads = new ArrayList<Thread>();
+		for (int j = 0; j < NUM_THREADS; ++j) {
+			Thread t = new Thread(() ->{
+				long end = System.currentTimeMillis() + RUN_TIME_SECONDS * 1000;
+				while (System.currentTimeMillis() < end) {
+					writer.log(Severity.ERROR, Category.AUTONOMOUS, "num: %d str: %s", 42, "my string");
+					writer.logRaw(Severity.WARNING, Category.AUTONOMOUS, "Test raw log");
+				}
+			});
+			t.start();
+			threads.add(t);
+		}
+		for (Thread t : threads) {
+			t.join();
+		}
+		writer.close();
 	}
 }

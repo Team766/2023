@@ -3,6 +3,7 @@ package com.team766.logging;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +20,16 @@ public class LogWriter {
 			e.printStackTrace();
 			for (LogWriter log : loggers) {
 				log.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, e.toString());
-				log.close();
+				while (true) {
+					try {
+						log.close();
+						break;
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
 		}
 	}
@@ -35,14 +45,18 @@ public class LogWriter {
 	
 	private HashMap<String, Integer> m_formatStringIndices = new HashMap<String, Integer>();
 	
-	private FileOutputStream m_fileStream;
+	private OutputStream m_fileStream;
 	private ObjectOutputStream m_objectStream;
 	
 	private Severity m_minSeverity = Severity.INFO;
 	
 	public LogWriter(String filename) throws IOException {
+		this(new FileOutputStream(filename));
+	}
+
+	public LogWriter(OutputStream fileStream) throws IOException {
 		m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
-		m_fileStream = new FileOutputStream(filename);
+		m_fileStream = fileStream;
 		m_objectStream = new ObjectOutputStream(m_fileStream);
 		m_workerThread = new Thread(new Runnable() {
 			public void run() {
@@ -64,31 +78,18 @@ public class LogWriter {
 		m_workerThread.start();
 	}
 
-	public void close() {
+	public void close() throws IOException, InterruptedException {
 		m_running = false;
 		m_entriesQueue.add(new CloseLogPseudoEntry());
-		try {
-			m_entriesQueue.waitForEmpty();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		try {
-			m_objectStream.flush();
-			m_fileStream.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			m_workerThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		try {
-			m_objectStream.close();
-			m_fileStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		m_entriesQueue.waitForEmpty();
+		m_workerThread.join();
+
+		m_objectStream.flush();
+		m_fileStream.flush();
+
+		m_objectStream.close();
+		m_fileStream.close();
 	}
 	
 	public void setSeverityFilter(Severity threshold) {
