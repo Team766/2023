@@ -3,7 +3,7 @@ package com.team766.logging;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 
-public class CloseLogPseudoEntry implements LogEntry {
+public class CloseLogPseudoEntry extends LogEntry {
 	@Override
 	public void write(ObjectOutputStream objectStream) {
 		throw new UnsupportedOperationException("CloseLogPseudoEntry should not be written");

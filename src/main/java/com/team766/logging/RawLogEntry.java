@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 
-public class RawLogEntry implements LogEntry {
+public class RawLogEntry extends LogEntry {
 	public static RawLogEntry deserialize(ObjectInputStream objectStream) throws IOException {
 		Severity severity = Severity.fromInteger(objectStream.readByte());
 		Category category = Category.fromInteger(objectStream.readByte());

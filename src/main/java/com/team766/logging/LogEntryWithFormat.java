@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 
-public class LogEntryWithFormat implements LogEntry {
+public class LogEntryWithFormat extends LogEntry {
 	public static LogEntryWithFormat deserialize(ObjectInputStream objectStream) throws IOException {
 		Severity severity = Severity.fromInteger(objectStream.readByte());
 		Category category = Category.fromInteger(objectStream.readByte());
