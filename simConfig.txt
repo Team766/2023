@@ -36,5 +36,19 @@
 	},
 	"lineSensorRight": {
 		"port": 4
+	},
+
+	"intake": {
+		"extend": {"port": 0},
+		"frontWheels": {"deviceId": 10},
+		"topWheels": {"deviceId": 12}
+	},
+	"shooter": {
+		"motor": {"deviceId": 14}
+	},
+	"storage": {
+		"proximitySensor": {"port": 2},
+		"left": {"deviceId": 6},
+		"right": {"deviceId": 4}
 	}
 }
