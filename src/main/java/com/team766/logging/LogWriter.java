@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +21,18 @@ public class LogWriter {
 		public void uncaughtException(Thread t, Throwable e) {
 			e.printStackTrace();
 			for (LogWriter log : loggers) {
-				log.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, e.toString());
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				pw.print("Uncaught exception: ");
+				e.printStackTrace(pw);
+				pw.flush();
+				String str = sw.toString();
+				try {
+					log.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, str);
+				} catch (Exception exc) {
+					exc.printStackTrace();
+				}
+
 				while (true) {
 					try {
 						log.close();
