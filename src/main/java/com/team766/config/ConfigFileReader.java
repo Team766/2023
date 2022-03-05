@@ -50,7 +50,7 @@ public class ConfigFileReader {
 		} catch (Exception e) {
 			System.err.println("Failed to load config file!");
 			e.printStackTrace();
-			LoggerExceptionUtils.logException(e);
+			LoggerExceptionUtils.logException(new IOException("Failed to load config file!", e));
 		}
 	}
 

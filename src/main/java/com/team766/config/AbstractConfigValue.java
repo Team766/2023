@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 
 public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 	protected String m_key;
@@ -28,7 +31,13 @@ public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 			m_cachedGeneration = ConfigFileReader.instance.getGeneration();
 			m_cachedHasValue = ConfigFileReader.instance.containsKey(m_key);
 			if (m_cachedHasValue) {
-				m_cachedValue = parseJsonValue(ConfigFileReader.instance.getRawValue(m_key));
+				try {
+					m_cachedValue = parseJsonValue(ConfigFileReader.instance.getRawValue(m_key));
+				} catch (Exception ex) {
+					Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, "Failed to parse " + m_key + " from the config file: " + ex);
+					m_cachedValue = null;
+					m_cachedHasValue = false;
+				}
 			} else {
 				m_cachedValue = null;
 			}
