@@ -47,7 +47,6 @@ public class RobotMain extends TimedRobot {
 		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
-			throw e;
 		}
 	}
 
