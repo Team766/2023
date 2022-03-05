@@ -12,6 +12,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import com.team766.web.AutonomousSelector;
 import com.team766.web.ConfigUI;
+import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.WebServer;
 
@@ -32,11 +33,12 @@ public class Robot extends MyRobot {
 	private double m_disabledModeStartTime;
 
 	public Robot() {
-		m_webServer = new WebServer();
-		m_webServer.addHandler("/config", new ConfigUI());
-		m_webServer.addHandler("/logs", new LogViewer());
 		m_autonSelector = new AutonomousSelector(AutonomousModes.class);
-		m_webServer.addHandler("/values", m_autonSelector);
+		m_webServer = new WebServer();
+		m_webServer.addHandler(new DriverInterface(m_autonSelector));
+		m_webServer.addHandler(new ConfigUI());
+		m_webServer.addHandler(new LogViewer());
+		m_webServer.addHandler(m_autonSelector);
 		m_webServer.start();
 	}
 

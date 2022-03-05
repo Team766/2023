@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,15 +31,41 @@ import com.sun.net.httpserver.HttpServer;
 public class WebServer {
 	
 	public interface Handler {
+		String endpoint();
+		default boolean showInMenu() { return true; }
 		String title();
 		String handle(Map<String, Object> params);
 	}
 
 	private HttpServer server;
-	private HashMap<String, Handler> pages = new HashMap<>();
+	private LinkedHashMap<String, Handler> pages = new LinkedHashMap<String, Handler>();
+
+	public WebServer() {
+		addHandler(new Handler() {
+			@Override
+			public String endpoint() {
+				return "/";
+			}
+
+			@Override
+			public String title() {
+				return "Menu";
+			}
+
+			@Override
+			public boolean showInMenu() {
+				return false;
+			}
+
+			@Override
+			public String handle(Map<String, Object> params) {
+				return "";
+			}
+		});
+	}
 	
-	public void addHandler(String endpoint, Handler handler) {
-		pages.put(endpoint, handler);
+	public void addHandler(Handler handler) {
+		pages.put(handler.endpoint(), handler);
 	}
 
 	public void start(){
@@ -89,6 +116,7 @@ public class WebServer {
 		result += "</style>\n";
 		result += "<p>\n";
 		for (Map.Entry<String, Handler> page : pages.entrySet()) {
+			if (page.getValue().showInMenu()) 
 			result += String.format("<a href=\"%s\">%s</a><br>\n", page.getKey(), page.getValue().title());
 		}
 		result += "</p>\n";

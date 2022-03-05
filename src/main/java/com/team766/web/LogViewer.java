@@ -2,37 +2,41 @@ package com.team766.web;
 
 import java.util.Arrays;
 import java.util.Map;
-
+import java.util.stream.Stream;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.RawLogEntry;
+import com.team766.logging.Severity;
 
 public class LogViewer implements WebServer.Handler {
-	@Override
-	public String handle(Map<String, Object> params) {
-		Category category = Category.JAVA_EXCEPTION;
-		String categoryName = (String)params.get("category");
-		if (categoryName != null) {
-			category = Enum.valueOf(Category.class, categoryName);
-		}
-		
-		Logger logger = Logger.get(category);
-		
-		String r = String.join("\n", new String[]{
-			"<h1>Log: " + category.toString() + "</h1>",
-			"<form><p>",
-			HtmlElements.buildDropDown("category", category.name(), Arrays.stream(Category.values()).map(Category::name).toArray(String[]::new)),
-			"<input type=\"submit\" value=\"View\">",
-			"</p></form>",
-			"<table id=\"log-entries\" border=\"1\">"
-		});
-		for (RawLogEntry entry : logger.recentEntries()) {
+	private static final String ENDPOINT = "/logs";
+	private static final String ALL_ERRORS_NAME = "All Errors";
+
+	private static String makeLogEntriesTable(Iterable<RawLogEntry> entries) {
+		String r = "<table id=\"log-entries\" border=\"1\">\n";
+		for (RawLogEntry entry : entries) {
 			r += String.format(
 				"<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
 				entry.getCategory(), entry.getTime(), entry.getSeverity(), entry.format());
 		}
-		r += String.join("\n", new String[]{
-			"</table>",
+		r += "</table>";
+		return r;
+	}
+
+	private static String makePage(String categoryName, Iterable<RawLogEntry> entries) {
+		return String.join("\n", new String[]{
+			"<h1>Log: " + categoryName + "</h1>",
+			"<form action=\"" + ENDPOINT + "\"><p>",
+			HtmlElements.buildDropDown(
+				"category",
+				categoryName,
+				Stream.concat(
+					Stream.of(ALL_ERRORS_NAME),
+					Arrays.stream(Category.values()).map(Category::name)
+				).toArray(String[]::new)),
+			"<input type=\"submit\" value=\"View\">",
+			"</p></form>",
+			makeLogEntriesTable(entries),
 			"<input type=\"button\" onclick=\"window.location.reload();\" value=\"Refresh\" />",
 			"<input type=\"checkbox\" id=\"refresh-enabled\" checked=\"checked\" />",
 			"<label for=\"refresh-enabled\">Enable automatic refresh</label>",
@@ -66,8 +70,31 @@ public class LogViewer implements WebServer.Handler {
 			"  }, 1000);",
 			"</script>",
 		});
-		
-		return r;
+	}
+
+	static String makeAllErrorsPage() {
+		return makePage(
+			ALL_ERRORS_NAME,
+			Arrays.stream(Category.values())
+				.flatMap(category -> Logger.get(category).recentEntries().stream())
+				.filter(entry -> entry.getSeverity() == Severity.ERROR)
+				::iterator);
+	}
+
+	@Override
+	public String endpoint() {
+		return ENDPOINT;
+	}
+
+	@Override
+	public String handle(Map<String, Object> params) {
+		String categoryName = (String)params.get("category");
+		if (categoryName == null || categoryName.equals(ALL_ERRORS_NAME)) {
+			return makeAllErrorsPage();
+		} else {
+			Category category = Enum.valueOf(Category.class, categoryName);
+			return makePage(category.name(), Logger.get(category).recentEntries());
+		}
 	}
 
 	@Override

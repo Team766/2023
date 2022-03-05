@@ -7,6 +7,11 @@ import com.team766.config.ConfigValueParseException;
 
 public class ConfigUI implements WebServer.Handler {
 	@Override
+	public String endpoint() {
+		return "/config";
+	}
+
+	@Override
 	public String handle(Map<String, Object> params) {
 		String r = "<h1>Configuration</h1>";
 

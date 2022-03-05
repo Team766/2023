@@ -43,6 +43,11 @@ public class AutonomousSelector implements WebServer.Handler {
 			return null;
 		}
 	}
+
+	@Override
+	public String endpoint() {
+		return "/values";
+	}
 	
 	@Override
 	public String handle(Map<String, Object> params) {
