@@ -1,6 +1,5 @@
 package com.team766.hal;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -91,58 +90,58 @@ public class CANSpeedControllerWithSensorScale implements CANSpeedController {
     }
 
     @Override
-	public ErrorCode config_kP(int slotIdx, double value, int timeoutMs) {
-        return delegate.config_kP(slotIdx, value / scale, timeoutMs);
+	public void config_kP(int slotIdx, double value) {
+        delegate.config_kP(slotIdx, value / scale);
     }
 
     @Override
-	public ErrorCode config_kI(int slotIdx, double value, int timeoutMs) {
-        return delegate.config_kI(slotIdx, value / scale, timeoutMs);
+	public void config_kI(int slotIdx, double value) {
+        delegate.config_kI(slotIdx, value / scale);
     }
 
     @Override
-	public ErrorCode config_kD(int slotIdx, double value, int timeoutMs) {
-        return delegate.config_kD(slotIdx, value / scale, timeoutMs);
+	public void config_kD(int slotIdx, double value) {
+        delegate.config_kD(slotIdx, value / scale);
     }
 
     @Override
-	public ErrorCode config_kF(int slotIdx, double value, int timeoutMs) {
-        return delegate.config_kF(slotIdx, value / scale, timeoutMs);
+	public void config_kF(int slotIdx, double value) {
+        delegate.config_kF(slotIdx, value / scale);
     }
 
     @Override
-	public ErrorCode configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-        return delegate.configSelectedFeedbackSensor(feedbackDevice);
+	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+        delegate.configSelectedFeedbackSensor(feedbackDevice);
     }
 
     @Override
-	public ErrorCode configNominalOutputForward(double PercentOutput) {
-        return delegate.configNominalOutputForward(PercentOutput);
+	public void configNominalOutputForward(double PercentOutput) {
+        delegate.configNominalOutputForward(PercentOutput);
     }
 
     @Override
-	public ErrorCode configNominalOutputReverse(double PercentOutput) {
-        return delegate.configNominalOutputReverse(PercentOutput);
+	public void configNominalOutputReverse(double PercentOutput) {
+        delegate.configNominalOutputReverse(PercentOutput);
     }
 
     @Override
-	public ErrorCode configPeakOutputForward(double PercentOutput) {
-        return delegate.configPeakOutputForward(PercentOutput);
+	public void configPeakOutputForward(double PercentOutput) {
+        delegate.configPeakOutputForward(PercentOutput);
     }
 
     @Override
-	public ErrorCode configPeakOutputReverse(double PercentOutput) {
-        return delegate.configPeakOutputReverse(PercentOutput);
+	public void configPeakOutputReverse(double PercentOutput) {
+        delegate.configPeakOutputReverse(PercentOutput);
     }
 
     @Override
-	public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms) {
-        return delegate.configMotionCruiseVelocity((int)Math.round(sensorUnitsPer100ms / scale));
+	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
+        delegate.configMotionCruiseVelocity((int)Math.round(sensorUnitsPer100ms / scale));
     }
 
     @Override
-	public ErrorCode configMotionAcceleration(int sensorunitsPer100msPerSec) {
-        return delegate.configMotionAcceleration((int)Math.round(sensorunitsPer100msPerSec / scale));
+	public void configMotionAcceleration(int sensorunitsPer100msPerSec) {
+        delegate.configMotionAcceleration((int)Math.round(sensorunitsPer100msPerSec / scale));
     }
 
     @Override
@@ -151,18 +150,18 @@ public class CANSpeedControllerWithSensorScale implements CANSpeedController {
     }
 
     @Override
-	public ErrorCode configFactoryDefault() {
-        return delegate.configFactoryDefault();
+	public void configFactoryDefault() {
+        delegate.configFactoryDefault();
     }
 
     @Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
-        delegate.configOpenLoopRamp(secondsFromNeutralToFull, timeoutMs);
+	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
+        delegate.configOpenLoopRamp(secondsFromNeutralToFull);
     }
 
     @Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
-        delegate.configClosedLoopRamp(secondsFromNeutralToFull, timeoutMs);
+	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
+        delegate.configClosedLoopRamp(secondsFromNeutralToFull);
     }
 
     @Override

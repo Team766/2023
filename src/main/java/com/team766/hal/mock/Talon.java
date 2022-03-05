@@ -1,6 +1,5 @@
 package com.team766.hal.mock;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.hal.CANSpeedController;
@@ -94,51 +93,43 @@ public class Talon implements CANSpeedController {
 
 	// TODO: add actual mock stuff for these functions
 	@Override
-	public ErrorCode config_kP(int slotIdx, double value, int timeoutMs) {
+	public void config_kP(int slotIdx, double value) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode config_kI(int slotIdx, double value, int timeoutMs) {
+	public void config_kI(int slotIdx, double value) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode config_kD(int slotIdx, double value, int timeoutMs) {
+	public void config_kD(int slotIdx, double value) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configNominalOutputForward(double PercentOutput) {
+	public void configNominalOutputForward(double PercentOutput) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configNominalOutputReverse(double PercentOutput) {
+	public void configNominalOutputReverse(double PercentOutput) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configPeakOutputForward(double PercentOutput) {
+	public void configPeakOutputForward(double PercentOutput) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configPeakOutputReverse(double PercentOutput) {
+	public void configPeakOutputReverse(double PercentOutput) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
@@ -147,36 +138,32 @@ public class Talon implements CANSpeedController {
 	}
 
 	@Override
-	public ErrorCode configFactoryDefault() {
-		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
-	}
-
-	@Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
+	public void configFactoryDefault() {
 		// throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
+	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
 		// throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ErrorCode config_kF(int slotIdx, double value, int timeoutMs) {
+	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
 		// throw new UnsupportedOperationException();
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms) {
+	public void config_kF(int slotIdx, double value) {
+		// throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
 		motionCruiseVelocity = sensorUnitsPer100ms;
-		return ErrorCode.OK;
 	}
 
 	@Override
-	public ErrorCode configMotionAcceleration(int sensorUnitsPer100msPerSec) {
+	public void configMotionAcceleration(int sensorUnitsPer100msPerSec) {
 		motionCruiseAcceleration = sensorUnitsPer100msPerSec;
-		return ErrorCode.OK;
 	}
 }

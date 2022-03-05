@@ -1,6 +1,5 @@
 package com.team766.hal;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -80,33 +79,33 @@ public interface CANSpeedController extends SpeedController {
 
 	void setNeutralMode(NeutralMode neutralMode);
 
-	ErrorCode config_kP(int slotIdx, double value, int timeoutMs);
+	void config_kP(int slotIdx, double value);
 
-	ErrorCode config_kI(int slotIdx, double value, int timeoutMs);
+	void config_kI(int slotIdx, double value);
 
-	ErrorCode config_kD(int slotIdx, double value, int timeoutMs);
+	void config_kD(int slotIdx, double value);
 
-	ErrorCode config_kF(int slotIdx, double value, int timeoutMs);
+	void config_kF(int slotIdx, double value);
 
-	ErrorCode configSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
+	void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
 
-	ErrorCode configNominalOutputForward(double PercentOutput);
+	void configNominalOutputForward(double PercentOutput);
 
-	ErrorCode configNominalOutputReverse(double PercentOutput);
+	void configNominalOutputReverse(double PercentOutput);
 
-	ErrorCode configPeakOutputForward(double PercentOutput);
+	void configPeakOutputForward(double PercentOutput);
 
-	ErrorCode configPeakOutputReverse(double PercentOutput);
+	void configPeakOutputReverse(double PercentOutput);
 
-	ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms);
+	void configMotionCruiseVelocity(int sensorUnitsPer100ms);
 
-	ErrorCode configMotionAcceleration(int sensorunitsPer100msPerSec);
+	void configMotionAcceleration(int sensorunitsPer100msPerSec);
 
 	void setSensorPhase(boolean PhaseSensor);
 
-	ErrorCode configFactoryDefault();
+	void configFactoryDefault();
 
-	void configOpenLoopRamp(double secondsFromNeutralToFull, int timeoutMs);
+	void configOpenLoopRamp(double secondsFromNeutralToFull);
 
-	void configClosedLoopRamp(double secondsFromNeutralToFull, int timeoutMs);
+	void configClosedLoopRamp(double secondsFromNeutralToFull);
 }
