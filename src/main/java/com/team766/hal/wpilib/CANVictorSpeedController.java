@@ -88,7 +88,11 @@ public class CANVictorSpeedController extends WPI_VictorSPX implements CANSpeedC
 
 	@Override
 	public void follow(CANSpeedController leader) {
-		super.follow((IMotorController)leader);
+		try {
+			super.follow((IMotorController)leader);
+		} catch (ClassCastException ex) {
+			throw new IllegalArgumentException("Victor can only follow another CTRE motor controller", ex);
+		}
 	}
 
 	@Override

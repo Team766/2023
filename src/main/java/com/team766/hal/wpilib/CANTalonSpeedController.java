@@ -91,7 +91,11 @@ public class CANTalonSpeedController extends WPI_TalonSRX implements CANSpeedCon
 
 	@Override
 	public void follow(CANSpeedController leader) {
-		super.follow((CANTalonSpeedController)leader);
+		try {
+			super.follow((IMotorController)leader);
+		} catch (ClassCastException ex) {
+			throw new IllegalArgumentException("Victor can only follow another CTRE motor controller", ex);
+		}
 	}
 
 	@Override

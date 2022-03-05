@@ -14,13 +14,18 @@ public class Talon implements CANSpeedController {
 
 	private double motionCruiseVelocity;
 	private double motionCruiseAcceleration;
+	private CANSpeedController leader;
 	
 	public Talon(int index) {
 		output = 0;
+		leader = null;
 	}
 	
 	@Override
 	public double get() {
+		if (leader != null) {
+			return leader.get();
+		}
 		return output;
 	}
 	
@@ -65,6 +70,7 @@ public class Talon implements CANSpeedController {
 	public void set(ControlMode mode, double value) {
 		output = value;
 		controlMode = mode;
+		leader = null;
 	}
 	
 	public ControlMode getControlMode() {
@@ -78,12 +84,12 @@ public class Talon implements CANSpeedController {
 
 	@Override
 	public void follow(CANSpeedController leader) {
-		throw new UnsupportedOperationException();
+		this.leader = leader;
 	}
 
 	@Override
 	public void setNeutralMode(NeutralMode neutralMode) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	// TODO: add actual mock stuff for these functions
@@ -107,47 +113,53 @@ public class Talon implements CANSpeedController {
 
 	@Override
 	public ErrorCode configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public ErrorCode configNominalOutputForward(double PercentOutput) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public ErrorCode configNominalOutputReverse(double PercentOutput) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public ErrorCode configPeakOutputForward(double PercentOutput) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public ErrorCode configPeakOutputReverse(double PercentOutput) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public void setSensorPhase(boolean PhaseSensor) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ErrorCode configFactoryDefault() {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return ErrorCode.OK;
 	}
 
 	@Override
 	public void configOpenLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void configClosedLoopRamp(double secondsFromNeutralToFull, int timeoutMs) {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	@Override
