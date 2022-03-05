@@ -9,6 +9,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public interface CANSpeedController extends SpeedController {
 
+	public enum Type {
+		VictorSPX,
+		TalonSRX,
+	}
+
 	public enum ControlMode {
 		PercentOutput,
 		Position,

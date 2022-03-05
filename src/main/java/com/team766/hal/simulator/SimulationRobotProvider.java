@@ -18,6 +18,7 @@ import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider{
 
+	private CANSpeedController[] canMotors = new CANSpeedController[64];
 	private int m_dsUpdateNumber = 0;
 
 	@Override
@@ -28,19 +29,11 @@ public class SimulationRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public CANSpeedController getTalonCANMotor(int index) {
-		if(talonCanMotors[index] == null)
-			talonCanMotors[index] = new Talon(index);
-		return talonCanMotors[index];
+	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
+		if(canMotors[index] == null)
+			canMotors[index] = new Talon(index);
+		return canMotors[index];
 	}
-
-	@Override
-	public CANSpeedController getVictorCANMotor(int index) {
-		if(talonCanMotors[index] == null)
-			talonCanMotors[index] = new Talon(index);
-		return talonCanMotors[index];
-	}
-
 
 	@Override
 	public EncoderReader getEncoder(int index1, int index2) {

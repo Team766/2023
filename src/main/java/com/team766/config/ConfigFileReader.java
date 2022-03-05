@@ -128,6 +128,10 @@ public class ConfigFileReader {
 	public ValueProvider<String> getString(String key) {
 		return new StringConfigValue(key);
 	}
+
+	public <E extends Enum<E>> ValueProvider<E> getEnum(Class<E> enumClass, String key) {
+		return new EnumConfigValue<E>(enumClass, key);
+	}
 	
 	Object getRawValue(String key){
 		return m_values.get(key);

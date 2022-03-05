@@ -25,6 +25,10 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
 
+	private CANSpeedController[] talonCanMotors = new CANSpeedController[64];
+	private CANSpeedController[] victorCanMotors = new CANSpeedController[64];
+	private CANSpeedController[] sparkMaxMotors = new CANSpeedController[64];
+
 	@Override
 	public SpeedController getMotor(int index) {
 		if(motors[index] == null){
@@ -35,21 +39,20 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public CANSpeedController getTalonCANMotor(int index) {
-		if (talonCanMotors[index] == null) {
-			talonCanMotors[index] = new CANTalonSpeedController(index);
+	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
+		switch (type) {
+			case TalonSRX:
+				if (talonCanMotors[index] == null) {
+					talonCanMotors[index] = new CANTalonSpeedController(index);
+				}
+				return talonCanMotors[index];
+			case VictorSPX:
+				if (victorCanMotors[index] == null) {
+					victorCanMotors[index] = new CANVictorSpeedController(index);
+				}
+				return victorCanMotors[index];
 		}
-
-		return talonCanMotors[index];
-	}
-
-	@Override
-	public CANSpeedController getVictorCANMotor(int index) {
-		if (victorCanMotors[index] == null) {
-			victorCanMotors[index] = new CANVictorSpeedController(index);
-		}
-
-		return victorCanMotors[index];
+		throw new IllegalArgumentException("Unsupported CAN motor type " + type);
 	}
 
 	@Override

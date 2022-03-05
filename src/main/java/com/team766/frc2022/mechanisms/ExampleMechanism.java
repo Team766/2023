@@ -9,8 +9,8 @@ public class ExampleMechanism extends Mechanism {
 	private SpeedController m_rightMotor;
 
 	public ExampleMechanism() {
-		m_leftMotor = RobotProvider.instance.getTalonCANMotor("exampleMechanism.leftMotor");
-		m_rightMotor = RobotProvider.instance.getVictorCANMotor("exampleMechanism.rightMotor");
+		m_leftMotor = RobotProvider.instance.getCANMotor("exampleMechanism.leftMotor");
+		m_rightMotor = RobotProvider.instance.getCANMotor("exampleMechanism.rightMotor");
 	}
 
 	public void setMotorPower(double leftPower, double rightPower){

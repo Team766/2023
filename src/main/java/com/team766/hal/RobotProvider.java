@@ -15,8 +15,6 @@ public abstract class RobotProvider {
 	public static RobotProvider instance;
 	
 	protected SpeedController[] motors = new SpeedController[12];
-	protected CANSpeedController[] talonCanMotors = new CANSpeedController[64];
-	protected CANSpeedController[] victorCanMotors = new CANSpeedController[64];
 	protected EncoderReader[] encoders = new EncoderReader[20];
 	protected SolenoidController[] solenoids = new SolenoidController[10];
 	protected GyroReader[] gyros = new GyroReader[13];
@@ -29,8 +27,7 @@ public abstract class RobotProvider {
 	
 	//HAL
 	public abstract SpeedController getMotor(int index);
-	public abstract CANSpeedController getTalonCANMotor(int index);
-	public abstract CANSpeedController getVictorCANMotor(int index);
+	public abstract CANSpeedController getCANMotor(int index, CANSpeedController.Type type);
 	
 	public abstract EncoderReader getEncoder(int index1, int index2);
 	
@@ -62,10 +59,11 @@ public abstract class RobotProvider {
 			return new Victor(0);
 		}
 	}
-	public CANSpeedController getTalonCANMotor(String configName) {
+	public CANSpeedController getCANMotor(String configName) {
 		try {
 			Integer port = ConfigFileReader.getInstance().getInt(configName + ".deviceId").get();
-			var motor = getTalonCANMotor(port);
+			CANSpeedController.Type type = ConfigFileReader.getInstance().getEnum(CANSpeedController.Type.class, configName + ".type").valueOr(CANSpeedController.Type.TalonSRX);
+			var motor = getCANMotor(port, type);
 			ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
 			if (sensorScaleConfig.hasValue()) {
 				motor = new CANSpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
@@ -73,20 +71,6 @@ public abstract class RobotProvider {
 			return motor;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Talon CAN Motor %s not found in config file, using mock talon instead", configName);
-			return new Talon(0);
-		}
-	}
-	public CANSpeedController getVictorCANMotor(String configName) {
-		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".deviceId").get();
-			var motor = getVictorCANMotor(port);
-			ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
-			if (sensorScaleConfig.hasValue()) {
-				motor = new CANSpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
-			}
-			return motor;
-		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Victor CAN Motor %s not found in config file, using mock victor instead", configName);
 			return new Talon(0);
 		}
 	}

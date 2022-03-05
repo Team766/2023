@@ -19,6 +19,7 @@ import com.team766.hal.wpilib.SystemClock;
 public class TestRobotProvider extends RobotProvider{
 
 	private boolean m_hasDriverStationUpdate = false;
+	private CANSpeedController[] canMotors = new CANSpeedController[64];
 
 	@Override
 	public SpeedController getMotor(int index) {
@@ -28,17 +29,10 @@ public class TestRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public CANSpeedController getTalonCANMotor(int index) {
-		if(talonCanMotors[index] == null)
-			talonCanMotors[index] = new Talon(index);
-		return talonCanMotors[index];
-	}
-
-	@Override
-	public CANSpeedController getVictorCANMotor(int index) {
-		if(victorCanMotors[index] == null)
-			victorCanMotors[index] = new Talon(index);
-		return victorCanMotors[index];
+	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
+		if(canMotors[index] == null)
+			canMotors[index] = new Talon(index);
+		return canMotors[index];
 	}
 
 	@Override
