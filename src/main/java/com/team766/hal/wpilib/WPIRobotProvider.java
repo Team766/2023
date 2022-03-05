@@ -20,6 +20,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
@@ -71,6 +72,8 @@ public class WPIRobotProvider extends RobotProvider {
 	// 	0+ 	= Analog Gyro on port index
 	public GyroReader getGyro(int index) {
 		if(gyros[index + 1] == null){
+			if(index == -2)
+				gyros[index + 1] = new NavXGyro(I2C.Port.kOnboard);
 			if(index == -1)
 				gyros[index + 1] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 			else
