@@ -41,6 +41,11 @@ public class WPIRobotProvider extends RobotProvider {
 	@Override
 	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
 		switch (type) {
+			case SparkMax:
+				if (sparkMaxMotors[index] == null) {
+					sparkMaxMotors[index] = new CANTalonSpeedController(index);
+				}
+				return sparkMaxMotors[index];
 			case TalonSRX:
 				if (talonCanMotors[index] == null) {
 					talonCanMotors[index] = new CANTalonSpeedController(index);
