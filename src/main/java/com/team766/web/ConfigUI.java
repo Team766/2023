@@ -27,6 +27,7 @@ public class ConfigUI implements WebServer.Handler {
 			}
 			if (validationErrors.isEmpty()) {
 				r += "<p>New configuration (v" + ConfigFileReader.getInstance().getGeneration() + ") has been applied</p>";
+				r += "<p><b>Remember to click Restart Robot Code in the driver station if you have changed any motor/sensor settings</b></p>";
 				if (params.containsKey("saveToFile")) {
 					try {
 						ConfigFileReader.getInstance().saveFile(configJsonString);
