@@ -15,7 +15,14 @@ abstract class AbstractConfigMultiValue<E> extends AbstractConfigValue<E[]> {
 
 	@Override
 	protected final E[] parseJsonValue(Object configValue) {
-		final JSONArray jsonArray = (JSONArray)configValue;
+		JSONArray jsonArray;
+		try {
+			jsonArray = (JSONArray)configValue;
+		} catch (ClassCastException ex) {
+			final E[] valueArray = m_arrayFactory.apply(1);
+			valueArray[0] = parseJsonElement(configValue);
+			return valueArray;
+		}
 		final int length = jsonArray.length();
 		final E[] valueArray = m_arrayFactory.apply(length);
 		for (int i = 0; i < length; ++i) {

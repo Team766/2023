@@ -1,5 +1,6 @@
 package com.team766.hal;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.team766.config.ConfigFileReader;
@@ -135,14 +136,28 @@ public abstract class RobotProvider {
 			return new Relay(0);
 		}
 	}
-	public SolenoidController getSolenoid(String configName) {
+	public DoubleSolenoid getSolenoid(String configName) {
 		try {
-			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			final String legacyConfigKey = configName + ".port";
+			ValueProvider<Integer[]> forwardPorts =
+				ConfigFileReader.getInstance().containsKey(legacyConfigKey)
+					? ConfigFileReader.getInstance().getInts(legacyConfigKey)
+					: ConfigFileReader.getInstance().getInts(configName + ".forwardPort");
+			ValueProvider<Integer[]> reversePorts =
+				ConfigFileReader.getInstance().getInts(configName + ".reversePort");
 
-			return getSolenoid(port.get());
+			SolenoidController forwardSolenoids = new MultiSolenoid(
+				Arrays.stream(forwardPorts.valueOr(new Integer[0]))
+					.<SolenoidController>map(this::getSolenoid)
+					.toArray(SolenoidController[]::new));
+			SolenoidController reverseSolenoids = new MultiSolenoid(
+				Arrays.stream(reversePorts.valueOr(new Integer[0]))
+					.<SolenoidController>map(this::getSolenoid)
+					.toArray(SolenoidController[]::new));
+			return new DoubleSolenoid(forwardSolenoids, reverseSolenoids);
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead", configName);
-			return new Solenoid(0);
+			return new DoubleSolenoid(null, null);
 		}
 	}
 	public GyroReader getGyro(String configName) {
