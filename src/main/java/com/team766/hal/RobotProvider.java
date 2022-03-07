@@ -52,8 +52,14 @@ public abstract class RobotProvider {
 	// Config-driven methods
 	public SpeedController getMotor(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getMotor(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
+
+			var motor = getMotor(port.get());
+			if (invertedConfig.valueOr(false)) {
+				motor.setInverted(true);
+			}
+			return motor;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
 			return new Victor(0);
@@ -61,28 +67,35 @@ public abstract class RobotProvider {
 	}
 	public CANSpeedController getCANMotor(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".deviceId").get();
-			CANSpeedController.Type type = ConfigFileReader.getInstance().getEnum(CANSpeedController.Type.class, configName + ".type").valueOr(CANSpeedController.Type.TalonSRX);
-			var motor = getCANMotor(port, type);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".deviceId");
 			ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
+			ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
+			ValueProvider<CANSpeedController.Type> type = ConfigFileReader.getInstance().getEnum(CANSpeedController.Type.class, configName + ".type");
+
+			var motor = getCANMotor(port.get(), type.valueOr(CANSpeedController.Type.TalonSRX));
 			if (sensorScaleConfig.hasValue()) {
 				motor = new CANSpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
 			}
+			if (invertedConfig.valueOr(false)) {
+				motor.setInverted(true);
+			}
 			return motor;
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Talon CAN Motor %s not found in config file, using mock talon instead", configName);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "CAN Motor %s not found in config file, using mock motor instead", configName);
 			return new Talon(0);
 		}
 	}
 	public EncoderReader getEncoder(String configName) {
 		try {
-			Integer[] ports = ConfigFileReader.getInstance().getInts(configName + ".ports").get();
-			if (ports.length != 2) {
-				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Encoder %s has %d config values, but expected 2", configName, ports.length);
+			ValueProvider<Integer[]> ports = ConfigFileReader.getInstance().getInts(configName + ".ports");
+			ValueProvider<Double> distancePerPulseConfig = ConfigFileReader.getInstance().getDouble(configName + ".distancePerPulse");
+
+			var portsValue = ports.get();
+			if (portsValue.length != 2) {
+				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Encoder %s has %d config values, but expected 2", configName, portsValue.length);
 				return new Encoder(0, 0);
 			}
-			EncoderReader reader = getEncoder(ports[0], ports[1]);
-			ValueProvider<Double> distancePerPulseConfig = ConfigFileReader.getInstance().getDouble(configName + ".distancePerPulse");
+			EncoderReader reader = getEncoder(portsValue[0], portsValue[1]);
 			if (distancePerPulseConfig.hasValue()) {
 				reader.setDistancePerPulse(distancePerPulseConfig.get());
 			}
@@ -94,8 +107,9 @@ public abstract class RobotProvider {
 	}
 	public DigitalInputReader getDigitalInput(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getDigitalInput(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+
+			return getDigitalInput(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Digital input %s not found in config file, using mock digital input instead", configName);
 			return new DigitalInput();
@@ -103,8 +117,9 @@ public abstract class RobotProvider {
 	}
 	public AnalogInputReader getAnalogInput(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getAnalogInput(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+
+			return getAnalogInput(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Analog input %s not found in config file, using mock analog input instead", configName);
 			return new AnalogInput();
@@ -112,8 +127,9 @@ public abstract class RobotProvider {
 	}
 	public RelayOutput getRelay(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getRelay(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+
+			return getRelay(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Relay %s not found in config file, using mock relay instead", configName);
 			return new Relay(0);
@@ -121,8 +137,9 @@ public abstract class RobotProvider {
 	}
 	public SolenoidController getSolenoid(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getSolenoid(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+
+			return getSolenoid(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead", configName);
 			return new Solenoid(0);
@@ -130,8 +147,9 @@ public abstract class RobotProvider {
 	}
 	public GyroReader getGyro(String configName) {
 		try {
-			Integer port = ConfigFileReader.getInstance().getInt(configName + ".port").get();
-			return getGyro(port);
+			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+
+			return getGyro(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Gyro %s not found in config file, using mock gyro instead", configName);
 			return new Gyro();
