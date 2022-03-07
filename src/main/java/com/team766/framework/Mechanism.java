@@ -4,11 +4,16 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
-public abstract class Mechanism extends Loggable implements Runnable {
+public abstract class Mechanism extends Loggable {
 	private Context m_owningContext = null;
+	private boolean m_runningPeriodic = false;
 	
 	public Mechanism() {
-		Scheduler.getInstance().add(this);
+		Scheduler.getInstance().add(() -> {
+			this.m_runningPeriodic = true;
+			this.run();
+			this.m_runningPeriodic = false;
+		});
 	}
 
 	public String getName() {
@@ -16,7 +21,7 @@ public abstract class Mechanism extends Loggable implements Runnable {
 	}
 	
 	protected void checkContextOwnership() {
-		if (Context.currentContext() != m_owningContext) {
+		if (Context.currentContext() != m_owningContext && !m_runningPeriodic) {
 			String message = getName() + " tried to be used by " + Context.currentContext().getContextName();
 			if (m_owningContext != null) {
 				message += " while owned by " + m_owningContext.getContextName();
@@ -50,6 +55,5 @@ public abstract class Mechanism extends Loggable implements Runnable {
 		m_owningContext = null;
 	}
 
-	@Override
 	public void run () {}
 }
