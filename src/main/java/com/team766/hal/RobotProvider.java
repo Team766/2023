@@ -71,6 +71,7 @@ public abstract class RobotProvider {
 			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".deviceId");
 			ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
 			ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
+			ValueProvider<Boolean> sensorInvertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".sensorInverted");
 			ValueProvider<CANSpeedController.Type> type = ConfigFileReader.getInstance().getEnum(CANSpeedController.Type.class, configName + ".type");
 
 			var motor = getCANMotor(port.get(), type.valueOr(CANSpeedController.Type.TalonSRX));
@@ -79,6 +80,9 @@ public abstract class RobotProvider {
 			}
 			if (invertedConfig.valueOr(false)) {
 				motor.setInverted(true);
+			}
+			if (sensorInvertedConfig.valueOr(false)) {
+				motor.setSensorInverted(true);
 			}
 			return motor;
 		} catch (IllegalArgumentException ex) {

@@ -90,78 +90,53 @@ public class CANSpeedControllerWithSensorScale implements CANSpeedController {
     }
 
     @Override
-	public void config_kP(int slotIdx, double value) {
-        delegate.config_kP(slotIdx, value / scale);
+	public void setP(double value) {
+        delegate.setP(value / scale);
     }
 
     @Override
-	public void config_kI(int slotIdx, double value) {
-        delegate.config_kI(slotIdx, value / scale);
+	public void setI(double value) {
+        delegate.setI(value / scale);
     }
 
     @Override
-	public void config_kD(int slotIdx, double value) {
-        delegate.config_kD(slotIdx, value / scale);
+	public void setD(double value) {
+        delegate.setD(value / scale);
     }
 
     @Override
-	public void config_kF(int slotIdx, double value) {
-        delegate.config_kF(slotIdx, value / scale);
+	public void setFF(double value) {
+        delegate.setFF(value / scale);
     }
 
     @Override
-	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-        delegate.configSelectedFeedbackSensor(feedbackDevice);
+	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+        delegate.setSelectedFeedbackSensor(feedbackDevice);
     }
 
     @Override
-	public void configNominalOutputForward(double PercentOutput) {
-        delegate.configNominalOutputForward(PercentOutput);
+    public void setSensorInverted(boolean inverted) {
+        delegate.setSensorInverted(inverted);
     }
 
     @Override
-	public void configNominalOutputReverse(double PercentOutput) {
-        delegate.configNominalOutputReverse(PercentOutput);
+	public void setOutputRange(double minOutput, double maxOutput) {
+        delegate.setOutputRange(minOutput, maxOutput);
     }
 
     @Override
-	public void configPeakOutputForward(double PercentOutput) {
-        delegate.configPeakOutputForward(PercentOutput);
+	public void restoreFactoryDefault() {
+        delegate.restoreFactoryDefault();
     }
 
     @Override
-	public void configPeakOutputReverse(double PercentOutput) {
-        delegate.configPeakOutputReverse(PercentOutput);
+	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
+        delegate.setOpenLoopRamp(secondsFromNeutralToFull);
     }
 
     @Override
-	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
-        delegate.configMotionCruiseVelocity((int)Math.round(sensorUnitsPer100ms / scale));
-    }
-
-    @Override
-	public void configMotionAcceleration(int sensorunitsPer100msPerSec) {
-        delegate.configMotionAcceleration((int)Math.round(sensorunitsPer100msPerSec / scale));
-    }
-
-    @Override
-	public void setSensorPhase(boolean PhaseSensor) {
-        delegate.setSensorPhase(PhaseSensor);
-    }
-
-    @Override
-	public void configFactoryDefault() {
-        delegate.configFactoryDefault();
-    }
-
-    @Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
-        delegate.configOpenLoopRamp(secondsFromNeutralToFull);
-    }
-
-    @Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
-        delegate.configClosedLoopRamp(secondsFromNeutralToFull);
+	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
+        delegate.setClosedLoopRamp(secondsFromNeutralToFull);
     }
 
     @Override

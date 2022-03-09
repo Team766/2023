@@ -87,77 +87,52 @@ public class Talon implements CANSpeedController {
 	}
 
 	@Override
-	public void config_kP(int slotIdx, double value) {
+	public void setP(double value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void config_kI(int slotIdx, double value) {
+	public void setI(double value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void config_kD(int slotIdx, double value) {
+	public void setD(double value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void setFF(double value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configNominalOutputForward(double PercentOutput) {
+	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configNominalOutputReverse(double PercentOutput) {
+	public void setSensorInverted(boolean inverted) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configPeakOutputForward(double PercentOutput) {
+	public void setOutputRange(double minOutput, double maxOutput) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configPeakOutputReverse(double PercentOutput) {
+	public void restoreFactoryDefault() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setSensorPhase(boolean PhaseSensor) {
+	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void configFactoryDefault() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void config_kF(int slotIdx, double value) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configMotionAcceleration(int sensorUnitsPer100msPerSec) {
+	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
 		throw new UnsupportedOperationException();
 	}
 }

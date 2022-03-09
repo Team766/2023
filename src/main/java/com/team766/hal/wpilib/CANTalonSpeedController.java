@@ -43,6 +43,8 @@ public class CANTalonSpeedController implements CANSpeedController {
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Position;
 			break;
 		case Velocity:
+			// Sensor velocity is measured in units per 100ms.
+			value /= 10.0;
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Velocity;
 			break;
 		case Current:
@@ -91,7 +93,8 @@ public class CANTalonSpeedController implements CANSpeedController {
 
 	@Override
 	public double getSensorVelocity() {
-		return m_device.getSelectedSensorVelocity(0);
+		// Sensor velocity is returned in units per 100ms.
+		return m_device.getSelectedSensorVelocity(0) * 10.0;
 	}
 	
 	@Override
@@ -109,72 +112,53 @@ public class CANTalonSpeedController implements CANSpeedController {
 	}
 
 	@Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
+	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
 		errorCodeToException(m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
+	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
 		errorCodeToException(m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
-	public void config_kF(int slotIdx, double value) {
-		errorCodeToException(m_device.config_kF(slotIdx, value, TIMEOUT_MS));
+	public void setFF(double value) {
+		errorCodeToException(m_device.config_kF(0, value, TIMEOUT_MS));
 	}
 
 	@Override
-	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
-		errorCodeToException(m_device.configMotionCruiseVelocity(sensorUnitsPer100ms));
+	public void setP(double value) {
+		errorCodeToException(m_device.config_kP(0, value));
 	}
 
 	@Override
-	public void configMotionAcceleration(int sensorUnitsPer100msPerSec) {
-		errorCodeToException(m_device.configMotionAcceleration(sensorUnitsPer100msPerSec));
+	public void setI(double value) {
+		errorCodeToException(m_device.config_kI(0, value));
 	}
 
 	@Override
-	public void config_kP(int slotIdx, double value) {
-		errorCodeToException(m_device.config_kP(slotIdx, value));
+	public void setD(double value) {
+		errorCodeToException(m_device.config_kD(0, value));
 	}
 
 	@Override
-	public void config_kI(int slotIdx, double value) {
-		errorCodeToException(m_device.config_kI(slotIdx, value));
-	}
-
-	@Override
-	public void config_kD(int slotIdx, double value) {
-		errorCodeToException(m_device.config_kD(slotIdx, value));
-	}
-
-	@Override
-	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
 		errorCodeToException(m_device.configSelectedFeedbackSensor(feedbackDevice));
 	}
 
 	@Override
-	public void configNominalOutputForward(double PercentOutput) {
-		errorCodeToException(m_device.configNominalOutputForward(PercentOutput));
+	public void setSensorInverted(boolean inverted) {
+		m_device.setSensorPhase(inverted);
 	}
 
 	@Override
-	public void configNominalOutputReverse(double PercentOutput) {
-		errorCodeToException(m_device.configNominalOutputReverse(PercentOutput));
+	public void setOutputRange(double minOutput, double maxOutput) {
+		errorCodeToException(m_device.configPeakOutputReverse(minOutput));
+		errorCodeToException(m_device.configPeakOutputForward(maxOutput));
 	}
 
 	@Override
-	public void configPeakOutputForward(double PercentOutput) {
-		errorCodeToException(m_device.configPeakOutputForward(PercentOutput));
-	}
-
-	@Override
-	public void configPeakOutputReverse(double PercentOutput) {
-		errorCodeToException(m_device.configPeakOutputReverse(PercentOutput));
-	}
-
-	@Override
-	public void configFactoryDefault() {
+	public void restoreFactoryDefault() {
 		errorCodeToException(m_device.configFactoryDefault());
 	}
 
@@ -201,11 +185,6 @@ public class CANTalonSpeedController implements CANSpeedController {
 	@Override
 	public void setNeutralMode(NeutralMode neutralMode) {
 		m_device.setNeutralMode(neutralMode);
-	}
-
-	@Override
-	public void setSensorPhase(boolean PhaseSensor) {
-		m_device.setSensorPhase(PhaseSensor);
 	}
 	
 }

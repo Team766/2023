@@ -85,33 +85,23 @@ public interface CANSpeedController extends SpeedController {
 
 	void setNeutralMode(NeutralMode neutralMode);
 
-	void config_kP(int slotIdx, double value);
+	void setP(double value);
 
-	void config_kI(int slotIdx, double value);
+	void setI(double value);
 
-	void config_kD(int slotIdx, double value);
+	void setD(double value);
 
-	void config_kF(int slotIdx, double value);
+	void setFF(double value);
 
-	void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
+	void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
+	
+	void setSensorInverted(boolean inverted);
 
-	void configNominalOutputForward(double PercentOutput);
+	void setOutputRange(double minOutput, double maxOutput);
 
-	void configNominalOutputReverse(double PercentOutput);
+	void restoreFactoryDefault();
 
-	void configPeakOutputForward(double PercentOutput);
+	void setOpenLoopRamp(double secondsFromNeutralToFull);
 
-	void configPeakOutputReverse(double PercentOutput);
-
-	void configMotionCruiseVelocity(int sensorUnitsPer100ms);
-
-	void configMotionAcceleration(int sensorunitsPer100msPerSec);
-
-	void setSensorPhase(boolean PhaseSensor);
-
-	void configFactoryDefault();
-
-	void configOpenLoopRamp(double secondsFromNeutralToFull);
-
-	void configClosedLoopRamp(double secondsFromNeutralToFull);
+	void setClosedLoopRamp(double secondsFromNeutralToFull);
 }

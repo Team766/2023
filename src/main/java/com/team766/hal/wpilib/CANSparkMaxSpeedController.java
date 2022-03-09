@@ -13,9 +13,11 @@ import com.team766.hal.SpeedControllerCommandFailedException;
 
 public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedController {
 
-	Supplier<Double> sensorPositionSupplier;
-	Supplier<Double> sensorVelocitySupplier;
-	Consumer<Integer> sensorPositionSetter;
+	private Supplier<Double> sensorPositionSupplier;
+	private Supplier<Double> sensorVelocitySupplier;
+	private Consumer<Integer> sensorPositionSetter;
+	private Consumer<Boolean> sensorInvertedSetter;
+	private boolean sensorInverted = false;
 
 	public CANSparkMaxSpeedController(int deviceId) {
 		super(deviceId, MotorType.kBrushless);
@@ -23,7 +25,7 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 		// Set default feedback device. This ensures that our implementations of
 		// getSensorPosition/getSensorVelocity return values that match what the
 		// device's PID controller is using.
-		configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 	}
 
 	private void revErrorToException(REVLibError err) {
@@ -47,7 +49,7 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	public void set(ControlMode mode, double value) {
 		switch (mode) {
 			case Current:
-				getPIDController().setReference(value, ControlType.kCurrent);
+				getPIDController().setReference(value, CANSparkMax.ControlType.kCurrent);
 				break;
 			case Disabled:
 				disable();
@@ -61,13 +63,13 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 			case MotionProfileArc:
 				throw new IllegalArgumentException("SparkMax does not support MotionProfileArc");
 			case PercentOutput:
-				getPIDController().setReference(value, ControlType.kDutyCycle);
+				getPIDController().setReference(value, CANSparkMax.ControlType.kDutyCycle);
 				break;
 			case Position:
-				getPIDController().setReference(value, ControlType.kPosition);
+				getPIDController().setReference(value, CANSparkMax.ControlType.kPosition);
 				break;
 			case Velocity:
-				getPIDController().setReference(value, ControlType.kVelocity);
+				getPIDController().setReference(value, CANSparkMax.ControlType.kVelocity);
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported control mode " + mode);
@@ -101,33 +103,35 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	}
 
 	@Override
-	public void config_kP(int slotIdx, double value) {
-		revErrorToException(getPIDController().setP(value, slotIdx));
+	public void setP(double value) {
+		revErrorToException(getPIDController().setP(value));
 	}
 
 	@Override
-	public void config_kI(int slotIdx, double value) {
-		revErrorToException(getPIDController().setI(value, slotIdx));
+	public void setI(double value) {
+		revErrorToException(getPIDController().setI(value));
 	}
 
 	@Override
-	public void config_kD(int slotIdx, double value) {
-		revErrorToException(getPIDController().setD(value, slotIdx));
+	public void setD(double value) {
+		revErrorToException(getPIDController().setD(value));
 	}
 
 	@Override
-	public void config_kF(int slotIdx, double value) {
-		revErrorToException(getPIDController().setFF(value, slotIdx));
+	public void setFF(double value) {
+		revErrorToException(getPIDController().setFF(value));
 	}
 
 	@Override
-	public void configSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
 		switch (feedbackDevice) {
 			case Analog: {
 				SparkMaxAnalogSensor analog = getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
+				revErrorToException(analog.setInverted(sensorInverted));
 				sensorPositionSupplier = analog::getPosition;
 				sensorVelocitySupplier = analog::getVelocity;
 				sensorPositionSetter = (pos) -> {};
+				sensorInvertedSetter = analog::setInverted;
 				revErrorToException(getPIDController().setFeedbackDevice(analog));
 				return;
 			}
@@ -137,9 +141,11 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 				throw new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder");
 			case IntegratedSensor: {
 				RelativeEncoder encoder = getEncoder();
+				revErrorToException(encoder.setInverted(sensorInverted));
 				sensorPositionSupplier = encoder::getPosition;
 				sensorVelocitySupplier = encoder::getVelocity;
 				sensorPositionSetter = encoder::setPosition;
+				sensorInvertedSetter = encoder::setInverted;
 				revErrorToException(getPIDController().setFeedbackDevice(encoder));
 				return;
 			}
@@ -150,9 +156,11 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 			case QuadEncoder: {
 				// TODO: should we pass a real counts-per-rev scale here?
 				RelativeEncoder encoder = getAlternateEncoder(1);
+				revErrorToException(encoder.setInverted(sensorInverted));
 				sensorPositionSupplier = encoder::getPosition;
 				sensorVelocitySupplier = encoder::getVelocity;
 				sensorPositionSetter = encoder::setPosition;
+				sensorInvertedSetter = encoder::setInverted;
 				revErrorToException(getPIDController().setFeedbackDevice(encoder));
 				return;
 			}
@@ -174,53 +182,29 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	}
 
 	@Override
-	public void configNominalOutputForward(double PercentOutput) {
-		throw new UnsupportedOperationException();
+	public void setSensorInverted(boolean inverted) {
+		sensorInverted = inverted;
+		sensorInvertedSetter.accept(inverted);
 	}
 
 	@Override
-	public void configNominalOutputReverse(double PercentOutput) {
-		throw new UnsupportedOperationException();
+	public void setOutputRange(double minOutput, double maxOutput) {
+		revErrorToException(getPIDController().setOutputRange(minOutput, maxOutput));
 	}
 
 	@Override
-	public void configPeakOutputForward(double PercentOutput) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configPeakOutputReverse(double PercentOutput) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configMotionCruiseVelocity(int sensorUnitsPer100ms) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configMotionAcceleration(int sensorunitsPer100msPerSec) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setSensorPhase(boolean PhaseSensor) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void configFactoryDefault() {
+	public void restoreFactoryDefault() {
 		revErrorToException(restoreFactoryDefaults());
 	}
 
 	@Override
-	public void configOpenLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
+	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
+		revErrorToException(setOpenLoopRampRate(secondsFromNeutralToFull));
 	}
 
 	@Override
-	public void configClosedLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
+	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
+		revErrorToException(setClosedLoopRampRate(secondsFromNeutralToFull));
 	}
 	
 }
