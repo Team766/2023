@@ -13,6 +13,7 @@ public interface CANSpeedController extends SpeedController {
 		VictorSPX,
 		TalonSRX,
 		SparkMax,
+		TalonFX,
 	}
 
 	public enum ControlMode {
