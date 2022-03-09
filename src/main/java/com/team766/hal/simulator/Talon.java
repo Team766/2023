@@ -5,6 +5,7 @@ import static com.team766.math.Math.clamp;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.hal.CANSpeedController;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
 
 public class Talon implements CANSpeedController {
@@ -78,61 +79,61 @@ public class Talon implements CANSpeedController {
 
 	@Override
 	public void follow(CANSpeedController leader) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("follow() is currently unsupported in the simulator"));
 	}
 	
 	@Override
 	public void setNeutralMode(NeutralMode neutralMode) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setNeutralMode() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setP(double value) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setP() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setI(double value) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setI() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setD(double value) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setD() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setFF(double value) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setFF() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setSelectedFeedbsckSensor() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setSensorInverted(boolean inverted) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setSensorInverted() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setOutputRange(double minOutput, double maxOutput) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setOutputRange() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void restoreFactoryDefault() {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("restoreFactoryDefault() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setOpenLoopRamp() is currently unsupported in the simulator"));
 	}
 
 	@Override
 	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
-		throw new UnsupportedOperationException();
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setClosedLoopRamp() is currently unsupported in the simulator"));
 	}
 }

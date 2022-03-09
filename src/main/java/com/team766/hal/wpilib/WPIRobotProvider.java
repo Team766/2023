@@ -70,7 +70,8 @@ public class WPIRobotProvider extends RobotProvider {
 				}
 				return talonFxCanMotors[index];
 		}
-		throw new IllegalArgumentException("Unsupported CAN motor type " + type);
+		LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported CAN motor type " + type));
+		return new Talon(index);
 	}
 
 	@Override

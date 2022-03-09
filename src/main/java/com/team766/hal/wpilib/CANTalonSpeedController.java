@@ -1,33 +1,23 @@
 package com.team766.hal.wpilib;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team766.hal.CANSpeedController;
-import com.team766.hal.SpeedControllerCommandFailedException;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class CANTalonSpeedController implements CANSpeedController {
-
-	static final int TIMEOUT_MS = 20;
+public class CANTalonSpeedController extends BaseCTRESpeedController implements CANSpeedController {
 
 	private WPI_TalonSRX m_device;
 	private double m_feedForward = 0.0;
 
 	public CANTalonSpeedController(int deviceNumber) {
 		m_device = new WPI_TalonSRX(deviceNumber);
-	}
-
-	static void errorCodeToException(ErrorCode err) {
-		if (err == ErrorCode.OK) {
-			return;
-		}
-		throw new SpeedControllerCommandFailedException(err.toString());
 	}
 
 	@Override
@@ -99,7 +89,7 @@ public class CANTalonSpeedController implements CANSpeedController {
 	
 	@Override
 	public void setPosition(int position){
-		errorCodeToException(m_device.setSelectedSensorPosition(position, 0, 0));
+		errorCodeToException(ExceptionTarget.THROW, m_device.setSelectedSensorPosition(position, 0, 0));
 	}
 
 	@Override
@@ -107,43 +97,43 @@ public class CANTalonSpeedController implements CANSpeedController {
 		try {
 			m_device.follow((IMotorController)leader);
 		} catch (ClassCastException ex) {
-			throw new IllegalArgumentException("Victor can only follow another CTRE motor controller", ex);
+			LoggerExceptionUtils.logException(new IllegalArgumentException("Talon can only follow another CTRE motor controller", ex));
 		}
 	}
 
 	@Override
 	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		errorCodeToException(m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
-		errorCodeToException(m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setFF(double value) {
-		errorCodeToException(m_device.config_kF(0, value, TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(0, value, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setP(double value) {
-		errorCodeToException(m_device.config_kP(0, value));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(0, value));
 	}
 
 	@Override
 	public void setI(double value) {
-		errorCodeToException(m_device.config_kI(0, value));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(0, value));
 	}
 
 	@Override
 	public void setD(double value) {
-		errorCodeToException(m_device.config_kD(0, value));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(0, value));
 	}
 
 	@Override
 	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		errorCodeToException(m_device.configSelectedFeedbackSensor(feedbackDevice));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configSelectedFeedbackSensor(feedbackDevice));
 	}
 
 	@Override
@@ -153,13 +143,13 @@ public class CANTalonSpeedController implements CANSpeedController {
 
 	@Override
 	public void setOutputRange(double minOutput, double maxOutput) {
-		errorCodeToException(m_device.configPeakOutputReverse(minOutput));
-		errorCodeToException(m_device.configPeakOutputForward(maxOutput));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
 	}
 
 	@Override
 	public void restoreFactoryDefault() {
-		errorCodeToException(m_device.configFactoryDefault());
+		errorCodeToException(ExceptionTarget.LOG, m_device.configFactoryDefault());
 	}
 
 	@Override

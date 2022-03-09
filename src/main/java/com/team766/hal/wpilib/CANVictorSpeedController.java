@@ -8,9 +8,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.team766.hal.CANSpeedController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class CANVictorSpeedController implements CANSpeedController {
+public class CANVictorSpeedController extends BaseCTRESpeedController implements CANSpeedController {
 
 	private WPI_VictorSPX m_device;
 	private double m_feedForward = 0.0;
@@ -88,7 +89,7 @@ public class CANVictorSpeedController implements CANSpeedController {
 	
 	@Override
 	public void setPosition(int position){
-		CANTalonSpeedController.errorCodeToException(m_device.setSelectedSensorPosition(position, 0, 20));
+		errorCodeToException(ExceptionTarget.THROW, m_device.setSelectedSensorPosition(position, 0, 20));
 	}
 
 	@Override
@@ -96,23 +97,23 @@ public class CANVictorSpeedController implements CANSpeedController {
 		try {
 			m_device.follow((IMotorController)leader);
 		} catch (ClassCastException ex) {
-			throw new IllegalArgumentException("Victor can only follow another CTRE motor controller", ex);
+			LoggerExceptionUtils.logException(new IllegalArgumentException("Victor can only follow another CTRE motor controller", ex));
 		}
 	}
 
 	@Override
 	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		CANTalonSpeedController.errorCodeToException(m_device.configOpenloopRamp(secondsFromNeutralToFull, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
-		CANTalonSpeedController.errorCodeToException(m_device.configClosedloopRamp(secondsFromNeutralToFull, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setFF(double value) {
-		CANTalonSpeedController.errorCodeToException(m_device.config_kF(0, value, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(0, value, TIMEOUT_MS));
 	}
 
 	@Override
@@ -142,22 +143,22 @@ public class CANVictorSpeedController implements CANSpeedController {
 
 	@Override
 	public void setP(double value) {
-		CANTalonSpeedController.errorCodeToException(m_device.config_kP(0, value, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(0, value, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setI(double value) {
-		CANTalonSpeedController.errorCodeToException(m_device.config_kI(0, value, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(0, value, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setD(double value) {
-		CANTalonSpeedController.errorCodeToException(m_device.config_kD(0, value, CANTalonSpeedController.TIMEOUT_MS));
+		errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(0, value, TIMEOUT_MS));
 	}
 
 	@Override
 	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		CANTalonSpeedController.errorCodeToException(m_device.configSelectedFeedbackSensor(feedbackDevice));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configSelectedFeedbackSensor(feedbackDevice));
 	}
 
 	@Override
@@ -167,12 +168,12 @@ public class CANVictorSpeedController implements CANSpeedController {
 
 	@Override
 	public void setOutputRange(double minOutput, double maxOutput) {
-		CANTalonSpeedController.errorCodeToException(m_device.configPeakOutputReverse(minOutput));
-		CANTalonSpeedController.errorCodeToException(m_device.configPeakOutputForward(maxOutput));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
 	}
 
 	@Override
 	public void restoreFactoryDefault() {
-		CANTalonSpeedController.errorCodeToException(m_device.configFactoryDefault());
+		errorCodeToException(ExceptionTarget.LOG, m_device.configFactoryDefault());
 	}
 }
