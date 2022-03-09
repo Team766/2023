@@ -15,6 +15,7 @@ public class ConfigUI implements WebServer.Handler {
 	public String handle(Map<String, Object> params) {
 		String r = "<h1>Configuration</h1>";
 
+		r += "<div id=\"results\">\n";
 		if (params.containsKey("configJson")) {
 			String configJsonString = (String)params.get("configJson");
 			ArrayList<String> validationErrors = new ArrayList<String>();
@@ -42,11 +43,32 @@ public class ConfigUI implements WebServer.Handler {
 				for (String error : validationErrors) {
 					r += "<li>" + error + "</li>\n";
 				}
-				r += "</ul></p>";
+				r += "</ul></p>\n";
 			}
 		}
+		r += "</div>\n";
+
+		r += String.join("\n", new String[]{
+			"<script>",
+			"  function submitForm(oFormElement) {",
+			"    var xhttp = new XMLHttpRequest();",
+			"    xhttp.onreadystatechange = function() {",
+			"      if (this.readyState == 4 && this.status == 200) {",
+			"        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
+			"        var oldDiv = document.getElementById('results');",
+			"        oldDiv.parentNode.replaceChild(",
+			"            document.importNode(newDoc.querySelector('#results'), true),",
+			"            oldDiv);",
+			"     }",
+			"    };",
+			"    xhttp.open(oFormElement.method, oFormElement.getAttribute('action'), true);",
+			"    xhttp.send(new URLSearchParams(new FormData(oFormElement)));",
+			"    return false;",
+			"  }",
+			"</script>",
+		});
 		
-		r += "<form method=\"post\">\n";
+		r += "<form method=\"post\" action=\"" + endpoint() + "\" onsubmit=\"return submitForm(this);\">\n";
 		r += "<textarea name=\"configJson\" style=\"box-sizing: border-box; width: 100%; height: 400px;\">";
 		if (params.containsKey("configJson")) {
 			r += (String)params.get("configJson");

@@ -58,13 +58,30 @@ public class AutonomousSelector implements WebServer.Handler {
 			}
 		}
 		
-		String r = "<h1>Autonomous Mode Selector</h1>\n";
-		r += "<h3>Current Mode: " + String.valueOf(autonMode) + "</h1>\n";
-		r += "<form>\n";
-		r += "<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>\n";
-		r += "<input type=\"submit\" value=\"Submit\"></form>\n";
-		
-		return r;
+		return String.join("\n", new String[]{
+			"<h1>Autonomous Mode Selector</h1>",
+			"<h3 id=\"current-mode\">Current Mode: " + String.valueOf(autonMode) + "</h1>",
+			"<form>",
+			"<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>",
+			"<input type=\"submit\" value=\"Submit\"></form>",
+			"<script>",
+			"  function refresh() {",
+			"    var xhttp = new XMLHttpRequest();",
+			"    xhttp.onreadystatechange = function() {",
+			"      if (this.readyState == 4 && this.status == 200) {",
+			"        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
+			"        var oldMode = document.getElementById('current-mode');",
+			"        oldMode.parentNode.replaceChild(",
+			"            document.importNode(newDoc.querySelector('#current-mode'), true),",
+			"            oldMode);",
+			"     }",
+			"    };",
+			"    xhttp.open('GET', window.location.href, true);",
+			"    xhttp.send();",
+			"  }",
+			"  setInterval(refresh, 1000);",
+			"</script>",
+		});
 	}
 
 	@Override
