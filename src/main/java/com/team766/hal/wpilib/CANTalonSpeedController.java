@@ -24,6 +24,9 @@ public class CANTalonSpeedController implements CANSpeedController {
 	}
 
 	static void errorCodeToException(ErrorCode err) {
+		if (err == ErrorCode.OK) {
+			return;
+		}
 		throw new SpeedControllerCommandFailedException(err.toString());
 	}
 

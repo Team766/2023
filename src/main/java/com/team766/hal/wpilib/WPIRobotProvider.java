@@ -15,8 +15,10 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
 import com.team766.hal.mock.PositionSensor;
+import com.team766.hal.mock.Talon;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,7 +45,12 @@ public class WPIRobotProvider extends RobotProvider {
 		switch (type) {
 			case SparkMax:
 				if (sparkMaxMotors[index] == null) {
-					sparkMaxMotors[index] = new CANTalonSpeedController(index);
+					try {
+						sparkMaxMotors[index] = new CANSparkMaxSpeedController(index);
+					} catch (Exception ex) {
+						LoggerExceptionUtils.logException(ex);
+						sparkMaxMotors[index] = new Talon(index);
+					}
 				}
 				return sparkMaxMotors[index];
 			case TalonSRX:

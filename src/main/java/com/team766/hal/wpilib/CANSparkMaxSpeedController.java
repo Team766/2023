@@ -27,6 +27,9 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	}
 
 	private void revErrorToException(REVLibError err) {
+		if (err == REVLibError.kOk) {
+			return;
+		}
 		throw new SpeedControllerCommandFailedException(err.toString());
 	}
 
