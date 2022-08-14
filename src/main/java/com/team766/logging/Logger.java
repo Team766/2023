@@ -1,6 +1,7 @@
 package com.team766.logging;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +16,8 @@ public class Logger {
 	private static EnumMap<Category, Logger> m_loggers = new EnumMap<Category, Logger>(Category.class);
 	private static LogWriter m_logWriter = null;
 	private CircularBuffer<RawLogEntry> m_recentEntries = new CircularBuffer<RawLogEntry>(MAX_NUM_RECENT_ENTRIES);
+
+	public static String logFilePathBase = null;
 	
 	static {
 		for (Category category : Category.values()) {
@@ -23,8 +26,10 @@ public class Logger {
 		try {
 			ConfigFileReader config_file = ConfigFileReader.getInstance();
 			if (config_file != null) {
-				String logFilePath = config_file.getString("logFilePath").get();
-				logFilePath = new File(logFilePath).getAbsolutePath();
+				logFilePathBase = config_file.getString("logFilePath").get();
+				new File(logFilePathBase).mkdirs();
+				final String timestamp = new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(new Date());
+				final String logFilePath = new File(logFilePathBase, timestamp).getAbsolutePath();
 				m_logWriter = new LogWriter(logFilePath);
 				get(Category.CONFIGURATION).logRaw(Severity.INFO, "Logging to " + logFilePath);
 			} else {

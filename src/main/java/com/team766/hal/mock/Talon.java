@@ -123,6 +123,11 @@ public class Talon implements CANSpeedController {
 	}
 
 	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		// throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void restoreFactoryDefault() {
 		// throw new UnsupportedOperationException();
 	}

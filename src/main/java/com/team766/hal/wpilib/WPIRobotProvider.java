@@ -14,6 +14,7 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
+import com.team766.hal.mock.Gyro;
 import com.team766.hal.mock.PositionSensor;
 import com.team766.hal.mock.Talon;
 import com.team766.logging.Category;
@@ -93,15 +94,22 @@ public class WPIRobotProvider extends RobotProvider {
 	// -1 	= Spartan Gyro
 	// 	0+ 	= Analog Gyro on port index
 	public GyroReader getGyro(int index) {
-		if(gyros[index + 1] == null){
-			if(index == -2)
-				gyros[index + 1] = new NavXGyro(I2C.Port.kOnboard);
-			if(index == -1)
-				gyros[index + 1] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+		if(gyros[index + 2] == null){
+			if(index < -2) {
+				Logger.get(Category.CONFIGURATION).logData(
+					Severity.ERROR,
+					"Invalid gyro port " + index + ". Must be -2, -1, or a non-negative integer"
+				);
+				return new Gyro();
+			}
+			else if(index == -2)
+				gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
+			else if(index == -1)
+				gyros[index + 2] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 			else
-				gyros[index + 1] = new AnalogGyro(index);
+				gyros[index + 2] = new AnalogGyro(index);
 		}
-		return gyros[index + 1];
+		return gyros[index + 2];
 	}
 
 	@Override

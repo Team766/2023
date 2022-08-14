@@ -22,7 +22,9 @@ public class DriverInterface implements WebServer.Handler {
 
 	@Override
 	public String handle(Map<String, Object> params) {
-		return LogViewer.makeAllErrorsPage() + autonomousSelector.handle(params);
+		return Dashboard.makeDashboardPage()
+			+ LogViewer.makeAllErrorsPage()
+			+ autonomousSelector.handle(params);
 	}
 	
 }

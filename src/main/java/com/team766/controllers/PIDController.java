@@ -35,6 +35,7 @@ public class PIDController {
 	private ValueProvider<Double> Kp;
 	private ValueProvider<Double> Ki;
 	private ValueProvider<Double> Kd;
+	private ValueProvider<Double> Kff;
 	private ValueProvider<Double> maxoutput_low = new MissingValue<Double>();
 	private ValueProvider<Double> maxoutput_high = new MissingValue<Double>();
 	private ValueProvider<Double> endthreshold;
@@ -55,12 +56,13 @@ public class PIDController {
 			configPrefix += ".";
 		}
 		return new PIDController(
-				ConfigFileReader.getInstance().getDouble(configPrefix + "pGain"),
-				ConfigFileReader.getInstance().getDouble(configPrefix + "iGain"),
-				ConfigFileReader.getInstance().getDouble(configPrefix + "dGain"),
-				ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxLow"),
-				ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxHigh"),
-				ConfigFileReader.getInstance().getDouble(configPrefix + "threshold"));
+			ConfigFileReader.getInstance().getDouble(configPrefix + "pGain"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "iGain"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "dGain"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "ffGain"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxLow"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxHigh"),
+			ConfigFileReader.getInstance().getDouble(configPrefix + "threshold"));
 	}
 	
 	/**
@@ -83,31 +85,40 @@ public class PIDController {
 		Kp = new ConstantValueProvider<Double>(P);
 		Ki = new ConstantValueProvider<Double>(I);
 		Kd = new ConstantValueProvider<Double>(D);
+		Kff = new MissingValue<Double>();
 		maxoutput_low = new ConstantValueProvider<Double>(outputmax_low);
 		maxoutput_high = new ConstantValueProvider<Double>(outputmax_high);
 		endthreshold = new ConstantValueProvider<Double>(threshold);
-		setTimeProvider(RobotProvider.getTimeProvider(), timeProvider.get());
+		setTimeProvider(RobotProvider.getTimeProvider());
 	}
 
-	private void setTimeProvider(TimeProviderI timeProvider, double v) {
+	public PIDController(double P, double I, double D, double FF, double outputmax_low,
+	                     double outputmax_high, double threshold) {
+		this(P,I,D,outputmax_low,outputmax_high,threshold);
+		Kff = new ConstantValueProvider<Double>(FF);
+	}
+
+	private void setTimeProvider(TimeProviderI timeProvider) {
 		this.timeProvider = timeProvider;
-		lastTime = v;
+		lastTime = timeProvider.get();
 	}
 
 	public PIDController(
 			ValueProvider<Double> P,
 			ValueProvider<Double> I,
 			ValueProvider<Double> D,
+			ValueProvider<Double> FF,
 			ValueProvider<Double> outputmax_low,
 			ValueProvider<Double> outputmax_high,
 			ValueProvider<Double> threshold) {
 		Kp = P;
 		Ki = I;
 		Kd = D;
+		Kff = FF;
 		maxoutput_low = outputmax_low;
 		maxoutput_high = outputmax_high;
 		endthreshold = threshold;
-		setTimeProvider(RobotProvider.getTimeProvider(), timeProvider.get());
+		setTimeProvider(RobotProvider.getTimeProvider());
 	}
 
 	/**
@@ -122,10 +133,22 @@ public class PIDController {
 		Kp = new ConstantValueProvider<Double>(P);
 		Ki = new ConstantValueProvider<Double>(I);
 		Kd = new ConstantValueProvider<Double>(D);
+		Kff = new MissingValue<Double>();
 		maxoutput_low = new MissingValue<Double>();
 		maxoutput_high = new MissingValue<Double>();
 		endthreshold = new ConstantValueProvider<Double>(threshold);
-		setTimeProvider(timeProvider, timeProvider.get());
+		setTimeProvider(timeProvider);
+	}
+
+	public PIDController(double P, double I, double D, double FF, double threshold, TimeProviderI timeProvider) {
+		Kp = new ConstantValueProvider<Double>(P);
+		Ki = new ConstantValueProvider<Double>(I);
+		Kd = new ConstantValueProvider<Double>(D);
+		Kff = new ConstantValueProvider<Double>(FF);
+		maxoutput_low = new MissingValue<Double>();
+		maxoutput_high = new MissingValue<Double>();
+		endthreshold = new ConstantValueProvider<Double>(threshold);
+		setTimeProvider(timeProvider);
 	}
 
 	/**
@@ -183,17 +206,18 @@ public class PIDController {
 
 		total_error += cur_error * delta_time;
 
-		if ((total_error * Ki.get()) > 1) {
-			total_error = 1 / Ki.get();
-		} else {
-			if ((total_error * Ki.get()) < -1)
-				total_error = -1 / Ki.get();
+		double ki = Ki.valueOr(0.0);
+		if ((total_error * ki) > 1) {
+			total_error = 1 / ki;
+		} else if ((total_error * ki) < -1) {
+			total_error = -1 / ki;
 		}
 
 		double out =
-				Kp.get() * cur_error +
-				Ki.get() * total_error +
-				Kd.get() * ((cur_error - prev_error) / delta_time);
+				Kp.valueOr(0.0) * cur_error +
+				Ki.valueOr(0.0) * total_error +
+				Kd.valueOr(0.0) * ((cur_error - prev_error) / delta_time) +
+				Kff.valueOr(0.0) * setpoint;
 		prev_error = cur_error;
 
 		pr("Pre-clip output: " + out);
@@ -235,14 +259,8 @@ public class PIDController {
 	 */
 	private double clip(double clipped) {
 		double out = clipped;
-		double outputMaxLow = -1;
-		double outputMaxHigh = 1;
-		if (maxoutput_low.hasValue()) {
-			outputMaxLow = maxoutput_low.get();
-		}
-		if (maxoutput_high.hasValue()) {
-			outputMaxHigh = maxoutput_high.get();
-		}
+		double outputMaxLow = maxoutput_low.valueOr(-1.0);
+		double outputMaxHigh = maxoutput_high.valueOr(1.0);
 		if (out > outputMaxHigh) {
 			out = outputMaxHigh;
 		}

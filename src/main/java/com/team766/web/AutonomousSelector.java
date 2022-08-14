@@ -65,7 +65,7 @@ public class AutonomousSelector implements WebServer.Handler {
 			"<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>",
 			"<input type=\"submit\" value=\"Submit\"></form>",
 			"<script>",
-			"  function refresh() {",
+			"  function refreshAutoMode() {",
 			"    var xhttp = new XMLHttpRequest();",
 			"    xhttp.onreadystatechange = function() {",
 			"      if (this.readyState == 4 && this.status == 200) {",
@@ -79,7 +79,7 @@ public class AutonomousSelector implements WebServer.Handler {
 			"    xhttp.open('GET', window.location.href, true);",
 			"    xhttp.send();",
 			"  }",
-			"  setInterval(refresh, 1000);",
+			"  setInterval(refreshAutoMode, 1000);",
 			"</script>",
 		});
 	}

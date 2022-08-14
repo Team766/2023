@@ -53,6 +53,9 @@ public class CANVictorSpeedController extends BaseCTRESpeedController implements
 		case MotionProfileArc:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
 			break;
+		case Voltage:
+			m_device.setVoltage(value);
+			return;
 		case Disabled:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
 			useFourTermSet = false;
@@ -170,6 +173,12 @@ public class CANVictorSpeedController extends BaseCTRESpeedController implements
 	public void setOutputRange(double minOutput, double maxOutput) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
+	}
+	
+	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		LoggerExceptionUtils.logException(
+			new UnsupportedOperationException("VictorSPX does not support current limiting"));
 	}
 
 	@Override

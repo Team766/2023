@@ -44,7 +44,7 @@ public final class Context implements Runnable, LaunchedContext {
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
 		m_state = State.RUNNING;
-		m_thread = new Thread(this::threadFunction);
+		m_thread = new Thread(this::threadFunction, getContextName());
 		m_thread.start();
 		Scheduler.getInstance().add(this);
 	}
@@ -65,7 +65,13 @@ public final class Context implements Runnable, LaunchedContext {
 
 	@Override
 	public String toString() {
-		return getContextName();
+		String repr = getContextName();
+		if (currentContext() == this) {
+			repr += " running";
+		}
+		repr += "\n";
+		repr += StackTraceUtils.getStackTrace(m_thread);
+		return repr;
 	}
 
 	private String getExecutionPoint() {
@@ -132,15 +138,21 @@ public final class Context implements Runnable, LaunchedContext {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);
+			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Context " + getContextName() + " died");
 		} finally {
-			synchronized (m_threadSync) {
-				m_state = State.DONE;
-				m_threadSync.notifyAll();
-			}
 			for (Mechanism m : m_ownedMechanisms) {
 				// Don't use this.releaseOwnership here, because that would cause a
 				// ConcurrentModificationException since we're iterating over m_ownedMechanisms
-				m.releaseOwnership(this);
+				try {
+					m.releaseOwnership(this);
+				} catch (Exception ex) {
+					LoggerExceptionUtils.logException(ex);
+				}
+			}
+			synchronized (m_threadSync) {
+				m_state = State.DONE;
+				c_currentContext = null;
+				m_threadSync.notifyAll();
 			}
 			m_ownedMechanisms.clear();
 		}
@@ -181,6 +193,7 @@ public final class Context implements Runnable, LaunchedContext {
 	}
 
 	public void stop() {
+		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Stopping requested of " + getContextName());
 		synchronized (m_threadSync) {
 			if (m_state != State.DONE) {
 				m_state = State.CANCELED;

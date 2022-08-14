@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team766.hal.CANSpeedController;
 import com.team766.logging.Category;
@@ -53,6 +54,9 @@ public class CANTalonFxSpeedController extends BaseCTRESpeedController implement
 		case MotionProfileArc:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
 			break;
+		case Voltage:
+			m_device.setVoltage(value);
+			return;
 		case Disabled:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
 			useFourTermSet = false;
@@ -145,6 +149,12 @@ public class CANTalonFxSpeedController extends BaseCTRESpeedController implement
 	public void setOutputRange(double minOutput, double maxOutput) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
+	}
+
+	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		errorCodeToException(ExceptionTarget.LOG, m_device.configSupplyCurrentLimit(
+			new SupplyCurrentLimitConfiguration(true, ampsLimit, 0, 0.01)));
 	}
 
 	@Override

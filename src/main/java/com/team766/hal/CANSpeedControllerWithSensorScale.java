@@ -26,34 +26,36 @@ public class CANSpeedControllerWithSensorScale implements CANSpeedController {
 	public void set(ControlMode mode, double value) {
         switch (mode) {
         case PercentOutput:
-            set(mode, value);
+            delegate.set(mode, value);
             return;
         case Position:
-            set(mode, value / scale);
+            delegate.set(mode, value / scale);
             return;
         case Velocity:
-            set(mode, value / scale);
+            delegate.set(mode, value / scale);
             return;
         case Current:
-            set(mode, value);
+            delegate.set(mode, value);
             return;
+        case Voltage:
+            delegate.set(mode, value);
         case Follower:
-            set(mode, value);
+            delegate.set(mode, value);
             return;
         case MotionProfile:
             // TODO: What is value here? This assumes its a target position.
-            set(mode, value / scale);
+            delegate.set(mode, value / scale);
             return;
         case MotionMagic:
             // TODO: What is value here? This assumes its a target position.
-            set(mode, value / scale);
+            delegate.set(mode, value / scale);
             return;
         case MotionProfileArc:
             // TODO: What is value here? This assumes its a target position.
-            set(mode, value / scale);
+            delegate.set(mode, value / scale);
             return;
         case Disabled:
-            set(mode, value);
+            delegate.set(mode, value);
             return;
         }
         throw new UnsupportedOperationException("Unimplemented control mode in CANSpeedControllerWithSensorScale");
@@ -122,6 +124,11 @@ public class CANSpeedControllerWithSensorScale implements CANSpeedController {
     @Override
 	public void setOutputRange(double minOutput, double maxOutput) {
         delegate.setOutputRange(minOutput, maxOutput);
+    }
+	
+    @Override
+    public void setCurrentLimit(double ampsLimit) {
+        delegate.setCurrentLimit(ampsLimit);
     }
 
     @Override

@@ -84,6 +84,8 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 			case Velocity:
 				getPIDController().setReference(value, CANSparkMax.ControlType.kVelocity);
 				break;
+			case Voltage:
+				getPIDController().setReference(value, CANSparkMax.ControlType.kVoltage);
 			default:
 				throw new IllegalArgumentException("Unsupported control mode " + mode);
 		}
@@ -154,11 +156,14 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
 			case IntegratedSensor: {
 				RelativeEncoder encoder = getEncoder();
-				revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
+				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the integrated sensor returns an error.
+				// revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
 				sensorPositionSupplier = encoder::getPosition;
 				sensorVelocitySupplier = encoder::getVelocity;
 				sensorPositionSetter = encoder::setPosition;
-				sensorInvertedSetter = encoder::setInverted;
+				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the integrated sensor returns an error.
+				// sensorInvertedSetter = encoder::setInverted;
+				sensorInvertedSetter = (inverted) -> REVLibError.kOk;
 				revErrorToException(ExceptionTarget.LOG, getPIDController().setFeedbackDevice(encoder));
 				return;
 			}
@@ -203,6 +208,10 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	@Override
 	public void setOutputRange(double minOutput, double maxOutput) {
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput));
+	}
+
+	public void setCurrentLimit(double ampsLimit) {
+		revErrorToException(ExceptionTarget.LOG, setSmartCurrentLimit((int)ampsLimit));
 	}
 
 	@Override

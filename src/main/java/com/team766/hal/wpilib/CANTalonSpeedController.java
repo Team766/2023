@@ -53,6 +53,9 @@ public class CANTalonSpeedController extends BaseCTRESpeedController implements 
 		case MotionProfileArc:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
 			break;
+		case Voltage:
+			m_device.setVoltage(value);
+			return;
 		case Disabled:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
 			useFourTermSet = false;
@@ -145,6 +148,14 @@ public class CANTalonSpeedController extends BaseCTRESpeedController implements 
 	public void setOutputRange(double minOutput, double maxOutput) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
+	}
+
+	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentLimit(0));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentDuration(10));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configContinuousCurrentLimit((int)ampsLimit));
+		m_device.enableCurrentLimit(true);
 	}
 
 	@Override

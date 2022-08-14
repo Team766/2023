@@ -28,6 +28,7 @@ public class ProgramInterface {
 			MotionProfile,
 			MotionMagic,
 			MotionProfileArc,
+			Voltage,
 			Disabled,
 		}
 		

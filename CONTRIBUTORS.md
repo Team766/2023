@@ -7,3 +7,9 @@ Alexander Youngblood
 Yarden Goraly
 Aiden Tai
 Samir Rashid
+Alexandre Sauquet
+Nicholas Chang
+Adrian Deutscher-Bishop
+Jason Lee
+Rajit Ghosh
+Debajit Ghosh
