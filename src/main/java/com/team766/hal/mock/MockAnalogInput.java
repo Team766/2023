@@ -2,7 +2,7 @@ package com.team766.hal.mock;
 
 import com.team766.hal.AnalogInputReader;
 
-public class AnalogInput implements AnalogInputReader {
+public class MockAnalogInput implements AnalogInputReader {
 	
 	private double sensor = 0.0;
 	

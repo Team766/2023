@@ -1,6 +1,6 @@
 package com.team766.hal;
 
-public interface EncoderReader {
+public interface EncoderReader extends ControlInputReader {
 
 	/**
 	 * Gets the current count. Returns the current count on the Encoder. This
@@ -64,4 +64,10 @@ public interface EncoderReader {
 	 *            units.
 	 */
 	public void setDistancePerPulse(double distancePerPulse);
+
+	// Implementation for ControlInputReader interface
+	@Override
+	public default double getPosition() {
+		return getDistance();
+	}
 }

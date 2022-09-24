@@ -8,15 +8,15 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
-import com.team766.hal.CANSpeedController;
+import com.team766.hal.SpeedController;
 import com.team766.hal.SpeedControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
 
-public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedController {
+public class CANSparkMaxSpeedController extends CANSparkMax implements SpeedController {
 
 	private Supplier<Double> sensorPositionSupplier;
 	private Supplier<Double> sensorVelocitySupplier;
-	private Function<Integer, REVLibError> sensorPositionSetter;
+	private Function<Double, REVLibError> sensorPositionSetter;
 	private Function<Boolean, REVLibError> sensorInvertedSetter;
 	private boolean sensorInverted = false;
 
@@ -92,12 +92,12 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 	}
 
 	@Override
-	public void setPosition(int position) {
+	public void setSensorPosition(double position) {
 		revErrorToException(ExceptionTarget.THROW, sensorPositionSetter.apply(position));
 	}
 
 	@Override
-	public void follow(CANSpeedController leader) {
+	public void follow(SpeedController leader) {
 		try {
 			revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax)leader));
 		} catch (ClassCastException ex) {

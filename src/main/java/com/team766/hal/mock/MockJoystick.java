@@ -2,14 +2,14 @@ package com.team766.hal.mock;
 
 import com.team766.hal.JoystickReader;
 
-public class Joystick implements JoystickReader {
+public class MockJoystick implements JoystickReader {
 	
 	private double[] axisValues;
 	private boolean[] buttonValues;
 	private boolean[] prevButtonValues;
 	private int povValue;
 	
-	public Joystick(){
+	public MockJoystick(){
 		axisValues = new double[4];
 		buttonValues = new boolean[20];
 		prevButtonValues = new boolean[20];

@@ -5,7 +5,12 @@ import java.util.HashMap;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.TimeProviderI;
-import com.team766.hal.mock.*;
+import com.team766.hal.mock.MockAnalogInput;
+import com.team766.hal.mock.MockDigitalInput;
+import com.team766.hal.mock.MockEncoder;
+import com.team766.hal.mock.MockGyro;
+import com.team766.hal.mock.MockRelay;
+import com.team766.hal.mock.MockSpeedController;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -15,7 +20,6 @@ public abstract class RobotProvider {
 	
 	public static RobotProvider instance;
 	
-	protected SpeedController[] motors = new SpeedController[12];
 	protected EncoderReader[] encoders = new EncoderReader[20];
 	protected SolenoidController[] solenoids = new SolenoidController[10];
 	protected GyroReader[] gyros = new GyroReader[13];
@@ -27,8 +31,7 @@ public abstract class RobotProvider {
 	protected PositionReader positionSensor = null;
 	
 	//HAL
-	public abstract SpeedController getMotor(int index);
-	public abstract CANSpeedController getCANMotor(int index, CANSpeedController.Type type);
+	public abstract SpeedController getMotor(int index, SpeedController.Type type, ControlInputReader localSensor);
 	
 	public abstract EncoderReader getEncoder(int index1, int index2);
 	
@@ -52,31 +55,34 @@ public abstract class RobotProvider {
 	
 	// Config-driven methods
 	public SpeedController getMotor(String configName) {
-		try {
-			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
-			ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
+		final String encoderConfigName = configName + ".encoder";
+		final String analogInputConfigName = configName + ".analogInput";
+		final ControlInputReader sensor =
+			ConfigFileReader.getInstance().containsKey(encoderConfigName) ? getEncoder(encoderConfigName) :
+			ConfigFileReader.getInstance().containsKey(analogInputConfigName) ? getAnalogInput(analogInputConfigName) :
+			null;
 
-			var motor = getMotor(port.get());
-			if (invertedConfig.valueOr(false)) {
-				motor.setInverted(true);
+		try {
+			ValueProvider<Integer> deviceId = ConfigFileReader.getInstance().getInt(configName + ".deviceId");
+			final ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			final ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
+			final ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
+			final ValueProvider<Boolean> sensorInvertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".sensorInverted");
+			final ValueProvider<SpeedController.Type> type = ConfigFileReader.getInstance().getEnum(SpeedController.Type.class, configName + ".type");
+
+			if (deviceId.hasValue() && port.hasValue()) {
+				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s configuration should have only one of `deviceId` or `port`", configName);
 			}
-			return motor;
-		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
-			return new Victor(0);
-		}
-	}
-	public CANSpeedController getCANMotor(String configName) {
-		try {
-			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".deviceId");
-			ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
-			ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
-			ValueProvider<Boolean> sensorInvertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".sensorInverted");
-			ValueProvider<CANSpeedController.Type> type = ConfigFileReader.getInstance().getEnum(CANSpeedController.Type.class, configName + ".type");
 
-			var motor = getCANMotor(port.get(), type.valueOr(CANSpeedController.Type.TalonSRX));
+			SpeedController.Type defaultType = SpeedController.Type.TalonSRX;
+			if (!deviceId.hasValue()) {
+				deviceId = port;
+				defaultType = SpeedController.Type.VictorSP;
+			}
+
+			var motor = getMotor(deviceId.get(), type.valueOr(defaultType), sensor);
 			if (sensorScaleConfig.hasValue()) {
-				motor = new CANSpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
+				motor = new SpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
 			}
 			if (invertedConfig.valueOr(false)) {
 				motor.setInverted(true);
@@ -86,28 +92,28 @@ public abstract class RobotProvider {
 			}
 			return motor;
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "CAN Motor %s not found in config file, using mock motor instead", configName);
-			return new Talon(0);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
+			return new LocalSpeedController(new MockSpeedController(0), sensor);
 		}
 	}
 	public EncoderReader getEncoder(String configName) {
 		try {
-			ValueProvider<Integer[]> ports = ConfigFileReader.getInstance().getInts(configName + ".ports");
-			ValueProvider<Double> distancePerPulseConfig = ConfigFileReader.getInstance().getDouble(configName + ".distancePerPulse");
+			final ValueProvider<Integer[]> ports = ConfigFileReader.getInstance().getInts(configName + ".ports");
+			final ValueProvider<Double> distancePerPulseConfig = ConfigFileReader.getInstance().getDouble(configName + ".distancePerPulse");
 
-			var portsValue = ports.get();
+			final var portsValue = ports.get();
 			if (portsValue.length != 2) {
 				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Encoder %s has %d config values, but expected 2", configName, portsValue.length);
-				return new Encoder(0, 0);
+				return new MockEncoder(0, 0);
 			}
-			EncoderReader reader = getEncoder(portsValue[0], portsValue[1]);
+			final EncoderReader reader = getEncoder(portsValue[0], portsValue[1]);
 			if (distancePerPulseConfig.hasValue()) {
 				reader.setDistancePerPulse(distancePerPulseConfig.get());
 			}
 			return reader;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Encoder %s not found in config file, using mock encoder instead", configName);
-			return new Encoder(0, 0);
+			return new MockEncoder(0, 0);
 		}
 	}
 	public DigitalInputReader getDigitalInput(String configName) {
@@ -117,7 +123,7 @@ public abstract class RobotProvider {
 			return getDigitalInput(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Digital input %s not found in config file, using mock digital input instead", configName);
-			return new DigitalInput();
+			return new MockDigitalInput();
 		}
 	}
 	public AnalogInputReader getAnalogInput(String configName) {
@@ -127,7 +133,7 @@ public abstract class RobotProvider {
 			return getAnalogInput(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Analog input %s not found in config file, using mock analog input instead", configName);
-			return new AnalogInput();
+			return new MockAnalogInput();
 		}
 	}
 	public RelayOutput getRelay(String configName) {
@@ -137,7 +143,7 @@ public abstract class RobotProvider {
 			return getRelay(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Relay %s not found in config file, using mock relay instead", configName);
-			return new Relay(0);
+			return new MockRelay(0);
 		}
 	}
 	public DoubleSolenoid getSolenoid(String configName) {
@@ -171,7 +177,7 @@ public abstract class RobotProvider {
 			return getGyro(port.get());
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Gyro %s not found in config file, using mock gyro instead", configName);
-			return new Gyro();
+			return new MockGyro();
 		}
 	}
 
@@ -181,6 +187,8 @@ public abstract class RobotProvider {
 	public abstract CameraInterface getCamServer();
 	
 	public abstract Clock getClock();
+
+	public abstract double getBatteryVoltage();
 
 	public abstract boolean hasNewDriverStationData();
 }

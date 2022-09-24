@@ -2,7 +2,7 @@ package com.team766.hal.mock;
 
 import com.team766.hal.GyroReader;
 
-public class Gyro implements GyroReader{
+public class MockGyro implements GyroReader{
 
 	private double angle = 0;
 	private double rate = 0;

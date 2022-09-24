@@ -2,7 +2,7 @@ package com.team766.hal.mock;
 
 import com.team766.hal.PositionReader;
 
-public class PositionSensor implements PositionReader {
+public class MockPositionSensor implements PositionReader {
 
 	private double x = 0;
 	private double y = 0;

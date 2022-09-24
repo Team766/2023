@@ -2,7 +2,7 @@ package com.team766.hal.mock;
 
 import com.team766.hal.DigitalInputReader;
 
-public class DigitalInput implements DigitalInputReader{
+public class MockDigitalInput implements DigitalInputReader{
 	
 	private boolean sensor = false;
 

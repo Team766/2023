@@ -219,9 +219,14 @@ public class VrConnector implements Runnable {
 			ProgramInterface.gyro.roll = normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
 
 			for (PortMapping m : ENCODER_CHANNELS) {
-				long value = getFeedback(m.messageDataIndex);
-				ProgramInterface.encoderChannels[m.robotPortIndex] += value - lastEncoderValue[m.robotPortIndex];
+				final long value = getFeedback(m.messageDataIndex);
+				final long delta = value - lastEncoderValue[m.robotPortIndex];
 				lastEncoderValue[m.robotPortIndex] = value;
+
+				ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
+				if (ProgramInterface.simulationTime > prevSimTime) {
+					ProgramInterface.encoderChannels[m.robotPortIndex].rate = delta / (ProgramInterface.simulationTime - prevSimTime);
+				}
 			}
 			for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
 				var status = ProgramInterface.canSpeedControllerChannels[m.canId].status;

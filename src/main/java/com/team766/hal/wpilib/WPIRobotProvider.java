@@ -1,22 +1,23 @@
 package com.team766.hal.wpilib;
 
 import com.team766.hal.AnalogInputReader;
-import com.team766.hal.CANSpeedController;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
+import com.team766.hal.ControlInputReader;
 import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
+import com.team766.hal.LocalSpeedController;
 import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.SpeedController;
-import com.team766.hal.mock.Gyro;
-import com.team766.hal.mock.PositionSensor;
-import com.team766.hal.mock.Talon;
+import com.team766.hal.mock.MockGyro;
+import com.team766.hal.mock.MockPositionSensor;
+import com.team766.hal.mock.MockSpeedController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -24,55 +25,53 @@ import com.team766.logging.Severity;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
 
-	private CANSpeedController[] talonCanMotors = new CANSpeedController[64];
-	private CANSpeedController[] victorCanMotors = new CANSpeedController[64];
-	private CANSpeedController[] sparkMaxMotors = new CANSpeedController[64];
-	private CANSpeedController[] talonFxCanMotors = new CANSpeedController[64];
+	private SpeedController[][] motors = new SpeedController[SpeedController.Type.values().length][64];
 
 	@Override
-	public SpeedController getMotor(int index) {
-		if(motors[index] == null){
-			motors[index] = new Victor(index);
+	public SpeedController getMotor(int index, SpeedController.Type type, ControlInputReader localSensor) {
+		if (motors[type.ordinal()][index] != null) {
+			return motors[type.ordinal()][index];
 		}
-
-		return motors[index];
-	}
-
-	@Override
-	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
+		SpeedController motor = null;
 		switch (type) {
 			case SparkMax:
-				if (sparkMaxMotors[index] == null) {
-					try {
-						sparkMaxMotors[index] = new CANSparkMaxSpeedController(index);
-					} catch (Exception ex) {
-						LoggerExceptionUtils.logException(ex);
-						sparkMaxMotors[index] = new Talon(index);
-					}
+				try {
+					motor = new CANSparkMaxSpeedController(index);
+				} catch (Exception ex) {
+					LoggerExceptionUtils.logException(ex);
+					motor = new LocalSpeedController(new MockSpeedController(index), localSensor);
+					localSensor = null;
 				}
-				return sparkMaxMotors[index];
+				break;
 			case TalonSRX:
-				if (talonCanMotors[index] == null) {
-					talonCanMotors[index] = new CANTalonSpeedController(index);
-				}
-				return talonCanMotors[index];
+				motor = new CANTalonSpeedController(index);
+				break;
 			case VictorSPX:
-				if (victorCanMotors[index] == null) {
-					victorCanMotors[index] = new CANVictorSpeedController(index);
-				}
-				return victorCanMotors[index];
+				motor = new CANVictorSpeedController(index);
+				break;
 			case TalonFX:
-				if (talonFxCanMotors[index] == null) {
-					talonFxCanMotors[index] = new CANTalonFxSpeedController(index);
-				}
-				return talonFxCanMotors[index];
+				motor = new CANTalonFxSpeedController(index);
+				break;
+			case VictorSP:
+				motor = new LocalSpeedController(new PWMVictorSP(index), localSensor);
+				localSensor = null;
+				break;
 		}
-		LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported CAN motor type " + type));
-		return new Talon(index);
+		if (motor == null) {
+			LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported motor type " + type));
+			motor = new LocalSpeedController(new MockSpeedController(index), localSensor);
+			localSensor = null;
+		}
+		if (localSensor != null) {
+			motor = new LocalSpeedController(motor, localSensor);
+		}
+		motors[type.ordinal()][index] = motor;
+		return motor;
 	}
 
 	@Override
@@ -96,11 +95,11 @@ public class WPIRobotProvider extends RobotProvider {
 	public GyroReader getGyro(int index) {
 		if(gyros[index + 2] == null){
 			if(index < -2) {
-				Logger.get(Category.CONFIGURATION).logData(
+				Logger.get(Category.CONFIGURATION).logRaw(
 					Severity.ERROR,
 					"Invalid gyro port " + index + ". Must be -2, -1, or a non-negative integer"
 				);
-				return new Gyro();
+				return new MockGyro();
 			}
 			else if(index == -2)
 				gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
@@ -154,8 +153,8 @@ public class WPIRobotProvider extends RobotProvider {
 	@Override
 	public PositionReader getPositionSensor() {
 		if (positionSensor == null) {
-			positionSensor = new PositionSensor();
-			Logger.get(Category.CONFIGURATION).logData(
+			positionSensor = new MockPositionSensor();
+			Logger.get(Category.CONFIGURATION).logRaw(
 				Severity.ERROR,
 				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
 			);
@@ -171,5 +170,10 @@ public class WPIRobotProvider extends RobotProvider {
 	@Override
 	public boolean hasNewDriverStationData() {
 		return DriverStation.isNewControlData();
+	}
+
+	@Override
+	public double getBatteryVoltage() {
+		return RobotController.getBatteryVoltage();
 	}
 }

@@ -1,14 +1,15 @@
 package com.team766.hal.simulator;
 
 import com.team766.hal.AnalogInputReader;
-import com.team766.hal.CANSpeedController;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
+import com.team766.hal.ControlInputReader;
 import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
+import com.team766.hal.LocalSpeedController;
 import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
@@ -18,21 +19,18 @@ import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider{
 
-	private CANSpeedController[] canMotors = new CANSpeedController[64];
+	private SpeedController[] motors = new SpeedController[64];
 	private int m_dsUpdateNumber = 0;
 
 	@Override
-	public SpeedController getMotor(int index) {
-		if(motors[index] == null)
-			motors[index] = new Victor(index);
+	public SpeedController getMotor(int index, SpeedController.Type type, ControlInputReader localSensor) {
+		if(motors[index] == null) {
+			motors[index] = new SimSpeedController(index);
+			if (localSensor != null) {
+				motors[index] = new LocalSpeedController(motors[index], localSensor);
+			}
+		}
 		return motors[index];
-	}
-
-	@Override
-	public CANSpeedController getCANMotor(int index, CANSpeedController.Type type) {
-		if(canMotors[index] == null)
-			canMotors[index] = new Talon(index);
-		return canMotors[index];
 	}
 
 	@Override
@@ -111,5 +109,11 @@ public class SimulationRobotProvider extends RobotProvider{
 		boolean result = m_dsUpdateNumber != newUpdateNumber;
 		m_dsUpdateNumber = newUpdateNumber;
 		return result;
+	}
+
+	@Override
+	public double getBatteryVoltage() {
+		// TODO: The simulator currently doesn't include a simulation of electrical load.
+		return 12.0;
 	}
 }

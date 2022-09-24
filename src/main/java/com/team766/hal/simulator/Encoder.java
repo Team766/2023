@@ -12,39 +12,43 @@ public class Encoder implements EncoderReader{
 		this.channel = a;
 	}
 	
+	@Override
 	public int get() {
-		return (int)ProgramInterface.encoderChannels[channel];
+		return (int)ProgramInterface.encoderChannels[channel].distance;
 	}
 
+	@Override
 	public void reset() {
 		set(0);
 	}
 
+	@Override
 	public boolean getStopped() {
-		// TODO
-		return false;
+		return getRate() == 0;
 	}
 
+	@Override
 	public boolean getDirection() {
-		// TODO
-		return false;
+		return getRate() > 0;
 	}
 
+	@Override
 	public double getDistance() {
 		return get() * distancePerPulse;
 	}
 
+	@Override
 	public double getRate() {
-		// TODO
-		return 0;
+		return ProgramInterface.encoderChannels[channel].rate * distancePerPulse;
 	}
 
+	@Override
 	public void setDistancePerPulse(double distancePerPulse) {
 		this.distancePerPulse = distancePerPulse;
 	}
 	
 	public void set(int tick){
-		ProgramInterface.encoderChannels[channel] = tick;
+		ProgramInterface.encoderChannels[channel].distance = tick;
 	}
 
 }

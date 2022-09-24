@@ -2,11 +2,11 @@ package com.team766.hal.mock;
 
 import com.team766.hal.RelayOutput;
 
-public class Relay implements RelayOutput{
+public class MockRelay implements RelayOutput{
 
 	private Value val;
 	
-	public Relay(int port){
+	public MockRelay(int port){
 		val = Value.kOff;
 	}
 	

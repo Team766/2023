@@ -1,7 +1,7 @@
 package com.team766.simulator;
 
 import java.lang.reflect.Array;
-import com.team766.hal.mock.Joystick;
+import com.team766.hal.mock.MockJoystick;
 
 public class ProgramInterface {
 	public static Runnable programStep = () -> {};
@@ -55,7 +55,13 @@ public class ProgramInterface {
 	
 	public static final boolean[] solenoidChannels = new boolean[20];
 	
-	public static final long[] encoderChannels = new long[20];
+	public static class EncoderChannel {
+		public long distance = 0;
+		public double rate = 0;
+	}
+
+	public static final EncoderChannel[] encoderChannels =
+		initializeArray(20, EncoderChannel.class);
 	
 	public static class GyroCommunication {
 		public double angle; // Yaw angle (accumulative)
@@ -74,8 +80,8 @@ public class ProgramInterface {
 
 	public static final RobotPosition robotPosition = new RobotPosition();
 	
-	public static final Joystick[] joystickChannels =
-			initializeArray(4, Joystick.class);
+	public static final MockJoystick[] joystickChannels =
+			initializeArray(4, MockJoystick.class);
 	
 	
 	private static <E> E[] initializeArray(int size, Class<E> clazz) {

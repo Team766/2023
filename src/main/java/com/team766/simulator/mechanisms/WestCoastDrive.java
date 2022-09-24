@@ -78,12 +78,14 @@ public class WestCoastDrive extends DriveBase {
 		
 		Vector3D ego_velocity = robotRotation.applyInverseTo(linearVelocity);
 		
-		double deltaLeft = ENCODER_TICKS_PER_METER * (ego_velocity.getX() - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm()) * Parameters.TIME_STEP;
-		double deltaRight = ENCODER_TICKS_PER_METER * (ego_velocity.getX() + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm()) * Parameters.TIME_STEP;
-		leftEncoderResidual += deltaLeft;
-		rightEncoderResidual += deltaRight;
-		ProgramInterface.encoderChannels[0] += (long)leftEncoderResidual;
-		ProgramInterface.encoderChannels[2] += (long)rightEncoderResidual;
+		double rateLeft = ENCODER_TICKS_PER_METER * (ego_velocity.getX() - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm());
+		double rateRight = ENCODER_TICKS_PER_METER * (ego_velocity.getX() + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm());
+		leftEncoderResidual += rateLeft * Parameters.TIME_STEP;
+		rightEncoderResidual += rateRight * Parameters.TIME_STEP;
+		ProgramInterface.encoderChannels[0].distance += (long)leftEncoderResidual;
+		ProgramInterface.encoderChannels[0].rate = rateLeft;
+		ProgramInterface.encoderChannels[2].distance += (long)rightEncoderResidual;
+		ProgramInterface.encoderChannels[2].rate = rateRight;
 		leftEncoderResidual %= 1;
 		rightEncoderResidual %= 1;
 

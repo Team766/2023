@@ -64,6 +64,7 @@ public class ConfigFileReader {
 			if (obj == null) {
 				values.put(fullKey, json.get(key));
 			} else {
+				values.put(fullKey, obj);
 				loadJson(fullKey + KEY_DELIMITER, obj, values);
 			}
 		}
