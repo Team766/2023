@@ -3,10 +3,6 @@ package com.team766.logging;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -15,61 +11,21 @@ import com.team766.library.LossyPriorityQueue;
 public class LogWriter {
 	private static final int QUEUE_SIZE = 50;
 	
-	private static ArrayList<LogWriter> loggers = new ArrayList<LogWriter>();
-	
-	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
-		public void uncaughtException(Thread t, Throwable e) {
-			e.printStackTrace();
-			for (LogWriter log : loggers) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				pw.print("Uncaught exception: ");
-				e.printStackTrace(pw);
-				pw.flush();
-				String str = sw.toString();
-				try {
-					log.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, str);
-				} catch (Exception exc) {
-					exc.printStackTrace();
-				}
-
-				while (true) {
-					try {
-						log.close();
-						break;
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-	
-	static {
-		Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
-	}
-	
 	private LossyPriorityQueue<LogEntry> m_entriesQueue;
 	
-	private static Thread m_workerThread;
+	private Thread m_workerThread;
 	private boolean m_running = true;
 	
 	private HashMap<String, Integer> m_formatStringIndices = new HashMap<String, Integer>();
 	
-	private OutputStream m_fileStream;
+	private FileOutputStream m_fileStream;
 	private ObjectOutputStream m_objectStream;
 	
 	private Severity m_minSeverity = Severity.INFO;
 	
 	public LogWriter(String filename) throws IOException {
-		this(new FileOutputStream(filename));
-	}
-
-	public LogWriter(OutputStream fileStream) throws IOException {
 		m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
-		m_fileStream = fileStream;
+		m_fileStream = new FileOutputStream(filename);
 		m_objectStream = new ObjectOutputStream(m_fileStream);
 		m_workerThread = new Thread(new Runnable() {
 			public void run() {
@@ -100,6 +56,8 @@ public class LogWriter {
 
 		m_objectStream.flush();
 		m_fileStream.flush();
+
+		m_fileStream.getFD().sync();
 
 		m_objectStream.close();
 		m_fileStream.close();

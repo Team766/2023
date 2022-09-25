@@ -1,6 +1,8 @@
 package com.team766.logging;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +13,32 @@ import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
 
 public class Logger {
+	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
+		public void uncaughtException(Thread t, Throwable e) {
+			e.printStackTrace();
+			if (m_logWriter != null) {
+				try {
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					pw.print("Uncaught exception: ");
+					e.printStackTrace(pw);
+					pw.flush();
+					String str = sw.toString();
+					m_logWriter.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, str);
+				} catch (Exception exc) {
+					exc.printStackTrace();
+				}
+
+				try {
+					m_logWriter.close();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+			System.exit(1);
+		}
+	}
+
 	private static final int MAX_NUM_RECENT_ENTRIES = 100;
 	
 	private static EnumMap<Category, Logger> m_loggers = new EnumMap<Category, Logger>(Category.class);
@@ -39,6 +67,8 @@ public class Logger {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
+
+		Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
 	}
 	
 	public static Logger get(Category category) {
