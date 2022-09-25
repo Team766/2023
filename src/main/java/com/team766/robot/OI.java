@@ -1,12 +1,11 @@
-package com.team766.frc2022;
+package com.team766.robot;
 
 import com.team766.framework.Procedure;
 import com.team766.framework.Context;
-import com.team766.frc2022.Robot;
-import com.team766.frc2022.procedures.*;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.procedures.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator

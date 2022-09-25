@@ -1,7 +1,6 @@
 package com.team766.hal.wpilib;
 
 import java.util.function.Supplier;
-import com.team766.EntryPoint;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.MyRobot;
@@ -41,7 +40,7 @@ public class RobotMain extends TimedRobot {
 		try {
 			ConfigFileReader.instance = new ConfigFileReader("/home/lvuser/robotConfig.txt");
 			RobotProvider.instance = new WPIRobotProvider();
-			robot = EntryPoint.createRobot();
+			robot = new MyRobot();
 			
 			robot.robotInit();
 		} catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.team766.frc2022.mechanisms;
+package com.team766.robot.mechanisms;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.RobotProvider;

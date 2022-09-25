@@ -1,7 +1,7 @@
-package com.team766.frc2022;
+package com.team766.robot;
 
 import com.team766.framework.AutonomousProcedure;
-import com.team766.frc2022.procedures.*;
+import com.team766.robot.procedures.*;
 
 public enum AutonomousModes {
 

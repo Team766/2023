@@ -2,7 +2,6 @@ package com.team766.hal.simulator;
 
 import java.io.IOException;
 
-import com.team766.EntryPoint;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.MyRobot;
@@ -27,7 +26,7 @@ public class RobotMain {
 			
 			Scheduler.getInstance().reset();
 			
-			robot = EntryPoint.createRobot();
+			robot = new MyRobot();
 			
 			robot.robotInit();
 			
