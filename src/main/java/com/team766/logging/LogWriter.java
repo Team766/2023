@@ -2,10 +2,8 @@ package com.team766.logging;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Date;
 import java.util.HashMap;
-
+import com.google.protobuf.CodedOutputStream;
 import com.team766.library.LossyPriorityQueue;
 
 public class LogWriter {
@@ -19,14 +17,14 @@ public class LogWriter {
 	private HashMap<String, Integer> m_formatStringIndices = new HashMap<String, Integer>();
 	
 	private FileOutputStream m_fileStream;
-	private ObjectOutputStream m_objectStream;
+	private CodedOutputStream m_dataStream;
 	
 	private Severity m_minSeverity = Severity.INFO;
 	
 	public LogWriter(String filename) throws IOException {
 		m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
 		m_fileStream = new FileOutputStream(filename);
-		m_objectStream = new ObjectOutputStream(m_fileStream);
+		m_dataStream = CodedOutputStream.newInstance(m_fileStream);
 		m_workerThread = new Thread(new Runnable() {
 			public void run() {
 				while (true) {
@@ -37,10 +35,18 @@ public class LogWriter {
 						System.out.println("Logger thread received interruption");
 						continue;
 					}
-					if (entry instanceof CloseLogPseudoEntry) {
+					if (entry == LogEntryComparator.TERMINATION_SENTINAL) {
+						// close() sends this sentinel element when it's time to exit
 						return;
 					}
-					entry.write(m_objectStream);
+					try {
+						m_dataStream.writeMessageNoTag(entry);
+					} catch (IOException e) {
+						e.printStackTrace();
+						Logger.get(Category.JAVA_EXCEPTION).logOnlyInMemory(
+							Severity.ERROR,
+							LoggerExceptionUtils.exceptionToString(e));
+					}
 				}
 			}
 		});
@@ -49,17 +55,16 @@ public class LogWriter {
 
 	public void close() throws IOException, InterruptedException {
 		m_running = false;
-		m_entriesQueue.add(new CloseLogPseudoEntry());
+		m_entriesQueue.add(LogEntryComparator.TERMINATION_SENTINAL);
 
 		m_entriesQueue.waitForEmpty();
 		m_workerThread.join();
 
-		m_objectStream.flush();
+		m_dataStream.flush();
 		m_fileStream.flush();
 
 		m_fileStream.getFD().sync();
 
-		m_objectStream.close();
 		m_fileStream.close();
 	}
 	
@@ -67,36 +72,37 @@ public class LogWriter {
 		m_minSeverity = threshold;
 	}
 	
-	public void log(Severity severity, Category category, String format, Object... args) {
-		if (severity.compareTo(m_minSeverity) < 0) {
+	public void logStoredFormat(LogEntry.Builder entry) {
+		if (entry.getSeverity().compareTo(m_minSeverity) < 0) {
 			return;
 		}
 		if (!m_running) {
-			System.out.println("Log message during shutdown: " + String.format(format, args));
+			System.out.println("Log message during shutdown: " + LogEntryRenderer.renderLogEntry(entry.build(), null));
 			return;
 		}
+		final String format = entry.getMessageStr();
 		Integer index = m_formatStringIndices.get(format);
-		LogEntry logEntry;
 		if (index == null) {
-			m_formatStringIndices.put(format, m_formatStringIndices.size());
+			index = m_formatStringIndices.size() + 1;
+			m_formatStringIndices.put(format, index);
 			if (m_formatStringIndices.size() % 100 == 0) {
 				System.out.println("You're logging a lot of unique messages. Please switch to using logRaw()");
 			}
-			logEntry = new LogEntryWithFormat(severity, new Date(), category, format, args);
 		} else {
-			logEntry = new FormattedLogEntry(severity, new Date(), category, index, args);
+			entry.clearMessageStr();
 		}
-		m_entriesQueue.add(logEntry);
+		entry.setMessageIndex(index);
+		m_entriesQueue.add(entry.build());
 	}
-	
-	public void logRaw(Severity severity, Category category, String message) {
-		if (severity.compareTo(m_minSeverity) < 0) {
+
+	public void log(LogEntry entry) {
+		if (entry.getSeverity().compareTo(m_minSeverity) < 0) {
 			return;
 		}
 		if (!m_running) {
-			System.out.println("Log message during shutdown: " + message);
+			System.out.println("Log message during shutdown: " + LogEntryRenderer.renderLogEntry(entry, null));
 			return;
 		}
-		m_entriesQueue.add(new RawLogEntry(severity, new Date(), category, message));
+		m_entriesQueue.add(entry);
 	}
 }

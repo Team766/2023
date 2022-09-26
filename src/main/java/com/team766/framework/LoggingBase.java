@@ -4,7 +4,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
-public abstract class Loggable {
+public abstract class LoggingBase {
 	protected Category loggerCategory = Category.PROCEDURES;
 
 	public abstract String getName();

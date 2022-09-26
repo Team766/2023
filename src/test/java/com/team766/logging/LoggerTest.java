@@ -17,17 +17,37 @@ public class LoggerTest {
 	public void test() throws IOException, InterruptedException {
 		String logFile = new File(workingDir.getRoot(), "test.log").getPath();
 		LogWriter writer = new LogWriter(logFile);
-		writer.log(Severity.ERROR, Category.AUTONOMOUS, "num: %d str: %s", 42, "my string");
-		writer.log(Severity.ERROR, Category.AUTONOMOUS, "num: %d str: %s", 63, "second blurb");
-		writer.logRaw(Severity.WARNING, Category.AUTONOMOUS, "Test raw log");
+		writer.logStoredFormat(
+			LogEntry.newBuilder()
+				.setTime(Logger.getTime())
+				.setSeverity(Severity.ERROR)
+				.setCategory(Category.AUTONOMOUS)
+				.setMessageStr("num: %d str: %s")
+				.addArg(LogValue.newBuilder().setIntValue(42))
+				.addArg(LogValue.newBuilder().setStringValue("my string")));
+		writer.logStoredFormat(
+			LogEntry.newBuilder()
+				.setTime(Logger.getTime())
+				.setSeverity(Severity.ERROR)
+				.setCategory(Category.AUTONOMOUS)
+				.setMessageStr("num: %d str: %s")
+				.addArg(LogValue.newBuilder().setIntValue(63))
+				.addArg(LogValue.newBuilder().setStringValue("second blurb")));
+		writer.log(
+			LogEntry.newBuilder()
+				.setTime(Logger.getTime())
+				.setSeverity(Severity.WARNING)
+				.setCategory(Category.AUTONOMOUS)
+				.setMessageStr("Test raw log")
+				.build());
 		writer.close();
 		
 		LogReader reader = new LogReader(logFile);
-		String logString1 = reader.readNext().format(reader);
+		String logString1 = LogEntryRenderer.renderLogEntry(reader.readNext(), reader);
 		assertEquals("num: 42 str: my string", logString1);
-		String logString2 = reader.readNext().format(reader);
+		String logString2 = LogEntryRenderer.renderLogEntry(reader.readNext(), reader);
 		assertEquals("num: 63 str: second blurb", logString2);
-		String logString3 = reader.readNext().format(reader);
+		String logString3 = LogEntryRenderer.renderLogEntry(reader.readNext(), reader);
 		assertEquals("Test raw log", logString3);
 	}
 
@@ -42,8 +62,21 @@ public class LoggerTest {
 			Thread t = new Thread(() ->{
 				long end = System.currentTimeMillis() + RUN_TIME_SECONDS * 1000;
 				while (System.currentTimeMillis() < end) {
-					writer.log(Severity.ERROR, Category.AUTONOMOUS, "num: %d str: %s", 42, "my string");
-					writer.logRaw(Severity.WARNING, Category.AUTONOMOUS, "Test raw log");
+					writer.logStoredFormat(
+						LogEntry.newBuilder()
+							.setTime(Logger.getTime())
+							.setSeverity(Severity.ERROR)
+							.setCategory(Category.AUTONOMOUS)
+							.setMessageStr("num: %d str: %s")
+							.addArg(LogValue.newBuilder().setIntValue(42))
+							.addArg(LogValue.newBuilder().setStringValue("my string")));
+					writer.log(
+						LogEntry.newBuilder()
+							.setTime(Logger.getTime())
+							.setSeverity(Severity.WARNING)
+							.setCategory(Category.AUTONOMOUS)
+							.setMessageStr("Test raw log")
+							.build());
 				}
 			});
 			t.start();

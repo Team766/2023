@@ -5,7 +5,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public abstract class Mechanism extends Loggable {
+public abstract class Mechanism extends LoggingBase {
 	private Context m_owningContext = null;
 	private Thread m_runningPeriodic = null;
 	

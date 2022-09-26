@@ -1,11 +1,15 @@
 plugins {
+    id 'java'
     id 'java-library'
     id 'maven-publish'
     id 'edu.wpi.first.GradleRIO' version '2022.4.1'
+    id 'com.google.protobuf' version '0.8.19'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
+
+def protobufVersion = '3.21.6'
 
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
 
@@ -69,6 +73,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     // our files
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+
     implementation files('deps/commons-math3-3.6.1.jar')
     implementation files('deps/gral-core-0.11.jar')
     // implementation "org.java-websocket:Java-WebSocket:1.4.0"
@@ -101,6 +107,8 @@ allprojects {
     repositories {
         mavenCentral()
 
+        gradlePluginPortal()  // for protobuf
+
         maven { url = uri('https://frcmaven.wpi.edu/artifactory/release/') }
 
         // CTRE
@@ -109,6 +117,14 @@ allprojects {
         // REV
         maven { url = uri('https://maven.revrobotics.com/') }
     }
+}
+
+protobuf {
+  // Configure the protoc executable
+  protoc {
+    // Download from repositories
+    artifact = "com.google.protobuf:protoc:${protobufVersion}"
+  }
 }
 
 publishing {

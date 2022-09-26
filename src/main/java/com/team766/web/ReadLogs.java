@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LogEntry;
+import com.team766.logging.LogEntryRenderer;
 import com.team766.logging.LogReader;
 import com.team766.logging.Severity;
 
@@ -35,7 +36,7 @@ public class ReadLogs implements WebServer.Handler {
 			LogEntry entry = entries.next();
 			r += String.format(
 				"<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-				entry.getCategory(), entry.getTime(), entry.getSeverity(), entry.format(reader));
+				entry.getCategory(), entry.getTime(), entry.getSeverity(), LogEntryRenderer.renderLogEntry(entry, reader));
 		}
 		r += "</table>";
 		return r;

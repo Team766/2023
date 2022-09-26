@@ -1,6 +1,6 @@
 package com.team766.framework;
 
-public abstract class Procedure extends Loggable implements RunnableWithContext {
+public abstract class Procedure extends LoggingBase implements RunnableWithContext {
 	// A reusable Procedure that does nothing.
 	private static final class NoOpProcedure extends Procedure {
 		@Override

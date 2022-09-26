@@ -1,8 +1,6 @@
 package com.team766.logging;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,25 +14,17 @@ public class Logger {
 	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
 		public void uncaughtException(Thread t, Throwable e) {
 			e.printStackTrace();
-			if (m_logWriter != null) {
-				try {
-					StringWriter sw = new StringWriter();
-					PrintWriter pw = new PrintWriter(sw);
-					pw.print("Uncaught exception: ");
-					e.printStackTrace(pw);
-					pw.flush();
-					String str = sw.toString();
-					m_logWriter.logRaw(Severity.ERROR, Category.JAVA_EXCEPTION, str);
-				} catch (Exception exc) {
-					exc.printStackTrace();
-				}
 
+			LoggerExceptionUtils.logException(e);
+
+			if (m_logWriter != null) {
 				try {
 					m_logWriter.close();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
+
 			System.exit(1);
 		}
 	}
@@ -43,7 +33,9 @@ public class Logger {
 	
 	private static EnumMap<Category, Logger> m_loggers = new EnumMap<Category, Logger>(Category.class);
 	private static LogWriter m_logWriter = null;
-	private CircularBuffer<RawLogEntry> m_recentEntries = new CircularBuffer<RawLogEntry>(MAX_NUM_RECENT_ENTRIES);
+	private CircularBuffer<LogEntry> m_recentEntries = new CircularBuffer<LogEntry>(MAX_NUM_RECENT_ENTRIES);
+	private static Object s_lastWriteTimeSync = new Object();
+	private static long s_lastWriteTime = 0L;
 
 	public static String logFilePathBase = null;
 	
@@ -74,6 +66,18 @@ public class Logger {
 	public static Logger get(Category category) {
 		return m_loggers.get(category);
 	}
+
+	static long getTime() {
+		long nowNanosec = new Date().getTime() * 1000000;
+		synchronized(s_lastWriteTimeSync) {
+			// Ensure that log entries' timestamps are unique. This is important
+			// because the log viewer uses an entry's timestamp as a unique ID,
+			// and we don't want two different log entries to accidentally
+			// compare as equal.
+			nowNanosec = s_lastWriteTime = Math.max(nowNanosec, s_lastWriteTime);
+		}
+		return nowNanosec;
+	}
 	
 	private final Category m_category;
 	
@@ -81,21 +85,48 @@ public class Logger {
 		m_category = category;
 	}
 	
-	public Collection<RawLogEntry> recentEntries() {
+	public Collection<LogEntry> recentEntries() {
 		return Collections.unmodifiableCollection(m_recentEntries);
 	}
 	
 	public void logData(Severity severity, String format, Object... args) {
-		m_recentEntries.add(new RawLogEntry(severity, new Date(), m_category, String.format(format, args)));
+		var entry = LogEntry.newBuilder()
+				.setTime(getTime())
+				.setSeverity(severity)
+				.setCategory(m_category);
+		{
+			entry.setMessageStr(String.format(format, args));
+			m_recentEntries.add(entry.build());
+		}
+		entry.setMessageStr(format);
+		for (Object arg : args) {
+			SerializationUtils.valueToProto(arg, entry.addArgBuilder());
+		}
 		if (m_logWriter != null) {
-			m_logWriter.log(severity, m_category, format, args);
+			m_logWriter.logStoredFormat(entry);
 		}
 	}
 	
 	public void logRaw(Severity severity, String message) {
-		m_recentEntries.add(new RawLogEntry(severity, new Date(), m_category, message));
+		var entry = LogEntry.newBuilder()
+				.setTime(getTime())
+				.setSeverity(severity)
+				.setCategory(m_category)
+				.setMessageStr(message)
+				.build();
+		m_recentEntries.add(entry);
 		if (m_logWriter != null) {
-			m_logWriter.logRaw(severity, m_category, message);
+			m_logWriter.log(entry);
 		}
+	}
+
+	void logOnlyInMemory(Severity severity, String message) {
+		var entry = LogEntry.newBuilder()
+				.setTime(getTime())
+				.setSeverity(severity)
+				.setCategory(m_category)
+				.setMessageStr(message)
+				.build();
+		m_recentEntries.add(entry);
 	}
 }
