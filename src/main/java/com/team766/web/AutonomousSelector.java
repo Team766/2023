@@ -10,6 +10,8 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
 public class AutonomousSelector implements WebServer.Handler {
+	private static final String ENDPOINT = "/auton";
+
 	private final AutonomousMode[] m_autonModes;
 	private final String[] m_autonModeNames;
 	private String m_selectedAutonModeName;
@@ -77,7 +79,7 @@ public class AutonomousSelector implements WebServer.Handler {
 			"            oldMode);",
 			"     }",
 			"    };",
-			"    xhttp.open('GET', window.location.href, true);",
+			"    xhttp.open('GET', \"" + ENDPOINT + "\", true);",
 			"    xhttp.send();",
 			"  }",
 			"  setInterval(refreshAutoMode, 1000);",

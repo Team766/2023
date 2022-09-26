@@ -1,7 +1,6 @@
 package com.team766.web;
 
 import java.util.Map;
-import com.team766.web.WebServer.Handler;
 import com.team766.web.dashboard.Widget;
 
 public class Dashboard implements WebServer.Handler {
