@@ -1,7 +1,5 @@
 package com.team766.hal;
 
-import com.team766.framework.AutonomousProcedureUtils;
-import com.team766.framework.Procedure;
 import com.team766.framework.Scheduler;
 import com.team766.framework.LaunchedContext;
 import com.team766.hal.MyRobot;
@@ -35,7 +33,7 @@ public final class MyRobot {
 	private double m_disabledModeStartTime;
 
 	public MyRobot() {
-		m_autonSelector = new AutonomousSelector(AutonomousModes.class);
+		m_autonSelector = new AutonomousSelector(AutonomousModes.AUTONOMOUS_MODES);
 		m_webServer = new WebServer();
 		m_webServer.addHandler(new Dashboard());
 		m_webServer.addHandler(new DriverInterface(m_autonSelector));
@@ -90,9 +88,13 @@ public final class MyRobot {
 		}
 		
 		if (m_autonomous == null) {
-			Procedure autonomousProcedure = AutonomousProcedureUtils.getProcedure(
-				m_autonSelector.getSelectedAutonMode(AutonomousModes.class));
-			m_autonomous = Scheduler.getInstance().startAsync(autonomousProcedure);
+			final var autonomousMode = m_autonSelector.getSelectedAutonMode();
+			if (autonomousMode == null) {
+				Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
+			} else {
+				m_autonomous = Scheduler.getInstance().startAsync(
+					autonomousMode.instantiate());
+			}
 		}
 	}
 

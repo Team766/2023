@@ -2,67 +2,68 @@ package com.team766.web;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import com.team766.framework.AutonomousMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public class AutonomousSelector implements WebServer.Handler {
-	private String[] AUTONS;
-	private String autonMode;
+	private final AutonomousMode[] m_autonModes;
+	private final String[] m_autonModeNames;
+	private String m_selectedAutonModeName;
 	
-	public AutonomousSelector(String[] autons){
-		AUTONS = autons;
-		autonMode = AUTONS[0];
-	}
-	
-	public AutonomousSelector(Class<? extends Enum<?>> auton_enum) {
-		Enum<? extends Enum<?>>[] states = auton_enum.getEnumConstants();
-		AUTONS = new String[states.length];
-		for (int i = 0; i < states.length; ++i) {
-			AUTONS[i] = states[i].toString();
-		}
-		if (AUTONS.length > 0) {
-			autonMode = AUTONS[0];
+	public AutonomousSelector(AutonomousMode[] autonModes) {
+		m_autonModes = autonModes;
+		m_autonModeNames =
+			Arrays.stream(autonModes).map(m -> m.name()).toArray(String[]::new);
+		if (m_autonModeNames.length > 0) {
+			m_selectedAutonModeName = m_autonModeNames[0];
 		} else {
-			Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous modes were declared in AutonomousModes.java");
-			autonMode = null;
+			Logger.get(Category.AUTONOMOUS).logRaw(
+				Severity.WARNING,
+				"No autonomous modes were declared in AutonomousModes.java");
+			m_selectedAutonModeName = null;
 		}
 	}
 	
-	public String getSelectedAutonModeString() {
-		return autonMode;
-	}
-	
-	public <E extends Enum<E>> E getSelectedAutonMode(Class<E> clazz) {
-		try {
-			return Enum.valueOf(clazz, autonMode);
-		} catch (IllegalArgumentException | NullPointerException ex) {
-			ex.printStackTrace();
-			LoggerExceptionUtils.logException(ex);
+	public AutonomousMode getSelectedAutonMode() {
+		if (m_selectedAutonModeName == null) {
 			return null;
 		}
+		final Optional<AutonomousMode> selectedAutonMode =
+			Arrays.stream(m_autonModes).filter(m -> m.name().equals(m_selectedAutonModeName)).findFirst();
+		if (selectedAutonMode.isEmpty()) {
+			Logger.get(Category.AUTONOMOUS).logData(
+				Severity.ERROR,
+				"Internal framework error: Inconsistent name for selected autonomous mode (selected: %s ; available: %s). Autonomous mode will not run.",
+				m_selectedAutonModeName,
+				Arrays.stream(m_autonModes).map(m -> m.name()).collect(Collectors.joining(",")));
+			return null;
+		}
+		return selectedAutonMode.get();
 	}
 
 	@Override
 	public String endpoint() {
-		return "/values";
+		return ENDPOINT;
 	}
 	
 	@Override
 	public String handle(Map<String, Object> params) {
-		String selectedAuto = (String)params.get("AutoMode");
-		if (selectedAuto != null) {
-			if (Arrays.stream(AUTONS).anyMatch(selectedAuto::equals)) {
-				autonMode = selectedAuto;
+		final String selectedAutoName = (String)params.get("AutoMode");
+		if (selectedAutoName != null) {
+			if (Arrays.stream(m_autonModeNames).anyMatch(selectedAutoName::equals)) {
+				m_selectedAutonModeName = selectedAutoName;
 			}
 		}
 		
 		return String.join("\n", new String[]{
 			"<h1>Autonomous Mode Selector</h1>",
-			"<h3 id=\"current-mode\">Current Mode: " + String.valueOf(autonMode) + "</h1>",
+			"<h3 id=\"current-mode\">Current Mode: " + String.valueOf(m_selectedAutonModeName) + "</h1>",
 			"<form>",
-			"<p>" + HtmlElements.buildDropDown("AutoMode", autonMode, AUTONS) + "</p>",
+			"<p>" + HtmlElements.buildDropDown("AutoMode", m_selectedAutonModeName, m_autonModeNames) + "</p>",
 			"<input type=\"submit\" value=\"Submit\"></form>",
 			"<script>",
 			"  function refreshAutoMode() {",
