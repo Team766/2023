@@ -34,12 +34,12 @@ public class Scheduler implements Runnable {
 			if (c_instance.m_running != null && 
 				c_instance.m_iterationCount == lastIterationCount &&
 				c_instance.m_running == lastRunning) {
-				Logger.get(Category.PROCEDURES).logRaw(
+				Logger.get(Category.FRAMEWORK).logRaw(
 					Severity.ERROR,
 					"The code has gotten stuck in "
 						+ c_instance.m_running.toString()
 						+ ". You probably have an unintended infinite loop or need to add a call to context.yield()");
-				Logger.get(Category.PROCEDURES).logRaw(
+				Logger.get(Category.FRAMEWORK).logRaw(
 					Severity.INFO,
 					Thread.getAllStackTraces()
 						.entrySet()

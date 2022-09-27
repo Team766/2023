@@ -26,15 +26,16 @@ enum Category {
 	// Don't change the numbers. When adding a new option, just use the next
 	// available number.
 	JAVA_EXCEPTION = 0;
-	DRIVE = 1;
+	FRAMEWORK = 1;
 	HAL = 2;
-	CAMERA = 3;
-	PID_CONTROLLER = 4;
-	TRAJECTORY = 5;
-	AUTONOMOUS = 6;
-	CONFIGURATION = 7;
-	PROCEDURES = 8;
+	CONFIGURATION = 3;
+	PROCEDURES = 4;
+	AUTONOMOUS = 5;
+	CAMERA = 6;
+	PID_CONTROLLER = 7;
+	TRAJECTORY = 8;
 	OPERATOR_INTERFACE = 9;
+	DRIVE = 10;
 }
 
 // `Value` represents a dynamically typed value which can be either a number,

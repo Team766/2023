@@ -155,7 +155,7 @@ public final class Context implements Runnable, LaunchedContext {
 	private Context(RunnableWithContext func, Context parentContext) {
 		m_func = func;
 		m_parentContext = parentContext;
-		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Starting context " + getContextName() + " for " + func.toString());
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Starting context " + getContextName() + " for " + func.toString());
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
@@ -227,7 +227,7 @@ public final class Context implements Runnable, LaunchedContext {
 		if (thisOwner == ControlOwner.SUBROUTINE) {
 			String waitPointTrace = getExecutionPoint();
 			if (waitPointTrace != null && !waitPointTrace.equals(m_previousWaitPoint)) {
-				Logger.get(Category.PROCEDURES).logRaw(Severity.DEBUG, getContextName() + " is waiting at " + waitPointTrace);
+				Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, getContextName() + " is waiting at " + waitPointTrace);
 				m_previousWaitPoint = waitPointTrace;
 			}
 		}
@@ -286,13 +286,13 @@ public final class Context implements Runnable, LaunchedContext {
 		try {
 			// Call into the user's code.
 			m_func.run(this);
-			Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Context " + getContextName() + " finished");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Context " + getContextName() + " finished");
 		} catch (ContextStoppedException ex) {
-			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, getContextName() + " was stopped");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING, getContextName() + " was stopped");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);
-			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Context " + getContextName() + " died");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING, "Context " + getContextName() + " died");
 		} finally {
 			for (Mechanism m : m_ownedMechanisms) {
 				// Don't use this.releaseOwnership here, because that would cause a
@@ -388,7 +388,7 @@ public final class Context implements Runnable, LaunchedContext {
 	 */
 	@Override
 	public void stop() {
-		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Stopping requested of " + getContextName());
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Stopping requested of " + getContextName());
 		synchronized (m_threadSync) {
 			if (m_state != State.DONE) {
 				m_state = State.CANCELED;
