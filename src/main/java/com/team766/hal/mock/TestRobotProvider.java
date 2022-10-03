@@ -9,25 +9,25 @@ import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
-import com.team766.hal.LocalSpeedController;
+import com.team766.hal.LocalMotorController;
 import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
-import com.team766.hal.SpeedController;
+import com.team766.hal.MotorController;
 import com.team766.hal.wpilib.SystemClock;
 
 public class TestRobotProvider extends RobotProvider{
 
-	private SpeedController[] motors = new SpeedController[64];
+	private MotorController[] motors = new MotorController[64];
 	private boolean m_hasDriverStationUpdate = false;
 	private double m_batteryVoltage = 12.0;
 
 	@Override
-	public SpeedController getMotor(int index, SpeedController.Type type, ControlInputReader localSensor) {
+	public MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor) {
 		if(motors[index] == null) {
-			motors[index] = new LocalSpeedController(
-				new MockSpeedController(index),
+			motors[index] = new LocalMotorController(
+				new MockMotorController(index),
 				localSensor != null ? localSensor : new MockEncoder(-1, -1));
 		}
 		return motors[index];

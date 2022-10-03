@@ -3,11 +3,11 @@ package com.team766.hal;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-public class SpeedControllerWithSensorScale implements SpeedController {
-	private SpeedController delegate;
+public class MotorControllerWithSensorScale implements MotorController {
+	private MotorController delegate;
 	private double scale;
 
-	public SpeedControllerWithSensorScale(SpeedController delegate, double scale) {
+	public MotorControllerWithSensorScale(MotorController delegate, double scale) {
 		this.delegate = delegate;
 		this.scale = scale;
 	}
@@ -58,7 +58,7 @@ public class SpeedControllerWithSensorScale implements SpeedController {
 			delegate.set(mode, value);
 			return;
 		}
-		throw new UnsupportedOperationException("Unimplemented control mode in CANSpeedControllerWithSensorScale");
+		throw new UnsupportedOperationException("Unimplemented control mode in MotorControllerWithSensorScale");
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class SpeedControllerWithSensorScale implements SpeedController {
 	}
 
 	@Override
-	public void follow(SpeedController leader) {
+	public void follow(MotorController leader) {
 		delegate.follow(leader);
 	}
 
@@ -152,7 +152,7 @@ public class SpeedControllerWithSensorScale implements SpeedController {
 	}
 
 	@Override
-	public void set(double speed) {
-		delegate.set(speed);
+	public void set(double power) {
+		delegate.set(power);
 	}
 }

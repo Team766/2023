@@ -119,7 +119,7 @@ public class VrConnector implements Runnable {
 
 	private double lastGyroValue = Double.NaN;
 	private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
-	private long[] lastCANSensorValue = new long[ProgramInterface.canSpeedControllerChannels.length];
+	private long[] lastCANSensorValue = new long[ProgramInterface.canMotorControllerChannels.length];
 
 	private int getFeedback(int index) {
 		return feedback.getInt(index * 4);
@@ -172,7 +172,7 @@ public class VrConnector implements Runnable {
 		for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
 			putCommandFloat(
 				m.motorCommandMessageDataIndex,
-				ProgramInterface.canSpeedControllerChannels[m.canId].command.output);
+				ProgramInterface.canMotorControllerChannels[m.canId].command.output);
 		}
 
 		selector.selectedKeys().clear();
@@ -229,7 +229,7 @@ public class VrConnector implements Runnable {
 				}
 			}
 			for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
-				var status = ProgramInterface.canSpeedControllerChannels[m.canId].status;
+				var status = ProgramInterface.canMotorControllerChannels[m.canId].status;
 
 				long value = getFeedback(m.sensorFeedbackMessageDataIndex);
 				long delta = value - lastCANSensorValue[m.canId];

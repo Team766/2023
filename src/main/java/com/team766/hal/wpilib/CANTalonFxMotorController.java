@@ -6,18 +6,18 @@ import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.team766.hal.SpeedController;
+import com.team766.hal.MotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class CANTalonFxSpeedController extends BaseCTRESpeedController implements SpeedController {
+public class CANTalonFxMotorController extends BaseCTREMotorController implements MotorController {
 
 	private WPI_TalonFX m_device;
 	private double m_feedForward = 0.0;
 
-	public CANTalonFxSpeedController(int deviceNumber) {
+	public CANTalonFxMotorController(int deviceNumber) {
 		m_device = new WPI_TalonFX(deviceNumber);
 	}
 
@@ -97,7 +97,7 @@ public class CANTalonFxSpeedController extends BaseCTRESpeedController implement
 	}
 
 	@Override
-	public void follow(SpeedController leader) {
+	public void follow(MotorController leader) {
 		try {
 			m_device.follow((IMotorController)leader);
 		} catch (ClassCastException ex) {
@@ -168,8 +168,8 @@ public class CANTalonFxSpeedController extends BaseCTRESpeedController implement
 	}
 
 	@Override
-	public void set(double speed) {
-		m_device.set(speed);
+	public void set(double power) {
+		m_device.set(power);
 	}
 
 	@Override

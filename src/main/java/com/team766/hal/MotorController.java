@@ -4,10 +4,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
- * Interface for speed controlling devices.
+ * Interface for motor controlling devices.
  */
 
-public interface SpeedController extends BasicSpeedController {
+public interface MotorController extends BasicMotorController {
 
 	public enum Type {
 		VictorSP,
@@ -31,22 +31,22 @@ public interface SpeedController extends BasicSpeedController {
 	}
 
 	/**
-	 * Common interface for getting the current set speed of a speed controller.
+	 * Common interface for getting the current power output by a motor controller.
 	 *
-	 * @return The current set speed. Value is between -1.0 and 1.0.
+	 * @return The current set power. Value is between -1.0 and 1.0.
 	 */
 	double get();
 
 
 	/**
-	 * Common interface for setting the speed of a speed controller.
+	 * Common interface for setting the power outputu by a motor controller.
 	 *
-	 * @param speed The speed to set. Value should be between -1.0 and 1.0.
+	 * @param power The power to set. Value should be between -1.0 and 1.0.
 	 */
-	void set(double speed);
+	void set(double power);
 
 	/**
-	 * Sets the appropriate output on the speed controller, depending on the mode.
+	 * Sets the appropriate output on the motor controller, depending on the mode.
 	 * @param mode The output mode to apply.
 	 * In PercentOutput, the output is between -1.0 and 1.0, with 0.0 as stopped.
 	 * In Current mode, output value is in amperes.
@@ -61,14 +61,14 @@ public interface SpeedController extends BasicSpeedController {
 	void set(ControlMode mode, double value);
 
 	/**
-	 * Common interface for inverting direction of a speed controller.
+	 * Common interface for inverting direction of a motor controller.
 	 *
 	 * @param isInverted The state of inversion true is inverted.
 	 */
 	void setInverted(boolean isInverted);
 
 	/**
-	 * Common interface for returning if a speed controller is in the inverted
+	 * Common interface for returning if a motor controller is in the inverted
 	 * state or not.
 	 *
 	 * @return isInverted The state of the inversion true is inverted.
@@ -82,12 +82,12 @@ public interface SpeedController extends BasicSpeedController {
 	void stopMotor();
 
 	/**
-	 * Read the motor position from the sensor attached to the speed controller.
+	 * Read the motor position from the sensor attached to the motor controller.
 	 */
 	double getSensorPosition();
 
 	/**
-	 * Read the motor velocity from the sensor attached to the speed controller.
+	 * Read the motor velocity from the sensor attached to the motor controller.
 	 */
 	double getSensorVelocity();
 
@@ -98,7 +98,7 @@ public interface SpeedController extends BasicSpeedController {
 	 */
 	void setSensorPosition(double position);
 
-	void follow(SpeedController leader);
+	void follow(MotorController leader);
 
 	void setNeutralMode(NeutralMode neutralMode);
 

@@ -2,10 +2,10 @@ package com.team766.simulator.elements;
 
 import com.team766.simulator.interfaces.ElectricalDevice;
 
-public abstract class SpeedController implements ElectricalDevice {
+public abstract class MotorController implements ElectricalDevice {
 	private ElectricalDevice downstream;
 	
-	public SpeedController(ElectricalDevice downstream) {
+	public MotorController(ElectricalDevice downstream) {
 		this.downstream = downstream;
 	}
 	

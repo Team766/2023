@@ -5,18 +5,18 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.team766.hal.SpeedController;
+import com.team766.hal.MotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class CANTalonSpeedController extends BaseCTRESpeedController implements SpeedController {
+public class CANTalonMotorController extends BaseCTREMotorController implements MotorController {
 
 	private WPI_TalonSRX m_device;
 	private double m_feedForward = 0.0;
 
-	public CANTalonSpeedController(int deviceNumber) {
+	public CANTalonMotorController(int deviceNumber) {
 		m_device = new WPI_TalonSRX(deviceNumber);
 	}
 
@@ -96,7 +96,7 @@ public class CANTalonSpeedController extends BaseCTRESpeedController implements 
 	}
 
 	@Override
-	public void follow(SpeedController leader) {
+	public void follow(MotorController leader) {
 		try {
 			m_device.follow((IMotorController)leader);
 		} catch (ClassCastException ex) {
@@ -169,8 +169,8 @@ public class CANTalonSpeedController extends BaseCTRESpeedController implements 
 	}
 
 	@Override
-	public void set(double speed) {
-		m_device.set(speed);
+	public void set(double power) {
+		m_device.set(power);
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import com.team766.logging.Severity;
  * match.
  * 
  * Because FRC's PID only supports a narrow range of things - you have to send
- * the output directly to speed controller, etc.
+ * the output directly to a motor controller, etc.
  * 
  * <p>
  * Possibly later we may create a second class that allows for different PID
@@ -179,7 +179,7 @@ public class PIDController {
 	/** Same as calculate() except that it prints debugging information
 	 * 
 	 * @param cur_input The current input to be plugged into the PID controller
-	 * @param smart True if you want the output to be dynamically adjusted to the speed controller
+	 * @param smart True if you want the output to be dynamically adjusted to the motor controller
 	 */
 	public void calculateDebug(double cur_input, boolean smart) {
 		print = true;
@@ -251,7 +251,7 @@ public class PIDController {
 	}
 
 	/**
-	 * Clips value for sending to speed controllers. This deals with if you
+	 * Clips value for sending to motor controllers. This deals with if you
 	 * don't want to run an arm or wheels at full speed under PID.
 	 * 
 	 * @param clipped

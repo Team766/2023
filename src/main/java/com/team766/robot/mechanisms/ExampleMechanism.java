@@ -2,11 +2,11 @@ package com.team766.robot.mechanisms;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.SpeedController;
+import com.team766.hal.MotorController;
 
 public class ExampleMechanism extends Mechanism {
-	private SpeedController m_leftMotor;
-	private SpeedController m_rightMotor;
+	private MotorController m_leftMotor;
+	private MotorController m_rightMotor;
 
 	public ExampleMechanism() {
 		m_leftMotor = RobotProvider.instance.getMotor("exampleMechanism.leftMotor");

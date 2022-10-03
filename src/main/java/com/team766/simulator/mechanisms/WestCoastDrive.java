@@ -12,8 +12,8 @@ import com.team766.simulator.ProgramInterface;
 import com.team766.simulator.elements.DCMotor;
 import com.team766.simulator.elements.DriveBase;
 import com.team766.simulator.elements.Gears;
-import com.team766.simulator.elements.PwmSpeedController;
-import com.team766.simulator.elements.SpeedController;
+import com.team766.simulator.elements.PwmMotorController;
+import com.team766.simulator.elements.MotorController;
 import com.team766.simulator.elements.Wheel;
 import com.team766.simulator.interfaces.MechanicalDevice;
 
@@ -21,8 +21,8 @@ public class WestCoastDrive extends DriveBase {
 	private DCMotor leftMotor = DCMotor.makeCIM();
 	private DCMotor rightMotor = DCMotor.makeCIM();
 	
-	private SpeedController leftController = new PwmSpeedController(6, leftMotor);
-	private SpeedController rightController = new PwmSpeedController(4, rightMotor);
+	private MotorController leftController = new PwmMotorController(6, leftMotor);
+	private MotorController rightController = new PwmMotorController(4, rightMotor);
 	
 	private Gears leftGears = new Gears(Parameters.DRIVE_GEAR_RATIO, leftMotor);
 	private Gears rightGears = new Gears(Parameters.DRIVE_GEAR_RATIO, rightMotor);

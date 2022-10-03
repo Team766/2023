@@ -10,8 +10,8 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class LocalSpeedController implements SpeedController {
-	private BasicSpeedController motor;
+public class LocalMotorController implements MotorController {
+	private BasicMotorController motor;
 	private ControlInputReader sensor;
 	private PIDController pidController;
 
@@ -28,9 +28,9 @@ public class LocalSpeedController implements SpeedController {
 
 	private ControlMode controlMode = ControlMode.PercentOutput;
 	private double setpoint = 0.0;
-	private SpeedController leader = null;
+	private MotorController leader = null;
 
-	public LocalSpeedController(BasicSpeedController motor, ControlInputReader sensor){
+	public LocalMotorController(BasicMotorController motor, ControlInputReader sensor){
 		this.motor = motor;
 		this.sensor = sensor;
 		this.pidController = new PIDController(
@@ -40,15 +40,15 @@ public class LocalSpeedController implements SpeedController {
 		Scheduler.getInstance().add(new Runnable() {
 			@Override
 			public void run() {
-				switch (LocalSpeedController.this.controlMode) {
+				switch (LocalMotorController.this.controlMode) {
 					case Current:
 						LoggerExceptionUtils.logException(new UnsupportedOperationException(toString() + " does not support Current control mode"));
 						stopMotor();
 						break;
 					case Disabled:
-						// support proper output disabling if this.motor is a SpeedController
-						if (LocalSpeedController.this.motor instanceof SpeedController) {
-							((SpeedController)LocalSpeedController.this.motor).set(ControlMode.Disabled, 0);
+						// support proper output disabling if this.motor is a MotorController
+						if (LocalMotorController.this.motor instanceof MotorController) {
+							((MotorController)LocalMotorController.this.motor).set(ControlMode.Disabled, 0);
 						} else {
 							setPower(0);
 						}
@@ -87,14 +87,14 @@ public class LocalSpeedController implements SpeedController {
 
 			@Override
 			public String toString() {
-				return LocalSpeedController.this.toString();
+				return LocalMotorController.this.toString();
 			}
 		});
 	}
 
 	@Override
 	public String toString() {
-		return "LocalSpeedController:" + LocalSpeedController.this.motor.toString();
+		return "LocalMotorController:" + LocalMotorController.this.motor.toString();
 	}
 
 	private void setPower(double power) {
@@ -114,8 +114,8 @@ public class LocalSpeedController implements SpeedController {
 	}
 	
 	@Override
-	public void set(double speed) {
-		set(ControlMode.PercentOutput, speed);
+	public void set(double power) {
+		set(ControlMode.PercentOutput, power);
 	}
 
 	@Override
@@ -188,21 +188,21 @@ public class LocalSpeedController implements SpeedController {
 	}
 
 	@Override
-	public void follow(SpeedController leader) {
+	public void follow(MotorController leader) {
 		if (leader == null) {
 			throw new IllegalArgumentException("leader argument to follow() is null");
 		}
-		// TODO: detect if this.motor is a SpeedController, and delegate to its follow() method if so.
+		// TODO: detect if this.motor is a MotorController, and delegate to its follow() method if so.
 		this.controlMode = ControlMode.Follower;
 		this.leader = leader;
 	}
 	
 	@Override
 	public void setNeutralMode(NeutralMode neutralMode) {
-		if (this.motor instanceof SpeedController) {
-			((SpeedController)this.motor).setNeutralMode(neutralMode);
+		if (this.motor instanceof MotorController) {
+			((MotorController)this.motor).setNeutralMode(neutralMode);
 		} else {
-			LoggerExceptionUtils.logException(new UnsupportedOperationException(this.toString() + " - setNeutralMode() is only unsupported with CAN speed controllers"));
+			LoggerExceptionUtils.logException(new UnsupportedOperationException(this.toString() + " - setNeutralMode() is only supported with CAN motor controllers"));
 		}
 	}
 
@@ -228,7 +228,7 @@ public class LocalSpeedController implements SpeedController {
 
 	@Override
 	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setSelectedFeedbsckSensor() is currently unsupported by LocalSpeedController"));
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setSelectedFeedbsckSensor() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class LocalSpeedController implements SpeedController {
 
 	@Override
 	public void setCurrentLimit(double ampsLimit) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setCurrentLimit() is currently unsupported by LocalSpeedController"));
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setCurrentLimit() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
@@ -266,11 +266,11 @@ public class LocalSpeedController implements SpeedController {
 
 	@Override
 	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setOpenLoopRamp() is currently unsupported by LocalSpeedController"));
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setOpenLoopRamp() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
 	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setClosedLoopRamp() is currently unsupported by LocalSpeedController"));
+		LoggerExceptionUtils.logException(new UnsupportedOperationException("setClosedLoopRamp() is currently unsupported by LocalMotorController"));
 	}
 }

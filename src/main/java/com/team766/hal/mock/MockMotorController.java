@@ -1,12 +1,12 @@
 package com.team766.hal.mock;
 
-import com.team766.hal.BasicSpeedController;
+import com.team766.hal.BasicMotorController;
 
-public class MockSpeedController implements BasicSpeedController {
+public class MockMotorController implements BasicMotorController {
 
 	private double output;
 	
-	public MockSpeedController(int index) {
+	public MockMotorController(int index) {
 		output = 0;
 	}
 	
@@ -16,8 +16,8 @@ public class MockSpeedController implements BasicSpeedController {
 	}
 	
 	@Override
-	public void set(double speed) {
-		output = speed;
+	public void set(double power) {
+		output = power;
 	}
 
 	@Override

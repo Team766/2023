@@ -18,7 +18,7 @@ public class ProgramInterface {
 	
 	public static final double[] pwmChannels = new double[20];
 	
-	public static class CANSpeedControllerCommand {
+	public static class CANMotorControllerCommand {
 		public enum ControlMode {
 			PercentOutput,
 			Position,
@@ -35,17 +35,17 @@ public class ProgramInterface {
 		public double output;
 		public ControlMode controlMode;
 	}
-	public static class CANSpeedControllerStatus {
+	public static class CANMotorControllerStatus {
 		public double sensorPosition;
 		public double sensorVelocity;
 	}
-	public static class CANSpeedControllerCommunication {
-		public final CANSpeedControllerCommand command = new CANSpeedControllerCommand();
-		public final CANSpeedControllerStatus status = new CANSpeedControllerStatus();
+	public static class CANMotorControllerCommunication {
+		public final CANMotorControllerCommand command = new CANMotorControllerCommand();
+		public final CANMotorControllerStatus status = new CANMotorControllerStatus();
 	}
 	
-	public static final CANSpeedControllerCommunication[] canSpeedControllerChannels =
-			initializeArray(256, CANSpeedControllerCommunication.class);
+	public static final CANMotorControllerCommunication[] canMotorControllerChannels =
+			initializeArray(256, CANMotorControllerCommunication.class);
 	
 	public static final double[] analogChannels = new double[20];
 	

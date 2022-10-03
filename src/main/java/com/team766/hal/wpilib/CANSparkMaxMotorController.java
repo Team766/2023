@@ -8,11 +8,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
-import com.team766.hal.SpeedController;
-import com.team766.hal.SpeedControllerCommandFailedException;
+import com.team766.hal.MotorController;
+import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
 
-public class CANSparkMaxSpeedController extends CANSparkMax implements SpeedController {
+public class CANSparkMaxMotorController extends CANSparkMax implements MotorController {
 
 	private Supplier<Double> sensorPositionSupplier;
 	private Supplier<Double> sensorVelocitySupplier;
@@ -20,7 +20,7 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements SpeedCont
 	private Function<Boolean, REVLibError> sensorInvertedSetter;
 	private boolean sensorInverted = false;
 
-	public CANSparkMaxSpeedController(int deviceId) {
+	public CANSparkMaxMotorController(int deviceId) {
 		super(deviceId, MotorType.kBrushless);
 
 		// Set default feedback device. This ensures that our implementations of
@@ -38,7 +38,7 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements SpeedCont
 		if (err == REVLibError.kOk) {
 			return;
 		}
-		var ex = new SpeedControllerCommandFailedException(err.toString());
+		var ex = new MotorControllerCommandFailedException(err.toString());
 		switch (throwEx) {
 			case THROW:
 				throw ex;
@@ -97,7 +97,7 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements SpeedCont
 	}
 
 	@Override
-	public void follow(SpeedController leader) {
+	public void follow(MotorController leader) {
 		try {
 			revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax)leader));
 		} catch (ClassCastException ex) {

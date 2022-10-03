@@ -3,11 +3,11 @@ package com.team766.simulator.elements;
 import com.team766.simulator.ProgramInterface;
 import com.team766.simulator.interfaces.ElectricalDevice;
 
-public class CanSpeedController extends SpeedController {
+public class CanMotorController extends MotorController {
 
 	private int address;
 	
-	public CanSpeedController(int address, ElectricalDevice downstream) {
+	public CanMotorController(int address, ElectricalDevice downstream) {
 		super(downstream);
 		
 		this.address = address;
@@ -15,7 +15,7 @@ public class CanSpeedController extends SpeedController {
 
 	@Override
 	protected double getCommand() {
-		return ProgramInterface.canSpeedControllerChannels[address].command.output;
+		return ProgramInterface.canMotorControllerChannels[address].command.output;
 	}
 
 }

@@ -10,7 +10,7 @@ import com.team766.hal.mock.MockDigitalInput;
 import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockRelay;
-import com.team766.hal.mock.MockSpeedController;
+import com.team766.hal.mock.MockMotorController;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -31,7 +31,7 @@ public abstract class RobotProvider {
 	protected PositionReader positionSensor = null;
 	
 	//HAL
-	public abstract SpeedController getMotor(int index, SpeedController.Type type, ControlInputReader localSensor);
+	public abstract MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor);
 	
 	public abstract EncoderReader getEncoder(int index1, int index2);
 	
@@ -54,7 +54,7 @@ public abstract class RobotProvider {
 	}
 	
 	// Config-driven methods
-	public SpeedController getMotor(String configName) {
+	public MotorController getMotor(String configName) {
 		final String encoderConfigName = configName + ".encoder";
 		final String analogInputConfigName = configName + ".analogInput";
 		final ControlInputReader sensor =
@@ -68,21 +68,21 @@ public abstract class RobotProvider {
 			final ValueProvider<Double> sensorScaleConfig = ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
 			final ValueProvider<Boolean> invertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
 			final ValueProvider<Boolean> sensorInvertedConfig = ConfigFileReader.getInstance().getBoolean(configName + ".sensorInverted");
-			final ValueProvider<SpeedController.Type> type = ConfigFileReader.getInstance().getEnum(SpeedController.Type.class, configName + ".type");
+			final ValueProvider<MotorController.Type> type = ConfigFileReader.getInstance().getEnum(MotorController.Type.class, configName + ".type");
 
 			if (deviceId.hasValue() && port.hasValue()) {
 				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s configuration should have only one of `deviceId` or `port`", configName);
 			}
 
-			SpeedController.Type defaultType = SpeedController.Type.TalonSRX;
+			MotorController.Type defaultType = MotorController.Type.TalonSRX;
 			if (!deviceId.hasValue()) {
 				deviceId = port;
-				defaultType = SpeedController.Type.VictorSP;
+				defaultType = MotorController.Type.VictorSP;
 			}
 
 			var motor = getMotor(deviceId.get(), type.valueOr(defaultType), sensor);
 			if (sensorScaleConfig.hasValue()) {
-				motor = new SpeedControllerWithSensorScale(motor, sensorScaleConfig.get());
+				motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
 			}
 			if (invertedConfig.valueOr(false)) {
 				motor.setInverted(true);
@@ -93,7 +93,7 @@ public abstract class RobotProvider {
 			return motor;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
-			return new LocalSpeedController(new MockSpeedController(0), sensor);
+			return new LocalMotorController(new MockMotorController(0), sensor);
 		}
 	}
 	public EncoderReader getEncoder(String configName) {
