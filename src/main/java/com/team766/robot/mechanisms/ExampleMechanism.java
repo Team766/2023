@@ -5,18 +5,18 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController;
 
 public class ExampleMechanism extends Mechanism {
-	private MotorController m_leftMotor;
-	private MotorController m_rightMotor;
+	private MotorController leftMotor;
+	private MotorController rightMotor;
 
 	public ExampleMechanism() {
-		m_leftMotor = RobotProvider.instance.getMotor("exampleMechanism.leftMotor");
-		m_rightMotor = RobotProvider.instance.getMotor("exampleMechanism.rightMotor");
+		leftMotor = RobotProvider.instance.getMotor("exampleMechanism.leftMotor");
+		rightMotor = RobotProvider.instance.getMotor("exampleMechanism.rightMotor");
 	}
 
 	public void setMotorPower(double leftPower, double rightPower){
 		checkContextOwnership();
 
-		m_leftMotor.set(leftPower);
-		m_rightMotor.set(rightPower);
+		leftMotor.set(leftPower);
+		rightMotor.set(rightPower);
 	}
 }

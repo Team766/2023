@@ -12,16 +12,16 @@ import com.team766.robot.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
-	private JoystickReader m_joystick0;
-	private JoystickReader m_joystick1;
-	private JoystickReader m_joystick2;
+	private JoystickReader joystick0;
+	private JoystickReader joystick1;
+	private JoystickReader joystick2;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
-		m_joystick0 = RobotProvider.instance.getJoystick(0);
-		m_joystick1 = RobotProvider.instance.getJoystick(1);
-		m_joystick2 = RobotProvider.instance.getJoystick(2);
+		joystick0 = RobotProvider.instance.getJoystick(0);
+		joystick1 = RobotProvider.instance.getJoystick(1);
+		joystick2 = RobotProvider.instance.getJoystick(2);
 	}
 	
 	public void run(Context context) {
