@@ -14,7 +14,7 @@
 		}
 	},
 	"intakeWheels": {
-		"port": 0
+		"deviceId": 10
 	},
 	"intakeArm": {
 		"port": 0
