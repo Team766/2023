@@ -9,6 +9,14 @@
 			"deviceId": 4,
 			"sensorScale": -0.0524
 		},
+		"leftEncoder": {
+			"ports": [0, 1],
+			"distancePerPulse": -0.0524
+		},
+		"rightEncoder": {
+			"ports": [2, 3],
+			"distancePerPulse": -0.0524
+		},
 		"gyro": {
 			"port": 12
 		}
