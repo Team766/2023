@@ -2,7 +2,7 @@ package com.team766.hal;
 
 import com.team766.framework.Scheduler;
 import com.team766.framework.LaunchedContext;
-import com.team766.hal.MyRobot;
+import com.team766.hal.GenericRobotMain;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -19,7 +19,7 @@ import com.team766.web.WebServer;
 
 // Team 766 - Robot Interface Base class
 
-public final class MyRobot {
+public final class GenericRobotMain {
 	private OI m_oi;
 	
 	private WebServer m_webServer;
@@ -32,7 +32,7 @@ public final class MyRobot {
 	private static final double RESET_IN_DISABLED_PERIOD = 10.0;
 	private double m_disabledModeStartTime;
 
-	public MyRobot() {
+	public GenericRobotMain() {
 		m_autonSelector = new AutonomousSelector(AutonomousModes.AUTONOMOUS_MODES);
 		m_webServer = new WebServer();
 		m_webServer.addHandler(new Dashboard());

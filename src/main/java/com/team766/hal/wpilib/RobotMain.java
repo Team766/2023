@@ -3,14 +3,14 @@ package com.team766.hal.wpilib;
 import java.util.function.Supplier;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
-import com.team766.hal.MyRobot;
+import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public class RobotMain extends TimedRobot {
-	private MyRobot robot;
+	private GenericRobotMain robot;
 
 	public static void main(String... args) {
 		Supplier<RobotMain> supplier = new Supplier<RobotMain>() {
@@ -40,7 +40,7 @@ public class RobotMain extends TimedRobot {
 		try {
 			ConfigFileReader.instance = new ConfigFileReader("/home/lvuser/robotConfig.txt");
 			RobotProvider.instance = new WPIRobotProvider();
-			robot = new MyRobot();
+			robot = new GenericRobotMain();
 			
 			robot.robotInit();
 		} catch (Exception e) {
