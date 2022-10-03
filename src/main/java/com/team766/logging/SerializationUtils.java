@@ -21,7 +21,7 @@ public class SerializationUtils {
 		} else if (object == null) {
 			value.clearKind();
 		} else if (object instanceof Loggable) {
-			((Loggable)object).toLog(value);
+			((Loggable)object).toLogValue(value);
 		} else {
 			throw new IllegalArgumentException(
 				"Value of type " + object.getClass().getName() + " isn't loggable");
