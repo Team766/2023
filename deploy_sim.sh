@@ -37,7 +37,7 @@ user="root"
 
 ./gradlew jar
 
-jar_file=( build/libs/project*.jar )
+jar_file=( build/libs/*.jar )
 [ "${#jar_file[@]}" -eq 1 ] || (echo "Output jar file could not be determined"; exit 1)
 
 version="$(md5sum < "$jar_file" | awk '{ print $1 }')"
