@@ -25,12 +25,17 @@ import com.team766.logging.Severity;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
 
 	private MotorController[][] motors = new MotorController[MotorController.Type.values().length][64];
+
+	// The presence of this object allows the compressor to run before we've declared any solenoids.
+	@SuppressWarnings("unused")
+	private PneumaticsControlModule pcm = new PneumaticsControlModule();
 
 	@Override
 	public MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor) {
