@@ -7,6 +7,7 @@ import com.team766.framework.Scheduler;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.simulator.Program;
 import com.team766.simulator.ProgramInterface;
 import com.team766.simulator.Simulator;
 
@@ -30,11 +31,11 @@ public class RobotMain {
 			
 			robot.robotInit();
 			
-			ProgramInterface.programStep = new Runnable() {
+			ProgramInterface.program = new Program() {
 				ProgramInterface.RobotMode prevRobotMode = null;
 				
 				@Override
-				public void run() {
+				public void step() {
 					switch (ProgramInterface.robotMode) {
 						case DISABLED:
 							if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {
@@ -61,6 +62,11 @@ public class RobotMain {
 							Scheduler.getInstance().run();
 							break;
 					}
+				}
+
+				@Override
+				public void reset() {
+					robot.resetAutonomousMode("simulation reset");
 				}
 			};
 		} catch (Exception exc) {

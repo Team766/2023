@@ -14,37 +14,24 @@ public class AutonomousSelector implements WebServer.Handler {
 
 	private final AutonomousMode[] m_autonModes;
 	private final String[] m_autonModeNames;
-	private String m_selectedAutonModeName;
+	private AutonomousMode m_selectedAutonMode;
 	
 	public AutonomousSelector(AutonomousMode[] autonModes) {
 		m_autonModes = autonModes;
 		m_autonModeNames =
 			Arrays.stream(autonModes).map(m -> m.name()).toArray(String[]::new);
 		if (m_autonModeNames.length > 0) {
-			m_selectedAutonModeName = m_autonModeNames[0];
+			m_selectedAutonMode = m_autonModes[0];
 		} else {
 			Logger.get(Category.AUTONOMOUS).logRaw(
 				Severity.WARNING,
 				"No autonomous modes were declared in AutonomousModes.java");
-			m_selectedAutonModeName = null;
+			m_selectedAutonMode = null;
 		}
 	}
 	
 	public AutonomousMode getSelectedAutonMode() {
-		if (m_selectedAutonModeName == null) {
-			return null;
-		}
-		final Optional<AutonomousMode> selectedAutonMode =
-			Arrays.stream(m_autonModes).filter(m -> m.name().equals(m_selectedAutonModeName)).findFirst();
-		if (selectedAutonMode.isEmpty()) {
-			Logger.get(Category.AUTONOMOUS).logData(
-				Severity.ERROR,
-				"Internal framework error: Inconsistent name for selected autonomous mode (selected: %s ; available: %s). Autonomous mode will not run.",
-				m_selectedAutonModeName,
-				Arrays.stream(m_autonModes).map(m -> m.name()).collect(Collectors.joining(",")));
-			return null;
-		}
-		return selectedAutonMode.get();
+		return m_selectedAutonMode;
 	}
 
 	@Override
@@ -54,18 +41,33 @@ public class AutonomousSelector implements WebServer.Handler {
 	
 	@Override
 	public String handle(Map<String, Object> params) {
-		final String selectedAutoName = (String)params.get("AutoMode");
-		if (selectedAutoName != null) {
-			if (Arrays.stream(m_autonModeNames).anyMatch(selectedAutoName::equals)) {
-				m_selectedAutonModeName = selectedAutoName;
+		String locationReplaceScript = "";
+		{
+			final String selectedAutonModeName = (String)params.get("AutoMode");
+			if (selectedAutonModeName != null) {
+				final Optional<AutonomousMode> selectedAutonMode =
+					Arrays.stream(m_autonModes).filter(m -> m.name().equals(selectedAutonModeName)).findFirst();
+				if (selectedAutonMode.isEmpty()) {
+					Logger.get(Category.AUTONOMOUS).logData(
+						Severity.ERROR,
+						"Internal framework error: Inconsistent name for selected autonomous mode (selected: %s ; available: %s). Autonomous mode will not run.",
+						selectedAutonModeName,
+						Arrays.stream(m_autonModes).map(m -> m.name()).collect(Collectors.joining(",")));
+				} else {
+					m_selectedAutonMode = selectedAutonMode.get().clone();
+				}
+
+				locationReplaceScript = "<script>window.location.replace(window.location.pathname);</script>";
 			}
 		}
 		
+		final String selectedAutonModeName = m_selectedAutonMode != null ? m_selectedAutonMode.name() : "<none>";
 		return String.join("\n", new String[]{
+			locationReplaceScript,
 			"<h1>Autonomous Mode Selector</h1>",
-			"<h3 id=\"current-mode\">Current Mode: " + String.valueOf(m_selectedAutonModeName) + "</h1>",
+			"<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeName + "</h1>",
 			"<form>",
-			"<p>" + HtmlElements.buildDropDown("AutoMode", m_selectedAutonModeName, m_autonModeNames) + "</p>",
+			"<p>" + HtmlElements.buildDropDown("AutoMode", selectedAutonModeName, m_autonModeNames) + "</p>",
 			"<input type=\"submit\" value=\"Submit\"></form>",
 			"<script>",
 			"  function refreshAutoMode() {",

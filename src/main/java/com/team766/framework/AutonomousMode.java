@@ -23,4 +23,8 @@ public class AutonomousMode {
 	public String toString() {
 		return name();
 	}
+
+	public AutonomousMode clone() {
+		return new AutonomousMode(m_name, m_constructor);
+	}
 }

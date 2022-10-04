@@ -70,7 +70,10 @@ public class VrConnector implements Runnable {
 
 	/// Feedback indexes
 
-	private static final int TIMESTAMP_CHANNEL = 5;
+	private static final int TIMESTAMP_LSW_CHANNEL = 5;
+	private static final int TIMESTAMP_MSW_CHANNEL = 4;
+
+	private static final int RESET_COUNTER_CHANNEL = 6;
 
 	private static final int ROBOT_MODE_CHANNEL = 3;
 	private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES = Map.of(
@@ -112,17 +115,23 @@ public class VrConnector implements Runnable {
 	private static final int feedbackPort = 7662;
 	private static final int BUF_SZ = 1024;
 
-	Selector selector;
-	InetSocketAddress sendAddr;
-	ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
-	ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
+	private Selector selector;
+	private InetSocketAddress sendAddr;
+	private ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
+	private ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
+	private int resetCounter = 0;
 
+	private int lastResetCounter = 0;
 	private double lastGyroValue = Double.NaN;
 	private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
 	private long[] lastCANSensorValue = new long[ProgramInterface.canMotorControllerChannels.length];
 
 	private int getFeedback(int index) {
 		return feedback.getInt(index * 4);
+	}
+
+	private static long assembleLong(int msw, int lsw) {
+		return ((long)msw << 32) | (lsw & 0xffffffffL);
 	}
 
 	private void putCommand(int index, int value) {
@@ -199,7 +208,10 @@ public class VrConnector implements Runnable {
 		if (newData) {
 			double prevSimTime = ProgramInterface.simulationTime;
 			// Time is sent in milliseconds
-			ProgramInterface.simulationTime = getFeedback(TIMESTAMP_CHANNEL) * 0.001;
+			ProgramInterface.simulationTime = assembleLong(
+				getFeedback(TIMESTAMP_MSW_CHANNEL), getFeedback(TIMESTAMP_LSW_CHANNEL)) * 0.001;
+			
+			resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
 
 			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
 
@@ -275,12 +287,16 @@ public class VrConnector implements Runnable {
 				// Wait for a connection to the simulator before starting to run the robot code.
 				continue;
 			}
+			if (resetCounter != lastResetCounter) {
+				lastResetCounter = resetCounter;
+				ProgramInterface.program.reset();
+			}
 			if (!started) {
 				System.out.println("Starting simulation");
 				started = true;
 			}
-			if (ProgramInterface.programStep != null) {
-				ProgramInterface.programStep.run();
+			if (ProgramInterface.program != null) {
+				ProgramInterface.program.step();
 			}
 		}
 	}

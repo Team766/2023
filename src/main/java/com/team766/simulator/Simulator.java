@@ -36,8 +36,8 @@ public class Simulator implements Runnable {
 		pneumaticsSystem.step();
 		drive.step();
 		
-		if (ProgramInterface.programStep != null) {
-			ProgramInterface.programStep.run();
+		if (ProgramInterface.program != null) {
+			ProgramInterface.program.step();
 		}
 		
 		metrics.add(new Double[] {
