@@ -10,6 +10,8 @@ public abstract class Mechanism extends LoggingBase {
 	private Thread m_runningPeriodic = null;
 	
 	public Mechanism() {
+		loggerCategory = Category.MECHANISMS;
+
 		Scheduler.getInstance().add(new Runnable() {
 			@Override
 			public void run() {
