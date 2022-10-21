@@ -163,3 +163,6 @@ bin/
 
 # The list of available sim robots is environment-specific, so it shouldn't be committed
 /sim_robots.lst
+
+# Don't commit logs written by the framework when running in sim
+/sim_robot_logs
