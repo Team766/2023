@@ -13,6 +13,16 @@ def protobufVersion = '3.21.6'
 
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
 
+sourceSets {
+  main {
+    java {
+      // NOTE(rcahoon, 2022-10-16): Gradle doesn't need this, but VSCode seems
+      // to not automatically add generated classes to the classpath.
+      srcDirs 'build/generated/source/proto/main/java'
+    }
+  }
+}
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
