@@ -1,13 +1,9 @@
 package com.team766.library;
 
 public class ConstantValueProvider<E> implements ValueProvider<E> {
-	private E m_value;
+	private final E m_value;
 	
 	public ConstantValueProvider(E value) {
-		m_value = value;
-	}
-
-	public void set(E value) {
 		m_value = value;
 	}
 
