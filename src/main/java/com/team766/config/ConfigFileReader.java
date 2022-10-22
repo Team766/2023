@@ -3,11 +3,8 @@ package com.team766.config;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -36,7 +33,7 @@ public class ConfigFileReader {
 	private int m_generation = 0;
 	
 	private String m_fileName;
-	private HashMap<String, Object> m_values = new HashMap<String, Object>();
+	private JSONObject m_values = new JSONObject();
 	
 	public static ConfigFileReader getInstance() {
 		return instance;
@@ -53,22 +50,6 @@ public class ConfigFileReader {
 			LoggerExceptionUtils.logException(new IOException("Failed to load config file!", e));
 		}
 	}
-
-	private static void loadJson(String keyPrefix, JSONObject json, HashMap<String, Object> values) {
-		for (String key : json.keySet()) {
-			if (json.isNull(key)) {
-				continue;
-			}
-			JSONObject obj = json.optJSONObject(key);
-			String fullKey = keyPrefix + key;
-			if (obj == null) {
-				values.put(fullKey, json.get(key));
-			} else {
-				values.put(fullKey, obj);
-				loadJson(fullKey + KEY_DELIMITER, obj, values);
-			}
-		}
-	}
 	
 	public void reloadFromFile() throws IOException {
 		System.out.println("Loading config file: " + m_fileName);
@@ -77,19 +58,17 @@ public class ConfigFileReader {
 	}
 
 	public void reloadFromJson(String jsonString) {
-		HashMap<String, Object> newValues = new HashMap<String, Object>();
-		
-		JSONObject newJson;
+		JSONObject newValues;
 		try (StringReader reader = new StringReader(jsonString)) {
-			newJson = new JSONObject(new JSONTokener(reader));
-			loadJson("", newJson, newValues);
+			newValues = new JSONObject(new JSONTokener(reader));
 		}
-		for (Map.Entry<String, AbstractConfigValue<?>> param : AbstractConfigValue.accessedValues().entrySet()) {
-			if (!newValues.containsKey(param.getKey())) {
+		for (AbstractConfigValue<?> param : AbstractConfigValue.accessedValues()) {
+			var rawValue = getRawValue(newValues, param.getKey());
+			if (rawValue == null) {
 				continue;
 			}
 			try {
-				param.getValue().parseJsonValue(newValues.get(param.getKey()));
+				param.parseJsonValue(rawValue);
 			} catch (Exception ex) {
 				throw new ConfigValueParseException("Could not parse config value for " + param.getKey(), ex);
 			}
@@ -103,7 +82,7 @@ public class ConfigFileReader {
 	}
 	
 	public boolean containsKey(String key) {
-		return m_values.containsKey(key);
+		return getRawValue(key) != null;
 	}
 	
 	public ValueProvider<Integer[]> getInts(String key) {
@@ -134,36 +113,46 @@ public class ConfigFileReader {
 		return new EnumConfigValue<E>(enumClass, key);
 	}
 	
-	Object getRawValue(String key){
-		return m_values.get(key);
+	Object getRawValue(String key) {
+		return getRawValue(m_values, key);
+	}
+
+	private static Object getRawValue(JSONObject obj, String key) {
+		String[] keyParts = key.split(Pattern.quote(KEY_DELIMITER));
+		for (int i = 0; i < keyParts.length - 1; ++i) {
+			JSONObject subObj;
+			try {
+				subObj = (JSONObject)obj.opt(keyParts[i]);
+			} catch (ClassCastException ex) {
+				throw new IllegalArgumentException(
+					"The config file cannot store both a single config " + 
+					"setting and a group of config settings with the name " +
+					key + " Please pick a different name for one of them.");
+			}
+			if (subObj == null) {
+				subObj = new JSONObject();
+				obj.put(keyParts[i], subObj);
+			}
+			obj = subObj;
+		}
+		var rawValue = obj.opt(keyParts[keyParts.length - 1]);
+		if (rawValue instanceof JSONObject) {
+			throw new IllegalArgumentException(
+				"The config file cannot store both a single config " + 
+				"setting and a group of config settings with the name " +
+				key + " Please pick a different name");
+		}
+		if (rawValue == null) {
+			obj.put(keyParts[keyParts.length - 1], JSONObject.NULL);
+		}
+		if (rawValue == JSONObject.NULL) {
+			rawValue = null;
+		}
+		return rawValue;
 	}
 
 	public String getJsonString() {
-		HashMap<String, Object> values = new HashMap<String, Object>(m_values);
-		for (String key : AbstractConfigValue.accessedValues().keySet()) {
-			if (!values.containsKey(key)) {
-				values.put(key, JSONObject.NULL);
-			}
-		}
-
-		JSONObject root = new JSONObject();
-		for (Map.Entry<String, Object> entry : values.entrySet()) {
-			String[] keyParts = entry.getKey().split(Pattern.quote(KEY_DELIMITER));
-			JSONObject obj = root;
-			for (int i = 0; i < keyParts.length - 1; ++i) {
-				JSONObject subObj = obj.optJSONObject(keyParts[i]);
-				if (subObj == null) {
-					subObj = new JSONObject();
-					obj.put(keyParts[i], subObj);
-				}
-				obj = subObj;
-			}
-			obj.put(keyParts[keyParts.length - 1], entry.getValue());
-		}
-
-		StringWriter writer = new StringWriter();
-		root.write(writer, 2, 0);
-		return writer.toString(); 
+		return m_values.toString(2);
 	}
 	
 	public void saveFile(String jsonString) throws IOException {
