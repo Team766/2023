@@ -68,9 +68,9 @@ public class RobotMain extends TimedRobot {
 			filename = checkForAndReturnPathToConfigFile(SELECTED_CONFIG_FILE);
 			
 			if (filename == null) {
-				checkForAndReturnPathToConfigFile(DEFAULT_CONFIG_FILE);
+				filename = checkForAndReturnPathToConfigFile(DEFAULT_CONFIG_FILE);
 			}
-			
+
 			if (filename == null) {
 				filename = LEGACY_CONFIG_FILE;
 			}
