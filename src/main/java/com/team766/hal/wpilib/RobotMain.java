@@ -18,10 +18,10 @@ public class RobotMain extends TimedRobot {
 	// this allows for the same code to be deployed to multiple physical robots, each with their own
 	// config file with CAN bus port mappings, etc, with the actual file used for a specific robot
 	// to be "selected" via this symlink to the actual file.
-	private final static String SELECTED_CONFIG_FILE = "configs/selectedConfig.txt";
+	private final static String SELECTED_CONFIG_FILE = "/home/lvuser/selectedConfig.txt";
 
 	// if the symlink (above) is not present, back off to this file in the deploy directory.
-	private final static String DEFAULT_CONFIG_FILE = "configs/robotConfig.txt";
+	private final static String DEFAULT_CONFIG_FILE = "configs/defaultRobotConfig.txt";
 
 	// for backwards compatibility, back off to the previous config file location if the above are not
 	// found in the deploy directory.
