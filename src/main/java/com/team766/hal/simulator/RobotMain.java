@@ -22,6 +22,7 @@ public class RobotMain {
 	
 	public RobotMain(Mode mode) {
 		try {
+			// TODO: update this to come from deploy directory? 
 			ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
 			RobotProvider.instance = new SimulationRobotProvider();
 			
