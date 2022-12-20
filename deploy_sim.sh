@@ -50,9 +50,10 @@ cp "$jar_file" "$deployed_code/project.jar"
 cp -R src/main/deploy "$deployed_code"
 cp simConfig.txt "$deployed_code"
 
-scp -o "StrictHostKeyChecking=no" -r "$deployed_code" "${user}@${server}":"$deployed_code"
+deployed_package=${deployed_code}.tgz
+tar cfz ${deployed_package} -C ${deployed_code} .
 
-ssh -o "StrictHostKeyChecking=no" "${user}@${server}" "launch_robot_code.sh $deployed_code $@"
+curl -F "package=@${deployed_package}" ${server}:4000/uploadrobotcode
 
 set +x
 echo -e "\nDeploy finished. Your code is running"
