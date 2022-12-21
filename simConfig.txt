@@ -23,42 +23,66 @@
 		"frontLeftDriveMotor": {
 			"deviceId": 84,
 			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
+			"sensorScaledUnits": "meter",
+			"pid": {
+				"ffGain": 0.00022
+			}
 		},
 		"backLeftDriveMotor": {
 			"deviceId": 85,
 			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
+			"sensorScaledUnits": "meter",
+			"pid": {
+				"ffGain": 0.00022
+			}
 		},
 		"frontRightDriveMotor": {
 			"deviceId": 86,
 			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
+			"sensorScaledUnits": "meter",
+			"pid": {
+				"ffGain": 0.00022
+			}
 		},
 		"backRightDriveMotor": {
 			"deviceId": 87,
 			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
+			"sensorScaledUnits": "meter",
+			"pid": {
+				"ffGain": 0.00022
+			}
 		},
 		"frontLeftSteerMotor": {
 			"deviceId": 88,
 			"inverted": true,
-			"sensorScaledUnits": "degree"
+			"sensorScaledUnits": "degree",
+			"pid": {
+				"pGain": 0.035
+			}
 		},
 		"backLeftSteerMotor": {
 			"deviceId": 89,
 			"inverted": true,
-			"sensorScaledUnits": "degree"
+			"sensorScaledUnits": "degree",
+			"pid": {
+				"pGain": 0.035
+			}
 		},
 		"frontRightSteerMotor": {
 			"deviceId": 90,
 			"inverted": true,
-			"sensorScaledUnits": "degree"
+			"sensorScaledUnits": "degree",
+			"pid": {
+				"pGain": 0.035
+			}
 		},
 		"backRightSteerMotor": {
 			"deviceId": 91,
 			"inverted": true,
-			"sensorScaledUnits": "degree"
+			"sensorScaledUnits": "degree",
+			"pid": {
+				"pGain": 0.035
+			}
 		}
 	},
 	"intakeWheels": {
