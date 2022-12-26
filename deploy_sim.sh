@@ -53,7 +53,7 @@ cp simConfig.txt "$deployed_code"
 deployed_package=${deployed_code}.tgz
 tar cfz ${deployed_package} -C ${deployed_code} .
 
-curl -F "package=@${deployed_package}" ${server}:4000/uploadrobotcode
+curl --fail -F "package=@${deployed_package}" ${server}:4000/uploadrobotcode
 
 set +x
 echo -e "\nDeploy finished. Your code is running"
