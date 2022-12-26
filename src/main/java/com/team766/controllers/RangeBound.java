@@ -1,7 +1,7 @@
 package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.library.ConstantValueProvider;
+import com.team766.library.SetValueProvider;
 import com.team766.library.ValueProvider;
 
 /*
@@ -21,8 +21,8 @@ public class RangeBound {
 	}
 	
 	public RangeBound(double min, double max) {
-		m_min = new ConstantValueProvider<Double>(min);
-		m_max = new ConstantValueProvider<Double>(max);
+		m_min = new SetValueProvider<Double>(min);
+		m_max = new SetValueProvider<Double>(max);
 	}
 	
 	public RangeBound(ValueProvider<Double> min, ValueProvider<Double> max) {

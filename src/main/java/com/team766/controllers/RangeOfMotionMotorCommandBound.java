@@ -1,7 +1,7 @@
 package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.library.ConstantValueProvider;
+import com.team766.library.SetValueProvider;
 import com.team766.library.ValueProvider;
 
 /*
@@ -24,9 +24,9 @@ public class RangeOfMotionMotorCommandBound {
 	}
 	
 	public RangeOfMotionMotorCommandBound(double minPosition, double maxPosition, boolean sensorInverted) {
-		m_minPosition = new ConstantValueProvider<Double>(minPosition);
-		m_maxPosition = new ConstantValueProvider<Double>(maxPosition);
-		m_sensorInverted = new ConstantValueProvider<Boolean>(sensorInverted);
+		m_minPosition = new SetValueProvider<Double>(minPosition);
+		m_maxPosition = new SetValueProvider<Double>(maxPosition);
+		m_sensorInverted = new SetValueProvider<Boolean>(sensorInverted);
 	}
 	
 	public RangeOfMotionMotorCommandBound(

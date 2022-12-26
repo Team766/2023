@@ -6,28 +6,12 @@ import com.team766.hal.LocalMotorController;
 import com.team766.simulator.ProgramInterface;
 
 public class SimMotorController extends LocalMotorController {
-
-	public SimMotorController(int address) {
-		this(ProgramInterface.canMotorControllerChannels[address]);
+	public SimMotorController(String configPrefix, int address) {
+		this(configPrefix, ProgramInterface.canMotorControllerChannels[address]);
 	}
 
-	SimMotorController(ProgramInterface.CANMotorControllerCommunication channel) {
-		super(new BasicMotorController() {
-			@Override
-			public double get() {
-				return channel.command.output;
-			}
-
-			@Override
-			public void set(double power) {
-				channel.command.output = power;
-				channel.command.controlMode =
-					ProgramInterface.CANMotorControllerCommand.ControlMode.PercentOutput;
-			}
-
-			@Override
-			public void restoreFactoryDefault() {}
-		}, new ControlInputReader() {
+	SimMotorController(String configPrefix, ProgramInterface.CANMotorControllerCommunication channel) {
+		super(configPrefix, new SimBasicMotorController(channel), new ControlInputReader() {
 			@Override
 			public double getPosition() {
 				return channel.status.sensorPosition;
@@ -39,4 +23,32 @@ public class SimMotorController extends LocalMotorController {
 			}
 		});
 	}
+}
+
+class SimBasicMotorController implements BasicMotorController {
+	private final ProgramInterface.CANMotorControllerCommunication channel;
+
+	public SimBasicMotorController(int address) {
+		this(ProgramInterface.canMotorControllerChannels[address]);
+	}
+
+	public SimBasicMotorController(ProgramInterface.CANMotorControllerCommunication channel) {
+		this.channel = channel;
+	}
+
+	@Override
+	public double get() {
+		return channel.command.output;
+	}
+
+	@Override
+	public void set(double power) {
+		power = Math.min(Math.max(-1, power), 1);
+		channel.command.output = power;
+		channel.command.controlMode =
+			ProgramInterface.CANMotorControllerCommand.ControlMode.PercentOutput;
+	}
+
+	@Override
+	public void restoreFactoryDefault() {}
 }

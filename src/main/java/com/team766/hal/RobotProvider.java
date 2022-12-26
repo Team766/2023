@@ -31,7 +31,7 @@ public abstract class RobotProvider {
 	protected PositionReader positionSensor = null;
 	
 	//HAL
-	public abstract MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor);
+	protected abstract MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor);
 	
 	public abstract EncoderReader getEncoder(int index1, int index2);
 	
@@ -80,7 +80,7 @@ public abstract class RobotProvider {
 				defaultType = MotorController.Type.VictorSP;
 			}
 
-			var motor = getMotor(deviceId.get(), type.valueOr(defaultType), sensor);
+			var motor = getMotor(deviceId.get(), configName, type.valueOr(defaultType), sensor);
 			if (sensorScaleConfig.hasValue()) {
 				motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
 			}
@@ -93,7 +93,7 @@ public abstract class RobotProvider {
 			return motor;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
-			return new LocalMotorController(new MockMotorController(0), sensor);
+			return new LocalMotorController(configName, new MockMotorController(0), sensor);
 		}
 	}
 	public EncoderReader getEncoder(String configName) {
