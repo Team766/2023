@@ -115,6 +115,9 @@ public class VrConnector implements Runnable {
 	private static final int feedbackPort = 7662;
 	private static final int BUF_SZ = 1024;
 
+	private long startTime;
+	private boolean started = false;
+
 	private Selector selector;
 	private InetSocketAddress sendAddr;
 	private ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
@@ -166,9 +169,10 @@ public class VrConnector implements Runnable {
 		commands.limit(MAX_COMMANDS * 4);
 		commands.order(ByteOrder.LITTLE_ENDIAN);
 		feedback.order(ByteOrder.LITTLE_ENDIAN);
+		startTime = System.currentTimeMillis();
 	}
 
-	public void process() throws IOException {
+	private boolean process() throws IOException {
 		for (PortMapping m : PWM_CHANNELS) {
 			putCommandFloat(m.messageDataIndex, ProgramInterface.pwmChannels[m.robotPortIndex]);
 		}
@@ -185,7 +189,7 @@ public class VrConnector implements Runnable {
 		}
 
 		selector.selectedKeys().clear();
-		selector.selectNow();
+		selector.select();
 		boolean newData = false;
 		for (SelectionKey key : selector.selectedKeys()) {
 			if (!key.isValid()) {
@@ -198,9 +202,12 @@ public class VrConnector implements Runnable {
 				chan.receive(feedback);
 				newData = true;
 				key.interestOps(SelectionKey.OP_WRITE);
-			} else if (key.isWritable()) {
-				chan.send(commands.duplicate(), sendAddr);
-				putCommand(RESET_SIM_CHANNEL, 0);
+			}
+			if (key.isWritable()) {
+				if (started) {
+					chan.send(commands.duplicate(), sendAddr);
+					putCommand(RESET_SIM_CHANNEL, 0);
+				}
 				key.interestOps(SelectionKey.OP_READ);
 			}
 		}
@@ -269,13 +276,15 @@ public class VrConnector implements Runnable {
 
 			++ProgramInterface.driverStationUpdateNumber;
 		}
+
+		return newData;
 	}
 
 	public void run() {
-		boolean started = false;
 		while (true) {
+			boolean newData = false;
 			try {
-				process();
+				newData = process();
 			} catch (Exception e) {
 				e.printStackTrace();
 				LoggerExceptionUtils.logException(e);
@@ -285,15 +294,27 @@ public class VrConnector implements Runnable {
 			}
 			if (ProgramInterface.simulationTime == 0) {
 				// Wait for a connection to the simulator before starting to run the robot code.
+				startTime = System.currentTimeMillis();
 				continue;
 			}
 			if (resetCounter != lastResetCounter) {
 				lastResetCounter = resetCounter;
 				ProgramInterface.program.reset();
 			}
+			if (!newData) {
+				continue;
+			}
 			if (!started) {
-				System.out.println("Starting simulation");
-				started = true;
+				// When the simulator has already been running, we seem to need to allow the socket
+				// service loop to run for a bit to allow buffers in the sockets that communicate
+				// with the simulator to flush, otherwise the messages queue up which results in a
+				// significant control latency.
+				if (System.currentTimeMillis() - startTime > 1000) {
+					System.out.println("Starting simulation");
+					started = true;
+				} else {
+					continue;
+				}
 			}
 			if (ProgramInterface.program != null) {
 				ProgramInterface.program.step();
