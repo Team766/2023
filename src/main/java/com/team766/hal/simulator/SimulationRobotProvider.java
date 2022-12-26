@@ -19,7 +19,7 @@ import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider{
 
-	private MotorController[] motors = new MotorController[64];
+	private MotorController[] motors = new MotorController[100];
 	private int m_dsUpdateNumber = 0;
 
 	@Override

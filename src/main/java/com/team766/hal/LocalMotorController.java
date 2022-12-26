@@ -133,7 +133,7 @@ public class LocalMotorController implements MotorController {
 			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, toString() + " does not have an attached sensor configured");
 			return;
 		}
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			position *= -1;
 		}
 		sensorOffset = position - sensor.getPosition();
@@ -146,7 +146,7 @@ public class LocalMotorController implements MotorController {
 			return 0.0;
 		}
 		double position = sensor.getPosition() + sensorOffset;
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			position *= -1;
 		}
 		return position;
@@ -159,7 +159,7 @@ public class LocalMotorController implements MotorController {
 			return 0.0;
 		}
 		double velocity = sensor.getRate();
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			velocity *= -1;
 		}
 		return velocity;
@@ -175,6 +175,7 @@ public class LocalMotorController implements MotorController {
 		}
 		this.controlMode = mode;
 		this.setpoint = value;
+		this.pidController.setSetpoint(setpoint);
 	}
 	
 	public ControlMode getControlMode() {

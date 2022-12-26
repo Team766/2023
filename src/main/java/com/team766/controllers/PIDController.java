@@ -163,14 +163,13 @@ public class PIDController {
 	 */
 	public void setSetpoint(double set) {
 		setpoint = set;
-		total_error = 0;
 		needsUpdate = true;
 	}
 
 	public void disable() {
 		setpoint = Double.NaN;
-		total_error = 0;
 		needsUpdate = true;
+		reset();
 	}
 
 	/**
@@ -240,7 +239,9 @@ public class PIDController {
 		
 		double delta_time = timeProvider.get() - lastTime;
 
-		error_rate = (cur_error - prev_error) / delta_time;
+		if (delta_time > 0) { // This condition basically only false in the simulator
+			error_rate = (cur_error - prev_error) / delta_time;
+		}
 
 		total_error += cur_error * delta_time;
 
@@ -287,6 +288,7 @@ public class PIDController {
 	public void reset() {
 		cur_error = 0;
 		prev_error = 0;
+		error_rate = 0;
 		total_error = 0;
 		needsUpdate = true;
 	}

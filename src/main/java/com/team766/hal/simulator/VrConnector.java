@@ -44,7 +44,7 @@ public class VrConnector implements Runnable {
 
 	/// Command indexes
 
-	private static final int MAX_COMMANDS = 64;
+	private static final int MAX_COMMANDS = 100;
 
 	private static final int RESET_SIM_CHANNEL = 0;
 
@@ -65,7 +65,16 @@ public class VrConnector implements Runnable {
 		new CANPortMapping(4, 11, 11),  // Right motor
 		new CANPortMapping(10, 12, 13), // Intake
 		new CANPortMapping(12, 14, 0),  // Aux/center motor
-		new CANPortMapping(14, 16, 0)   // Aux2 motor
+		new CANPortMapping(14, 16, 0),  // Aux2 motor
+
+		new CANPortMapping(84, 84, 84), // FLD motor
+		new CANPortMapping(85, 85, 85), // BLD motor
+		new CANPortMapping(86, 86, 86), // FRD motor
+		new CANPortMapping(87, 87, 87), // BRD motor
+		new CANPortMapping(88, 88, 88), // FLS motor
+		new CANPortMapping(89, 89, 89), // BLS motor
+		new CANPortMapping(90, 90, 90), // FRS motor
+		new CANPortMapping(91, 91, 91)  // BRS motor
 	);
 
 	/// Feedback indexes

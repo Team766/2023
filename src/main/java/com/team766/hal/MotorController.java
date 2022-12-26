@@ -63,6 +63,10 @@ public interface MotorController extends BasicMotorController {
 	/**
 	 * Common interface for inverting direction of a motor controller.
 	 *
+	 * This changes the direction of the motor and sensor together. To change the
+	 * direction of the sensor relative to the direction of the motor,
+	 * use setSensorInverted.
+	 *
 	 * @param isInverted The state of inversion true is inverted.
 	 */
 	void setInverted(boolean isInverted);
@@ -111,7 +115,15 @@ public interface MotorController extends BasicMotorController {
 	void setFF(double value);
 
 	void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
-	
+
+	/**
+	 * Set whether to reverse the sensor relative to the direction of the motor.
+	 *
+	 * This is different from setInverted, which sets the direction of both the
+	 * motor and sensor together.
+	 *
+	 * @param inverted The state of inversion true is inverted.
+	 */
 	void setSensorInverted(boolean inverted);
 
 	void setOutputRange(double minOutput, double maxOutput);
