@@ -104,10 +104,12 @@ public class VrConnector implements Runnable {
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 
 	private static final int NUM_JOYSTICK = 4;
-    private static final int JOYSTICK_AXIS_START = 20;
-    private static final int AXES_PER_JOYSTICK = 4;
-    private static final int JOYSTICK_BUTTON_START = 40;
-    private static final int BUTTONS_PER_JOYSTICK = 8;
+	private static final int BASE_AXIS_START = 20;
+	private static final int BASE_AXES_PER_JOYSTICK = 4;
+	private static final int ADDITIONAL_AXIS_START = 100;
+	private static final int ADDITIONAL_AXES_PER_JOYSTICK = 4;
+	private static final int JOYSTICK_BUTTON_START = 72;
+	private static final int BUTTONS_PER_JOYSTICK = 20;
 
 	/// Socket Communication
 
@@ -266,11 +268,15 @@ public class VrConnector implements Runnable {
 				ProgramInterface.analogChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
 			}
 			for (int j = 0; j < NUM_JOYSTICK; ++j) {
-				for (int a = 0; a < AXES_PER_JOYSTICK; ++a) {
-					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * AXES_PER_JOYSTICK + a + JOYSTICK_AXIS_START) / 100.0);
+				for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
+					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
 				}
+				for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
+					ProgramInterface.joystickChannels[j].setAxisValue(a + BASE_AXES_PER_JOYSTICK, getFeedback(j * ADDITIONAL_AXES_PER_JOYSTICK + a + ADDITIONAL_AXIS_START) / 100.0);
+				}
+				int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
 				for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-					ProgramInterface.joystickChannels[j].setButton(b + 1, getFeedback(j * BUTTONS_PER_JOYSTICK + b + JOYSTICK_BUTTON_START) > 0);
+					ProgramInterface.joystickChannels[j].setButton(b + 1, ((denseButtonState >> b) & 1) != 0);
 				}
 			}
 
