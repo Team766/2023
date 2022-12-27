@@ -77,13 +77,13 @@
 		"arms": {"port": 0}
 	},
 	"lineSensorLeft": {
-		"port": 2
+		"port": 4
 	},
 	"lineSensorCenter": {
-		"port": 3
+		"port": 5
 	},
 	"lineSensorRight": {
-		"port": 4
+		"port": 6
 	},
 
 	"intake": {

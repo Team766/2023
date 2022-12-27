@@ -106,9 +106,9 @@ public class VrConnector implements Runnable {
 	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
 		new PortMapping(13, 0), // Intake state
 		new PortMapping(14, 1), // Ball presence
-		new PortMapping(17, 2), // Line Sensor 1
-		new PortMapping(18, 3), // Line Sensor 2
-		new PortMapping(19, 4)  // Line Sensor 3
+		new PortMapping(17, 4), // Line Sensor 1
+		new PortMapping(18, 5), // Line Sensor 2
+		new PortMapping(19, 6)  // Line Sensor 3
 	);
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 
