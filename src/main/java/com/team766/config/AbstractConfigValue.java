@@ -3,13 +3,13 @@ package com.team766.config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import com.team766.library.ValueProvider;
+import com.team766.library.SettableValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
+public abstract class AbstractConfigValue<E> implements SettableValueProvider<E> {
 	protected String m_key;
 	private E m_cachedValue;
 	private boolean m_cachedHasValue;
@@ -67,6 +67,14 @@ public abstract class AbstractConfigValue<E> implements ValueProvider<E> {
 			throw new IllegalArgumentException(m_key + " not found in the config file");
 		}
 		return m_cachedValue;
+	}
+
+	public void set(E value) {
+		ConfigFileReader.instance.setValue(m_key, value);
+	}
+
+	public void clear() {
+		ConfigFileReader.instance.setValue(m_key, null);
 	}
 	
 	protected abstract E parseJsonValue(Object configValue);

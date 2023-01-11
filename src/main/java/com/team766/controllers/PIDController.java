@@ -2,8 +2,8 @@ package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.RobotProvider;
-import com.team766.library.ConstantValueProvider;
-import com.team766.library.MissingValue;
+import com.team766.library.SetValueProvider;
+import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -32,13 +32,13 @@ public class PIDController {
 	private int printCounter = 0;
 	private boolean print = false;
 
-	private ValueProvider<Double> Kp;
-	private ValueProvider<Double> Ki;
-	private ValueProvider<Double> Kd;
-	private ValueProvider<Double> Kff;
-	private ValueProvider<Double> maxoutput_low = new MissingValue<Double>();
-	private ValueProvider<Double> maxoutput_high = new MissingValue<Double>();
-	private ValueProvider<Double> endthreshold;
+	private final ValueProvider<Double> Kp;
+	private final ValueProvider<Double> Ki;
+	private final ValueProvider<Double> Kd;
+	private final ValueProvider<Double> Kff;
+	private final ValueProvider<Double> maxoutput_low;
+	private final ValueProvider<Double> maxoutput_high;
+	private final ValueProvider<Double> endthreshold;
 
 	private double setpoint = Double.NaN;
 
@@ -85,20 +85,20 @@ public class PIDController {
 	 */
 	public PIDController(double P, double I, double D, double outputmax_low,
 	                     double outputmax_high, double threshold) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new MissingValue<Double>();
-		maxoutput_low = new ConstantValueProvider<Double>(outputmax_low);
-		maxoutput_high = new ConstantValueProvider<Double>(outputmax_high);
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>();
+		maxoutput_low = new SetValueProvider<Double>(outputmax_low);
+		maxoutput_high = new SetValueProvider<Double>(outputmax_high);
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(RobotProvider.getTimeProvider());
 	}
 
 	public PIDController(double P, double I, double D, double FF, double outputmax_low,
 	                     double outputmax_high, double threshold) {
 		this(P,I,D,outputmax_low,outputmax_high,threshold);
-		Kff = new ConstantValueProvider<Double>(FF);
+		((SetValueProvider<Double>)Kff).set(FF);
 	}
 
 	private void setTimeProvider(TimeProviderI timeProvider) {
@@ -133,24 +133,24 @@ public class PIDController {
 	 * @param timeProvider
 	 */
 	public PIDController(double P, double I, double D, double threshold, TimeProviderI timeProvider) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new MissingValue<Double>();
-		maxoutput_low = new MissingValue<Double>();
-		maxoutput_high = new MissingValue<Double>();
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>();
+		maxoutput_low = new SetValueProvider<Double>();
+		maxoutput_high = new SetValueProvider<Double>();
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(timeProvider);
 	}
 
 	public PIDController(double P, double I, double D, double FF, double threshold, TimeProviderI timeProvider) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new ConstantValueProvider<Double>(FF);
-		maxoutput_low = new MissingValue<Double>();
-		maxoutput_high = new MissingValue<Double>();
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>(FF);
+		maxoutput_low = new SetValueProvider<Double>();
+		maxoutput_high = new SetValueProvider<Double>();
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(timeProvider);
 	}
 
@@ -163,14 +163,13 @@ public class PIDController {
 	 */
 	public void setSetpoint(double set) {
 		setpoint = set;
-		total_error = 0;
 		needsUpdate = true;
 	}
 
 	public void disable() {
 		setpoint = Double.NaN;
-		total_error = 0;
 		needsUpdate = true;
+		reset();
 	}
 
 	/**
@@ -181,9 +180,29 @@ public class PIDController {
 	 * @param D Derivative value used in the PID controller
 	 */
 	public void setConstants(double P, double I, double D) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
+		((SettableValueProvider<Double>)Kp).set(P);
+		((SettableValueProvider<Double>)Ki).set(I);
+		((SettableValueProvider<Double>)Kd).set(D);
+		needsUpdate = true;
+	}
+
+	public void setP(double P) {
+		((SettableValueProvider<Double>)Kp).set(P);
+		needsUpdate = true;
+	}
+
+	public void setI(double I) {
+		((SettableValueProvider<Double>)Ki).set(I);
+		needsUpdate = true;
+	}
+
+	public void setD(double D) {
+		((SettableValueProvider<Double>)Kd).set(D);
+		needsUpdate = true;
+	}
+
+	public void setFF(double FF) {
+		((SettableValueProvider<Double>)Kff).set(FF);
 		needsUpdate = true;
 	}
 	
@@ -220,7 +239,9 @@ public class PIDController {
 		
 		double delta_time = timeProvider.get() - lastTime;
 
-		error_rate = (cur_error - prev_error) / delta_time;
+		if (delta_time > 0) { // This condition basically only false in the simulator
+			error_rate = (cur_error - prev_error) / delta_time;
+		}
 
 		total_error += cur_error * delta_time;
 
@@ -267,7 +288,9 @@ public class PIDController {
 	public void reset() {
 		cur_error = 0;
 		prev_error = 0;
+		error_rate = 0;
 		total_error = 0;
+		needsUpdate = true;
 	}
 
 	/**
@@ -296,12 +319,20 @@ public class PIDController {
 		return cur_error;
 	}
 
-	public void setMaxoutputHigh(double in) {
-		maxoutput_high = new ConstantValueProvider<Double>(in);
+	public void setMaxoutputHigh(Double in) {
+		if (in == null) {
+			((SettableValueProvider<Double>)maxoutput_high).clear();
+		} else {
+			((SettableValueProvider<Double>)maxoutput_high).set(in);
+		}
 	}
 
-	public void setMaxoutputLow(double in) {
-		maxoutput_low = new ConstantValueProvider<Double>(in);
+	public void setMaxoutputLow(Double in) {
+		if (in == null) {
+			((SettableValueProvider<Double>)maxoutput_low).clear();
+		} else {
+			((SettableValueProvider<Double>)maxoutput_low).set(in);
+		}
 	}
 	
 	public double getSetpoint(){

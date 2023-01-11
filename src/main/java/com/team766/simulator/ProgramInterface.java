@@ -81,7 +81,7 @@ public class ProgramInterface {
 	public static final RobotPosition robotPosition = new RobotPosition();
 	
 	public static final MockJoystick[] joystickChannels =
-			initializeArray(4, MockJoystick.class);
+			initializeArray(6, MockJoystick.class);
 	
 	
 	private static <E> E[] initializeArray(int size, Class<E> clazz) {

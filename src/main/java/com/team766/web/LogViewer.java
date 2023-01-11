@@ -1,6 +1,8 @@
 package com.team766.web;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Stream;
 import com.team766.logging.Category;
@@ -13,12 +15,14 @@ public class LogViewer implements WebServer.Handler {
 	private static final String ENDPOINT = "/logs";
 	private static final String ALL_ERRORS_NAME = "All Errors";
 
+	private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	private static String makeLogEntriesTable(Iterable<LogEntry> entries) {
 		String r = "<table id=\"log-entries\" border=\"1\">\n";
 		for (LogEntry entry : entries) {
 			r += String.format(
 				"<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-				entry.getCategory(), entry.getTime(), entry.getSeverity(), LogEntryRenderer.renderLogEntry(entry, null));
+				entry.getCategory(), timeFormat.format(new Date(entry.getTime() / 1000000)), entry.getSeverity(), LogEntryRenderer.renderLogEntry(entry, null));
 		}
 		r += "</table>";
 		return r;

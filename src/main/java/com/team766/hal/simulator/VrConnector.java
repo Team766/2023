@@ -44,7 +44,7 @@ public class VrConnector implements Runnable {
 
 	/// Command indexes
 
-	private static final int MAX_COMMANDS = 64;
+	private static final int MAX_COMMANDS = 100;
 
 	private static final int RESET_SIM_CHANNEL = 0;
 
@@ -65,7 +65,16 @@ public class VrConnector implements Runnable {
 		new CANPortMapping(4, 11, 11),  // Right motor
 		new CANPortMapping(10, 12, 13), // Intake
 		new CANPortMapping(12, 14, 0),  // Aux/center motor
-		new CANPortMapping(14, 16, 0)   // Aux2 motor
+		new CANPortMapping(14, 16, 0),  // Aux2 motor
+
+		new CANPortMapping(84, 84, 84), // FLD motor
+		new CANPortMapping(85, 85, 85), // BLD motor
+		new CANPortMapping(86, 86, 86), // FRD motor
+		new CANPortMapping(87, 87, 87), // BRD motor
+		new CANPortMapping(88, 88, 88), // FLS motor
+		new CANPortMapping(89, 89, 89), // BLS motor
+		new CANPortMapping(90, 90, 90), // FRS motor
+		new CANPortMapping(91, 91, 91)  // BRS motor
 	);
 
 	/// Feedback indexes
@@ -97,23 +106,28 @@ public class VrConnector implements Runnable {
 	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
 		new PortMapping(13, 0), // Intake state
 		new PortMapping(14, 1), // Ball presence
-		new PortMapping(17, 2), // Line Sensor 1
-		new PortMapping(18, 3), // Line Sensor 2
-		new PortMapping(19, 4)  // Line Sensor 3
+		new PortMapping(17, 4), // Line Sensor 1
+		new PortMapping(18, 5), // Line Sensor 2
+		new PortMapping(19, 6)  // Line Sensor 3
 	);
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 
 	private static final int NUM_JOYSTICK = 4;
-    private static final int JOYSTICK_AXIS_START = 20;
-    private static final int AXES_PER_JOYSTICK = 4;
-    private static final int JOYSTICK_BUTTON_START = 40;
-    private static final int BUTTONS_PER_JOYSTICK = 8;
+	private static final int BASE_AXIS_START = 20;
+	private static final int BASE_AXES_PER_JOYSTICK = 4;
+	private static final int ADDITIONAL_AXIS_START = 100;
+	private static final int ADDITIONAL_AXES_PER_JOYSTICK = 4;
+	private static final int JOYSTICK_BUTTON_START = 72;
+	private static final int BUTTONS_PER_JOYSTICK = 20;
 
 	/// Socket Communication
 
 	private static final int commandsPort = 7661;
 	private static final int feedbackPort = 7662;
 	private static final int BUF_SZ = 1024;
+
+	private long startTime;
+	private boolean started = false;
 
 	private Selector selector;
 	private InetSocketAddress sendAddr;
@@ -166,9 +180,10 @@ public class VrConnector implements Runnable {
 		commands.limit(MAX_COMMANDS * 4);
 		commands.order(ByteOrder.LITTLE_ENDIAN);
 		feedback.order(ByteOrder.LITTLE_ENDIAN);
+		startTime = System.currentTimeMillis();
 	}
 
-	public void process() throws IOException {
+	private boolean process() throws IOException {
 		for (PortMapping m : PWM_CHANNELS) {
 			putCommandFloat(m.messageDataIndex, ProgramInterface.pwmChannels[m.robotPortIndex]);
 		}
@@ -185,7 +200,7 @@ public class VrConnector implements Runnable {
 		}
 
 		selector.selectedKeys().clear();
-		selector.selectNow();
+		selector.select();
 		boolean newData = false;
 		for (SelectionKey key : selector.selectedKeys()) {
 			if (!key.isValid()) {
@@ -198,9 +213,12 @@ public class VrConnector implements Runnable {
 				chan.receive(feedback);
 				newData = true;
 				key.interestOps(SelectionKey.OP_WRITE);
-			} else if (key.isWritable()) {
-				chan.send(commands.duplicate(), sendAddr);
-				putCommand(RESET_SIM_CHANNEL, 0);
+			}
+			if (key.isWritable()) {
+				if (started) {
+					chan.send(commands.duplicate(), sendAddr);
+					putCommand(RESET_SIM_CHANNEL, 0);
+				}
 				key.interestOps(SelectionKey.OP_READ);
 			}
 		}
@@ -259,23 +277,29 @@ public class VrConnector implements Runnable {
 				ProgramInterface.analogChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
 			}
 			for (int j = 0; j < NUM_JOYSTICK; ++j) {
-				for (int a = 0; a < AXES_PER_JOYSTICK; ++a) {
-					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * AXES_PER_JOYSTICK + a + JOYSTICK_AXIS_START) / 100.0);
+				for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
+					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
 				}
+				for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
+					ProgramInterface.joystickChannels[j].setAxisValue(a + BASE_AXES_PER_JOYSTICK, getFeedback(j * ADDITIONAL_AXES_PER_JOYSTICK + a + ADDITIONAL_AXIS_START) / 100.0);
+				}
+				int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
 				for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-					ProgramInterface.joystickChannels[j].setButton(b + 1, getFeedback(j * BUTTONS_PER_JOYSTICK + b + JOYSTICK_BUTTON_START) > 0);
+					ProgramInterface.joystickChannels[j].setButton(b + 1, ((denseButtonState >> b) & 1) != 0);
 				}
 			}
 
 			++ProgramInterface.driverStationUpdateNumber;
 		}
+
+		return newData;
 	}
 
 	public void run() {
-		boolean started = false;
 		while (true) {
+			boolean newData = false;
 			try {
-				process();
+				newData = process();
 			} catch (Exception e) {
 				e.printStackTrace();
 				LoggerExceptionUtils.logException(e);
@@ -285,15 +309,27 @@ public class VrConnector implements Runnable {
 			}
 			if (ProgramInterface.simulationTime == 0) {
 				// Wait for a connection to the simulator before starting to run the robot code.
+				startTime = System.currentTimeMillis();
 				continue;
 			}
 			if (resetCounter != lastResetCounter) {
 				lastResetCounter = resetCounter;
 				ProgramInterface.program.reset();
 			}
+			if (!newData) {
+				continue;
+			}
 			if (!started) {
-				System.out.println("Starting simulation");
-				started = true;
+				// When the simulator has already been running, we seem to need to allow the socket
+				// service loop to run for a bit to allow buffers in the sockets that communicate
+				// with the simulator to flush, otherwise the messages queue up which results in a
+				// significant control latency.
+				if (System.currentTimeMillis() - startTime > 1000) {
+					System.out.println("Starting simulation");
+					started = true;
+				} else {
+					continue;
+				}
 			}
 			if (ProgramInterface.program != null) {
 				ProgramInterface.program.step();

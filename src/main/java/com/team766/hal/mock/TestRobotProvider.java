@@ -24,9 +24,10 @@ public class TestRobotProvider extends RobotProvider{
 	private double m_batteryVoltage = 12.0;
 
 	@Override
-	public MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor) {
+	public MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor) {
 		if(motors[index] == null) {
 			motors[index] = new LocalMotorController(
+				configPrefix,
 				new MockMotorController(index),
 				localSensor != null ? localSensor : new MockEncoder(-1, -1));
 		}

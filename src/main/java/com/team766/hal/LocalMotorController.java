@@ -4,9 +4,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Scheduler;
-import com.team766.library.ConstantValueProvider;
-import com.team766.library.MissingValue;
-import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -17,13 +14,6 @@ public class LocalMotorController implements MotorController {
 	private ControlInputReader sensor;
 	private PIDController pidController;
 
-	private ValueProvider<Double> pGain = new ConstantValueProvider<Double>(0.0);
-	private ValueProvider<Double> iGain = new ConstantValueProvider<Double>(0.0);
-	private ValueProvider<Double> dGain = new ConstantValueProvider<Double>(0.0);
-	private ValueProvider<Double> ffGain = new ConstantValueProvider<Double>(0.0);
-	private ValueProvider<Double> outputMaxLow = new MissingValue<Double>();
-	private ValueProvider<Double> outputMaxHigh = new MissingValue<Double>();
-
 	private boolean inverted = false;
 	private boolean sensorInverted = false;
 	private double sensorOffset = 0.0;
@@ -32,12 +22,14 @@ public class LocalMotorController implements MotorController {
 	private double setpoint = 0.0;
 	private MotorController leader = null;
 
-	public LocalMotorController(BasicMotorController motor, ControlInputReader sensor){
+	public LocalMotorController(String configPrefix, BasicMotorController motor, ControlInputReader sensor){
 		this.motor = motor;
 		this.sensor = sensor;
-		this.pidController = new PIDController(
-			pGain, iGain, dGain, ffGain, outputMaxLow, outputMaxHigh,
-			new ConstantValueProvider<Double>(0.0));
+
+		if (!configPrefix.endsWith(".")) {
+			configPrefix += ".";
+		}
+		this.pidController = PIDController.loadFromConfig(configPrefix + "pid.");
 
 		Scheduler.getInstance().add(new Runnable() {
 			@Override
@@ -141,7 +133,7 @@ public class LocalMotorController implements MotorController {
 			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, toString() + " does not have an attached sensor configured");
 			return;
 		}
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			position *= -1;
 		}
 		sensorOffset = position - sensor.getPosition();
@@ -154,7 +146,7 @@ public class LocalMotorController implements MotorController {
 			return 0.0;
 		}
 		double position = sensor.getPosition() + sensorOffset;
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			position *= -1;
 		}
 		return position;
@@ -167,7 +159,7 @@ public class LocalMotorController implements MotorController {
 			return 0.0;
 		}
 		double velocity = sensor.getRate();
-		if (this.sensorInverted) {
+		if (this.sensorInverted != this.inverted) {
 			velocity *= -1;
 		}
 		return velocity;
@@ -183,6 +175,7 @@ public class LocalMotorController implements MotorController {
 		}
 		this.controlMode = mode;
 		this.setpoint = value;
+		this.pidController.setSetpoint(setpoint);
 	}
 	
 	public ControlMode getControlMode() {
@@ -210,22 +203,22 @@ public class LocalMotorController implements MotorController {
 
 	@Override
 	public void setP(double value) {
-		pGain = new ConstantValueProvider<Double>(value);
+		pidController.setP(value);
 	}
 
 	@Override
 	public void setI(double value) {
-		iGain = new ConstantValueProvider<Double>(value);
+		pidController.setI(value);
 	}
 
 	@Override
 	public void setD(double value) {
-		dGain = new ConstantValueProvider<Double>(value);
+		pidController.setD(value);
 	}
 
 	@Override
 	public void setFF(double value) {
-		ffGain = new ConstantValueProvider<Double>(value);
+		pidController.setFF(value);
 	}
 
 	@Override
@@ -240,8 +233,8 @@ public class LocalMotorController implements MotorController {
 
 	@Override
 	public void setOutputRange(double minOutput, double maxOutput) {
-		outputMaxLow = new ConstantValueProvider<Double>(minOutput);
-		outputMaxHigh = new ConstantValueProvider<Double>(maxOutput);
+		pidController.setMaxoutputLow(minOutput);
+		pidController.setMaxoutputHigh(maxOutput);
 	}
 
 	@Override
@@ -253,12 +246,12 @@ public class LocalMotorController implements MotorController {
 	public void restoreFactoryDefault() {
 		this.motor.restoreFactoryDefault();
 
-		this.pGain = new ConstantValueProvider<Double>(0.0);
-		this.iGain = new ConstantValueProvider<Double>(0.0);
-		this.dGain = new ConstantValueProvider<Double>(0.0);
-		this.ffGain = new ConstantValueProvider<Double>(0.0);
-		this.outputMaxLow = new MissingValue<Double>();
-		this.outputMaxHigh = new MissingValue<Double>();
+		this.setP(0.0);
+		this.setI(0.0);
+		this.setD(0.0);
+		this.setFF(0.0);
+		this.pidController.setMaxoutputLow(null);
+		this.pidController.setMaxoutputHigh(null);
 
 		this.inverted = false;
 		this.sensorInverted = false;

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import com.team766.library.ValueProvider;
+import com.team766.library.SettableValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -85,40 +85,70 @@ public class ConfigFileReader {
 		return getRawValue(key) != null;
 	}
 	
-	public ValueProvider<Integer[]> getInts(String key) {
+	public SettableValueProvider<Integer[]> getInts(String key) {
 		return new IntegerConfigMultiValue(key);
 	}
 	
-	public ValueProvider<Integer> getInt(String key) {
+	public SettableValueProvider<Integer> getInt(String key) {
 		return new IntegerConfigValue(key);
 	}
 	
-	public ValueProvider<Double[]> getDoubles(String key) {
+	public SettableValueProvider<Double[]> getDoubles(String key) {
 		return new DoubleConfigMultiValue(key);
 	}
 	
-	public ValueProvider<Double> getDouble(String key) {
+	public SettableValueProvider<Double> getDouble(String key) {
 		return new DoubleConfigValue(key);
 	}
 	
-	public ValueProvider<Boolean> getBoolean(String key) {
+	public SettableValueProvider<Boolean> getBoolean(String key) {
 		return new BooleanConfigValue(key);
 	}
 	
-	public ValueProvider<String> getString(String key) {
+	public SettableValueProvider<String> getString(String key) {
 		return new StringConfigValue(key);
 	}
 
-	public <E extends Enum<E>> ValueProvider<E> getEnum(Class<E> enumClass, String key) {
+	public <E extends Enum<E>> SettableValueProvider<E> getEnum(Class<E> enumClass, String key) {
 		return new EnumConfigValue<E>(enumClass, key);
 	}
-	
+
+	public <E> void setValue(String key, E value) {
+		String[] keyParts = splitKey(key);
+		JSONObject parentObj = getParent(m_values, keyParts);
+		parentObj.putOpt(
+			keyParts[keyParts.length - 1],
+			value == null ? JSONObject.NULL : value);
+	}
+
 	Object getRawValue(String key) {
 		return getRawValue(m_values, key);
 	}
 
 	private static Object getRawValue(JSONObject obj, String key) {
-		String[] keyParts = key.split(Pattern.quote(KEY_DELIMITER));
+		String[] keyParts = splitKey(key);
+		JSONObject parentObj = getParent(obj, keyParts);
+		var rawValue = parentObj.opt(keyParts[keyParts.length - 1]);
+		if (rawValue instanceof JSONObject) {
+			throw new IllegalArgumentException(
+				"The config file cannot store both a single config " + 
+				"setting and a group of config settings with the name " +
+				key + " Please pick a different name");
+		}
+		if (rawValue == null) {
+			parentObj.put(keyParts[keyParts.length - 1], JSONObject.NULL);
+		}
+		if (rawValue == JSONObject.NULL) {
+			rawValue = null;
+		}
+		return rawValue;
+	}
+
+	private static String[] splitKey(String key) {
+		return key.split(Pattern.quote(KEY_DELIMITER));
+	}
+
+	private static JSONObject getParent(JSONObject obj, String[] keyParts) {
 		for (int i = 0; i < keyParts.length - 1; ++i) {
 			JSONObject subObj;
 			try {
@@ -127,7 +157,8 @@ public class ConfigFileReader {
 				throw new IllegalArgumentException(
 					"The config file cannot store both a single config " + 
 					"setting and a group of config settings with the name " +
-					key + " Please pick a different name for one of them.");
+					String.join(KEY_DELIMITER, keyParts) +
+					" Please pick a different name for one of them.");
 			}
 			if (subObj == null) {
 				subObj = new JSONObject();
@@ -135,20 +166,7 @@ public class ConfigFileReader {
 			}
 			obj = subObj;
 		}
-		var rawValue = obj.opt(keyParts[keyParts.length - 1]);
-		if (rawValue instanceof JSONObject) {
-			throw new IllegalArgumentException(
-				"The config file cannot store both a single config " + 
-				"setting and a group of config settings with the name " +
-				key + " Please pick a different name");
-		}
-		if (rawValue == null) {
-			obj.put(keyParts[keyParts.length - 1], JSONObject.NULL);
-		}
-		if (rawValue == JSONObject.NULL) {
-			rawValue = null;
-		}
-		return rawValue;
+		return obj;
 	}
 
 	public String getJsonString() {

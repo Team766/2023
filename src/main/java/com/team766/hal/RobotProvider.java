@@ -29,9 +29,17 @@ public abstract class RobotProvider {
 	protected AnalogInputReader[] angInputs = new AnalogInputReader[5];
 	protected RelayOutput[] relays = new RelayOutput[5];
 	protected PositionReader positionSensor = null;
-	
+
+	private HashMap<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> motorPortNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> digitalIoNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> analogInputNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> relayNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> solenoidNames = new HashMap<Integer, String>();
+	private HashMap<Integer, String> gyroNames = new HashMap<Integer, String>();
+
 	//HAL
-	public abstract MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor);
+	protected abstract MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor);
 	
 	public abstract EncoderReader getEncoder(int index1, int index2);
 	
@@ -54,6 +62,16 @@ public abstract class RobotProvider {
 	}
 	
 	// Config-driven methods
+
+	private void checkDeviceName(String deviceType, HashMap<Integer, String> deviceNames, Integer portId, String configName) {
+		String previousName = deviceNames.putIfAbsent(portId, configName);
+		if (previousName != null && previousName != configName) {
+			Logger.get(Category.CONFIGURATION).logRaw(
+				Severity.ERROR,
+				"Multiple " + deviceType + " devices for port ID " + portId + ": " + previousName + ", " + configName);
+		}
+	}
+
 	public MotorController getMotor(String configName) {
 		final String encoderConfigName = configName + ".encoder";
 		final String analogInputConfigName = configName + ".analogInput";
@@ -78,9 +96,12 @@ public abstract class RobotProvider {
 			if (!deviceId.hasValue()) {
 				deviceId = port;
 				defaultType = MotorController.Type.VictorSP;
+				checkDeviceName("PWM motor controller", motorPortNames, port.get(), configName);
+			} else {
+				checkDeviceName("CAN motor controller", motorDeviceIdNames, deviceId.get(), configName);
 			}
 
-			var motor = getMotor(deviceId.get(), type.valueOr(defaultType), sensor);
+			var motor = getMotor(deviceId.get(), configName, type.valueOr(defaultType), sensor);
 			if (sensorScaleConfig.hasValue()) {
 				motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
 			}
@@ -93,9 +114,10 @@ public abstract class RobotProvider {
 			return motor;
 		} catch (IllegalArgumentException ex) {
 			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
-			return new LocalMotorController(new MockMotorController(0), sensor);
+			return new LocalMotorController(configName, new MockMotorController(0), sensor);
 		}
 	}
+
 	public EncoderReader getEncoder(String configName) {
 		try {
 			final ValueProvider<Integer[]> ports = ConfigFileReader.getInstance().getInts(configName + ".ports");
@@ -106,6 +128,8 @@ public abstract class RobotProvider {
 				Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Encoder %s has %d config values, but expected 2", configName, portsValue.length);
 				return new MockEncoder(0, 0);
 			}
+			checkDeviceName("encoder/digital input", digitalIoNames, portsValue[0], configName);
+			checkDeviceName("encoder/digital input", digitalIoNames, portsValue[1], configName);
 			final EncoderReader reader = getEncoder(portsValue[0], portsValue[1]);
 			if (distancePerPulseConfig.hasValue()) {
 				reader.setDistancePerPulse(distancePerPulseConfig.get());
@@ -116,9 +140,11 @@ public abstract class RobotProvider {
 			return new MockEncoder(0, 0);
 		}
 	}
+
 	public DigitalInputReader getDigitalInput(String configName) {
 		try {
 			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			checkDeviceName("encoder/digital input", digitalIoNames, port.get(), configName);
 
 			return getDigitalInput(port.get());
 		} catch (IllegalArgumentException ex) {
@@ -126,9 +152,11 @@ public abstract class RobotProvider {
 			return new MockDigitalInput();
 		}
 	}
+
 	public AnalogInputReader getAnalogInput(String configName) {
 		try {
 			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			checkDeviceName("analog input", analogInputNames, port.get(), configName);
 
 			return getAnalogInput(port.get());
 		} catch (IllegalArgumentException ex) {
@@ -136,9 +164,11 @@ public abstract class RobotProvider {
 			return new MockAnalogInput();
 		}
 	}
+
 	public RelayOutput getRelay(String configName) {
 		try {
 			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			checkDeviceName("relay", relayNames, port.get(), configName);
 
 			return getRelay(port.get());
 		} catch (IllegalArgumentException ex) {
@@ -146,6 +176,7 @@ public abstract class RobotProvider {
 			return new MockRelay(0);
 		}
 	}
+
 	public DoubleSolenoid getSolenoid(String configName) {
 		try {
 			final String legacyConfigKey = configName + ".port";
@@ -155,6 +186,13 @@ public abstract class RobotProvider {
 					: ConfigFileReader.getInstance().getInts(configName + ".forwardPort");
 			ValueProvider<Integer[]> reversePorts =
 				ConfigFileReader.getInstance().getInts(configName + ".reversePort");
+
+			for (Integer port : forwardPorts.valueOr(new Integer[0])) {
+				checkDeviceName("solenoid", solenoidNames, port, configName);
+			}
+			for (Integer port : reversePorts.valueOr(new Integer[0])) {
+				checkDeviceName("solenoid", solenoidNames, port, configName);
+			}
 
 			SolenoidController forwardSolenoids = new MultiSolenoid(
 				Arrays.stream(forwardPorts.valueOr(new Integer[0]))
@@ -170,9 +208,11 @@ public abstract class RobotProvider {
 			return new DoubleSolenoid(null, null);
 		}
 	}
+
 	public GyroReader getGyro(String configName) {
 		try {
 			ValueProvider<Integer> port = ConfigFileReader.getInstance().getInt(configName + ".port");
+			checkDeviceName("gyro", gyroNames, port.get(), configName);
 
 			return getGyro(port.get());
 		} catch (IllegalArgumentException ex) {

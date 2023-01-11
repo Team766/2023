@@ -10,7 +10,7 @@ public class MockJoystick implements JoystickReader {
 	private int povValue;
 	
 	public MockJoystick(){
-		axisValues = new double[4];
+		axisValues = new double[12];
 		buttonValues = new boolean[20];
 		prevButtonValues = new boolean[20];
 	}

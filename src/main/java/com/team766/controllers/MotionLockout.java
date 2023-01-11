@@ -1,7 +1,7 @@
 package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.library.ConstantValueProvider;
+import com.team766.library.SetValueProvider;
 import com.team766.library.ValueProvider;
 
 /*
@@ -26,10 +26,10 @@ public class MotionLockout {
 	}
 	
 	public MotionLockout(double minPosition, double maxPosition, double minCommand, double maxCommand) {
-		m_minPosition = new ConstantValueProvider<Double>(minPosition);
-		m_maxPosition = new ConstantValueProvider<Double>(maxPosition);
-		m_minCommand = new ConstantValueProvider<Double>(minCommand);
-		m_maxCommand = new ConstantValueProvider<Double>(maxCommand);
+		m_minPosition = new SetValueProvider<Double>(minPosition);
+		m_maxPosition = new SetValueProvider<Double>(maxPosition);
+		m_minCommand = new SetValueProvider<Double>(minCommand);
+		m_maxCommand = new SetValueProvider<Double>(maxCommand);
 	}
 	
 	public MotionLockout(

@@ -38,7 +38,7 @@ public class WPIRobotProvider extends RobotProvider {
 	private PneumaticsControlModule pcm = new PneumaticsControlModule();
 
 	@Override
-	public MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor) {
+	public MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor) {
 		if (motors[type.ordinal()][index] != null) {
 			return motors[type.ordinal()][index];
 		}
@@ -49,7 +49,7 @@ public class WPIRobotProvider extends RobotProvider {
 					motor = new CANSparkMaxMotorController(index);
 				} catch (Exception ex) {
 					LoggerExceptionUtils.logException(ex);
-					motor = new LocalMotorController(new MockMotorController(index), localSensor);
+					motor = new LocalMotorController(configPrefix, new MockMotorController(index), localSensor);
 					localSensor = null;
 				}
 				break;
@@ -63,17 +63,17 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANTalonFxMotorController(index);
 				break;
 			case VictorSP:
-				motor = new LocalMotorController(new PWMVictorSP(index), localSensor);
+				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
 				localSensor = null;
 				break;
 		}
 		if (motor == null) {
 			LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported motor type " + type));
-			motor = new LocalMotorController(new MockMotorController(index), localSensor);
+			motor = new LocalMotorController(configPrefix, new MockMotorController(index), localSensor);
 			localSensor = null;
 		}
 		if (localSensor != null) {
-			motor = new LocalMotorController(motor, localSensor);
+			motor = new LocalMotorController(configPrefix, motor, localSensor);
 		}
 		motors[type.ordinal()][index] = motor;
 		return motor;

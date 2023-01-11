@@ -19,15 +19,16 @@ import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider{
 
-	private MotorController[] motors = new MotorController[64];
+	private MotorController[] motors = new MotorController[100];
 	private int m_dsUpdateNumber = 0;
 
 	@Override
-	public MotorController getMotor(int index, MotorController.Type type, ControlInputReader localSensor) {
+	public MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor) {
 		if(motors[index] == null) {
-			motors[index] = new SimMotorController(index);
 			if (localSensor != null) {
-				motors[index] = new LocalMotorController(motors[index], localSensor);
+				motors[index] = new LocalMotorController(configPrefix, new SimBasicMotorController(index), localSensor);
+			} else {
+				motors[index] = new SimMotorController(configPrefix, index);
 			}
 		}
 		return motors[index];
