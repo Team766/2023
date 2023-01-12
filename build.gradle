@@ -118,7 +118,7 @@ wpi.java.configureTestTasks(test)
 
 allprojects {
     group 'com.team766'
-    version '2.1.0'
+    version '2.1.1'
 
     repositories {
         mavenCentral()
