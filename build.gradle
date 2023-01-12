@@ -47,6 +47,12 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                 }
+
+                // Just the (static) config files
+                configFiles(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/main/deploy/configs')
+                    directory = '/home/lvuser/deploy/configs'
+                }
             }
         }
     }
