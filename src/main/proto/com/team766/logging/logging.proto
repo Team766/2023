@@ -1,0 +1,63 @@
+syntax = "proto2";
+
+package com.team766.logging;
+
+option java_multiple_files = true;
+
+message LogEntry {
+	// Time as nanoseconds since January 1, 1970, 00:00:00 GMT
+	optional int64 time = 1;
+	optional Severity severity = 2;
+	optional Category category = 3;
+
+	optional string message_str = 6;
+	optional int32 message_index = 7;
+	repeated LogValue arg = 8;
+}
+
+enum Severity {
+	DEBUG = 10;
+	INFO = 20;
+	WARNING = 30;
+	ERROR = 40;
+}
+
+enum Category {
+	// Don't change the numbers. When adding a new option, just use the next
+	// available number.
+	JAVA_EXCEPTION = 0;
+	FRAMEWORK = 1;
+	HAL = 2;
+	CONFIGURATION = 3;
+	MECHANISMS = 4;
+	PROCEDURES = 5;
+	AUTONOMOUS = 6;
+	CAMERA = 7;
+	PID_CONTROLLER = 8;
+	TRAJECTORY = 9;
+	OPERATOR_INTERFACE = 10;
+	DRIVE = 11;
+}
+
+// `Value` represents a dynamically typed value which can be either a number,
+// a string, a boolean, or a list of values. Absence of all fields indicates
+// a null value.
+message LogValue {
+	oneof kind {
+		int64 int_value = 1;
+		// Represents a double value.
+		double float_value = 2;
+		// Represents a string value.
+		string string_value = 3;
+		// Represents a boolean value.
+		bool bool_value = 4;
+		// Represents an array or list.
+		LogListValue list = 5;
+
+		// Add schemas for other serialized types here
+	}
+}
+
+message LogListValue {
+	repeated LogValue element = 1;
+}
