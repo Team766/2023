@@ -2,7 +2,7 @@ package com.team766.robot.mechanisms;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
-import com. team766.hal.RobotProvider;
+import com.team766.hal.RobotProvider;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.*;
 import org.photonvision.targeting.PhotonTrackedTarget;

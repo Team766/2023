@@ -13,6 +13,6 @@ public class Robot {
 		
 		drive = new Drive();
 		photonVision = new PhotonVision();
-		gyro = new Gyro();
+		gyro = new Gyro(); 
 	}
 }
