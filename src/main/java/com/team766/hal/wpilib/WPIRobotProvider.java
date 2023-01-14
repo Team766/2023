@@ -194,7 +194,9 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public boolean hasNewDriverStationData() {
-		return DriverStation.isNewControlData();
+		// TODO: replace implementation with event counting one
+		// return DriverStation.isNewControlData();
+		return true;
 	}
 
 	@Override
