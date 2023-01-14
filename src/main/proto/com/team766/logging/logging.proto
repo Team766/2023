@@ -63,3 +63,6 @@ message LogValue {
 message LogListValue {
 	repeated LogValue element = 1;
 }
+message LogListValue {
+	repeated LogValue element = 1;
+}
