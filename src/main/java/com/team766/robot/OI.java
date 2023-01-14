@@ -15,6 +15,7 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
+
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -25,10 +26,24 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.candle);
+		context.takeOwnership(Robot.drive);
+
 		while (true) {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			if(joystick0.getButton(8)){
+				Robot.candle.setColor(1, 0, 0,5);
+			}else if(joystick0.getButton(9)){
+				Robot.candle.setColor(0, 1, 0);
+			}else if(joystick0.getButton(10)){
+				Robot.candle.setColor(0, 0, 1);
+			}
+			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			
+
+			
+			//
 
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
