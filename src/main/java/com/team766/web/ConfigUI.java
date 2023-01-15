@@ -13,72 +13,16 @@ public class ConfigUI implements WebServer.Handler {
 
 	@Override
 	public String handle(Map<String, Object> params) {
-		String r = "<h1>Configuration</h1>";
-
-		r += "<div id=\"results\">\n";
-		if (params.containsKey("configJson")) {
-			String configJsonString = (String)params.get("configJson");
-			ArrayList<String> validationErrors = new ArrayList<String>();
-			try {
-				ConfigFileReader.getInstance().reloadFromJson(configJsonString);
-			} catch (ConfigValueParseException ex) {
-				validationErrors.add(ex.toString());
-			} catch (Exception ex) {
-				validationErrors.add("Failed to parse config json: " + ex);
-			}
-			if (validationErrors.isEmpty()) {
-				r += "<p>New configuration (v" + ConfigFileReader.getInstance().getGeneration() + ") has been applied</p>";
-				r += "<p><b>Remember to click Restart Robot Code in the driver station if you have changed any motor/sensor settings</b></p>";
-				if (params.containsKey("saveToFile")) {
-					try {
-						ConfigFileReader.getInstance().saveFile(configJsonString);
-					} catch (Exception ex) {
-						validationErrors.add("Could not save config file: " + ex.toString());
-					}
-				}
-			}
-			if (validationErrors.size() > 0) {
-				r += "<p>Errors:\n";
-				r += "<ul>\n";
-				for (String error : validationErrors) {
-					r += "<li>" + error + "</li>\n";
-				}
-				r += "</ul></p>\n";
-			}
-		}
-		r += "</div>\n";
-
-		r += String.join("\n", new String[]{
-			"<script>",
-			"  function submitForm(oFormElement) {",
-			"    var xhttp = new XMLHttpRequest();",
-			"    xhttp.onreadystatechange = function() {",
-			"      if (this.readyState == 4 && this.status == 200) {",
-			"        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
-			"        var oldDiv = document.getElementById('results');",
-			"        oldDiv.parentNode.replaceChild(",
-			"            document.importNode(newDoc.querySelector('#results'), true),",
-			"            oldDiv);",
-			"     }",
-			"    };",
-			"    xhttp.open(oFormElement.method, oFormElement.getAttribute('action'), true);",
-			"    xhttp.send(new URLSearchParams(new FormData(oFormElement)));",
-			"    return false;",
-			"  }",
-			"</script>",
-		});
+		String r = "<h1>Configuration (READ ONLY)</h1>";
+		r += "<p>";
+		r += "To edit, copy contents and place in <code>src/main/deploy/configs</code> directory.<br/>";
+		r += "See <a href=\"https://docs.google.com/document/d/1eKOG5iWi2tijRls1L9qZ4xBZx50y1EriIk2QBUTv86g/edit#\">docs</a> for more information.<br/>";
+		r += "</p>";
 		
-		r += "<form method=\"post\" action=\"" + endpoint() + "\" onsubmit=\"return submitForm(this);\">\n";
-		r += "<textarea name=\"configJson\" style=\"box-sizing: border-box; width: 100%; height: 400px;\">";
-		if (params.containsKey("configJson")) {
-			r += (String)params.get("configJson");
-		} else {
-			r += ConfigFileReader.getInstance().getJsonString();
-		}
+		// TODO: handle empty config file case.
+		r += "<textarea name=\"configJson\" readonly disabled style=\"background: lightgray; box-sizing: border-box; width: 100%; height: 400px;\">";
+		r += ConfigFileReader.getInstance().getJsonString();
 		r += "</textarea>\n";
-		r += "<p>Save to config file on robot? <input type=\"checkbox\" name=\"saveToFile\"></p>\n";
-		r += "<p><input type=\"submit\" value=\"Apply\"></p></form>\n";
-		
 		return r;
 	}
 
