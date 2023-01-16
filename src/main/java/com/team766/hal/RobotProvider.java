@@ -29,6 +29,7 @@ public abstract class RobotProvider {
 	protected AnalogInputReader[] angInputs = new AnalogInputReader[5];
 	protected RelayOutput[] relays = new RelayOutput[5];
 	protected PositionReader positionSensor = null;
+	protected BeaconReader beaconSensor = null;
 
 	private HashMap<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
 	private HashMap<Integer, String> motorPortNames = new HashMap<Integer, String>();
@@ -56,6 +57,8 @@ public abstract class RobotProvider {
 	public abstract CameraReader getCamera(String id, String value);
 
 	public abstract PositionReader getPositionSensor();
+
+	public abstract BeaconReader getBeaconSensor();
 
 	public static TimeProviderI getTimeProvider(){
 		return () -> instance.getClock().getTime();

@@ -1,6 +1,7 @@
 package com.team766.hal.mock;
 
 import com.team766.hal.AnalogInputReader;
+import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
@@ -99,6 +100,13 @@ public class TestRobotProvider extends RobotProvider{
 		if (positionSensor == null)
 			positionSensor = new MockPositionSensor();
 		return positionSensor;
+	}
+	
+	@Override
+	public BeaconReader getBeaconSensor() {
+		if (beaconSensor == null)
+			beaconSensor = new MockBeaconSensor();
+		return beaconSensor;
 	}
 
 	@Override

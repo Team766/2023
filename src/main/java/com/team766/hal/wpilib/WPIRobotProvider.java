@@ -1,6 +1,7 @@
 package com.team766.hal.wpilib;
 
 import com.team766.hal.AnalogInputReader;
+import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
@@ -15,6 +16,7 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.MotorController;
+import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockPositionSensor;
 import com.team766.hal.mock.MockMotorController;
@@ -165,6 +167,18 @@ public class WPIRobotProvider extends RobotProvider {
 			);
 		}
 		return positionSensor;
+	}
+
+	@Override
+	public BeaconReader getBeaconSensor() {
+		if (beaconSensor == null) {
+			beaconSensor = new MockBeaconSensor();
+			Logger.get(Category.CONFIGURATION).logRaw(
+				Severity.ERROR,
+				"Beacon sensor does not exist on real robots. Using mock beacon sensor instead - it will always return no beacons"
+			);
+		}
+		return beaconSensor;
 	}
 
 	@Override
