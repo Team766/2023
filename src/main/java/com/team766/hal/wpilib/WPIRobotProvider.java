@@ -1,5 +1,7 @@
 package com.team766.hal.wpilib;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -24,7 +26,9 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
-
+import com.team766.simulator.elements.AirCompressor;
+import edu.wpi.first.hal.DriverStationJNI;
+import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -32,6 +36,48 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
+
+	private static class DataRefreshRunnable implements Runnable {
+		private final AtomicBoolean m_keepAlive = new AtomicBoolean();
+		private final AtomicInteger m_dataCount = new AtomicInteger();
+
+		public DataRefreshRunnable() {
+			m_keepAlive.set(true);
+		}
+
+		@Override
+		public void run() {
+			int handle = WPIUtilJNI.createEvent(false, false);
+			DriverStationJNI.provideNewDataEventHandle(handle);
+
+			while (m_keepAlive.get()) {
+				try {
+       				if (!WPIUtilJNI.waitForObjectTimeout(handle, 0.1)) {
+						m_dataCount.incrementAndGet();
+					}
+      			} catch (InterruptedException e) {
+        			DriverStationJNI.removeNewDataEventHandle(handle);
+        			WPIUtilJNI.destroyEvent(handle);
+        			Thread.currentThread().interrupt();
+        			return;
+      			}
+				DriverStation.refreshData();
+			}
+
+			DriverStationJNI.removeNewDataEventHandle(handle);
+    		WPIUtilJNI.destroyEvent(handle);
+		}
+	}
+
+	private DataRefreshRunnable m_DataRefreshRunnable = new DataRefreshRunnable();
+	private Thread m_dataRefreshThread;
+	private AtomicInteger m_lastDataCount = new AtomicInteger();
+
+	public WPIRobotProvider() {
+		m_dataRefreshThread = new Thread(m_DataRefreshRunnable, "DataRefreshThread");
+		// FIXME: where is the right place to close this?  should this be auto-cloesable?
+		m_dataRefreshThread.start();
+	}
 
 	private MotorController[][] motors = new MotorController[MotorController.Type.values().length][64];
 
@@ -194,9 +240,8 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public boolean hasNewDriverStationData() {
-		// TODO: replace implementation with event counting one
-		// return DriverStation.isNewControlData();
-		return true;
+		int currentDataCount = m_DataRefreshRunnable.m_dataCount.get();
+		return m_lastDataCount.getAndSet(currentDataCount) != currentDataCount;
 	}
 
 	@Override
