@@ -1,6 +1,7 @@
 package com.team766.simulator;
 
 import java.lang.reflect.Array;
+import com.team766.hal.BeaconReader;
 import com.team766.hal.mock.MockJoystick;
 
 public class ProgramInterface {
@@ -79,6 +80,10 @@ public class ProgramInterface {
 	}
 
 	public static final RobotPosition robotPosition = new RobotPosition();
+
+	public static final int NUM_BEACONS = 8;
+	public static BeaconReader.BeaconPose[] beacons =
+			initializeArray(NUM_BEACONS, BeaconReader.BeaconPose.class);
 	
 	public static final MockJoystick[] joystickChannels =
 			initializeArray(6, MockJoystick.class);

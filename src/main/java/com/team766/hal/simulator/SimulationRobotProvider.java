@@ -1,6 +1,7 @@
 package com.team766.hal.simulator;
 
 import com.team766.hal.AnalogInputReader;
+import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
@@ -97,6 +98,13 @@ public class SimulationRobotProvider extends RobotProvider{
 		if (positionSensor == null)
 			positionSensor = new PositionSensor();
 		return positionSensor;
+	}
+
+	@Override
+	public BeaconReader getBeaconSensor() {
+		if (beaconSensor == null)
+			beaconSensor = new BeaconSensor();
+		return beaconSensor;
 	}
 
 	@Override
