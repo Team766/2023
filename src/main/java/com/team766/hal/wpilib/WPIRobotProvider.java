@@ -264,6 +264,18 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
+	public BeaconReader getBeaconSensor() {
+		if (beaconSensor == null) {
+			beaconSensor = new MockBeaconSensor();
+			Logger.get(Category.CONFIGURATION).logRaw(
+				Severity.ERROR,
+				"Beacon sensor does not exist on real robots. Using mock beacon sensor instead - it will always return no beacons"
+			);
+		}
+		return beaconSensor;
+	}
+
+	@Override
 	public Clock getClock() {
 		return SystemClock.instance;
 	}

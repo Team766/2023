@@ -2,7 +2,6 @@ package com.team766.hal.simulator;
 
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
-import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
