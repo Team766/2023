@@ -108,7 +108,7 @@ public class TestRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public void refreshData() {
+	public void refreshDriverStationData() {
 		// no-op
 	}
 

@@ -29,12 +29,11 @@ public class OI extends Procedure {
 		while (true) {
 			// get the latest data (joystick input etc) from the driver station
 			// at the end of this loop, we'll wait until there are more data available.
-			RobotProvider.instance.refreshData();
+			RobotProvider.instance.refreshDriverStationData();
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
 }

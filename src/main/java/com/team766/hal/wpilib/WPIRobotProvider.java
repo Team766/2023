@@ -36,8 +36,8 @@ import edu.wpi.first.wpilibj.SPI;
 public class WPIRobotProvider extends RobotProvider {
 
 	/**
-	 * Runnable that counts the number of times we receive new data from the driver station.
-	 * Used as part of impl of {@link #hasNewDriverStationData()}.
+	 * Runnable that counts the number of times we receive new data from the driver station. Used as
+	 * part of impl of {@link #hasNewDriverStationData()}.
 	 */
 	private static class DataRefreshRunnable implements Runnable {
 		private final AtomicBoolean m_keepAlive = new AtomicBoolean();
@@ -79,7 +79,7 @@ public class WPIRobotProvider extends RobotProvider {
 			}
 
 			DriverStationJNI.removeNewDataEventHandle(handle);
-    		WPIUtilJNI.destroyEvent(handle);
+			WPIUtilJNI.destroyEvent(handle);
 		}
 	}
 
@@ -92,14 +92,16 @@ public class WPIRobotProvider extends RobotProvider {
 		m_dataRefreshThread.start();
 	}
 
-	private MotorController[][] motors = new MotorController[MotorController.Type.values().length][64];
+	private MotorController[][] motors =
+			new MotorController[MotorController.Type.values().length][64];
 
 	// The presence of this object allows the compressor to run before we've declared any solenoids.
 	@SuppressWarnings("unused")
 	private PneumaticsControlModule pcm = new PneumaticsControlModule();
 
 	@Override
-	public MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor) {
+	public MotorController getMotor(int index, String configPrefix, MotorController.Type type,
+			ControlInputReader localSensor) {
 		if (motors[type.ordinal()][index] != null) {
 			return motors[type.ordinal()][index];
 		}
@@ -110,7 +112,8 @@ public class WPIRobotProvider extends RobotProvider {
 					motor = new CANSparkMaxMotorController(index);
 				} catch (Exception ex) {
 					LoggerExceptionUtils.logException(ex);
-					motor = new LocalMotorController(configPrefix, new MockMotorController(index), localSensor);
+					motor = new LocalMotorController(configPrefix, new MockMotorController(index),
+							localSensor);
 					localSensor = null;
 				}
 				break;
@@ -129,8 +132,10 @@ public class WPIRobotProvider extends RobotProvider {
 				break;
 		}
 		if (motor == null) {
-			LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported motor type " + type));
-			motor = new LocalMotorController(configPrefix, new MockMotorController(index), localSensor);
+			LoggerExceptionUtils
+					.logException(new IllegalArgumentException("Unsupported motor type " + type));
+			motor = new LocalMotorController(configPrefix, new MockMotorController(index),
+					localSensor);
 			localSensor = null;
 		}
 		if (localSensor != null) {
@@ -142,34 +147,31 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public EncoderReader getEncoder(int index1, int index2) {
-		if(encoders[index1] == null)
+		if (encoders[index1] == null)
 			encoders[index1] = new Encoder(index1, index2);
 		return encoders[index1];
 	}
 
 	@Override
 	public SolenoidController getSolenoid(int index) {
-		if(solenoids[index] == null)
+		if (solenoids[index] == null)
 			solenoids[index] = new Solenoid(index);
 		return solenoids[index];
 	}
 
 	@Override
-	//Gyro index values:
-	// -1 	= Spartan Gyro
-	// 	0+ 	= Analog Gyro on port index
+	// Gyro index values:
+	// -1 = Spartan Gyro
+	// 0+ = Analog Gyro on port index
 	public GyroReader getGyro(int index) {
-		if(gyros[index + 2] == null){
-			if(index < -2) {
-				Logger.get(Category.CONFIGURATION).logRaw(
-					Severity.ERROR,
-					"Invalid gyro port " + index + ". Must be -2, -1, or a non-negative integer"
-				);
+		if (gyros[index + 2] == null) {
+			if (index < -2) {
+				Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, "Invalid gyro port "
+						+ index + ". Must be -2, -1, or a non-negative integer");
 				return new MockGyro();
-			}
-			else if(index == -2)
+			} else if (index == -2)
 				gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
-			else if(index == -1)
+			else if (index == -1)
 				gyros[index + 2] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 			else
 				gyros[index + 2] = new AnalogGyro(index);
@@ -185,13 +187,13 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public JoystickReader getJoystick(int index) {
-		if(joysticks[index] == null)
+		if (joysticks[index] == null)
 			joysticks[index] = new Joystick(index);
 		return joysticks[index];
 	}
 
 	@Override
-	public CameraInterface getCamServer(){
+	public CameraInterface getCamServer() {
 		return new com.team766.hal.wpilib.CameraInterface();
 	}
 
@@ -203,15 +205,15 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public AnalogInputReader getAnalogInput(int index){
-		if(angInputs[index] == null)
+	public AnalogInputReader getAnalogInput(int index) {
+		if (angInputs[index] == null)
 			angInputs[index] = new AnalogInput(index);
 		return angInputs[index];
 	}
 
 	@Override
 	public RelayOutput getRelay(int index) {
-		if(relays[index] == null)
+		if (relays[index] == null)
 			relays[index] = new Relay(index);
 		return relays[index];
 	}
@@ -220,10 +222,8 @@ public class WPIRobotProvider extends RobotProvider {
 	public PositionReader getPositionSensor() {
 		if (positionSensor == null) {
 			positionSensor = new MockPositionSensor();
-			Logger.get(Category.CONFIGURATION).logRaw(
-				Severity.ERROR,
-				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
-			);
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0");
 		}
 		return positionSensor;
 	}
@@ -234,7 +234,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public void refreshData() {
+	public void refreshDriverStationData() {
 		DriverStation.refreshData();
 	}
 
