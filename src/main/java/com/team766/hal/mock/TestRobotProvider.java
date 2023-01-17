@@ -37,43 +37,49 @@ public class TestRobotProvider extends RobotProvider{
 
 	@Override
 	public EncoderReader getEncoder(int index1, int index2) {
-		if(encoders[index1] == null)
+		if(encoders[index1] == null) {
 			encoders[index1] = new MockEncoder(index1, index2);
+		}
 		return encoders[index1];
 	}
 
 	@Override
 	public SolenoidController getSolenoid(int index) {
-		if(solenoids[index] == null)
+		if(solenoids[index] == null) {
 			solenoids[index] = new MockSolenoid(index);
+		}
 		return solenoids[index];
 	}
 
 	@Override
 	public GyroReader getGyro(int index) {
-		if(gyros[0] == null)
+		if(gyros[0] == null) {
 			gyros[0] = new MockGyro();
+		}
 		return gyros[0];
 	}
 
 	@Override
 	public CameraReader getCamera(String id, String value) {
-		if(!cams.containsKey(id))
+		if(!cams.containsKey(id)) {
 			cams.put(id, new MockCamera());
+		}
 		return cams.get(id);
 	}
 
 	@Override
 	public JoystickReader getJoystick(int index) {
-		if(joysticks[index] == null)
+		if(joysticks[index] == null) {
 			joysticks[index] = new MockJoystick();
+		}
 		return joysticks[index];
 	}
 	
 	@Override
 	public DigitalInputReader getDigitalInput(int index) {
-		if(digInputs[index] == null)
+		if(digInputs[index] == null) {
 			digInputs[index] = new MockDigitalInput();
+		}
 		return digInputs[index];
 	}
 
@@ -84,28 +90,32 @@ public class TestRobotProvider extends RobotProvider{
 	
 	@Override
 	public AnalogInputReader getAnalogInput(int index) {
-		if(angInputs[index] == null)
+		if(angInputs[index] == null) {
 			angInputs[index] = new MockAnalogInput();
+		}
 		return angInputs[index];
 	}
 	
 	public RelayOutput getRelay(int index) {
-		if(relays[index] == null)
+		if(relays[index] == null) {
 			relays[index] = new MockRelay(index);
+		}
 		return relays[index];
 	}
 
 	@Override
 	public PositionReader getPositionSensor() {
-		if (positionSensor == null)
+		if (positionSensor == null) {
 			positionSensor = new MockPositionSensor();
+		}
 		return positionSensor;
 	}
 	
 	@Override
 	public BeaconReader getBeaconSensor() {
-		if (beaconSensor == null)
+		if (beaconSensor == null) {
 			beaconSensor = new MockBeaconSensor();
+		}
 		return beaconSensor;
 	}
 
