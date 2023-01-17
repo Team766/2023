@@ -37,6 +37,10 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class WPIRobotProvider extends RobotProvider {
 
+	/**
+	 * Runnable that counts the number of times we receive new data from the driver station.
+	 * Used as part of impl of {@link #hasNewDriverStationData()}.
+	 */
 	private static class DataRefreshRunnable implements Runnable {
 		private final AtomicBoolean m_keepAlive = new AtomicBoolean();
 		private final AtomicInteger m_dataCount = new AtomicInteger();
@@ -45,23 +49,36 @@ public class WPIRobotProvider extends RobotProvider {
 			m_keepAlive.set(true);
 		}
 
+		public void cancel() {
+			m_keepAlive.set(false);
+		}
+
 		@Override
 		public void run() {
+			// create and register a handle that gets notified whenever there's new DS data.
 			int handle = WPIUtilJNI.createEvent(false, false);
 			DriverStationJNI.provideNewDataEventHandle(handle);
 
 			while (m_keepAlive.get()) {
 				try {
+					// wait for new data or timeout
+					// (timeout returns true)
        				if (!WPIUtilJNI.waitForObjectTimeout(handle, 0.1)) {
 						m_dataCount.incrementAndGet();
 					}
       			} catch (InterruptedException e) {
+					// should only happen during failures
+					LoggerExceptionUtils.logException(e);
+
+					// clean up handle
         			DriverStationJNI.removeNewDataEventHandle(handle);
         			WPIUtilJNI.destroyEvent(handle);
-        			Thread.currentThread().interrupt();
-        			return;
+
+					// re-register handle in an attempt to keep data flowing.
+					handle = WPIUtilJNI.createEvent(false, false);
+					DriverStationJNI.provideNewDataEventHandle(handle);
+					// TODO: reset counter to 0?
       			}
-				DriverStation.refreshData();
 			}
 
 			DriverStationJNI.removeNewDataEventHandle(handle);
@@ -71,11 +88,10 @@ public class WPIRobotProvider extends RobotProvider {
 
 	private DataRefreshRunnable m_DataRefreshRunnable = new DataRefreshRunnable();
 	private Thread m_dataRefreshThread;
-	private AtomicInteger m_lastDataCount = new AtomicInteger();
+	private int m_lastDataCount = 0;
 
 	public WPIRobotProvider() {
 		m_dataRefreshThread = new Thread(m_DataRefreshRunnable, "DataRefreshThread");
-		// FIXME: where is the right place to close this?  should this be auto-cloesable?
 		m_dataRefreshThread.start();
 	}
 
@@ -239,9 +255,17 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
+	public void refreshData() {
+		DriverStation.refreshData();
+	}
+
+	@Override
 	public boolean hasNewDriverStationData() {
-		int currentDataCount = m_DataRefreshRunnable.m_dataCount.get();
-		return m_lastDataCount.getAndSet(currentDataCount) != currentDataCount;
+		// see if the thread has counted more data changes than the last time this method was called
+		int currentDataRefreshThreadCount = m_DataRefreshRunnable.m_dataCount.get();
+		boolean dataChanged = m_lastDataCount != currentDataRefreshThreadCount;
+		m_lastDataCount = currentDataRefreshThreadCount;
+		return dataChanged;
 	}
 
 	@Override

@@ -122,6 +122,12 @@ public class SimulationRobotProvider extends RobotProvider{
 	}
 
 	@Override
+	public void refreshData() {
+		// no-op on simulator
+		return;
+	}
+
+	@Override
 	public boolean hasNewDriverStationData() {
 		int newUpdateNumber = ProgramInterface.driverStationUpdateNumber;
 		boolean result = m_dsUpdateNumber != newUpdateNumber;

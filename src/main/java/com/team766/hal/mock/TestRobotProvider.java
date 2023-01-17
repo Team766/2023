@@ -126,6 +126,11 @@ public class TestRobotProvider extends RobotProvider{
 	}
 
 	@Override
+	public void refreshData() {
+		// no-op
+	}
+
+	@Override
 	public boolean hasNewDriverStationData() {
 		boolean result = m_hasDriverStationUpdate;
 		m_hasDriverStationUpdate = false;
