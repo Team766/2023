@@ -63,22 +63,21 @@ public class WPIRobotProvider extends RobotProvider {
 				try {
 					// wait for new data or timeout
 					// (timeout returns true)
-       				if (!WPIUtilJNI.waitForObjectTimeout(handle, 0.1)) {
+					if (!WPIUtilJNI.waitForObjectTimeout(handle, 0.1)) {
 						m_dataCount.incrementAndGet();
 					}
-      			} catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					// should only happen during failures
 					LoggerExceptionUtils.logException(e);
 
 					// clean up handle
-        			DriverStationJNI.removeNewDataEventHandle(handle);
-        			WPIUtilJNI.destroyEvent(handle);
+					DriverStationJNI.removeNewDataEventHandle(handle);
+					WPIUtilJNI.destroyEvent(handle);
 
 					// re-register handle in an attempt to keep data flowing.
 					handle = WPIUtilJNI.createEvent(false, false);
 					DriverStationJNI.provideNewDataEventHandle(handle);
-					// TODO: reset counter to 0?
-      			}
+				}
 			}
 
 			DriverStationJNI.removeNewDataEventHandle(handle);
