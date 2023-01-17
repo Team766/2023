@@ -230,5 +230,7 @@ public abstract class RobotProvider {
 
 	public abstract double getBatteryVoltage();
 
+	public abstract void refreshData();
+
 	public abstract boolean hasNewDriverStationData();
 }
