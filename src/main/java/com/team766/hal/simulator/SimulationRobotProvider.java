@@ -122,7 +122,7 @@ public class SimulationRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public void refreshData() {
+	public void refreshDriverStationData() {
 		// no-op on simulator
 		return;
 	}
