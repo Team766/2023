@@ -6,6 +6,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -26,11 +27,12 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		while (true) {
+			// wait for driver station data (and refresh it using the WPILib APIs)
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+			RobotProvider.instance.refreshDriverStationData();
+
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
-
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
 }
