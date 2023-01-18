@@ -27,10 +27,9 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		while (true) {
-			// get the latest data (joystick input etc) from the driver station
-			// at the end of this loop, we'll wait until there are more data available.
-			RobotProvider.instance.refreshDriverStationData();
+			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+			RobotProvider.instance.refreshDriverStationData();
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
