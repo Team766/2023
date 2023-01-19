@@ -5,7 +5,10 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.mechanisms.*;
 import com.team766.robot.procedures.*;
+
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -15,6 +18,7 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
+
 
 	
 	public OI() {
@@ -30,6 +34,8 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 
 		while (true) {
+			DriverStation.refreshData();
+
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 			if(joystick0.getButton(8)){
@@ -41,9 +47,14 @@ public class OI extends Procedure {
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			
-
+			if(joystick0.getButton(1)){
+				Robot.candle.FireAnim();
+			}else{
+				Robot.candle.EndAnim();
+			}
 			
-			//
+			
+			
 
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
