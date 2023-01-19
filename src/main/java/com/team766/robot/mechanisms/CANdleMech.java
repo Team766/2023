@@ -68,13 +68,41 @@ public class CANdleMech extends Mechanism {
 					break;*/
 		
 		//}
-		public void test(){
+		public void FireAnim(){
 			FireAnimation m_toAnimate = new FireAnimation(0.5, 0.7, LedCount, 0.7, 0.5);
 			m_candle.animate(m_toAnimate);
 		}
-		public void endtest(){
-			RainbowAnimation off = new RainbowAnimation(0, 0, 0);
-			m_candle.animate(off);
+		public void ColorFlowAnim(){
+			ColorFlowAnimation m_toAnim = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LedCount, Direction.Forward);
+			m_candle.animate(m_toAnim);
+		}
+		public void Larson(){
+			LarsonAnimation m_toAni =  new LarsonAnimation(0, 255, 46, 0, 1, LedCount, BounceMode.Front, 3);
+			m_candle.animate(m_toAni);
+		}
+		public void Rainbow(){
+			RainbowAnimation m_toAn = new RainbowAnimation(1, 0.1, LedCount);
+			m_candle.animate(m_toAn);
+		}
+		public void RgbFade(){
+			RgbFadeAnimation m_toA = new RgbFadeAnimation(0.7, 0.4, LedCount);
+			m_candle.animate(m_toA);
+		}
+		public void SingleFade(){
+			SingleFadeAnimation m_to = new SingleFadeAnimation(50, 2, 200, 0, 0.5, LedCount);
+			m_candle.animate(m_to);
+		}
+		public void Strobe(){
+			StrobeAnimation m_t= new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, LedCount);
+			m_candle.animate(m_t);
+		}
+		public void Twinkle(){
+			TwinkleAnimation m = new TwinkleAnimation(30, 70, 60, 0, 0.4, LedCount, TwinklePercent.Percent6);
+			m_candle.animate(m);
+
+		}
+		public void EndAnim(){
+			m_candle.setLEDs(0, 0, 0);
 		}
 
 }

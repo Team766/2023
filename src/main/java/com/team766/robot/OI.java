@@ -1,6 +1,7 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -47,15 +48,46 @@ public class OI extends Procedure {
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			
-			if(joystick0.getButton(1)){
-				Robot.candle.FireAnim();
-			}else{
+			if(joystick0.getPOV() == 1){
 				Robot.candle.EndAnim();
+			}else{
+				Robot.candle.FireAnim();
+				log("" + joystick0.getPOV());
 			}
 			
-			
-			
+			switch (joystick0.getPOV()) {
+				case 0: Robot.candle.FireAnim();
+				break;
 
+				case 45: Robot.candle.ColorFlowAnim();
+				break;
+
+				case 90: Robot.candle.Larson();
+				break;
+
+				case 135: Robot.candle.Rainbow();
+				break;
+
+				case 180: Robot.candle.RgbFade();
+				break;
+
+				case 225: Robot.candle.SingleFade();
+				break;
+
+				case 270: Robot.candle.Strobe();
+				break;
+
+				case 315: Robot.candle.Twinkle();
+				break;
+
+				case -1: Robot.candle.setColor(0, 0, 0);;
+				break;
+
+
+				default: Robot.candle.EndAnim();
+			}
+
+			
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
