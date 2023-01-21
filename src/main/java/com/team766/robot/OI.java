@@ -48,12 +48,7 @@ public class OI extends Procedure {
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			
-			if(joystick0.getPOV() == 1){
-				Robot.candle.EndAnim();
-			}else{
-				Robot.candle.FireAnim();
-				log("" + joystick0.getPOV());
-			}
+/* 
 			
 			switch (joystick0.getPOV()) {
 				case 0: Robot.candle.FireAnim();
@@ -86,7 +81,11 @@ public class OI extends Procedure {
 
 				default: Robot.candle.EndAnim();
 			}
-
+*/
+			if(joystick0.getButton(1)){
+				Robot.candle.CustomAnim();
+			}
+			
 			
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
