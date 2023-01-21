@@ -75,7 +75,10 @@ public class WebServer {
 			throw new RuntimeException(e);
 		}
 		for (Map.Entry<String, Handler> page : pages.entrySet()) {
-			HttpHandler httpHandler = new HttpHandler() {
+			if (page.getKey().startsWith("http:") || page.getKey().startsWith("https:")) {
+				continue;
+			}
+ 			HttpHandler httpHandler = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
 					Map<String, Object> params = parseParams(exchange);

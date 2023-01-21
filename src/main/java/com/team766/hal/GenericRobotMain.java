@@ -11,13 +11,7 @@ import com.team766.logging.Severity;
 import com.team766.robot.AutonomousModes;
 import com.team766.robot.OI;
 import com.team766.robot.Robot;
-import com.team766.web.AutonomousSelector;
-import com.team766.web.ConfigUI;
-import com.team766.web.Dashboard;
-import com.team766.web.DriverInterface;
-import com.team766.web.LogViewer;
-import com.team766.web.ReadLogs;
-import com.team766.web.WebServer;
+import com.team766.web.*;
 
 // Team 766 - Robot Interface Base class
 
@@ -43,6 +37,7 @@ public final class GenericRobotMain {
 		m_webServer.addHandler(new ConfigUI());
 		m_webServer.addHandler(new LogViewer());
 		m_webServer.addHandler(new ReadLogs());
+		m_webServer.addHandler(new PVlink());
 		m_webServer.addHandler(m_autonSelector);
 		m_webServer.start();
 	}
