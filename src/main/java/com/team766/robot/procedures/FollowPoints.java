@@ -9,55 +9,114 @@ import com.team766.hal.RobotProvider;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.PositionReader;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.team766.config.ConfigFileReader;
 import com.team766.logging.Category;
 import com.team766.controllers.PIDController;
  
 public class FollowPoints extends Procedure {
+	public static class Step {
+		public PointDir wayPoint;
+		public boolean criticalPoint;
+		public Procedure procedure;
+		public boolean stopRobot;
+		// ...
+
+		public Step(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
+			this.wayPoint = wayPoint;
+			this.procedure = procedure;
+		}
+	}
+
+	private List<Step> steps = new ArrayList<Step>();
+
 	private PointDir currentPos = new PointDir(0.0, 0.0, 0.0);
-	private Point[] pointList;
+	private PointDir[] pointList;
 	private Procedure[] proceduresAtPoints;
+	private boolean[] criticalPointList;
+	private boolean[] stopRobotList;
 	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
 	private static double leniency = ConfigFileReader.getInstance().getDouble("trajectory.leniency").get();
 	private static double speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
 	private double finalHeader;
 
-	public FollowPoints() {
+	/*public FollowPoints() {
 		parsePointList();
 		proceduresAtPoints = new Procedure[pointList.length];
 		for (int i = 0; i < proceduresAtPoints.length; i++) {
 			proceduresAtPoints[i] = new DoNothing();
 		}
 		loggerCategory = Category.AUTONOMOUS;
+	}*/
+
+	private void addStep(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
+		steps.add(new Step(wayPoint, criticalPoint, procedure, stopRobot));
+	}
+
+	public FollowPoints() {
+		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
+		addStep(new PointDir(0,20, 30), false, null /* don't execute procedure */, false);
+		addWaypoints();
+	}
+
+	private void addWaypoints() {
+		pointList = new PointDir[steps.size()];
+		proceduresAtPoints = new Procedure[steps.size()];
+		stopRobotList = new boolean[pointList.length];
+		criticalPointList = new boolean[pointList.length];
+		for (int i = 0; i < steps.size(); i++) {
+			if (steps.get(i).wayPoint == null) continue;
+			else {
+				pointList[i] = steps.get(i).wayPoint;
+			}
+			if (steps.get(i).procedure != null) {
+				proceduresAtPoints[i] = steps.get(i).procedure;
+				// run procedure
+				// TODO: make sure we're handling contexts correctly
+			} else {
+				proceduresAtPoints[i] = new DoNothing();
+			}
+			criticalPointList[i] = steps.get(i).criticalPoint;
+			stopRobotList[i] = steps.get(i).stopRobot;
+		}
 	}
 
 	public FollowPoints(Procedure[] procedureList) {
 		parsePointList();
 		proceduresAtPoints = procedureList;
+		criticalPointList = new boolean[pointList.length];
+		stopRobotList = new boolean[pointList.length];
 		loggerCategory = Category.AUTONOMOUS;
 	}
 
-	public FollowPoints(Point[] points) {
+	public FollowPoints(PointDir[] points) {
 		pointList = points;
 		finalHeader = Robot.drive.getCurrentPosition().getHeading();
 		proceduresAtPoints = new Procedure[pointList.length];
 		for (int i = 0; i < proceduresAtPoints.length; i++) {
 			proceduresAtPoints[i] = new DoNothing();
 		}
+		criticalPointList = new boolean[pointList.length];
+		stopRobotList = new boolean[pointList.length];
 		loggerCategory = Category.AUTONOMOUS;
 	}
 
-	public FollowPoints(Point[] points, Procedure[] procedureList) {
+	public FollowPoints(PointDir[] points, Procedure[] procedureList) {
 		pointList = points;
 		finalHeader = Robot.drive.getCurrentPosition().getHeading();
 		proceduresAtPoints = procedureList;
+		criticalPointList = new boolean[pointList.length];
+		stopRobotList = new boolean[pointList.length];
 		loggerCategory = Category.AUTONOMOUS;
 	}
 
 	//Takes pairs of points from pointDoubles (set in the config file) and converts them to Points, which are placed in pointList.
 	private void parsePointList() {
 		Double[] pointDoubles = ConfigFileReader.getInstance().getDoubles("trajectory.points").get();
-		pointList = new Point[pointDoubles.length / 2];
+		pointList = new PointDir[pointDoubles.length / 2];
 		double pointX = 0;
 		double pointY = 0;
 		for (int i = 0; i < pointDoubles.length / 2 * 2; i++) {
@@ -65,7 +124,7 @@ public class FollowPoints extends Procedure {
 				pointX = pointDoubles[i];
 			else {
 				pointY = pointDoubles[i];
-				pointList[i / 2] = new Point(pointX, pointY);
+				pointList[i / 2] = new PointDir(pointX, pointY);
 			}
 		}
 		if (pointDoubles.length % 2 == 1) {
@@ -95,6 +154,7 @@ public class FollowPoints extends Procedure {
 		log("Starting FollowPoints");
 		Robot.drive.resetCurrentPosition();
 		Robot.gyro.resetGyro();
+
 		for (int i = 0; i < pointList.length; i++) {
 			log(pointList[i].toString());
 		}
@@ -107,7 +167,11 @@ public class FollowPoints extends Procedure {
 				currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
 				if (currentPos.distance(pointList[targetNum]) <= radius && checkIntersection(targetNum, currentPos, pointList, radius)) {
 					if (proceduresAtPoints.length < targetNum) {
-						context.startAsync(proceduresAtPoints[targetNum]);
+						if (stopRobotList[targetNum]) {
+							context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
+						} else {
+							context.startAsync(proceduresAtPoints[targetNum]);
+						}
 					}
 					targetNum++;
 					log("Going to Next Point!");
