@@ -5,18 +5,18 @@ import java.util.Map;
 
 public class FieldInfoManager {
 
-	enum Mode {
+	public enum Mode {
 		TEST1,
 		COMPETITION
 	}
 
-	private static final Map<Integer,AprilTag> fieldTags = new HashMap<Integer, AprilTag>();
+	private final Map<Integer,AprilTag> fieldTags = new HashMap<Integer, AprilTag>();
 	
 	public FieldInfoManager(Mode mode) {
 		switch (mode) {
 			case TEST1:
 			// do stuff
-			addTag(new AprilTag(1 /* id */, 2 /* x */, 1 /* y */, .2 /* z */, 0 /* rotation */));
+			addTag(new AprilTag(1 /* id */, 0 /* x */, 1 /* y */, 1.6 /* z */, 0 /* rotation */));
 
 			break;
 			case COMPETITION:
@@ -34,11 +34,11 @@ public class FieldInfoManager {
 		}
 	}
 
-	private static void addTag(AprilTag tag) {
+	private void addTag(AprilTag tag) {
 		fieldTags.put(tag.getId(), tag);
 	}
 
-	public static AprilTag getTagForID(int id) {
+	public AprilTag getTagForID(int id) {
 		return fieldTags.get(id);
 	}
 }

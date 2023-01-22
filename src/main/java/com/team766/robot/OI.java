@@ -43,13 +43,9 @@ public class OI extends Procedure {
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick1.getAxis(0));
 			log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
-			if(Robot.photonVision.getXYZAngle() == null){
-				log("problem, no target");
-			} else{
-			log("x "+ Robot.photonVision.getXYZAngle().get(0));
-			log("y "+ Robot.photonVision.getXYZAngle().get(1));
-			log("z "+ Robot.photonVision.getXYZAngle().get(2));
-			log("angle "+ Robot.photonVision.getXYZAngle().get(3));
+			if(Robot.photonVision.hasTarget()){
+			log("x "+ Robot.photonVision.robotPosition().getX());
+			log("y "+ Robot.photonVision.robotPosition().getY());
 			}
 		}
 	}

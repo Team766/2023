@@ -70,16 +70,13 @@ public class PhotonVision extends Mechanism {
     //returns robot x and y coords using gyro angle, target angle, target location, and distance
     //based off of field coordinate system (https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf)
     public XY robotPosition() {
-
-        
-
         //todo: use Adrian's point instead of mine
         //todo: possibly use a direct distance output instead of pythagorean
         //todo: (not urgent): make it 3d
-        
-        AprilTag tag = FieldInfoManager.getTagForID(getID());
+        FieldInfoManager fieldData = new FieldInfoManager(FieldInfoManager.Mode.TEST1);
+        AprilTag tag = fieldData.getTagForID(getID());
         double dist = Math.sqrt(Math.pow(getXYZAngle().get(0), 2) + Math.pow(getXYZAngle().get(1), 2));
-        double angle =  getXYZAngle().get(3) + Robot.gyro.getGyroYaw();
+        double angle =  getXYZAngle().get(3); //+ Robot.gyro.getGyroYaw();
         return new XY(tag.getX() - dist * Math.cos(angle), tag.getY() - dist * Math.sin(angle));
     }
 }
