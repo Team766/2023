@@ -26,7 +26,7 @@ public class ColorSensorMech extends Mechanism {
 				lastColor[0]=m_colorSensor.getRed();
 				lastColor[1]=m_colorSensor.getGreen();
 				lastColor[2]=m_colorSensor.getBlue();
-		
+		//:)
 	}
 	
 }
