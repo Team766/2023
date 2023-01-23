@@ -124,6 +124,7 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANVictorMotorController(index);
 				break;
 			case TalonFX:
+				final ValueProvider<String> CANBus = ConfigFileReader.getInstance().getString(configName + ".CANBus");
 				motor = new CANTalonFxMotorController(index);
 				break;
 			case VictorSP:
