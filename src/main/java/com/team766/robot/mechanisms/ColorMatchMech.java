@@ -38,9 +38,20 @@ public class ColorMatchMech extends Mechanism {
 			piece = "Other";
 		}
 	}
-
-	public int getConeDist(){
-		return m_colorSensor.getProximity();
+	//returns if cone is in right position (cone base by sensor/base away from sensor/can't see base?)
+	//check with CADders where sensor is excactly
+	public String checkConeHold(){
+		String conePos;
+		//talk to CADders about which cone positions are good
+		//make a proximity logger to find if-statement ranges
+		//REMEMBER: proximity is from 0-2047; greater num = closer
+		if(m_colorSensor.getProximity()>/*close proximities*/){
+			conePos = "base at sensor";
+		} else if(/*close prox*/>m_colorSensor.getProximity()>/*far prox*/){
+			conePos = "base away from sensor";
+		} else {
+			conePos = "can't see base";
+		}
+		return conePos;
 	}
-
 }
