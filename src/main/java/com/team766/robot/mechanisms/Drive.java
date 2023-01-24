@@ -39,8 +39,6 @@ public class Drive extends Mechanism {
 
 	private double gyroValue;
 
-	private static PointDir currentPosition;
-
 	private MotorController[] motorList;
 	private CANCoder[] CANCoderList;
 
@@ -177,9 +175,6 @@ public class Drive extends Mechanism {
 		setBackLeftAngle(newAngle(angle, Math.pow((2048.0/360.0 * (150.0/7.0)), -1) * m_SteerBackLeft.getSensorPosition()));
 	}
 
-	public void drive2D(Point joystick) {
-		drive2D(joystick.getX(), joystick.getY());
-	}
 
     public void stopDriveMotors() {
 		checkContextOwnership();
@@ -246,9 +241,6 @@ public class Drive extends Mechanism {
 		setBackLeftAngle(newAngle(blAngle, Math.pow((2048.0/360.0 * (150.0/7.0)), -1) * m_SteerBackLeft.getSensorPosition()));
 	}
 
-	public void swerveDrive(PointDir joystick) {
-		swerveDrive(joystick.getY(), -1 * joystick.getX(), joystick.getHeading());
-	}
 	    
 public void turning(double Joystick){
 	checkContextOwnership();
@@ -366,13 +358,6 @@ public void turning(double Joystick){
 		return e_BackLeft.getAbsolutePosition();
 	}
 
-	public PointDir getCurrentPosition() {
-		return currentPosition;
-	}
-
-	public void resetCurrentPosition() {
-		swerveOdometry.resetCurrentPosition();
-	}
 
 	public void resetDriveEncoders() {
 		m_DriveBackLeft.setSensorPosition(0);

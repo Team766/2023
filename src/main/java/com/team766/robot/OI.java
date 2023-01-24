@@ -132,15 +132,6 @@ public class OI extends Procedure {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			}
-
-			if (joystick0.getButtonPressed(11)) {
-				Robot.drive.resetCurrentPosition();
-			}
-
-			if (joystick1.getButtonPressed(11)) {
-				context.takeOwnership(Robot.drive);
-				new FollowPoints().run(context);
-			}
 		}
 	}
 }
