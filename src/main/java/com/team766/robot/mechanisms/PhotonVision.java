@@ -75,12 +75,12 @@ public class PhotonVision extends Mechanism {
         PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
         return photonPoseEstimator.update();
     }
-    public Optional<Pose3d> location(){
+    public Pose3d location(){
         Optional<EstimatedRobotPose> estimate = PoseEstimate();
         if(estimate.isEmpty()) {
             return null;
         }
-        return estimate.getRobotPose();
+        return estimate.estimatedPose;
     }
 
     /*
