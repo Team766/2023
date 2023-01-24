@@ -1,16 +1,14 @@
 package com.team766.robot.mechanisms;
 
 import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 import com.team766.framework.Mechanism;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
 
 public class ColorSensorMech extends Mechanism {
-	private final I2C.Port i2cPort = /*???*/;
-	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(/*i2cPort*/);
+	private final I2C.Port i2cPort = I2C.Port.kOnboard;
+	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 	//code just to grab rgb vals once
 	public ColorSensorMech(){
 		log(":-)");
