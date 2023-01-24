@@ -13,12 +13,14 @@ public class ColorSensorMech extends Mechanism {
 	public ColorSensorMech(){
 		log(":-)");
 	}
+	//RGB MIGHT BE 16 BIT
 	public void senseRGB(){
 		int lastColor[]= {m_colorSensor.getRed(), m_colorSensor.getGreen(), m_colorSensor.getBlue()};
 				//code only logs if the sensor is getting a new color so it doesn't log a million times
-				if((m_colorSensor.getRed()!=lastColor[0])||(m_colorSensor.getGreen()!=lastColor[1])||(m_colorSensor.getBlue()!=lastColor[2])){
+				log("in the method");
+				//if((m_colorSensor.getRed()!=lastColor[0])||(m_colorSensor.getGreen()!=lastColor[1])||(m_colorSensor.getBlue()!=lastColor[2])){
 					log("red: "+m_colorSensor.getRed()+" green: "+m_colorSensor.getGreen()+" blue: "+m_colorSensor.getBlue());
-				}
+				//}
 				lastColor[0]=m_colorSensor.getRed();
 				lastColor[1]=m_colorSensor.getGreen();
 				lastColor[2]=m_colorSensor.getBlue();

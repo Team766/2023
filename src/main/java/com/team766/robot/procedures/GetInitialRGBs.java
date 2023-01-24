@@ -6,7 +6,7 @@ import com.team766.robot.Robot;
 public class GetInitialRGBs extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.cSensor);
-		while(true){
+		while(true) {
 			Robot.cSensor.senseRGB();
 			context.waitForSeconds(5.0);
 		}
