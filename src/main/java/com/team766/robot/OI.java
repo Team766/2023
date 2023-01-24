@@ -44,8 +44,7 @@ public class OI extends Procedure {
 			log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
 			if(Robot.photonVision.hasTarget()){
-			log("x "+ Robot.photonVision.robotPosition().getX());
-			log("y "+ Robot.photonVision.robotPosition().getY());
+				
 			}
 		}
 	}

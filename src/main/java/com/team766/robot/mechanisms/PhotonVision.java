@@ -1,18 +1,21 @@
 package com.team766.robot.mechanisms;
 
-import com.team766.framework.Mechanism;
-import com.team766.hal.MotorController;
-import com.team766.hal.RobotProvider;
-import edu.wpi.first.math.geometry.Transform3d;
-import org.photonvision.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.photonvision.PhotonCamera;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import java.util.*;
+import com.team766.framework.Mechanism;
 import com.team766.logging.Category;
-import com.team766.robot.Robot;
-import com.team766.simulator.ProgramInterface.RobotPosition;
-import com.team766.apriltags.AprilTag;
-import com.team766.apriltags.FieldInfoManager;
-import com.team766.apriltags.XY;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 
 
 public class PhotonVision extends Mechanism {	
@@ -66,7 +69,21 @@ public class PhotonVision extends Mechanism {
         }
         return null;
     }
+    public Optional<EstimatedRobotPose> PoseEstimate() throws IOException{
+        AprilTagFieldLayout aprilTagFieldLayout = new AprilTagFieldLayout("Field.JSON");
+        Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
+        return photonPoseEstimator.update();
+    }
+    public Optional<Pose3d> location(){
+        Optional<EstimatedRobotPose> estimate = PoseEstimate();
+        if(estimate.isEmpty()) {
+            return null;
+        }
+        return estimate.getRobotPose();
+    }
 
+    /*
     //returns robot x and y coords using gyro angle, target angle, target location, and distance
     //based off of field coordinate system (https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf)
     public XY robotPosition() {
@@ -79,4 +96,5 @@ public class PhotonVision extends Mechanism {
         double angle =  getXYZAngle().get(3); //+ Robot.gyro.getGyroYaw();
         return new XY(tag.getX() - dist * Math.cos(angle), tag.getY() - dist * Math.sin(angle));
     }
+    */
 }
