@@ -51,6 +51,10 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			log("Back Left:" + Robot.drive.getBackLeft());
+			log("Front Left:" + Robot.drive.getFrontLeft());
+			log("Front Right:" + Robot.drive.getFrontRight());
+			log("Back Right:" + Robot.drive.getBackRight());
 			if(joystick1.getButton(2)){
 				Robot.drive.setGyro(0);
 			}else{
