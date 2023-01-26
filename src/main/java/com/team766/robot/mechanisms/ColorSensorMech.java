@@ -15,24 +15,22 @@ public class ColorSensorMech extends Mechanism {
 	}
 	//RGB MIGHT BE 16 BIT
 	public void senseRGB(){
-		//proposed change: Color detectedColor = m_colorSensor.getColor();
-		int lastColor[]= {m_colorSensor.getRed(), m_colorSensor.getGreen(), m_colorSensor.getBlue()}
-		//proposed change: log("red: "+detectedColor.red+" green: "+detectedColor.green+" blue: "+detectedColor.blue);
+		Color detectedColor = m_colorSensor.getColor();
+		//previous: int lastColor[]= {m_colorSensor.getRed(), m_colorSensor.getGreen(), m_colorSensor.getBlue()}
+		log("detected color: "+detectedColor);
+		log("red: "+detectedColor.red+" green: "+detectedColor.green+" blue: "+detectedColor.blue);
 		//^have to see what the deal is with the dot notation colors --> just run it and check
-		log("red: "+m_colorSensor.getRed()+" green: "+m_colorSensor.getGreen()+" blue: "+m_colorSensor.getBlue());
+		//previous: log("red: "+m_colorSensor.getRed()+" green: "+m_colorSensor.getGreen()+" blue: "+m_colorSensor.getBlue());
 		//proposed change: omit				
-		lastColor[0]=m_colorSensor.getRed();
-		lastColor[1]=m_colorSensor.getGreen();
-		lastColor[2]=m_colorSensor.getBlue();
+		//previous: lastColor[0]=m_colorSensor.getRed();
+		//previous: lastColor[1]=m_colorSensor.getGreen();
+		//previous: lastColor[2]=m_colorSensor.getBlue();
 	}
 	//similar thing but for getting proximity ranges
 	public void senseProx(){
-		int lastProx= m_colorSensor.getProximity();
-				//proposed change: switch this to the every 5 seconds thing instead of the if
-				if(m_colorSensor.getProximity()!=lastProx){
-					log("proximity from base:"+m_colorSensor.getProximity());
-				}
-				lastProx=m_colorSensor.getProximity();
+		
+		log("proximity from base:"+m_colorSensor.getProximity());
+				
 	}
 	
 }

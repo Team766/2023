@@ -12,21 +12,24 @@ public class ColorMatchMech extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();
 	//private final I2C.Port i2cPort = /*???*/;
 	//private final ColorSensorV3 m_colorSensor = new ColorSensorV3(/*i2cPort*/);
+	private final I2C.Port i2cPort = I2C.Port.kOnboard;
+	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 	//need to find rgb with sensor to get rgb vals
-	//private final Color coneYellow = new Color(/*r, g, b*/);
-  	//private final Color cubePurple = new Color(/*r, g, b*/);
+	private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
+  	private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
 	
 	public ColorMatchMech(){
 
 	}
 	//adds possible colors
-	/* 
+	
 	public void makeColorMatches(){
 		m_colorMatcher.addColorMatch(coneYellow);
 		m_colorMatcher.addColorMatch(cubePurple);
+		m_colorMatcher.setConfidenceThreshold(0.95);
 	}
 	//identifies held object by color
-	public String checkColor(){
+	public void checkColor(){
 		Color detectedColor = m_colorSensor.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -38,7 +41,12 @@ public class ColorMatchMech extends Mechanism {
 		} else {
 			piece = "Other";
 		}
+		log("piece: "+piece);
+		log("detected color: "+detectedColor);
+		log("color: "+match.color);
+		log("confidence: "+match.confidence);
 	}
+	/* 
 	//returns if cone is in right position (cone base by sensor/base away from sensor/can't see base?)
 	//check with CADders where sensor is excactly
 	public String checkConeHold(){
