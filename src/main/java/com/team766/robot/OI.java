@@ -26,11 +26,19 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.pulley);
 		while (true) {
+			
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+			
 			RobotProvider.instance.refreshDriverStationData();
-
+			if(joystick0.getButton(8)){
+				log("" + Robot.pulley.getEncoderDistance());
+			}
+			
+				Robot.pulley.setPulleyPower(joystick0.getAxis(1)*.3);
+			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 		}
