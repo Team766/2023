@@ -152,43 +152,11 @@ public class CANdleMech extends Mechanism {
 
 	}
 
-	public void CustomAnim() {
+	public void Game() {
+		m_candle.configBrightnessScalar(.3);
+		m_candle.setLEDs(104/3, 195/3, 226/3, 0,8 , 150);
+		m_candle.setLEDs(225/3, 182/3, 0/3, 0, 158, 150);
 
-		/*
-		 * Path filePath = Paths.get("src/main/deploy/rickFrames.txt");
-		 * Scanner scanner = new Scanner(filePath);
-		 * List<Integer> integers = new ArrayList<>();
-		 * while (scanner.hasNext()) {
-		 * if (scanner.hasNextInt()) {
-		 * integers.add(scanner.nextInt());
-		 * } else {
-		 * scanner.next();
-		 * }
-		 * }
-		 */
-
-		/*for (int j = 0; j <= frames.length; j += 12) {
-			m_candle.setLEDs(frames[j], frames[j + 1], frames[j + 2], 0, 1, 1);
-			m_candle.setLEDs(frames[j + 3], frames[j + 4], frames[j + 5], 0, 2, 1);
-			m_candle.setLEDs(frames[j + 6], frames[j + 7], frames[j + 8], 0, 6, 1);
-			m_candle.setLEDs(frames[j + 9], frames[j + 10], frames[j + 11], 0, 5, 1);
-		}
-
-		a = 1;
-		b = 1;
-		c = 1;
-
-		d = 2;
-		e = 2;
-		f = 2;
-
-		g = 3;
-		h = 3;
-		i = 3;
-
-		j = 4;
-		k = 4;
-		l = 4;*/
 
 	}
 

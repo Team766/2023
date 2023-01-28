@@ -40,7 +40,7 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 			if(joystick0.getButton(8)){
-				Robot.candle.setColor(1, 0, 0,5);
+				Robot.candle.setColor(1, 0, 0,9);
 			}else if(joystick0.getButton(9)){
 				Robot.candle.setColor(0, 1, 0);
 			}else if(joystick0.getButton(10)){
@@ -48,9 +48,9 @@ public class OI extends Procedure {
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			
-/* 
+
 			
-			switch (joystick0.getPOV()) {
+			/*switch (joystick0.getPOV()) {
 				case 0: Robot.candle.FireAnim();
 				break;
 
@@ -80,11 +80,13 @@ public class OI extends Procedure {
 
 
 				default: Robot.candle.EndAnim();
-			}
-*/
+			}*/
+
 			if(joystick0.getButton(1)){
-				Robot.candle.CustomAnim();
+				Robot.candle.Game();
 			}
+			
+			
 			
 			
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
