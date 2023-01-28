@@ -140,6 +140,8 @@ public class FollowPoints extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
+		//This resetCurrentPosition() call makes FollowPoints() robot-oriented instead of field-oriented
+		//If we need to make this method field-oriented, just remove this line
 		Robot.drive.resetCurrentPosition();
 		Robot.gyro.resetGyro();
 
