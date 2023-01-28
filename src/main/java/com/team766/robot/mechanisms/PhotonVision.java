@@ -13,11 +13,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Filesystem;
 
 
 
 public class PhotonVision extends Mechanism {	
     PhotonCamera camera;
+    AprilTagFieldLayout aprilTagFieldLayout;
+    Transform3d  robotToCam;
     //List<PhotonTrackedTarget> targets;
     //PhotonTrackedTarget target;
     
@@ -26,6 +29,12 @@ public class PhotonVision extends Mechanism {
 
         //Create camera object
         camera = new PhotonCamera("Camera1");
+        try {
+            aprilTagFieldLayout = new AprilTagFieldLayout(Filesystem.getDeployDirectory().toPath().resolve("Field.JSON"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        robotToCam = new Transform3d(new Translation3d(0, 0.0, 0), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
         
         //var result = camera.getLatestResult();
     }
@@ -72,15 +81,13 @@ public class PhotonVision extends Mechanism {
         return null;
     }
     */
-    public Optional<EstimatedRobotPose> PoseEstimate() throws IOException{
-        AprilTagFieldLayout aprilTagFieldLayout = new AprilTagFieldLayout("Field.JSON");
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+    public Optional<EstimatedRobotPose> poseEstimate() throws IOException{
         PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
         return photonPoseEstimator.update();
     }
     public boolean hasPose(){
         try {
-            return PoseEstimate().isPresent();
+            return poseEstimate().isPresent();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -89,7 +96,7 @@ public class PhotonVision extends Mechanism {
     public Pose3d getPose3d(){
         Optional<EstimatedRobotPose> estimate;
         try {
-            estimate = PoseEstimate();
+            estimate = poseEstimate();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
