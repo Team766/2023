@@ -29,9 +29,9 @@ public class ColorSensorMech extends Mechanism {
 	//similar thing but for getting proximity ranges
 	public void senseProx(){
 		int prox = m_colorSensor.getProximity();
-		log("raw proximity value:"+prox);
+		//log("raw proximity value:"+prox);
 		if(prox<200){
-			log("NOT sensing object");
+			log("object is out of range");
 		} else {
 			log("sensing object :)");
 		}

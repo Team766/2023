@@ -50,9 +50,9 @@ public class ColorMatchMech extends Mechanism {
 			piece = "Other";
 		}
 		log("piece: "+piece);
-		log("detected color: "+detectedColor);
-		log("color: "+match.color);
-		log("confidence: "+match.confidence);
+		//log("detected color: "+detectedColor);
+		//log("color: "+match.color);
+		//log("confidence: "+match.confidence);
 	}
 	/* 
 	//returns if cone is in right position (cone base by sensor/base away from sensor/can't see base?)
