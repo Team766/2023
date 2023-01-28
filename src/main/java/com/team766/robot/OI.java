@@ -33,6 +33,12 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			context.takeOwnership(Robot.cSensor);
+			context.takeOwnership(Robot.cMatcher);
+			Robot.cSensor.senseProx();
+			//Robot.cSensor.senseRGB();
+			Robot.cMatcher.checkColor();
+			context.waitForSeconds(2.0);
 		}
 	}
 }

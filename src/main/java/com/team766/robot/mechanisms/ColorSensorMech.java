@@ -28,8 +28,27 @@ public class ColorSensorMech extends Mechanism {
 	}
 	//similar thing but for getting proximity ranges
 	public void senseProx(){
-		
-		log("proximity from base:"+m_colorSensor.getProximity());
+		int prox = m_colorSensor.getProximity();
+		log("raw proximity:"+m_colorSensor.getProximity());
+		if(prox <= 227){
+			log("calculated prox: 9-10 cm");
+		} else if(prox <= 455){
+			log("calculated prox: 8-9 cm");
+		} else if(prox <= 682){
+			log("calculated prox: 7-8 cm");
+		} else if(prox <= 910){
+			log("calculated prox: 6-7 cm");
+		} else if(prox <= 1137){
+			log("calculated prox: 5-6 cm");
+		} else if(prox <= 1365){
+			log("calculated prox: 4-5 cm");
+		} else if(prox <= 1592){
+			log("calculated prox: 3-4 cm");
+		} else if(prox <= 1819){
+			log("calculated prox: 2-3 cm");
+		} else {
+			log("calculated prox: 1-2 cm");
+		}
 				
 	}
 	
