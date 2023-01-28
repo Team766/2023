@@ -39,7 +39,7 @@ public class OI extends Procedure {
 			//Robot.cSensor.senseRGB();
 			Robot.cMatcher.makeColorMatches();
 			Robot.cMatcher.checkColor();
-			context.waitForSeconds(0.5);
+			//context.waitForSeconds(0.5);
 		}
 	}
 }
