@@ -17,6 +17,10 @@ public class ColorMatchMech extends Mechanism {
 	//need to find rgb with sensor to get rgb vals
 	private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   	private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
+	private final Color green = new Color(0.197, 0.561, 0.240);
+	private final Color red = new Color(0.561, 0.232, 0.114);
+	private final Color black = new Color(0.0,0.0,0.0);
+	private final Color white = new Color(1.0,1.0,1.0);
 	
 	public ColorMatchMech(){
 
@@ -26,6 +30,10 @@ public class ColorMatchMech extends Mechanism {
 	public void makeColorMatches(){
 		m_colorMatcher.addColorMatch(coneYellow);
 		m_colorMatcher.addColorMatch(cubePurple);
+		m_colorMatcher.addColorMatch(green);
+		m_colorMatcher.addColorMatch(red);
+		m_colorMatcher.addColorMatch(black);
+		m_colorMatcher.addColorMatch(white);
 		m_colorMatcher.setConfidenceThreshold(0.95);
 	}
 	//identifies held object by color
