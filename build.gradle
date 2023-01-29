@@ -50,6 +50,7 @@ deploy {
 
                 // Just the (static) config files
                 configFiles(getArtifactTypeClass('FileTreeArtifact')) {
+                    setDeployStage(it, 'BeforeProgramKill')
                     files = project.fileTree('src/main/deploy/configs')
                     directory = '/home/lvuser/deploy/configs'
                 }
@@ -130,7 +131,7 @@ tasks.withType(JavaCompile) {
 }
 allprojects {
     group 'com.team766'
-    version '2.1.0'
+    version '2.1.1'
 
     repositories {
         mavenCentral()
