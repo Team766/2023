@@ -15,7 +15,7 @@ public class Drive extends Mechanism {
 
 	public void setDrivePower(double leftPower, double rightPower) {
 		checkContextOwnership();
-
+		log(leftPower + "  " + rightPower);
 		leftMotor.set(leftPower);
 		rightMotor.set(rightPower);
 	}
@@ -24,6 +24,14 @@ public class Drive extends Mechanism {
 
 		double leftMotorPower = turn + forward;
 		double rightMotorPower = -turn + forward;
+		if(Math.max(leftMotorPower,rightMotorPower) >1){
+			rightMotorPower /= Math.max(leftMotorPower,rightMotorPower);
+			leftMotorPower /= Math.max(leftMotorPower,rightMotorPower);
+		}
+		if(Math.min(leftMotorPower,rightMotorPower) <-1){
+			rightMotorPower /= Math.abs(Math.min(leftMotorPower,rightMotorPower));
+			leftMotorPower /= Math.abs(Math.min(leftMotorPower,rightMotorPower));
+		}
 		setDrivePower(leftMotorPower, rightMotorPower);
 	}
 
