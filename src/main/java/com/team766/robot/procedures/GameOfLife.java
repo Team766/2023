@@ -111,11 +111,13 @@ public class GameOfLife extends Procedure {
 	}
 
 	public void run(Context context) {
-		context.takeOwnership(Robot.candle);
 		while (true) {
 			if (lifeLimiter.next()) {
+				log("Inside RateLimiter");
+				context.takeOwnership(Robot.candle);
 				step();
 				output();
+				context.releaseOwnership(Robot.candle);
 			}
 			context.yield();
 		}
@@ -125,7 +127,7 @@ public class GameOfLife extends Procedure {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (grid[i][j]) {
-			  		Robot.candle.setColor(0, 0, 0, 0.3, h * i + j + 8, 1);
+			  		Robot.candle.setColor(0.3, 0.3, 0.3, 0, h * i + j + 8, 1);
 				} else {
 					Robot.candle.setColor(0, 0, 0, 0, h * i + j + 8, 1);
 				}

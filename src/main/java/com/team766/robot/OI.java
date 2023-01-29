@@ -34,18 +34,15 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.candle);
-		context.takeOwnership(Robot.drive);
-
+		context.startAsync(new GameOfLife(gameModes.RANDOM));
 		while (true) {
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-			DriverStation.refreshData();
-
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			//Robot.candle.setColor(1, 0, 0.9);
 			/*if(joystick0.getButton(8)){
 				Robot.candle.setColor(1, 0, 0.9);
 			}else if(joystick0.getButton(9)){
@@ -93,7 +90,7 @@ public class OI extends Procedure {
 				Robot.candle.Game();
 			}*/
 			
-			context.startAsync(new GameOfLife(gameModes.RANDOM));
+			
 			
 			double cur_time = RobotProvider.instance.getClock().getTime();
 			
