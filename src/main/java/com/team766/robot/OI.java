@@ -8,6 +8,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.mechanisms.*;
 import com.team766.robot.procedures.*;
+import com.team766.robot.procedures.GameOfLife.gameModes;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -35,19 +36,20 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 
 		while (true) {
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			DriverStation.refreshData();
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			if(joystick0.getButton(8)){
-				Robot.candle.setColor(1, 0, 0,9);
+			/*if(joystick0.getButton(8)){
+				Robot.candle.setColor(1, 0, 0.9);
 			}else if(joystick0.getButton(9)){
 				Robot.candle.setColor(0, 1, 0);
 			}else if(joystick0.getButton(10)){
 				Robot.candle.setColor(0, 0, 1);
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
-			
+			*/
 
 			
 			/*switch (joystick0.getPOV()) {
@@ -82,14 +84,14 @@ public class OI extends Procedure {
 				default: Robot.candle.EndAnim();
 			}*/
 
-			if(joystick0.getButton(1)){
+			/*if(joystick0.getButton(1)){
 				Robot.candle.Game();
-			}
+			}*/
 			
+			context.startAsync(new GameOfLife(gameModes.RANDOM));
 			
+			double cur_time = RobotProvider.instance.getClock().getTime();
 			
-			
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
 }

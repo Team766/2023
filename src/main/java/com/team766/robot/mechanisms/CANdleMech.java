@@ -39,29 +39,19 @@ public class CANdleMech extends Mechanism {
 
 	private final CANdle m_candle = new CANdle(5);
 	private final int LedCount = 300;
-	private int realr;
-	private int realg;
-	private int realb;
 
 	public CANdleMech() {
-
+		
 	}
 
 	public void setColor(double r, double g, double b) {
 		checkContextOwnership();
-		realr = (int) ((r) * 255);
-		realb = (int) ((b) * 255);
-		realg = (int) ((g) * 255);
-		m_candle.setLEDs((realr), (realg), (realb));
+		m_candle.setLEDs((int) (255 * r), (int) (255 * g), (int) (255 * b));
 	}
 
-	public void setColor(double r, double g, double b, int index) {
+	public void setColor(double r, double g, double b, double w, int index, int count) {
 		checkContextOwnership();
-		realr = (int) ((r) * 255);
-		realb = (int) ((b) * 255);
-		realg = (int) ((g) * 255);
-
-		m_candle.setLEDs((realr), (realg), (realb), 0, index, 1);
+		m_candle.setLEDs((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * w), index, count);
 	}
 	/*
 	 * private Animation m_toAnimate = null;
