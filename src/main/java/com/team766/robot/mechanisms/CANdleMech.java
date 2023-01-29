@@ -49,9 +49,9 @@ public class CANdleMech extends Mechanism {
 		m_candle.setLEDs((int) (255 * r), (int) (255 * g), (int) (255 * b));
 	}
 
-	public void setColor(double r, double g, double b, double w, int index, int count) {
+	public void setColor(double r, double g, double b, int index, int count) {
 		checkContextOwnership();
-		m_candle.setLEDs((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * w), index, count);
+		m_candle.setLEDs((int) (255 * r), (int) (255 * g), (int) (255 * b), 0, index, count);
 	}
 	/*
 	 * private Animation m_toAnimate = null;

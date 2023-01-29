@@ -10,8 +10,6 @@ public class GameOfLife extends Procedure {
 	static boolean borderless = true;
 	private int w = 22;
     private int h = 22;
-    private int mode = 0;
-    private int maxSteps = 1000;
 	boolean[][] grid;
 	boolean[][] gridCheck;
 	private RateLimiter lifeLimiter;
@@ -21,7 +19,6 @@ public class GameOfLife extends Procedure {
 		GLIDER,
 		HIVENUDGER
 	}
-
 
 	public GameOfLife(gameModes gameMode) {
 		
@@ -123,19 +120,19 @@ public class GameOfLife extends Procedure {
 		}
 	}
 
-	public void output() {
+	private void output() {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (grid[i][j]) {
-			  		Robot.candle.setColor(0.3, 0.3, 0.3, 0, h * i + j + 8, 1);
+			  		Robot.candle.setColor(0.3, 0.3, 0.3, h * i + j + 8, 1);
 				} else {
-					Robot.candle.setColor(0, 0, 0, 0, h * i + j + 8, 1);
+					Robot.candle.setColor(0, 0, 0, h * i + j + 8, 1);
 				}
 			}
 		}
 	}
 
-	public void step() {
+	private void step() {
 		int neighbors;
 
 		for (int i = 0; i < h; i++) {
