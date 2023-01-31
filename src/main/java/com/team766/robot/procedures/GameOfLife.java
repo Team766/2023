@@ -8,8 +8,8 @@ import com.team766.library.RateLimiter;
 public class GameOfLife extends Procedure {
 
 	static boolean borderless = true;
-	private int w = 22;
-    private int h = 22;
+	private int w = 16;
+    private int h = 16;
 	boolean[][] grid;
 	boolean[][] gridCheck;
 	private RateLimiter lifeLimiter;
@@ -20,8 +20,7 @@ public class GameOfLife extends Procedure {
 		HIVENUDGER
 	}
 
-	public GameOfLife(gameModes gameMode) {
-		
+	public void reset(gameModes gameMode) {
 		switch (gameMode) {
 			
 			case RANDOM:
@@ -103,8 +102,11 @@ public class GameOfLife extends Procedure {
 			break;
 		}
 		grid = copy(gridCheck);
+	}
+
+	public GameOfLife(gameModes gameMode) {
+		reset(gameMode);
 		lifeLimiter = new RateLimiter(0.5);
-		output();
 	}
 
 	public void run(Context context) {
@@ -121,12 +123,18 @@ public class GameOfLife extends Procedure {
 	}
 
 	private void output() {
+		int k = 0;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				if (grid[i][j]) {
-			  		Robot.candle.setColor(0.3, 0.3, 0.3, h * i + j + 8, 1);
+				if (i % 2 == 0) {
+					k = h * i + j + 8;
 				} else {
-					Robot.candle.setColor(0, 0, 0, h * i + j + 8, 1);
+					k = h * i + w - 1 - j + 8;
+				}
+				if (grid[i][j]) {
+			  		Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+				} else {
+					Robot.candle.setColor(0, 0, 0, k, 1);
 				}
 			}
 		}
@@ -134,9 +142,15 @@ public class GameOfLife extends Procedure {
 
 	private void step() {
 		int neighbors;
+		int k = 0;
 
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
+				if (i % 2 == 0) {
+					k = h * i + j + 8;
+				} else {
+					k = h * i + w - 1 - j + 8;
+				}		
 			  neighbors = 0;
 			  neighbors += (grid[wrapAround(i - 1, h)][wrapAround(j - 1, w)]? 1 : 0);
 			  neighbors += (grid[wrapAround(i - 1, h)][j]? 1 : 0);
@@ -146,6 +160,9 @@ public class GameOfLife extends Procedure {
 			  neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j - 1, w)]? 1 : 0);
 			  neighbors += (grid[wrapAround(i + 1, h)][j]? 1 : 0);
 			  neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j + 1, w)]? 1 : 0);
+			  if (neighbors > 0) {
+				//Robot.candle.setColor(0.3,0,0,k,1);
+			  }
 			  if (grid[i][j]) {
 				gridCheck[i][j] = (neighbors == 2 || neighbors == 3);
 			  } else {
@@ -153,6 +170,7 @@ public class GameOfLife extends Procedure {
 			  }
 			}
 		}
+		grid = copy(gridCheck);
 	}
 
 	static int wrapAround(int input, int limit) {

@@ -34,7 +34,8 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.candle);
-		context.startAsync(new GameOfLife(gameModes.RANDOM));
+		Robot.candle.setColor(0,0,0);
+		context.startAsync(new GameOfLife(gameModes.GLIDER));
 		int lastPOV = -1;
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)

@@ -8,8 +8,8 @@ import com.team766.library.RateLimiter;
 
 public class Minesweeper extends Procedure {
 
-	private static int w = 22;
-    private static int h = 22;
+	private static int w = 16;
+    private static int h = 16;
 	//0 through 8 are numbers, -1 is a mine
 	static int[][] grid;
 	//0 is hidden, 1 is already clicked on, 2 is flagged
