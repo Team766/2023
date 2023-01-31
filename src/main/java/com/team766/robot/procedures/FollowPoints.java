@@ -9,18 +9,24 @@ import com.team766.hal.RobotProvider;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.PositionReader;
-
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.logging.Category;
 import com.team766.controllers.PIDController;
- 
+import edu.wpi.first.wpilibj.Filesystem;
+
 public class FollowPoints extends Procedure {
 
 	//Steps combine possible data types into one object for flexibility and ease-of-use purposes
 	public static class Step {
+		
+		Path path = Filesystem.getDeployDirectory().toPath().resolve("BLABLABLA.JSON");
+		File file = path.toFile();
+
 		public PointDir wayPoint;
 		public boolean criticalPoint;
 		public Procedure procedure;
