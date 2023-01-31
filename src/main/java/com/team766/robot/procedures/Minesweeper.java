@@ -8,22 +8,29 @@ import com.team766.library.RateLimiter;
 
 public class Minesweeper extends Procedure {
 
-	private int w = 22;
-    private int h = 22;
+	private static int w = 22;
+    private static int h = 22;
 	//0 through 8 are numbers, -1 is a mine
-	int[][] grid;
+	static int[][] grid;
 	//0 is hidden, 1 is already clicked on, 2 is flagged
-	int[][] shown;
+	static int[][] shown;
 	private RateLimiter sweeperLimiter;
-	int numOfClicks;
-	int x;
-	int y;
+	static int numOfClicks;
+	static int x;
+	static int y;
 	int timer;
+	private static boolean lost;
 
 	public Minesweeper() {
+		reset();
+		sweeperLimiter = new RateLimiter(0.25);
+	}
+
+	public static void reset() {
 		grid = new int[h][w];
 		shown = new int[h][w];
-		sweeperLimiter = new RateLimiter(0.25);
+		numOfClicks = 0;
+		lost = false;
 	}
 
 	public void run(Context context) {
@@ -38,7 +45,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public void moveRight() {
+	public static void moveRight() {
 		if (x == w - 1) {
 			x = 0;
 		} else {
@@ -46,7 +53,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public void moveLeft() {
+	public static void moveLeft() {
 		if (x == 0) {
 			x = w - 1;
 		} else {
@@ -54,7 +61,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public void moveDown() {
+	public static void moveDown() {
 		if (y == h - 1) {
 			y = 0;
 		} else {
@@ -62,7 +69,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public void moveUp() {
+	public static void moveUp() {
 		if (y == 0) {
 			y = h - 1;
 		} else {
@@ -80,7 +87,7 @@ public class Minesweeper extends Procedure {
 					Robot.candle.setColor(0.3, 0, 0, h * i + j + 8, 1);
 				} else if (grid[i][j] == 0) {
 					Robot.candle.setColor(0, 0, 0, h * i + j + 8, 1);
-				} else if (grid[i][j] == 1) {
+				} else if (grid[i][j] == -1) {
 					//Yellow
 					Robot.candle.setColor(0.2, 0.2, 0, h * i + j + 8, 1);
 				} else if (grid[i][j] == 1) {
@@ -113,9 +120,12 @@ public class Minesweeper extends Procedure {
 		if (timer == 0) {
 			Robot.candle.setColor(0.3, 0.3, 0.3, h * y + x + 8, 1);
 		}
+		if (lost && timer == 0) {
+			Robot.candle.setColor(0.2, 0.2, 0, h * y + x + 8, 484);
+		}
 	}
 
-	public void click() {
+	public static void click() {
 		if (numOfClicks == 0) {
 			numOfClicks++;
 			shown[y][x] = 1;
@@ -187,13 +197,16 @@ public class Minesweeper extends Procedure {
 				}
 			}
 			clearZeros(y, x);
-		} else if (shown[y][x] == 0) {
+		} else if (shown[y][x] == 0 && !lost) {
 			numOfClicks++;
 			clearZeros(y, x);
+			if (grid[y][x] == -1) {
+				lost = true;
+			}
 		}
 	}
 
-	public void flag() {
+	public static void flag() {
 		if (shown[y][x] == 0) {
 			shown[y][x] = 2;
 		} else if (shown[y][x] == 2) {
@@ -201,7 +214,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	private void clearZeros(int y, int x) {
+	private static void clearZeros(int y, int x) {
 		if (grid[y][x] == 0) {
 			if (y != 0) {
 				shown[y - 1][x] = 1;

@@ -35,6 +35,7 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.candle);
 		context.startAsync(new GameOfLife(gameModes.RANDOM));
+		int lastPOV = -1;
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -52,39 +53,50 @@ public class OI extends Procedure {
 			}
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			*/
+			if (joystick0.getButtonPressed(1)) {
+				Minesweeper.click();
+			}
 
+			if (joystick0.getButtonPressed(2)) {
+				Minesweeper.flag();
+			}
+
+			if (joystick0.getButtonPressed(8)) {
+				Minesweeper.reset();
+			}
 			
-			/*switch (joystick0.getPOV()) {
-				case 0: Robot.candle.FireAnim();
+			switch (joystick0.getPOV()) {
+				case 0:
+				if (lastPOV != 0) {
+					lastPOV = 0;
+					Minesweeper.moveUp();
+				}
 				break;
 
-				case 45: Robot.candle.ColorFlowAnim();
+				case 90:
+				if (lastPOV != 90) {
+					lastPOV = 90;
+					Minesweeper.moveRight();
+				}
 				break;
 
-				case 90: Robot.candle.Larson();
+				case 180:
+				if (lastPOV != 180) {
+					lastPOV = 180;
+					Minesweeper.moveLeft();
+				}
 				break;
 
-				case 135: Robot.candle.Rainbow();
+				case 270:
+				if (lastPOV != 270) {
+					lastPOV = 270;
+					Minesweeper.moveUp();
+				}
 				break;
 
-				case 180: Robot.candle.RgbFade();
+				case -1: lastPOV = -1;
 				break;
-
-				case 225: Robot.candle.SingleFade();
-				break;
-
-				case 270: Robot.candle.Strobe();
-				break;
-
-				case 315: Robot.candle.Twinkle();
-				break;
-
-				case -1: Robot.candle.setColor(0, 0, 0);;
-				break;
-
-
-				default: Robot.candle.EndAnim();
-			}*/
+			}
 
 			/*if(joystick0.getButton(1)){
 				Robot.candle.Game();
