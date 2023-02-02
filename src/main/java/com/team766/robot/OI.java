@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
+
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
@@ -27,9 +28,15 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		while (true) {
+			long currentTimeMillis = System.currentTimeMillis();
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+			long newTimeMillis = System.currentTimeMillis();
+			long deltaTimeMillis = newTimeMillis - currentTimeMillis;
+			if (deltaTimeMillis > 2000 /* 2s */) {
+				log("**** POSSIBLE STARVATION: " + deltaTimeMillis + "ms since data last refreshed.");
+			}
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
