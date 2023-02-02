@@ -38,11 +38,11 @@ public class GameOfLife extends Procedure {
 				borderless = true;
 				grid = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
 				gridCheck = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
-				gridCheck[0][0] = true;
-				gridCheck[1][1] = true;
-				gridCheck[1][2] = true;
-				gridCheck[2][0] = true;
-				gridCheck[2][1] = true;
+				gridCheck[5+0][5+0] = true;
+				gridCheck[5+1][5+1] = true;
+				gridCheck[5+1][5+2] = true;
+				gridCheck[5+2][5+0] = true;
+				gridCheck[5+2][5+1] = true;
 			break;
 
 			case HIVENUDGER:
@@ -106,17 +106,26 @@ public class GameOfLife extends Procedure {
 
 	public GameOfLife(gameModes gameMode) {
 		reset(gameMode);
-		lifeLimiter = new RateLimiter(0.5);
+		lifeLimiter = new RateLimiter(0.1);
 	}
 
 	public void run(Context context) {
+		int stage = 0;
 		while (true) {
 			if (lifeLimiter.next()) {
 				log("Inside RateLimiter");
-				context.takeOwnership(Robot.candle);
-				step();
-				output();
-				context.releaseOwnership(Robot.candle);
+				
+				switch (stage) {
+					case 0: step(); 
+						break;
+					case 1: context.takeOwnership(Robot.candle);
+						output(); 
+						context.releaseOwnership(Robot.candle); 
+						break;
+					case 2: grid = copy(gridCheck);
+						break;
+				}
+				stage = (stage + 1) % 3;
 			}
 			context.yield();
 		}
@@ -127,10 +136,11 @@ public class GameOfLife extends Procedure {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (i % 2 == 0) {
-					k = h * i + j + 8;
+					k = w * i + j + 8;
 				} else {
-					k = h * i + w - 1 - j + 8;
+					k = w * i + w - 1 - j + 8;
 				}
+				log("i,j" + i +"," + j + "=>" + k);
 				if (grid[i][j]) {
 			  		Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
 				} else {
@@ -151,29 +161,35 @@ public class GameOfLife extends Procedure {
 				} else {
 					k = h * i + w - 1 - j + 8;
 				}		
-			  neighbors = 0;
-			  neighbors += (grid[wrapAround(i - 1, h)][wrapAround(j - 1, w)]? 1 : 0);
-			  neighbors += (grid[wrapAround(i - 1, h)][j]? 1 : 0);
-			  neighbors += (grid[wrapAround(i - 1, h)][wrapAround(j + 1, w)]? 1 : 0);
-			  neighbors += (grid[i][wrapAround(j - 1, w)]? 1 : 0);
-			  neighbors += (grid[i][wrapAround(j + 1, w)]? 1 : 0);
-			  neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j - 1, w)]? 1 : 0);
-			  neighbors += (grid[wrapAround(i + 1, h)][j]? 1 : 0);
-			  neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j + 1, w)]? 1 : 0);
-			  if (neighbors > 0) {
-				//Robot.candle.setColor(0.3,0,0,k,1);
-			  }
-			  if (grid[i][j]) {
-				gridCheck[i][j] = (neighbors == 2 || neighbors == 3);
-			  } else {
-				gridCheck[i][j] = (neighbors == 3);
-			  }
+				neighbors = 0;
+				neighbors += (grid[wrapAround(i - 1, h)][wrapAround(j - 1, w)]? 1 : 0);
+				neighbors += (grid[wrapAround(i - 1, h)][j]? 1 : 0);
+				neighbors += (grid[wrapAround(i - 1, h)][wrapAround(j + 1, w)]? 1 : 0);
+				neighbors += (grid[i][wrapAround(j - 1, w)]? 1 : 0);
+				neighbors += (grid[i][wrapAround(j + 1, w)]? 1 : 0);
+				neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j - 1, w)]? 1 : 0);
+				neighbors += (grid[wrapAround(i + 1, h)][j]? 1 : 0);
+				neighbors += (grid[wrapAround(i + 1, h)][wrapAround(j + 1, w)]? 1 : 0);
+				/*if (neighbors > 0 && !grid[i][j]) {
+					switch (neighbors) {
+						case 1: Robot.candle.setColor(0.3,0,0,k,1); break;
+						case 2: Robot.candle.setColor(0,0.3,0,k,1); break;
+						case 3: Robot.candle.setColor(0,0,0.3,k,1); break;
+						case 4: Robot.candle.setColor(0.3,0.2,0,k,1); break;
+						case 5: Robot.candle.setColor(0.3,0,0.3,k,1); break;
+					}
+				}*/
+				if (grid[i][j]) {
+					gridCheck[i][j] = (neighbors == 2 || neighbors == 3);
+				} else {
+					gridCheck[i][j] = (neighbors == 3);
+				}
 			}
 		}
 		grid = copy(gridCheck);
 	}
 
-	static int wrapAround(int input, int limit) {
+	int wrapAround(int input, int limit) {
 		if (input == limit) {
 		  return borderless? 0 : limit;
 		}
@@ -183,7 +199,7 @@ public class GameOfLife extends Procedure {
 		return input;
 	  }
 	
-	  static boolean[][] copy(boolean[][] input) {
+	  boolean[][] copy(boolean[][] input) {
 		boolean[][] newArr = new boolean[input.length][input[0].length];
 		for (int m = 0; m < input.length; m++) {
 		  for (int n = 0; n < input[0].length; n++) {
