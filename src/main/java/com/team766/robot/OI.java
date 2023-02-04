@@ -72,6 +72,12 @@ public class OI extends Procedure {
 				Robot.pulley.resetEncoder();
 			}
 
+			if(joystick0.getButton(7)){
+				Robot.pulley.pidtest();
+			}else{
+				Robot.pulley.reset();
+			}
+
 		}
 	}
 }

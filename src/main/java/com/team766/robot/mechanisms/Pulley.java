@@ -1,5 +1,6 @@
 package com.team766.robot.mechanisms;
 
+import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -9,10 +10,14 @@ public class Pulley extends Mechanism {
     //This enables the code to interact with the motor that controls the pulley
     private MotorController elevator;
     private EncoderReader elevatorReader;
+    private PIDController pid;
+
     // private EncoderReader pulleyEncoder;
 
     public Pulley() {
         elevator = RobotProvider.instance.getMotor("elevator");
+        pid = new PIDController(.00019493,.000018494,0, 0, -.2, .2, 110 );
+
 
     }
     //This allows the pulley motor power to be changed
@@ -40,5 +45,14 @@ public class Pulley extends Mechanism {
 			elevator.set(0);
 		}
 	}
+    public void pidtest(){
+        pid.setSetpoint(0);
+        pid.calculate(elevator.getSensorPosition());
+        elevator.set(pid.getOutput());
+        log("" + elevator.getSensorPosition());
+    }
+    public void reset(){
+        pid.reset();
+    }
 
 }
