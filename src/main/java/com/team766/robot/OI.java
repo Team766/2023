@@ -36,11 +36,31 @@ public class OI extends Procedure {
 			if(joystick0.getButton(8)){
 				log("" + Robot.pulley.getEncoderDistance());
 			}
-			
-				Robot.pulley.setPulleyPower(joystick0.getAxis(1)*.3);
+			if(joystick0.getButton(9)){
+				//Robot.pulley.setPosition(6600);
+			}
+					Robot.pulley.setPulleyPower(joystick0.getAxis(1)*.3);
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			//ignore nightmarish variable names
+			//When you pronounce hiiiii, you must alot 1 second for each i.
+			log("button: "+joystick0.getButton(8));
+			
+			boolean hiiiii = joystick0.getButton(8);
+				while(hiiiii) {
+					log("hiiiiiii");
+					log("button in loop: "+joystick0.getButton(8));
+					if (Robot.pulley.getEncoderDistance() > 6500 && Robot.pulley.getEncoderDistance() < 6700) {
+						Robot.pulley.setPulleyPower(0);
+					} else if (Robot.pulley.getEncoderDistance() < 6500) {
+						Robot.pulley.setPulleyPower(0.12);
+					} else {
+						Robot.pulley.setPulleyPower(-0.1);
+					}
+					hiiiii=false;
+				}
+			
 		}
 	}
 }

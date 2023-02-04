@@ -24,4 +24,16 @@ public class Pulley extends Mechanism {
     public double getEncoderDistance() {
         return elevator.getSensorPosition();
     }
+
+	public void setPosition(double position){
+        //checkContextOwnership();
+		while(elevator.getSensorPosition() != position){
+			if(elevator.getSensorPosition() < position){
+				elevator.set(.17);
+			} else if(elevator.getSensorPosition()> position){
+				elevator.set(-.17);
+			}
+			elevator.set(0);
+		}
+	}
 }
