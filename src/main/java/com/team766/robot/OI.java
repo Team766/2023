@@ -49,18 +49,29 @@ public class OI extends Procedure {
 			
 			boolean hiiiii = joystick0.getButton(8);
 				while(hiiiii) {
-					log("hiiiiiii");
+					log("hi");
 					log("button in loop: "+joystick0.getButton(8));
-					if (Robot.pulley.getEncoderDistance() > 6500 && Robot.pulley.getEncoderDistance() < 6700) {
+					if (Robot.pulley.getEncoderDistance() > -100 && Robot.pulley.getEncoderDistance() < 100) {
 						Robot.pulley.setPulleyPower(0);
-					} else if (Robot.pulley.getEncoderDistance() < 6500) {
+					} else if (Robot.pulley.getEncoderDistance() < -100) {
 						Robot.pulley.setPulleyPower(0.12);
 					} else {
 						Robot.pulley.setPulleyPower(-0.1);
 					}
 					hiiiii=false;
 				}
-			
+				boolean hiiiiiiiiii = joystick0.getButton(16);
+				while(hiiiii) {
+					log("hiiiiiiiiiiii");
+					log("button in loop: "+joystick0.getButton(16));
+					Robot.pulley.setPulleyPower(-Robot.pulley.getEncoderDistance() * 0.000606);
+					hiiiiiiiiii=false;
+				}
+
+			if(joystick0.getButton(1)){
+				Robot.pulley.resetEncoder();
+			}
+
 		}
 	}
 }

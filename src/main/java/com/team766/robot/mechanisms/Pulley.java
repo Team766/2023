@@ -8,11 +8,12 @@ import com.team766.hal.EncoderReader;
 public class Pulley extends Mechanism {
     //This enables the code to interact with the motor that controls the pulley
     private MotorController elevator;
+    private EncoderReader elevatorReader;
     // private EncoderReader pulleyEncoder;
 
     public Pulley() {
         elevator = RobotProvider.instance.getMotor("elevator");
-        // pulleyEncoder = RobotProvider.instance.getEncoder("PulleyEncoder");
+
     }
     //This allows the pulley motor power to be changed
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
@@ -24,7 +25,10 @@ public class Pulley extends Mechanism {
     public double getEncoderDistance() {
         return elevator.getSensorPosition();
     }
-
+    public void resetEncoder(){
+        checkContextOwnership();
+        elevator.setSensorPosition(0);
+    }
 	public void setPosition(double position){
         //checkContextOwnership();
 		while(elevator.getSensorPosition() != position){
@@ -36,4 +40,5 @@ public class Pulley extends Mechanism {
 			elevator.set(0);
 		}
 	}
+
 }
