@@ -21,6 +21,7 @@ public class PhotonVision extends Mechanism {
     PhotonCamera camera;
     AprilTagFieldLayout aprilTagFieldLayout;
     Transform3d  robotToCam;
+    PhotonPoseEstimator photonPoseEstimator;
     //List<PhotonTrackedTarget> targets;
     //PhotonTrackedTarget target;
     
@@ -35,7 +36,7 @@ public class PhotonVision extends Mechanism {
             e.printStackTrace();
         }
         robotToCam = new Transform3d(new Translation3d(0, 0.0, 0), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        
+        photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
         //var result = camera.getLatestResult();
     }
     
@@ -81,27 +82,17 @@ public class PhotonVision extends Mechanism {
         return null;
     }
     */
-    public Optional<EstimatedRobotPose> poseEstimate() throws IOException{
-        PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
+    public Optional<EstimatedRobotPose> poseEstimate(){
         return photonPoseEstimator.update();
     }
-    public boolean hasPose(){
-        try {
-            return poseEstimate().isPresent();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // public boolean hasPose(){
+    //     if(poseEstimate() != null) return poseEstimate().isPresent();
+    //     return false;
+    // }
     public Pose3d getPose3d(){
         Optional<EstimatedRobotPose> estimate;
-        try {
-            estimate = poseEstimate();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        if(estimate.isEmpty()) {
+        estimate = poseEstimate();
+        if(estimate == null || estimate.isEmpty()) {
             return null;
         }
         return estimate.get().estimatedPose;

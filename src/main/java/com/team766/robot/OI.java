@@ -10,6 +10,7 @@ import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose3d;
 
 
 /**
@@ -45,10 +46,15 @@ public class OI extends Procedure {
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(2), -1*joystick0.getAxis(1));
 			//log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
-			if(Robot.photonVision.hasPose()){
-				log("X: " + Robot.photonVision.getPose3d().getX() + "\n Y: " + Robot.photonVision.getPose3d().getY() + "\n Z: " + Robot.photonVision.getPose3d().getZ());
-			} else{
-				log("Pose?" + Robot.photonVision.hasPose());
+			try {
+				Pose3d pose = Robot.photonVision.getPose3d();
+				if(pose != null){
+					log("X: " + pose.getX() + "\n Y: " + pose.getY() + "\n Z: " + pose.getZ());
+				} else{
+					log("No pose");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
