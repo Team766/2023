@@ -33,6 +33,7 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		//context.takeOwnership(Robot.photonVision);
+		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -44,11 +45,11 @@ public class OI extends Procedure {
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(2), -1*joystick0.getAxis(1));
 			//log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
-			/*if(Robot.photonVision.hasPose()){
+			if(Robot.photonVision.hasPose()){
 				log("X: " + Robot.photonVision.getPose3d().getX() + "\n Y: " + Robot.photonVision.getPose3d().getY() + "\n Z: " + Robot.photonVision.getPose3d().getZ());
 			} else{
 				log("Pose?" + Robot.photonVision.hasPose());
-			}*/
+			}
 		}
 	}
 }
