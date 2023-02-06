@@ -21,31 +21,31 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
-	private CameraServer cameraserver;
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
-		cameraserver.startAutomaticCapture();
+		CameraServer.startAutomaticCapture();
 	}
 	
 	public void run(Context context) {
-		context.takeOwnership(Robot.drive);
-		//context.takeOwnership(Robot.photonVision);
 		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
-
+			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-
+			context.takeOwnership(Robot.drive);
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(2), -1*joystick0.getAxis(1));
+			context.releaseOwnership(Robot.drive);
+
 			//log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
+			context.takeOwnership(Robot.photonVision);
 			try {
 				Pose3d pose = Robot.photonVision.getPose3d();
 				if(pose != null){
@@ -56,6 +56,7 @@ public class OI extends Procedure {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			context.releaseOwnership(Robot.photonVision);
 		}
 	}
 }
