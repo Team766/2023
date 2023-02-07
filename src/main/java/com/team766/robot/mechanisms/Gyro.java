@@ -16,7 +16,7 @@ import com.team766.logging.Category;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 public class Gyro extends Mechanism {
-	Pigeon2 g_gyro = new Pigeon2(0);
+	Pigeon2 g_gyro = new Pigeon2(0, "Swerve");
 	double[] gyroArray = new double[3];
 	private RateLimiter l_loggingRate = new RateLimiter(0.05);
 	public Gyro() {
