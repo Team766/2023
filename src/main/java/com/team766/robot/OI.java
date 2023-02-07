@@ -46,7 +46,9 @@ public class OI extends Procedure {
 			//ignore nightmarish variable names
 			//When you pronounce hiiiii, you must alot 1 second for each i.
 			log("button: "+joystick0.getButton(8));
-			
+			if(joystick0.getButton(2)){
+				Robot.pulley.setFf();
+			}
 			boolean hiiiii = joystick0.getButton(8);
 				while(hiiiii) {
 					log("hi");

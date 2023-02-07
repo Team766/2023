@@ -16,7 +16,7 @@ public class Pulley extends Mechanism {
 
     public Pulley() {
         elevator = RobotProvider.instance.getMotor("elevator");
-        pid = new PIDController(.00009093,.000080494,0.00003500, 0, -.35, .5, 110 );
+        pid = new PIDController(.00009093,.000080494,0.00003500, (-Math.cos((Math.PI / 6600) * elevator.getSensorPosition()) * .1), -.35, .5, 110 );
 
 
     }
@@ -51,12 +51,14 @@ public class Pulley extends Mechanism {
         //}else{
             pid.setSetpoint(00);
             pid.calculate(elevator.getSensorPosition());
-            elevator.set(pid.getOutput());
+            elevator.set(pid.getOutput()+0);
             log("" + elevator.getSensorPosition());
         //}
     }
     public void reset(){
         pid.reset();
     }
-
+    public void setFf(){
+        elevator.set((Math.cos((Math.PI / 6600) * elevator.getSensorPosition()) * .10));
+    }
 }
