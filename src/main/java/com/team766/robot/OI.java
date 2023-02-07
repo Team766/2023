@@ -112,6 +112,9 @@ public class OI extends Procedure {
 			if(joystick0.getButtonPressed(1))
 				Robot.gyro.resetGyro();
 
+			if(joystick0.getButtonPressed(11))
+				Robot.drive.resetCurrentPosition();
+
 			if(joystick1.getButtonPressed(1))
 				isCross = !isCross;
 			

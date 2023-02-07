@@ -24,8 +24,8 @@ public class FollowPoints extends Procedure {
 	//Steps combine possible data types into one object for flexibility and ease-of-use purposes
 	public static class Step {
 		
-		Path path = Filesystem.getDeployDirectory().toPath().resolve("BLABLABLA.JSON");
-		File file = path.toFile();
+		//Path path = Filesystem.getDeployDirectory().toPath().resolve("BLABLABLA.JSON");
+		//File file = path.toFile();
 
 		public PointDir wayPoint;
 		public boolean criticalPoint;
@@ -68,7 +68,10 @@ public class FollowPoints extends Procedure {
 	//Default FollowPoints Constructor, Steps must be added here
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
-		addStep(new PointDir(0,20, 30), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(1,0, 0), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(1,1, 0), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,1, 0), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 0), false, null /* don't execute procedure */, false);
 		addWaypoints();
 	}
 
@@ -158,7 +161,7 @@ public class FollowPoints extends Procedure {
 			int targetNum = 0;
 			Point targetPoint = new Point(0.0, 0.0);
 			currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
-			while (targetNum != pointList.length - 1 && !passedPoint(pointList[pointList.length - 1])) {
+			while (targetNum != pointList.length - 1 ||  !passedPoint(pointList[pointList.length - 1])) {
 				lastPos = currentPos.clone();
 				currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
 				//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
@@ -179,7 +182,7 @@ public class FollowPoints extends Procedure {
 				//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 				
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))));
+				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), 0/*rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))*/));
 				log("Current Position: " + currentPos.toString());
 				log("Target Point: " + targetPoint.toString());
 				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))).toString());
