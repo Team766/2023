@@ -102,7 +102,8 @@ public class Logger {
 		for (Object arg : args) {
 			var logValue = LogValue.newBuilder();
 			SerializationUtils.valueToProto(arg, logValue);
-			entry.addArg(logValue.build());		}
+			entry.addArg(logValue.build());
+		}
 		if (m_logWriter != null) {
 			m_logWriter.logStoredFormat(entry);
 		}
