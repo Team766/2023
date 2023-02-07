@@ -93,7 +93,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
     // our files
-    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation "com.google.protobuf:protobuf-javalite:${protobufVersion}"
 
     implementation files('deps/commons-math3-3.6.1.jar')
     implementation files('deps/gral-core-0.11.jar')
@@ -153,6 +153,24 @@ protobuf {
   protoc {
     // Download from repositories
     artifact = "com.google.protobuf:protoc:${protobufVersion}"
+  }
+
+
+  plugins {
+    javalite {
+      // The codegen for lite comes as a separate artifact
+      artifact = 'com.google.protobuf:protoc-gen-javalite:${protobufVersion}'
+    }
+  }
+
+  generateProtoTasks {
+    all().configureEach { task ->
+      task.builtins {
+        java {
+          option "lite"
+        }
+      }
+    }
   }
 }
 

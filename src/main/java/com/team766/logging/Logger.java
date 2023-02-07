@@ -100,8 +100,9 @@ public class Logger {
 		}
 		entry.setMessageStr(format);
 		for (Object arg : args) {
-			SerializationUtils.valueToProto(arg, entry.addArgBuilder());
-		}
+			var logValue = LogValue.newBuilder();
+			SerializationUtils.valueToProto(arg, logValue);
+			entry.addArg(logValue.build());		}
 		if (m_logWriter != null) {
 			m_logWriter.logStoredFormat(entry);
 		}
