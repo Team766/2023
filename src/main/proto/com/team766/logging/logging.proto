@@ -3,6 +3,7 @@ syntax = "proto2";
 package com.team766.logging;
 
 option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
 
 message LogEntry {
 	// Time as nanoseconds since January 1, 1970, 00:00:00 GMT
