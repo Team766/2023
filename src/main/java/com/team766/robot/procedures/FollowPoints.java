@@ -182,7 +182,7 @@ public class FollowPoints extends Procedure {
 				//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 				
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), 0/*rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))*/));
+				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))));
 				log("Current Position: " + currentPos.toString());
 				log("Target Point: " + targetPoint.toString());
 				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))).toString());
@@ -253,19 +253,19 @@ public class FollowPoints extends Procedure {
 
 	//Returns if the robot has passed a certain point
 	public static boolean passedPoint(Point P) {
-		return currentPos.distance(P) > lastPos.distance(P);
+		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2);
 	}
 
 	//Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point
 	public static double rotationSpeed(double currentRot, double targetRot) {
-		double maxSpeed = 0.5;
+		double maxSpeed = 0.2;
 		double angleDistanceForMaxSpeed = 45;
 		currentRot = mod(currentRot, 360);
 		targetRot = mod(targetRot, 360);
-		if (Math.abs(targetRot - currentRot) < Math.abs(targetRot + 360 - currentRot)) {
+		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot + 360 - currentRot)) {
 			targetRot += 360;
 		}
-		if (Math.abs(targetRot - currentRot) < Math.abs(targetRot - 360 - currentRot)) {
+		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot - 360 - currentRot)) {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
