@@ -98,5 +98,13 @@
 		"proximitySensor": {"port": 2},
 		"left": {"deviceId": 6},
 		"right": {"deviceId": 4}
+	},
+	"arm": {
+		"j1Motor": {
+			"deviceId": 98
+		},
+		"j2Motor": {
+			"deviceId": 99
+		}
 	}
 }

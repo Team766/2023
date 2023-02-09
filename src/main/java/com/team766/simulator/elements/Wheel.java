@@ -26,10 +26,10 @@ public class Wheel implements MechanicalDevice {
 	}
 
 	@Override
-	public MechanicalDevice.Output step(MechanicalDevice.Input input) {
+	public MechanicalDevice.Output step(MechanicalDevice.Input input, double dt) {
 		MechanicalAngularDevice.Input upstreamInput =
 			new MechanicalAngularDevice.Input(FORWARD.dotProduct(input.velocity) * 2. / diameter);
-		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput);
+		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput, dt);
 		double appliedForce = upstreamOutput.torque * 2. / diameter;
 		double maxFriction = Parameters.WHEEL_COEFFICIENT_OF_FRICTION * Parameters.ROBOT_MASS * PhysicalConstants.GRAVITY_ACCELERATION / Parameters.NUM_LOADED_WHEELS;
 		if (Math.abs(appliedForce) > maxFriction) {

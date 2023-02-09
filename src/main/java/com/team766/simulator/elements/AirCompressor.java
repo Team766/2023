@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
-import com.team766.simulator.Parameters;
 import com.team766.simulator.PneumaticsSystem;
 import com.team766.simulator.interfaces.ElectricalDevice;
 import com.team766.simulator.interfaces.PneumaticDevice;
@@ -34,7 +33,7 @@ public class AirCompressor implements ElectricalDevice, PneumaticDevice {
 	}
 
 	@Override
-	public ElectricalDevice.Output step(ElectricalDevice.Input input) {
+	public ElectricalDevice.Output step(ElectricalDevice.Input input, double dt) {
 		electricalState = input;
 		if (isOn) {
 			double nominalCurrent = currentFunction.value(pneumaticState.pressure);
@@ -46,11 +45,16 @@ public class AirCompressor implements ElectricalDevice, PneumaticDevice {
 	}
 
 	@Override
-	public PneumaticDevice.Output step(PneumaticDevice.Input input) {
+	public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
 		pneumaticState = input;
 		double nominalFlowRate = flowRateFunction.value(pneumaticState.pressure);
 		double adjustedFlowRate = nominalFlowRate * electricalState.voltage / NOMINAL_VOLTAGE;
-		double flowVolume = adjustedFlowRate * Parameters.TIME_STEP;
+		double flowVolume = adjustedFlowRate * dt;
 		return new PneumaticDevice.Output(flowVolume, 0);
+	}
+
+	@Override
+	public String name() {
+		return "AirCompressor";
 	}
 }
