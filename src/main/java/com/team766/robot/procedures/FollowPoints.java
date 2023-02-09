@@ -68,10 +68,10 @@ public class FollowPoints extends Procedure {
 	//Default FollowPoints Constructor, Steps must be added here
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
-		addStep(new PointDir(1,0, 0), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(1,1, 0), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(0,1, 0), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(0,0, 0), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(2,0, 0), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(2,2, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,2, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 90), false, null /* don't execute procedure */, false);
 		addWaypoints();
 	}
 
@@ -182,10 +182,10 @@ public class FollowPoints extends Procedure {
 				//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 				
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))));
+				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())));
 				log("Current Position: " + currentPos.toString());
 				log("Target Point: " + targetPoint.toString());
-				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getAngleDifference(targetPoint))).toString());
+				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())).toString());
 
 				context.yield();
 			}
@@ -259,7 +259,7 @@ public class FollowPoints extends Procedure {
 	//Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point
 	public static double rotationSpeed(double currentRot, double targetRot) {
 		double maxSpeed = 0.2;
-		double angleDistanceForMaxSpeed = 45;
+		double angleDistanceForMaxSpeed = 180;
 		currentRot = mod(currentRot, 360);
 		targetRot = mod(targetRot, 360);
 		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot + 360 - currentRot)) {
@@ -269,7 +269,7 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			return (currentRot - targetRot) / angleDistanceForMaxSpeed * maxSpeed;
+			return Math.pow((currentRot - targetRot) / angleDistanceForMaxSpeed, 3) * maxSpeed;
 		}
 		return maxSpeed * Math.signum(currentRot - targetRot);
 	}
