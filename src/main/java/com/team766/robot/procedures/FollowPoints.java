@@ -11,22 +11,23 @@ import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.PositionReader;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.logging.Category;
+import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
 import edu.wpi.first.wpilibj.Filesystem;
+import org.json.*;
 
 public class FollowPoints extends Procedure {
 
 	//Steps combine possible data types into one object for flexibility and ease-of-use purposes
 	public static class Step {
-		
-		//Path path = Filesystem.getDeployDirectory().toPath().resolve("BLABLABLA.JSON");
-		//File file = path.toFile();
 
 		public PointDir wayPoint;
 		public boolean criticalPoint;
@@ -66,6 +67,23 @@ public class FollowPoints extends Procedure {
 		}
 		loggerCategory = Category.AUTONOMOUS;
 	}*/
+
+	public FollowPoints(String file) throws IOException {
+		String str;
+		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
+		try {
+			str = Files.readString(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			log(Severity.ERROR, "Could not load " + file);
+			return;
+		}
+		
+		JSONArray points = new JSONObject(str).getJSONArray("points");
+		for (int i = 0; i < points.length(); i++) {
+			addStep(new PointDir(points.getJSONObject(0).getJSONArray("coordinates").getDouble(0), points.getJSONObject(0).getJSONArray("coordinates").getDouble(1), points.getJSONObject(0).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(0).getBoolean("critical"), null, false);
+		}
+	}
 
 	//Creates a new Step object from its constituents
 	private void addStep(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
