@@ -93,22 +93,22 @@ public class MotorControllerWithSensorScale implements MotorController {
 
 	@Override
 	public void setP(double value) {
-		delegate.setP(value / scale);
+		delegate.setP(value * scale);
 	}
 
 	@Override
 	public void setI(double value) {
-		delegate.setI(value / scale);
+		delegate.setI(value * scale);
 	}
 
 	@Override
 	public void setD(double value) {
-		delegate.setD(value / scale);
+		delegate.setD(value * scale);
 	}
 
 	@Override
 	public void setFF(double value) {
-		delegate.setFF(value / scale);
+		delegate.setFF(value * scale);
 	}
 
 	@Override

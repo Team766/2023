@@ -94,6 +94,9 @@ public class VrConnector implements Runnable {
 	private static final int ROBOT_X_CHANNEL = 8;
 	private static final int ROBOT_Y_CHANNEL = 9;
 
+	private static final int BEACON_SENSOR_START = 120;
+	private static final int BEACON_SENSOR_STRIDE = 6; // (x, y, z, yaw, pitch, roll)
+
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
 		new PortMapping(10, 0), // Left encoder
 		new PortMapping(11, 2), // Right encoder
@@ -248,6 +251,15 @@ public class VrConnector implements Runnable {
 			ProgramInterface.gyro.pitch = normalizeAngleDegrees(getFeedback(GYRO_PITCH_CHANNEL) / 10.0);
 			ProgramInterface.gyro.roll = normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
 
+			for (int i = 0; i < ProgramInterface.NUM_BEACONS; ++i) {
+				ProgramInterface.beacons[i].x = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 0) / 1000.0;
+				ProgramInterface.beacons[i].y = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 1) / 1000.0;
+				ProgramInterface.beacons[i].z = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 2) / 1000.0;
+				ProgramInterface.beacons[i].yaw = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 3) / 1000.0;
+				ProgramInterface.beacons[i].pitch = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 4) / 1000.0;
+				ProgramInterface.beacons[i].roll = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 5) / 1000.0;
+			}
+
 			for (PortMapping m : ENCODER_CHANNELS) {
 				final long value = getFeedback(m.messageDataIndex);
 				final long delta = value - lastEncoderValue[m.robotPortIndex];
@@ -296,6 +308,7 @@ public class VrConnector implements Runnable {
 	}
 
 	public void run() {
+		double prevSimTime = 0;
 		while (true) {
 			boolean newData = false;
 			try {
@@ -330,9 +343,12 @@ public class VrConnector implements Runnable {
 				} else {
 					continue;
 				}
+				prevSimTime = ProgramInterface.simulationTime;
 			}
 			if (ProgramInterface.program != null) {
-				ProgramInterface.program.step();
+				final double time = ProgramInterface.simulationTime;
+				ProgramInterface.program.step(time - prevSimTime);
+				prevSimTime = time;
 			}
 		}
 	}
