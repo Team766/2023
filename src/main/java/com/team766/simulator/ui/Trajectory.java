@@ -4,140 +4,88 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
-import java.util.Arrays;
-import java.util.Collection;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import com.team766.simulator.Parameters;
 
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.ui.InteractivePanel;
 
-@SuppressWarnings("serial")
+/**
+ * UI Window that displays the path that the robot drove.
+ */
 public class Trajectory extends JPanel {
-	public static JFrame makePlotFrame(Collection<Double[]> series) {
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(800, 600);
-		frame.setContentPane(new Trajectory(series));
-		frame.setVisible(true);
-		return frame;
-	}
-	
-	XYPlot plot;
-	JSlider slider;
-	DataTable data;
-	JPanel plotPanel;
-	Timer playbackTimer;
-	
-	public Trajectory(Collection<Double[]> series) {
-		Double[] first = series.iterator().next();
-		@SuppressWarnings("unchecked")
-		Class<Double>[] types = new Class[first.length];
-		Arrays.fill(types, Double.class);
-		data = new DataTable(types);
-		for (Double[] values : series) {
-			if (first.length != values.length) {
-				throw new IllegalArgumentException("Data values must be the same length");
-			}
-			data.add(values);
-		}
-		plot = new XYPlot(new DataSeries("Trajectory", data, 0, 1));
+	private final XYPlot plot;
+	private final DataTable data;
+	// The current playback time.
+	private double time;
+
+	/**
+	 * @param series The time series data defining the robot's trajectory.
+	 *     Each element should be an array with 6 values:
+	 *      [0]: Time
+	 *      [1]: X Position
+	 *      [2]: Y Position
+	 *      [3]: Orientation
+	 *      [4]: X Velocity
+	 *      [5]: Y Velocity
+	 * @param playbackTimer The timer (shared between windows) which controls playback time.
+	 */
+	public Trajectory(Iterable<Double[]> series, PlaybackTimer playbackTimer) {
+		// Create an X-Y plot to display the trajectory
+		data = PlotUtils.makeDataTable(series);
+		var source = new DataSeries("Trajectory", data, 1, 2);
+		plot = new XYPlot(source);
 		plot.getAxis(XYPlot.AXIS_X).setRange(-10.0, 10.0);
 		plot.getAxis(XYPlot.AXIS_Y).setRange(-10.0, 10.0);
+		plot.setPointRenderers(source, null);
 		
 		InteractivePanel panel = new InteractivePanel(plot);
-		plotPanel = panel;
 		setLayout(new BorderLayout());
 		add(panel, BorderLayout.CENTER);
-		
-		final int TIMER_PERIOD_MS = 50;
-		playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				double deltaSteps = (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
-				int newValue = slider.getValue() + (int)deltaSteps;
-				if (newValue > slider.getMaximum()) {
-					newValue = slider.getMaximum();
-					playbackTimer.stop();
-				}
-				slider.setValue(newValue);
-			}
+
+		// Add the standard time slider and play/pause button.
+		add(new PlaybackControls(playbackTimer), BorderLayout.SOUTH);
+
+		// Add the callback that will update this window when playback time progresses.
+		playbackTimer.addListener(event -> {
+			this.time = (Double)event.getNewValue();
+			this.repaint();
 		});
-		playbackTimer.setRepeats(true);
-		
-		JPanel controlsPanel = new JPanel();
-		controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.LINE_AXIS));
-		slider = new JSlider(0, data.getRowCount() - 1);
-		slider.setValue(0);
-		slider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				Trajectory.this.repaint();
-			}
-		});
-		controlsPanel.add(slider);
-		JButton playButton = new JButton(">");
-		playButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (playbackTimer.isRunning()) {
-					playbackTimer.stop();
-				} else {
-					playbackTimer.start();
-					if (slider.getValue() == slider.getMaximum()) {
-						slider.setValue(slider.getMinimum());
-					}
-				}
-			}
-		});
-		controlsPanel.add(playButton);
-		add(controlsPanel, BorderLayout.SOUTH);
 	}
-	
+
+	/**
+	 * Draw overlays on the plot
+	 */
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
-		int slider_value = slider.getValue();
-		double x = (Double)data.get(0, slider_value);
-		double y = (Double)data.get(1, slider_value);
-		double orientation = (Double)data.get(2, slider_value);
-		double vel_x = (Double)data.get(3, slider_value);
-		double vel_y = (Double)data.get(4, slider_value);
-		
-		double pixelX = plot.getAxisRenderer(XYPlot.AXIS_X).worldToView(plot.getAxis(XYPlot.AXIS_X), x, false);
-		double pixelY = plot.getAxisRenderer(XYPlot.AXIS_Y).worldToView(plot.getAxis(XYPlot.AXIS_Y), y, false);
 
-		double plotAreaHeight = plot.getPlotArea().getHeight();
-		double plotAreaX = plot.getPlotArea().getX();
-		double plotAreaY = plot.getPlotArea().getY();
-		
-		pixelX = plotAreaX + pixelX;
-		pixelY = plotAreaY + plotAreaHeight - pixelY;
-		
 		Graphics2D g2d = (Graphics2D)g;
 
+		int index = PlotUtils.findIndex(data.getColumn(0), time);
+
+		double x = (Double)data.get(1, index);
+		double y = (Double)data.get(2, index);
+		double orientation = (Double)data.get(3, index);
+		double vel_x = (Double)data.get(4, index);
+		double vel_y = (Double)data.get(5, index);
+
+		// Show the robot's current pose by drawing a rectangle.
+		Point pixelPos = PlotUtils.getPixelCoords(plot, x, y);
 		final int SIZE_X = 30;
 		final int SIZE_Y = 20;
 		g2d.setColor(new Color(128, 128, 255));
 		AffineTransform saveXf = g2d.getTransform();
-		g2d.rotate(-orientation, pixelX, pixelY);
-		g2d.fillRect((int)pixelX - SIZE_X / 2, (int)pixelY - SIZE_Y / 2, SIZE_X, SIZE_Y);
+		g2d.rotate(-orientation, pixelPos.x, pixelPos.y);
+		g2d.fillRect((int)pixelPos.x - SIZE_X / 2, (int)pixelPos.y - SIZE_Y / 2, SIZE_X, SIZE_Y);
 		g2d.setTransform(saveXf);
+
+		// Show the robot's current velocity by drawing a line extending from the robot's position.
 		//g2d.setColor(Color.red);
-		//g2d.drawLine((int)pixelX, (int)pixelY, (int)(pixelX + vel_x * 20), (int)(pixelY - vel_y * 20));
+		//g2d.drawLine((int)pixelPos.x, (int)pixelPos.y, (int)(pixelPos.x + vel_x * 20), (int)(pixelPos.y - vel_y * 20));
 	}
 }
