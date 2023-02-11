@@ -70,10 +70,12 @@ public class PointDir extends Point {
 		return diff / 180;
 	}
 
+	@Override
 	public String toString() {
 		return super.toString() + " Heading: " + getHeading();
 	}
 
+	@Override
 	public PointDir clone() {
 		return new PointDir(getX(), getY(), getHeading());
 	}

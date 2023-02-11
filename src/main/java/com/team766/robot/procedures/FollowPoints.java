@@ -24,6 +24,10 @@ import com.team766.controllers.PIDController;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
 
+/**
+ * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
+ * the {@link #FollowPoints(String)} constructor.
+ */
 public class FollowPoints extends Procedure {
 
 	//Steps combine possible data types into one object for flexibility and ease-of-use purposes
@@ -68,6 +72,11 @@ public class FollowPoints extends Procedure {
 		loggerCategory = Category.AUTONOMOUS;
 	}*/
 
+	/**
+	 * Constructor to create a new FollowPoints instance.
+	 * @param file filename for the waypoints file to load and use.
+	 * @throws IOException Thrown if file is not found.
+	 */
 	public FollowPoints(String file) throws IOException {
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
@@ -85,12 +94,20 @@ public class FollowPoints extends Procedure {
 		}
 	}
 
-	//Creates a new Step object from its constituents
+	/**
+	 * Method which creates a new Step object from its constituents.
+	 * @param wayPoint PointDir consisting of the x- and y- coordinates of the point, as well as the target header for the robot at that point.
+	 * @param criticalPoint Boolean determining whether the robot should travel to the point (true) or if it should use the FollowPoints circle method (false).
+	 * @param procedure Procedure for the robot to run when reaching the point. If null is inputted, it is interpreted as "doNothing()".
+	 * @param stopRobot Boolean determining whether the robot should wait for the procedure to finish before continuing on its path.
+	 */
 	private void addStep(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
 		steps.add(new Step(wayPoint, criticalPoint, procedure, stopRobot));
 	}
 
-	//Default FollowPoints Constructor, Steps must be added here
+	/**
+	 * Default FollowPoints Constructor. Steps must be added in-code.
+	 */
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
 		addStep(new PointDir(4,0, 90), true, null /* don't execute procedure */, false);
@@ -98,7 +115,9 @@ public class FollowPoints extends Procedure {
 		addWaypoints();
 	}
 
-	//When using steps, this sets up the arrays to be used by the FollowPoints method
+	/**
+	 * When using steps (in the default constructor), this sets up the arrays to be used by the FollowPoints method.
+	 */
 	private void addWaypoints() {
 		pointList = new PointDir[steps.size()];
 		proceduresAtPoints = new Procedure[steps.size()];
@@ -123,16 +142,11 @@ public class FollowPoints extends Procedure {
 		}
 	}
 
-	//Takes an array of procedures and uses points from the config file
-	public FollowPoints(Procedure[] procedureList) {
-		parsePointList();
-		proceduresAtPoints = procedureList;
-		criticalPointList = new boolean[pointList.length];
-		stopRobotList = new boolean[pointList.length];
-		loggerCategory = Category.AUTONOMOUS;
-	}
 
-	//Takes an array of points
+	/**
+	 * Constructor which takes an array of points.
+	 * @param points Array of PointDir objects for the robot to follow, consisting of x- and y- coordinates, as well as a target header for the robot.
+	 */
 	public FollowPoints(PointDir[] points) {
 		pointList = points;
 		proceduresAtPoints = new Procedure[pointList.length];
@@ -144,17 +158,8 @@ public class FollowPoints extends Procedure {
 		loggerCategory = Category.AUTONOMOUS;
 	}
 
-	//Takes an array of points and an array of procedures to do at each point
-	public FollowPoints(PointDir[] points, Procedure[] procedureList) {
-		pointList = points;
-		proceduresAtPoints = procedureList;
-		criticalPointList = new boolean[pointList.length];
-		stopRobotList = new boolean[pointList.length];
-		loggerCategory = Category.AUTONOMOUS;
-	}
-
 	//Takes pairs of points from pointDoubles (set in the config file) and converts them to Points, which are placed in pointList.
-	private void parsePointList() {
+	/*private void parsePointList() {
 		Double[] pointDoubles = ConfigFileReader.getInstance().getDoubles("trajectory.points").get();
 		pointList = new PointDir[pointDoubles.length / 2];
 		double pointX = 0;
@@ -167,7 +172,7 @@ public class FollowPoints extends Procedure {
 				pointList[i / 2] = new PointDir(pointX, pointY);
 			}
 		}
-	}
+	}*/
 
 	public void run(Context context) {
 		speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
@@ -192,7 +197,7 @@ public class FollowPoints extends Procedure {
 					currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
 					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
 					//Otherwise, it uses the checkIntersection() method to follow the circle
-					if (criticalPointList[targetNum]? passedPoint(pointList[targetNum]) : checkIntersection(targetNum, currentPos, pointList, radius)) {
+					if (criticalPointList[targetNum]? passedPoint(pointList[targetNum]) : checkIntersection(pointList)) {
 						if (proceduresAtPoints.length < targetNum) {
 							if (stopRobotList[targetNum]) {
 								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
@@ -203,7 +208,7 @@ public class FollowPoints extends Procedure {
 						targetNum++;
 						log("Going to Next Point!");
 					}
-					targetPoint = selectTargetPoint(targetNum, currentPos, pointList, radius);
+					targetPoint = selectTargetPoint(targetNum, pointList);
 					//double diff = currentPos.getAngleDifference(targetPoint);
 					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 					
@@ -226,14 +231,21 @@ public class FollowPoints extends Procedure {
 		}
 	}
 
+	/**
+	 * Method which keeps updating how much the robot should turn between rateLimiter calls.
+	 */
 	public void updateRotation() {
 		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		driveSettings.setHeading(rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
 		Robot.drive.swerveDrive(driveSettings);
 	}
 
-	//Returns whether the circle around the robot intersects the line connecting the two next points.
-	public static boolean checkIntersection(int targetNum, PointDir currentPos, Point[] pointList, double radius) {
+	/**
+	 * Method which returns whether the circle around the robot intersects the line connecting the two next points.
+	 * @param pointList The list of points the robot is following.
+	 * @return Boolean: whether or not the circle with given radius centered at currentPos intersects with the line between the next two points.
+	 */
+	private boolean checkIntersection(Point[] pointList) {
 		double a;
 		double b;
 		double c;
@@ -250,8 +262,13 @@ public class FollowPoints extends Procedure {
 		return false;
 	}
 
-	//If the circle around the robot intersects the line connecting the previous and next points, returns whichever intersection point is closest to the next point. Otherwise, returns the next point.
-	public static Point selectTargetPoint(int targetNum, PointDir currentPos, Point[] pointList, double radius) {
+	/**
+	 * Method returning which point the robot should move towards.
+	 * @param targetNum The id value of the next point in pointList.
+	 * @param currentPos The current position of the robot.
+	 * @return If the circle around the robot intersects the line connecting the previous and next points, returns whichever intersection point is closest to the next point. Otherwise, returns the next point.
+	 */
+	private static Point selectTargetPoint(int targetNum, Point[] pointList) {
 		double a;
 		double b;
 		double c;
@@ -288,13 +305,23 @@ public class FollowPoints extends Procedure {
 	}
 
 	//Returns if the robot has passed a certain point
-	public boolean passedPoint(Point P) {
+	/**
+	 * Method returning whether the robot has passed a given point.
+	 * @param P Point which this method determines has been passed.
+	 * @return If the robot is within a certain distance of P, and the distance to P is increasing, returns true. Otherwise, returns false.
+	 */
+	private boolean passedPoint(Point P) {
 		log(currentPos + " " + P + " " + currentPos.distance(P) + " " + ((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2) ? " true" : " false"));
 		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2);
 	}
 
-	//Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point
-	public double rotationSpeed(double currentRot, double targetRot) {
+	/**
+	 * Method which returns how much the robot should turn to reach its target heading.
+	 * @param currentRot The current heading of the robot.
+	 * @param targetRot The target heading of the robot.
+	 * @return Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point.
+	 */
+	private double rotationSpeed(double currentRot, double targetRot) {
 		double maxSpeed = 0.2;
 		double angleDistanceForMaxSpeed = 90;
 		currentRot = mod(currentRot, 360);
@@ -311,7 +338,8 @@ public class FollowPoints extends Procedure {
 		return maxSpeed * -Math.signum(currentRot - targetRot);
 	}
 
-	public static double mod(double d1, double d2) {
+	//Returns mod(d1, d2), to use to circumvent java's weird % function
+	private static double mod(double d1, double d2) {
 		return d1 % d2 + (d1 < 0 ? d2 : 0);
 	}
 }

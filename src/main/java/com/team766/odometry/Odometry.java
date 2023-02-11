@@ -7,6 +7,9 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.logging.Category;
 import com.team766.robot.*;
 
+/**
+ * Method which calculates the position of the robot based on wheel positions.
+ */
 public class Odometry extends LoggingBase {
 
 	private RateLimiter odometryLimiter;
@@ -32,6 +35,16 @@ public class Odometry extends LoggingBase {
 	//In the same order as motorList, relative to the center of the robot
 	private Point[] wheelPositions;
 	
+	/**
+	 * Constructor for Odometry, taking in several defines for the robot.
+	 * @param motors A list of every wheel-controlling motor on the robot.
+	 * @param CANCoders A list of the CANCoders corresponding to each wheel, in the same order as motors.
+	 * @param wheelLocations A list of the locations of each wheel, in the same order as motors.
+	 * @param wheelCircumference The circumfrence of the wheels, including treads.
+	 * @param gearRatio The gear ratio of the wheels.
+	 * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
+	 * @param rateLimiterTime How often odometry should run.
+	 */
 	public Odometry(MotorController[] motors, CANCoder[] CANCoders, Point[] wheelLocations, double wheelCircumference, double gearRatio, int encoderToRevolutionConstant, double rateLimiterTime) {
 		loggerCategory = Category.ODOMETRY;
 
@@ -63,6 +76,9 @@ public class Odometry extends LoggingBase {
 		return "Odometry";
 	}
 
+	/**
+	 * Sets the current position of the robot to (0, 0).
+	 */
 	public void resetCurrentPosition() {
 		currentPosition.set(0, 0);
 		for (int i = 0; i < motorCount; i++) {
@@ -71,6 +87,9 @@ public class Odometry extends LoggingBase {
 		}
 	}
 
+	/**
+	 * Updates the odometry encoder values to the robot encoder values.
+	 */
 	private void setCurrentEncoderValues() {
 		for (int i = 0; i < motorCount; i++) {
 			prevEncoderValues[i] = currEncoderValues[i];
@@ -78,6 +97,9 @@ public class Odometry extends LoggingBase {
 		}
 	}
 
+	/**
+	 * Updates the position of each wheel of the robot by assuming each wheel moved in an arc.
+	 */
 	private void updateCurrentPositions() {
 		double angleChange;
 		double radius;
@@ -105,6 +127,9 @@ public class Odometry extends LoggingBase {
 		}
 	}
 
+	/**
+	 * Calculates the position of the robot by finding the average of the wheel positions.
+	 */
 	private void findRobotPosition() {
 		double sumX = 0;
 		double sumY = 0;

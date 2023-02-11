@@ -3,6 +3,9 @@ package com.team766.odometry;
 import com.team766.framework.LoggingBase;
 import java.lang.Math;
 
+/**
+ * Class of two-coordinate objects, an x-coordinate and a y-coordinate.
+ */
 public class Point extends LoggingBase {
 	private double x;
 	private double y;
