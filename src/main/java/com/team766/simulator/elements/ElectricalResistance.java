@@ -27,9 +27,14 @@ public class ElectricalResistance implements ElectricalDevice {
 	}
 	
 	@Override
-	public ElectricalDevice.Output step(ElectricalDevice.Input input) {
+	public ElectricalDevice.Output step(ElectricalDevice.Input input, double dt) {
 		ElectricalDevice.Input downstreamInput = new ElectricalDevice.Input(input.voltage - resistance * state.current);
-		state = downstream.step(downstreamInput);
+		state = downstream.step(downstreamInput, dt);
 		return state;
+	}
+
+	@Override
+	public String name() {
+		return downstream.name() + "+resistance";
 	}
 }

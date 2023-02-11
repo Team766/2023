@@ -18,8 +18,8 @@ import com.team766.simulator.elements.Wheel;
 import com.team766.simulator.interfaces.MechanicalDevice;
 
 public class WestCoastDrive extends DriveBase {
-	private DCMotor leftMotor = DCMotor.makeCIM();
-	private DCMotor rightMotor = DCMotor.makeCIM();
+	private DCMotor leftMotor = DCMotor.makeCIM("DriveLeftMotor");
+	private DCMotor rightMotor = DCMotor.makeCIM("DriveRightMotor");
 	
 	private MotorController leftController = new PwmMotorController(6, leftMotor);
 	private MotorController rightController = new PwmMotorController(4, rightMotor);
@@ -59,20 +59,20 @@ public class WestCoastDrive extends DriveBase {
 		return x;
 	}
 
-	public void step() {
+	public void step(double dt) {
 		Vector3D wheelForce;
 		Vector3D netForce = Vector3D.ZERO;
 		Vector3D netTorque = Vector3D.ZERO;
 		MechanicalDevice.Input leftWheelInput = new MechanicalDevice.Input(
 				LEFT_WHEEL_POSITION,
 				linearVelocity.scalarMultiply(-1.));
-		wheelForce = leftWheels.step(leftWheelInput).force.scalarMultiply(-1.0);
+		wheelForce = leftWheels.step(leftWheelInput, dt).force.scalarMultiply(-1.0);
 		netForce = netForce.add(wheelForce);
 		netTorque = netTorque.add(Vector3D.crossProduct(LEFT_WHEEL_POSITION, wheelForce));
 		MechanicalDevice.Input rightWheelInput = new MechanicalDevice.Input(
 				RIGHT_WHEEL_POSITION,
 				linearVelocity.scalarMultiply(-1.));
-		wheelForce = rightWheels.step(rightWheelInput).force.scalarMultiply(-1.0);
+		wheelForce = rightWheels.step(rightWheelInput, dt).force.scalarMultiply(-1.0);
 		netForce = netForce.add(wheelForce);
 		netTorque = netTorque.add(Vector3D.crossProduct(RIGHT_WHEEL_POSITION, wheelForce));
 		
@@ -80,8 +80,8 @@ public class WestCoastDrive extends DriveBase {
 		
 		double rateLeft = ENCODER_TICKS_PER_METER * (ego_velocity.getX() - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm());
 		double rateRight = ENCODER_TICKS_PER_METER * (ego_velocity.getX() + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm());
-		leftEncoderResidual += rateLeft * Parameters.TIME_STEP;
-		rightEncoderResidual += rateRight * Parameters.TIME_STEP;
+		leftEncoderResidual += rateLeft * dt;
+		rightEncoderResidual += rateRight * dt;
 		ProgramInterface.encoderChannels[0].distance += (long)leftEncoderResidual;
 		ProgramInterface.encoderChannels[0].rate = rateLeft;
 		ProgramInterface.encoderChannels[2].distance += (long)rightEncoderResidual;
@@ -106,12 +106,12 @@ public class WestCoastDrive extends DriveBase {
 						maxFriction * WHEEL_BASE / 2));
 		
 		linearAcceleration = robotRotation.applyTo(netForce).scalarMultiply(1.0 / Parameters.ROBOT_MASS);
-		linearVelocity = linearVelocity.add(linearAcceleration.scalarMultiply(Parameters.TIME_STEP));
-		robotPosition = robotPosition.add(linearVelocity.scalarMultiply(Parameters.TIME_STEP));
+		linearVelocity = linearVelocity.add(linearAcceleration.scalarMultiply(dt));
+		robotPosition = robotPosition.add(linearVelocity.scalarMultiply(dt));
 		
 		angularAcceleration = netTorque.scalarMultiply(1.0 / Parameters.ROBOT_MOMENT_OF_INERTIA);
-		angularVelocity = angularVelocity.add(angularAcceleration.scalarMultiply(Parameters.TIME_STEP));
-		Vector3D angularDelta = angularVelocity.scalarMultiply(Parameters.TIME_STEP);
+		angularVelocity = angularVelocity.add(angularAcceleration.scalarMultiply(dt));
+		Vector3D angularDelta = angularVelocity.scalarMultiply(dt);
 		robotRotation = robotRotation.compose(
 			new Rotation(RotationOrder.XYZ,
 			             RotationConvention.VECTOR_OPERATOR,

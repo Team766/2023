@@ -1,8 +1,10 @@
 package com.team766.simulator;
 
 public class Parameters {
-	public static final double TIME_STEP = 0.001; // seconds
-	public static final double DURATION = 5.0; // seconds
+	public static final double TIME_STEP = 0.0001; // seconds
+	public static final double DURATION = 10.0; // seconds
+
+	public static final double LOGGING_PERIOD = 0.005; // seconds
 
 	// Robot mode to run in the simulator
 	public static final ProgramInterface.RobotMode INITIAL_ROBOT_MODE = ProgramInterface.RobotMode.AUTON;
