@@ -14,6 +14,7 @@ import com.team766.logging.Severity;
 public class LogViewer implements WebServer.Handler {
 	private static final String ENDPOINT = "/logs";
 	private static final String ALL_ERRORS_NAME = "All Errors";
+	private static final String ALL_MESSAGES_NAME = "All Messages";
 
 	private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -37,7 +38,9 @@ public class LogViewer implements WebServer.Handler {
 				categoryName,
 				Stream.concat(
 					Stream.of(ALL_ERRORS_NAME),
-					Arrays.stream(Category.values()).map(Category::name)
+					Stream.concat(
+						Stream.of(ALL_MESSAGES_NAME),
+						Arrays.stream(Category.values()).map(Category::name))
 				).toArray(String[]::new)),
 			"<input type=\"submit\" value=\"View\">",
 			"</p></form>",
@@ -86,6 +89,14 @@ public class LogViewer implements WebServer.Handler {
 				::iterator);
 	}
 
+	static String makeAllMessagesPage() {
+		return makePage(
+			ALL_MESSAGES_NAME,
+			Arrays.stream(Category.values())
+				.flatMap(category -> Logger.get(category).recentEntries().stream())
+				::iterator);
+	}
+
 	@Override
 	public String endpoint() {
 		return ENDPOINT;
@@ -96,6 +107,8 @@ public class LogViewer implements WebServer.Handler {
 		String categoryName = (String)params.get("category");
 		if (categoryName == null || categoryName.equals(ALL_ERRORS_NAME)) {
 			return makeAllErrorsPage();
+		} else if (categoryName.equals(ALL_MESSAGES_NAME)) {
+			return makeAllMessagesPage();
 		} else {
 			Category category = Enum.valueOf(Category.class, categoryName);
 			return makePage(category.name(), Logger.get(category).recentEntries());
