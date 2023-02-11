@@ -19,7 +19,8 @@ public class Arms extends Mechanism {
     public Arms() {
         firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
         secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
-        pid = new PIDController(.001,0,0, (-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition()) * .027), -.07, .07, 3);
+        pid = PIDController.loadFromConfig("ArmJoint1");
+        //(.15,0,0, (-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition()) * .027), -.07, .07, 3);
 
 
     }
@@ -63,6 +64,7 @@ public class Arms extends Mechanism {
         pid.reset();
     }
     public void setFf(){
-        firstJoint.set((-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .027);
+        firstJoint.set((-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .021);
+        log("ff: " + (-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .03);
     }
 }
