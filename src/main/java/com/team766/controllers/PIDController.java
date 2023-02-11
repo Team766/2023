@@ -290,6 +290,7 @@ public class PIDController {
 		prev_error = 0;
 		error_rate = 0;
 		total_error = 0;
+		lastTime = timeProvider.get();
 		needsUpdate = true;
 	}
 
