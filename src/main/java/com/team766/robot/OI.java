@@ -1,7 +1,6 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
-import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
