@@ -53,7 +53,7 @@ public class Arms extends Mechanism {
         //if(firstJoint.getSensorPosition() > 3240){
             
         //}else{
-            pid.setSetpoint(00);
+            pid.setSetpoint(-22);
             pid.calculate(firstJoint.getSensorPosition());
             firstJoint.set(pid.getOutput()+0);
             log("PID Output: " + pid.getOutput());
