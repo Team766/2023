@@ -21,6 +21,8 @@ public class ColorMatchMech extends Mechanism {
 	private final Color red = new Color(0.561, 0.232, 0.114);
 	private final Color black = new Color(0.0,0.0,0.0);
 	private final Color white = new Color(1.0,1.0,1.0);
+	private final Color boxTube1 = new Color(0.359,0.460,0.181);
+	private final Color offWhite = new Color(0.381,0.463,0.157);
 	
 	public ColorMatchMech(){
 
@@ -34,6 +36,8 @@ public class ColorMatchMech extends Mechanism {
 		m_colorMatcher.addColorMatch(red);
 		m_colorMatcher.addColorMatch(black);
 		m_colorMatcher.addColorMatch(white);
+		m_colorMatcher.addColorMatch(boxTube1);
+		m_colorMatcher.addColorMatch(offWhite);
 		m_colorMatcher.setConfidenceThreshold(0.95);
 	}
 	//identifies held object by color
