@@ -24,14 +24,14 @@ public class PneumaticsSystem {
 		circuit.regulatedPressure = regulatedPressure;
 		branchCircuits.add(circuit);
 	}
-	
-	public void step() {
+
+	public void step(double dt) {
 		double flowVolume = 0.0;
 		double systemVolume = 0.0;
 		for (BranchCircuit circuit : branchCircuits) {
 			double devicePressure = Math.min(circuit.regulatedPressure, systemPressure);
 			PneumaticDevice.Input inputState = new PneumaticDevice.Input(devicePressure);
-			PneumaticDevice.Output deviceState = circuit.device.step(inputState);
+			PneumaticDevice.Output deviceState = circuit.device.step(inputState, dt);
 			// TODO: implement relieving pressure regulator (make sure device pressure doesn't exceed
 			// circuit.regulatedPressure, even when including flow volume)
 			flowVolume += deviceState.flowVolume;
