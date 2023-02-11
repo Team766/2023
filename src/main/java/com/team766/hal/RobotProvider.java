@@ -2,6 +2,8 @@ package com.team766.hal;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.TimeProviderI;
@@ -116,7 +118,11 @@ public abstract class RobotProvider {
 			}
 			return motor;
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
+			StringWriter exsw = new StringWriter();
+			ex.printStackTrace(new PrintWriter(exsw));
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, 
+			  "Error getting configuration for motor %s from config file, using mock motor instead.\nDetailed error: %s", 
+			  configName, exsw.toString());
 			return new LocalMotorController(configName, new MockMotorController(0), sensor);
 		}
 	}
