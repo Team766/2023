@@ -26,20 +26,21 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		context.takeOwnership(Robot.pulley);
+		context.takeOwnership(Robot.arms);
 		while (true) {
 			
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
+			log(""+joystick0.getButton(8));
 			if(joystick0.getButton(8)){
-				log("" + Robot.pulley.getEncoderDistance());
+				log("" + Robot.arms.getEncoderDistance());
 			}
 			if(joystick0.getButton(9)){
-				//Robot.pulley.setPosition(6600);
+				//Robot.arms.setPosition(6600);
 			}
-					Robot.pulley.setPulleyPower(joystick0.getAxis(1)*.3);
+					Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
@@ -47,18 +48,18 @@ public class OI extends Procedure {
 			//When you pronounce hiiiii, you must alot 1 second for each i.
 			log("button: "+joystick0.getButton(8));
 			if(joystick0.getButton(2)){
-				Robot.pulley.setFf();
+				Robot.arms.setFf();
 			}
 			boolean hiiiii = joystick0.getButton(8);
 				while(hiiiii) {
 					log("hi");
 					log("button in loop: "+joystick0.getButton(8));
-					if (Robot.pulley.getEncoderDistance() > -100 && Robot.pulley.getEncoderDistance() < 100) {
-						Robot.pulley.setPulleyPower(0);
-					} else if (Robot.pulley.getEncoderDistance() < -100) {
-						Robot.pulley.setPulleyPower(0.12);
+					if (Robot.arms.getEncoderDistance() > -100 && Robot.arms.getEncoderDistance() < 100) {
+						Robot.arms.setPulleyPower(0);
+					} else if (Robot.arms.getEncoderDistance() < -100) {
+						Robot.arms.setPulleyPower(0.12);
 					} else {
-						Robot.pulley.setPulleyPower(-0.1);
+						Robot.arms.setPulleyPower(-0.1);
 					}
 					hiiiii=false;
 				}
@@ -66,18 +67,18 @@ public class OI extends Procedure {
 				while(hiiiii) {
 					log("hiiiiiiiiiiii");
 					log("button in loop: "+joystick0.getButton(16));
-					Robot.pulley.setPulleyPower(-Robot.pulley.getEncoderDistance() * 0.000606);
+					Robot.arms.setPulleyPower(-Robot.arms.getEncoderDistance() * 0.000606);
 					hiiiiiiiiii=false;
 				}
 
 			if(joystick0.getButton(1)){
-				Robot.pulley.resetEncoder();
+				Robot.arms.resetEncoder();
 			}
 
 			if(joystick0.getButton(7)){
-				Robot.pulley.pidtest();
+				Robot.arms.pidtest();
 			}else{
-				Robot.pulley.reset();
+				Robot.arms.reset();
 			}
 
 		}
