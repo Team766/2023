@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.robot.Robot;
+import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
 import com.team766.odometry.Point;
@@ -43,13 +44,19 @@ public class FollowPoints extends Procedure {
 
 	private static PointDir currentPos = new PointDir(0.0, 0.0, 0.0);
 	private static PointDir lastPos = new PointDir(0.0, 0.0, 0.0);
+
 	private PointDir[] pointList;
 	private Procedure[] proceduresAtPoints;
 	private boolean[] criticalPointList;
 	private boolean[] stopRobotList;
+
+	private int targetNum = 0;
+	private RateLimiter followLimiter = new RateLimiter(0.05);
+
 	//Radius defines the radius of the circle around the robot
 	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
 	private static double speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
+	private static PointDir driveSettings = new PointDir(0, 0, 0);
 
 	/*public FollowPoints() {
 		parsePointList();
@@ -68,10 +75,8 @@ public class FollowPoints extends Procedure {
 	//Default FollowPoints Constructor, Steps must be added here
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
-		addStep(new PointDir(2,0, 0), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(2,2, 90), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(0,2, 90), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(0,0, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(4,0, 90), true, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
 		addWaypoints();
 	}
 
@@ -94,6 +99,8 @@ public class FollowPoints extends Procedure {
 				proceduresAtPoints[i] = new DoNothing();
 			}
 			criticalPointList[i] = steps.get(i).criticalPoint;
+			log(Boolean.toString(steps.get(i).criticalPoint));
+
 			stopRobotList[i] = steps.get(i).stopRobot;
 		}
 	}
@@ -153,47 +160,58 @@ public class FollowPoints extends Procedure {
 		//If we need to make this method field-oriented, just remove this line
 		Robot.drive.resetCurrentPosition();
 		Robot.gyro.resetGyro();
+		targetNum = 0;
 
 		for (int i = 0; i < pointList.length; i++) {
-			log(pointList[i].toString());
+			log(Boolean.toString(criticalPointList[i]));
 		}
 		if (pointList.length > 0) {
-			int targetNum = 0;
 			Point targetPoint = new Point(0.0, 0.0);
 			currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
 			while (targetNum != pointList.length - 1 ||  !passedPoint(pointList[pointList.length - 1])) {
-				lastPos = currentPos.clone();
-				currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
-				//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
-				//Otherwise, it uses the checkIntersection() method to follow the circle
-				if (criticalPointList[targetNum]? passedPoint(pointList[targetNum]) : checkIntersection(targetNum, currentPos, pointList, radius)) {
-					if (proceduresAtPoints.length < targetNum) {
-						if (stopRobotList[targetNum]) {
-							context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
-						} else {
-							context.startAsync(proceduresAtPoints[targetNum]);
+				if (followLimiter.next()) {
+					lastPos = currentPos.clone();
+					currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
+					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
+					//Otherwise, it uses the checkIntersection() method to follow the circle
+					if (criticalPointList[targetNum]? passedPoint(pointList[targetNum]) : checkIntersection(targetNum, currentPos, pointList, radius)) {
+						if (proceduresAtPoints.length < targetNum) {
+							if (stopRobotList[targetNum]) {
+								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
+							} else {
+								context.startAsync(proceduresAtPoints[targetNum]);
+							}
 						}
+						targetNum++;
+						log("Going to Next Point!");
 					}
-					targetNum++;
-					log("Going to Next Point!");
-				}
-				targetPoint = selectTargetPoint(targetNum, currentPos, pointList, radius);
-				//double diff = currentPos.getAngleDifference(targetPoint);
-				//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
-				
-				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())));
-				log("Current Position: " + currentPos.toString());
-				log("Target Point: " + targetPoint.toString());
-				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())).toString());
+					targetPoint = selectTargetPoint(targetNum, currentPos, pointList, radius);
+					//double diff = currentPos.getAngleDifference(targetPoint);
+					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
+					
+					Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+					Robot.drive.swerveDrive(driveSettings);
+					log("Current Position: " + currentPos.toString());
+					log("Target Point: " + targetPoint.toString());
+					log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())).toString());
 
-				context.yield();
+					context.yield();
+				} else {
+					updateRotation();
+				}
 			}
 			Robot.drive.drive2D(0, 0);
 			log("Finished method!");
 		} else {
 			log("No points!");
 		}
+	}
+
+	public void updateRotation() {
+		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+		driveSettings.setHeading(rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+		Robot.drive.swerveDrive(driveSettings);
 	}
 
 	//Returns whether the circle around the robot intersects the line connecting the two next points.
@@ -252,14 +270,15 @@ public class FollowPoints extends Procedure {
 	}
 
 	//Returns if the robot has passed a certain point
-	public static boolean passedPoint(Point P) {
+	public boolean passedPoint(Point P) {
+		log(currentPos + " " + P + " " + currentPos.distance(P) + " " + ((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2) ? " true" : " false"));
 		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2);
 	}
 
 	//Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point
-	public static double rotationSpeed(double currentRot, double targetRot) {
+	public double rotationSpeed(double currentRot, double targetRot) {
 		double maxSpeed = 0.2;
-		double angleDistanceForMaxSpeed = 180;
+		double angleDistanceForMaxSpeed = 90;
 		currentRot = mod(currentRot, 360);
 		targetRot = mod(targetRot, 360);
 		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot + 360 - currentRot)) {
@@ -269,9 +288,9 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			return Math.pow((currentRot - targetRot) / angleDistanceForMaxSpeed, 3) * maxSpeed;
+			return -(currentRot - targetRot) / angleDistanceForMaxSpeed * maxSpeed;
 		}
-		return maxSpeed * Math.signum(currentRot - targetRot);
+		return maxSpeed * -Math.signum(currentRot - targetRot);
 	}
 
 	public static double mod(double d1, double d2) {
