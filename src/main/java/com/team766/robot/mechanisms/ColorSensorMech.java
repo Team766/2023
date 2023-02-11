@@ -11,37 +11,26 @@ public class ColorSensorMech extends Mechanism {
 	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 	//code just to grab rgb vals once
 	public ColorSensorMech(){
-		log(":-)");
+		
 	}
 	//RGB MIGHT BE 16 BIT
 	public void senseRGB(){
 		Color detectedColor = m_colorSensor.getColor();
-		//previous: int lastColor[]= {m_colorSensor.getRed(), m_colorSensor.getGreen(), m_colorSensor.getBlue()}
+		
 		log("detected color: "+detectedColor);
 		log("red: "+detectedColor.red+" green: "+detectedColor.green+" blue: "+detectedColor.blue);
-		//^have to see what the deal is with the dot notation colors --> just run it and check
-		//previous: log("red: "+m_colorSensor.getRed()+" green: "+m_colorSensor.getGreen()+" blue: "+m_colorSensor.getBlue());
-		//proposed change: omit				
-		//previous: lastColor[0]=m_colorSensor.getRed();
-		//previous: lastColor[1]=m_colorSensor.getGreen();
-		//previous: lastColor[2]=m_colorSensor.getBlue();
+		
 	}
-	//similar thing but for getting proximity ranges
+	//since the prox sensor will basically return the same val if a piece is >4 cm away, this code just says if something is right in front of it or not
 	public void senseProx(){
 		int prox = m_colorSensor.getProximity();
-		//log("raw proximity value:"+prox);
+		
 		if(prox<200){
 			log("object is out of range");
 		} else {
 			log("sensing object :)");
 		}
-		/*
-		double calcProx = Math.round(((2047-(double)m_colorSensor.getProximity())/2047)*9);
-		if(calcProx == 0){
-			calcProx++;
-		}
-		log("calculated prox: "+calcProx+" - "+(calcProx+1)+" cm");
-		*/
+		
 	}
 	
 }
