@@ -35,10 +35,12 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			context.takeOwnership(Robot.cSensor);
 			context.takeOwnership(Robot.cMatcher);
-			Robot.cSensor.senseProx();
+			Robot.cMatcher.senseProxA();
+			Robot.cMatcher.senseProxB();
 			//Robot.cSensor.senseRGB();
 			Robot.cMatcher.makeColorMatches();
-			Robot.cMatcher.checkColor();
+			Robot.cMatcher.checkColorA();
+			Robot.cMatcher.checkColorB();
 			//context.waitForSeconds(0.1);
 		}
 	}

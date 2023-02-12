@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj.util.Color;
 public class ColorMatchMech extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();
 
-	private final I2C.Port i2cPort = I2C.Port.kOnboard;
-	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+	private final I2C.Port i2cPort1 = I2C.Port.kOnboard;
+	private final I2C.Port i2cPort2 = I2C.Port.kMXP;
+	private final ColorSensorV3 m_colorSensorA = new ColorSensorV3(i2cPort1);
+	private final ColorSensorV3 m_colorSensorB = new ColorSensorV3(i2cPort2);
 	//sensor checks which of these colors its reading is closest to
 	private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   	private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
@@ -43,8 +45,8 @@ public class ColorMatchMech extends Mechanism {
 		m_colorMatcher.setConfidenceThreshold(0.95);
 	}
 	//identifies held object by color
-	public void checkColor(){
-		Color detectedColor = m_colorSensor.getColor();
+	public void checkColorA(){
+		Color detectedColor = m_colorSensorA.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -59,6 +61,46 @@ public class ColorMatchMech extends Mechanism {
 		//log("detected color: "+detectedColor);
 		//log("color: "+match.color);
 		//log("confidence: "+match.confidence);
+	}
+	//I know having a different method for each sensor isn't the best but i'm lazy
+	public void checkColorB(){
+		Color detectedColor = m_colorSensorB.getColor();
+		String piece;
+		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+		if(match.color == coneYellow){
+			piece = "Cone";
+		} else if (match.color == cubePurple){
+			piece = "Cube";
+		} else {
+			piece = "Other";
+		}
+		log("piece: "+piece);
+		//log("detected color: "+detectedColor);
+		//log("color: "+match.color);
+		//log("confidence: "+match.confidence);
+	}
+
+	public void senseProxA(){
+		int prox = m_colorSensorA.getProximity();
+		
+		if(prox<200){
+			log("object is out of range");
+		} else {
+			log("sensing object :)");
+		}
+		
+	}
+
+	public void senseProxB(){
+		int prox = m_colorSensorB.getProximity();
+		
+		if(prox<200){
+			log("object is out of range");
+		} else {
+			log("sensing object :)");
+		}
+		
 	}
 	
 }

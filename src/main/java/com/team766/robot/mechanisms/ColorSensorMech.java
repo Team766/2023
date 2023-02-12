@@ -13,7 +13,7 @@ public class ColorSensorMech extends Mechanism {
 	public ColorSensorMech(){
 		
 	}
-	//RGB MIGHT BE 16 BIT
+	
 	public void senseRGB(){
 		Color detectedColor = m_colorSensor.getColor();
 		
@@ -22,6 +22,7 @@ public class ColorSensorMech extends Mechanism {
 		
 	}
 	//since the prox sensor will basically return the same val if a piece is >4 cm away, this code just says if something is right in front of it or not
+	//will prob delete since I moved this method to the color matcher
 	public void senseProx(){
 		int prox = m_colorSensor.getProximity();
 		
