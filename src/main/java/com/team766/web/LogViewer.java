@@ -37,10 +37,8 @@ public class LogViewer implements WebServer.Handler {
 				"category",
 				categoryName,
 				Stream.concat(
-					Stream.of(ALL_ERRORS_NAME),
-					Stream.concat(
-						Stream.of(ALL_MESSAGES_NAME),
-						Arrays.stream(Category.values()).map(Category::name))
+					Stream.of(ALL_ERRORS_NAME, ALL_MESSAGES_NAME),
+					Arrays.stream(Category.values()).map(Category::name)
 				).toArray(String[]::new)),
 			"<input type=\"submit\" value=\"View\">",
 			"</p></form>",
