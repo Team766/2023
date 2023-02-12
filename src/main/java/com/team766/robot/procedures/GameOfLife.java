@@ -132,21 +132,27 @@ public class GameOfLife extends Procedure {
 	}
 
 	private void output() {
-		int k = 0;
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				if (i % 2 == 0) {
-					k = w * i + j + 8;
-				} else {
-					k = w * i + w - 1 - j + 8;
-				}
-				log("i,j" + i +"," + j + "=>" + k);
-				if (grid[i][j]) {
-			  		Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
-				} else {
-					Robot.candle.setColor(0, 0, 0, k, 1);
+		for (int runTimes = 0; runTimes < 20; runTimes++) {
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					outputPixel(i, j);
 				}
 			}
+		}
+	}
+
+	private void outputPixel(int i, int j) {
+		int k;
+		if (i % 2 == 0) {
+			k = w * i + j + 8;
+		} else {
+			k = w * i + w - 1 - j + 8;
+		}
+		log("i,j" + i +"," + j + "=>" + k);
+		if (grid[i][j]) {
+			Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+		} else {
+			Robot.candle.setColor(0, 0, 0, k, 1);
 		}
 	}
 
