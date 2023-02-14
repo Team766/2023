@@ -9,14 +9,13 @@ import edu.wpi.first.wpilibj.util.Color;
 
 
 //identifies game pieces by color & checks if cones are held right
+/*NOTE: not fully confident on multiplexer stuff so I need to test it*/
 
 public class ColorMatchMech extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();
-
-	private final I2C.Port i2cPort1 = I2C.Port.kOnboard;
-	private final I2C.Port i2cPort2 = I2C.Port.kMXP;
-	private final ColorSensorV3 m_colorSensorA = new ColorSensorV3(i2cPort1);
-	private final ColorSensorV3 m_colorSensorB = new ColorSensorV3(i2cPort2);
+	private final int kMultiplexerAddress = 0x70;
+	//private final I2C.Port i2cPort = I2C.Port.kOnboard;
+	//private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 	//sensor checks which of these colors its reading is closest to
 	private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   	private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
@@ -26,11 +25,29 @@ public class ColorMatchMech extends Mechanism {
 	private final Color white = new Color(1.0,1.0,1.0);
 	private final Color boxTube1 = new Color(0.359,0.460,0.181);
 	private final Color offWhite = new Color(0.381,0.463,0.157);
-	
-	public ColorMatchMech(){
 
+	// The multiplexer I2C is static because it needs to be used for ALL of the multiplexer sensors,
+  	// and so by making it static all sensors can access it.
+ 	private static I2C multiplexer;
+ 	// The actual sensor. All of the methods call this sensor to get the data.
+ 	private ColorSensorV3 sensor;
+  	// What port on the multiplexer the color sensor is plugged into.
+  	private final int port;
+	
+	public ColorMatchMech(I2C.Port i2cPort, int port){
+		if (multiplexer == null) {
+			multiplexer = new I2C(i2cPort, kMultiplexerAddress);
+		  }
+		this.port = port;
+		setChannel();
+		sensor = new ColorSensorV3(i2cPort);
 	}
 
+	private void setChannel(){
+
+		multiplexer.write(kMultiplexerAddress, 1 << port);
+
+	}
 	//adds possible colors
 	
 	public void makeColorMatches(){
@@ -45,8 +62,9 @@ public class ColorMatchMech extends Mechanism {
 		m_colorMatcher.setConfidenceThreshold(0.95);
 	}
 	//identifies held object by color
-	public void checkColorA(){
-		Color detectedColor = m_colorSensorA.getColor();
+	public String checkColor(){
+		setChannel();
+		Color detectedColor = sensor.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -61,46 +79,22 @@ public class ColorMatchMech extends Mechanism {
 		//log("detected color: "+detectedColor);
 		//log("color: "+match.color);
 		//log("confidence: "+match.confidence);
-	}
-	//I know having a different method for each sensor isn't the best but i'm lazy
-	public void checkColorB(){
-		Color detectedColor = m_colorSensorB.getColor();
-		String piece;
-		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-
-		if(match.color == coneYellow){
-			piece = "Cone";
-		} else if (match.color == cubePurple){
-			piece = "Cube";
-		} else {
-			piece = "Other";
-		}
-		log("piece: "+piece);
-		//log("detected color: "+detectedColor);
-		//log("color: "+match.color);
-		//log("confidence: "+match.confidence);
+		return piece;
 	}
 
-	public void senseProxA(){
-		int prox = m_colorSensorA.getProximity();
-		
+	public String senseProx(){
+		setChannel();
+		int prox = sensor.getProximity();
+		String proxResult;
 		if(prox<200){
+			proxResult = "object is out of range";
 			log("object is out of range");
 		} else {
+			proxResult = "sensing object :)";
 			log("sensing object :)");
 		}
-		
+		return proxResult;
 	}
 
-	public void senseProxB(){
-		int prox = m_colorSensorB.getProximity();
-		
-		if(prox<200){
-			log("object is out of range");
-		} else {
-			log("sensing object :)");
-		}
-		
-	}
 	
 }
