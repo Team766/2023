@@ -77,15 +77,17 @@ public class Odometry extends LoggingBase {
 	}
 
 	/**
-	 * Sets the current position of the robot to (0, 0).
+	 * Sets the current position of the robot to Point P
+	 * @param P The point to set the current robot position to
 	 */
-	public void resetCurrentPosition() {
-		currentPosition.set(0, 0);
+	public void setCurrentPosition(Point P) {
+		currentPosition.set(P);
 		for (int i = 0; i < motorCount; i++) {
 			prevPositions[i].set(currentPosition.add(wheelPositions[i]));
-			currPositions[i].set(0,0);
+			currPositions[i].set(currentPosition.add(wheelPositions[i]));
 		}
 	}
+	
 
 	/**
 	 * Updates the odometry encoder values to the robot encoder values.

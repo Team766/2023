@@ -390,7 +390,7 @@ public class Drive extends Mechanism {
 	}
 
 	public void resetCurrentPosition() {
-		swerveOdometry.resetCurrentPosition();
+		swerveOdometry.setCurrentPosition(new Point(0, 0));
 	}
 	public void setCross() {
 		checkContextOwnership();

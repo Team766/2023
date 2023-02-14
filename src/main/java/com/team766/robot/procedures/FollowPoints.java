@@ -122,6 +122,7 @@ public class FollowPoints extends Procedure {
 		pointList = new PointDir[steps.size()];
 		proceduresAtPoints = new Procedure[steps.size()];
 		stopRobotList = new boolean[pointList.length];
+		//TODO: Fix all critical points being read as false
 		criticalPointList = new boolean[pointList.length];
 		for (int i = 0; i < steps.size(); i++) {
 			if (steps.get(i).wayPoint == null) continue;
