@@ -35,7 +35,7 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.candle);
 		Robot.candle.setColor(0,0,0);
 		context.releaseOwnership(Robot.candle);
-		GameOfLife gol = new GameOfLife(gameModes.HIVENUDGER);
+		GameOfLife gol = new GameOfLife(gameModes.GLIDER);
 		context.startAsync(gol);
 		int lastPOV = -1;
 		while (true) {
@@ -56,15 +56,15 @@ public class OI extends Procedure {
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			*/
 			if (joystick0.getButtonPressed(1)) {
-				Minesweeper.click();
+				gol.reset(gameModes.RANDOM);
 			}
 
 			if (joystick0.getButtonPressed(2)) {
-				Minesweeper.flag();
+				gol.reset(gameModes.GLIDER);
 			}
 
-			if (joystick0.getButtonPressed(8)) {
-				Minesweeper.reset();
+			if (joystick0.getButtonPressed(3)) {
+				gol.reset(gameModes.HIVENUDGER);
 			}
 			
 			switch (joystick0.getPOV()) {

@@ -1,7 +1,10 @@
 package com.team766.robot.procedures;
 
+import java.util.function.BooleanSupplier;
+
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.hal.RobotProvider;
 import com.team766.robot.Robot;
 import com.team766.library.RateLimiter;
 
@@ -13,6 +16,7 @@ public class GameOfLife extends Procedure {
 	boolean[][] grid;
 	boolean[][] gridCheck;
 	private RateLimiter lifeLimiter;
+	private Context golContext;
 	
 	public enum gameModes {
 		RANDOM,
@@ -20,9 +24,8 @@ public class GameOfLife extends Procedure {
 		HIVENUDGER
 	}
 
-	public void reset(gameModes gameMode) {
+	public void newMode(gameModes gameMode) {
 		switch (gameMode) {
-			
 			case RANDOM:
 				borderless = true;
 				grid = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
@@ -38,11 +41,11 @@ public class GameOfLife extends Procedure {
 				borderless = true;
 				grid = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
 				gridCheck = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
-				gridCheck[5+0][5+0] = true;
-				gridCheck[5+1][5+1] = true;
-				gridCheck[5+1][5+2] = true;
-				gridCheck[5+2][5+0] = true;
-				gridCheck[5+2][5+1] = true;
+				gridCheck[0][0] = true;
+				gridCheck[1][1] = true;
+				gridCheck[1][2] = true;
+				gridCheck[2][0] = true;
+				gridCheck[2][1] = true;
 			break;
 
 			case HIVENUDGER:
@@ -104,59 +107,53 @@ public class GameOfLife extends Procedure {
 		grid = copy(gridCheck);
 	}
 
+	public void reset(gameModes gameMode) {
+		newMode(gameMode);
+		golContext.takeOwnership(Robot.candle);
+		Robot.candle.setColor(0, 0, 0, 8, w * h);
+		int k;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (grid[i][j]) {
+					if (i % 2 == 0) {
+						k = h * i + j + 8;
+					} else {
+						k = h * i + w - 1 - j + 8;
+					}
+					Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+				}
+			}
+			golContext.waitForSeconds(0.001);
+		}
+		golContext.releaseOwnership(Robot.candle);
+	}
+
 	public GameOfLife(gameModes gameMode) {
-		reset(gameMode);
+		newMode(gameMode);
 		lifeLimiter = new RateLimiter(0.1);
 	}
 
 	public void run(Context context) {
+		golContext = context;
 		int stage = 0;
 		while (true) {
 			if (lifeLimiter.next()) {
 				log("Inside RateLimiter");
-				
 				switch (stage) {
-					case 0: step(); 
-						break;
-					case 1: context.takeOwnership(Robot.candle);
-						output(); 
+					case 0: context.takeOwnership(Robot.candle);
+						step(context); 
 						context.releaseOwnership(Robot.candle); 
 						break;
-					case 2: grid = copy(gridCheck);
+					case 1: grid = copy(gridCheck);
 						break;
 				}
-				stage = (stage + 1) % 3;
+				stage = (stage + 1) % 2;
 			}
 			context.yield();
 		}
 	}
 
-	private void output() {
-		for (int runTimes = 0; runTimes < 20; runTimes++) {
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					outputPixel(i, j);
-				}
-			}
-		}
-	}
-
-	private void outputPixel(int i, int j) {
-		int k;
-		if (i % 2 == 0) {
-			k = w * i + j + 8;
-		} else {
-			k = w * i + w - 1 - j + 8;
-		}
-		log("i,j" + i +"," + j + "=>" + k);
-		if (grid[i][j]) {
-			Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
-		} else {
-			Robot.candle.setColor(0, 0, 0, k, 1);
-		}
-	}
-
-	private void step() {
+	private void step(Context context) {
 		int neighbors;
 		int k = 0;
 
@@ -187,10 +184,17 @@ public class GameOfLife extends Procedure {
 				}*/
 				if (grid[i][j]) {
 					gridCheck[i][j] = (neighbors == 2 || neighbors == 3);
+					if (!gridCheck[i][j]) {
+						Robot.candle.setColor(0, 0, 0, k, 1);
+					}
 				} else {
 					gridCheck[i][j] = (neighbors == 3);
+					if (gridCheck[i][j]) {
+						Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+					}
 				}
 			}
+			context.waitForSeconds(0.001);
 		}
 		grid = copy(gridCheck);
 	}
