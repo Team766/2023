@@ -13,6 +13,7 @@ public class Arms extends Mechanism {
     private EncoderReader firstJointReader;
     private EncoderReader secondJointreader;
     private PIDController pid;
+    private PIDController pid4arm2;
 
     // private EncoderReader pulleyEncoder;
 
@@ -20,6 +21,7 @@ public class Arms extends Mechanism {
         firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
         secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
         pid = PIDController.loadFromConfig("ArmJoint1");
+        pid4arm2 = PIDController.loadFromConfig("ArmJoint2");
         //(.15,0,0, (-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition()) * .027), -.07, .07, 3);
 
 
@@ -37,6 +39,7 @@ public class Arms extends Mechanism {
     public void resetEncoder(){
         checkContextOwnership();
         firstJoint.setSensorPosition(0);
+        secondJoint.setSensorPosition(0);
     }
 	public void setPosition(double position){
         //checkContextOwnership();
@@ -49,22 +52,51 @@ public class Arms extends Mechanism {
 			firstJoint.set(0);
 		}
 	}
-    public void pidtest(){
+    public void pidtest(double value){
         //if(firstJoint.getSensorPosition() > 3240){
             
         //}else{
-            pid.setSetpoint(-22);
+            pid.setSetpoint(value);
             pid.calculate(firstJoint.getSensorPosition());
-            firstJoint.set(pid.getOutput()+0);
+            firstJoint.set(pid.getOutput()+0); //add ff to power
             log("PID Output: " + pid.getOutput());
             //log("" + firstJoint.getSensorPosition());
         //}
     }
+
+    public void pidForArm2(double height_encoderUnits){
+        pid4arm2.setSetpoint(height_encoderUnits);
+        pid4arm2.calculate(secondJoint.getSensorPosition());
+        secondJoint.set(pid4arm2.getOutput());
+        log("PID Output: approx " + pid4arm2.getOutput());
+    }
     public void reset(){
         pid.reset();
+        pid4arm2.reset();
+        
     }
-    public void setFf(){
-        firstJoint.set((-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .021);
-        log("ff: " + (-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .03);
+    public double findEU(){
+        return secondJoint.getSensorPosition();
+    }
+    public void setFf(){ // Use Encoder Units to Radians in the sine
+        firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+        log("ff: " + (-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .021);
+    }
+
+    public double degreesToEU(double angle) {
+        return angle * (44.0 / 90);
+    }
+
+    public void setA2(double set){
+        secondJoint.set(set);
     }
 }
+
+/* ~~ Code Review ~~
+    Make Anti-Grav function better by putting an EU to radians converter inside the sine function
+    Use Voltage Control Mode when setting power (refer to CANSparkMaxMotorController.java)
+
+    Maybe use Nicholas's formula for degrees to EU
+    "Use break mode" - Ronald te not programmer
+
+ */

@@ -28,11 +28,20 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.arms);
 		while (true) {
+
 			
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
+
 			RobotProvider.instance.refreshDriverStationData();
+
+			if(joystick0.getButton(14)){
+				Robot.arms.pidForArm2(7);
+			}
+			if(joystick0.getButton(15)){
+				log(" h " + Robot.arms.findEU());
+			}
 			log(""+joystick0.getButton(8));
 			if(joystick0.getButton(8)){
 				log("" + Robot.arms.getEncoderDistance());
@@ -41,6 +50,7 @@ public class OI extends Procedure {
 				//Robot.arms.setPosition(6600);
 			}
 					Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
+					//Robot.arms.setA2(joystick1.getAxis(1));
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
@@ -49,6 +59,7 @@ public class OI extends Procedure {
 			log("button: "+joystick0.getButton(8));
 			if(joystick0.getButton(2)){
 				Robot.arms.setFf();
+				log(" " + Robot.arms.getEncoderDistance());
 			}
 			boolean hiiiii = joystick0.getButton(8);
 				while(hiiiii) {
@@ -75,12 +86,27 @@ public class OI extends Procedure {
 				Robot.arms.resetEncoder();
 			}
 
-			if(joystick0.getButton(7)){
-				Robot.arms.pidtest();
-			}else{
+			if (joystick0.getButton(5)) {
+				Robot.arms.pidtest(Robot.arms.degreesToEU(80));
+			} else if(joystick0.getButton(6)){
+				Robot.arms.pidtest(Robot.arms.degreesToEU(60));
+			} else if(joystick0.getButton(7)){
+				Robot.arms.pidtest(Robot.arms.degreesToEU(30));
+			} else if(joystick0.getButton(8)){
+				Robot.arms.pidtest(Robot.arms.degreesToEU(0));
+			} else if(joystick0.getButton(9)){
+				Robot.arms.pidtest(Robot.arms.degreesToEU(-30));
+			} else if(joystick0.getButton(10)){
+				Robot.arms.pidtest(Robot.arms.degreesToEU(-60));
+			} else {
 				Robot.arms.reset();
 			}
 
 		}
 	}
 }
+
+/* ~~ Code Review ~~
+    Learn what contexts are. Make procedures to do the arm PID and call them in OI.java.
+
+ */
