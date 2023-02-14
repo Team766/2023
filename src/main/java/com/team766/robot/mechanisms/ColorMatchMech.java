@@ -75,7 +75,7 @@ public class ColorMatchMech extends Mechanism {
 		} else {
 			piece = "Other";
 		}
-		log("piece: "+piece);
+		log("piece: "+piece+" port: "+port);
 		//log("detected color: "+detectedColor);
 		//log("color: "+match.color);
 		//log("confidence: "+match.confidence);
