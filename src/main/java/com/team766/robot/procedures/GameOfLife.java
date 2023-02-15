@@ -21,7 +21,8 @@ public class GameOfLife extends Procedure {
 	public enum gameModes {
 		RANDOM,
 		GLIDER,
-		HIVENUDGER
+		HIVENUDGER,
+		BEAR
 	}
 
 	public void newMode(gameModes gameMode) {
@@ -102,6 +103,87 @@ public class GameOfLife extends Procedure {
 				gridCheck[13][4] = true;
 				gridCheck[13][10] = true;
 				gridCheck[13][13] = true;
+			break;
+
+			case BEAR:
+				borderless = true;
+				grid = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
+				gridCheck = new boolean[h + (borderless? 0 : 1)][w + (borderless? 0 : 1)];
+				gridCheck[0][2] = true;
+				gridCheck[0][3] = true;
+				gridCheck[0][4] = true;
+				
+				gridCheck[1][1] = true;
+				gridCheck[1][5] = true;
+				gridCheck[1][6] = true;
+				gridCheck[1][7] = true;
+				gridCheck[1][8] = true;
+				gridCheck[1][9] = true;
+
+				gridCheck[2][1] = true;
+				gridCheck[2][4] = true;
+				gridCheck[2][10] = true;
+				gridCheck[2][11] = true;
+				gridCheck[2][12] = true;
+
+				gridCheck[3][1] = true;
+				gridCheck[3][3] = true;
+				gridCheck[3][13] = true;
+
+				gridCheck[4][2] = true;
+				gridCheck[4][6] = true;
+				gridCheck[4][14] = true;
+
+				gridCheck[5][2] = true;
+				gridCheck[5][6] = true;
+				gridCheck[5][7] = true;
+				gridCheck[5][14] = true;
+
+				gridCheck[6][2] = true;
+				gridCheck[6][15] = true;
+				
+				gridCheck[7][3] = true;
+				gridCheck[7][10] = true;
+				gridCheck[7][11] = true;
+				gridCheck[7][15] = true;
+
+				gridCheck[8][3] = true;
+				gridCheck[8][10] = true;
+				gridCheck[8][11] = true;
+				gridCheck[8][15] = true;
+
+				gridCheck[9][2] = true;
+				gridCheck[9][15] = true;
+
+				gridCheck[10][2] = true;
+				gridCheck[10][6] = true;
+				gridCheck[10][7] = true;
+				gridCheck[10][14] = true;
+
+				gridCheck[11][2] = true;
+				gridCheck[11][6] = true;
+				gridCheck[11][14] = true;
+
+				gridCheck[12][1] = true;
+				gridCheck[12][3] = true;
+				gridCheck[12][13] = true;
+
+				gridCheck[13][1] = true;
+				gridCheck[13][4] = true;
+				gridCheck[13][10] = true;
+				gridCheck[13][11] = true;
+				gridCheck[13][12] = true;
+
+				gridCheck[14][1] = true;
+				gridCheck[14][5] = true;
+				gridCheck[14][6] = true;
+				gridCheck[14][7] = true;
+				gridCheck[14][8] = true;
+				gridCheck[14][9] = true;
+
+				gridCheck[15][2] = true;
+				gridCheck[15][3] = true;
+				gridCheck[15][4] = true;
 			break;
 		}
 		grid = copy(gridCheck);
