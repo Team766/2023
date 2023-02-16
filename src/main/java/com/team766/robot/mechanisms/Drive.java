@@ -20,7 +20,7 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.team766.odometry.Odometry;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
-
+import com.team766.hal.MotorControllerCommandFailedException;
 
 public class Drive extends Mechanism {
 
@@ -78,13 +78,13 @@ public class Drive extends Mechanism {
 		config.sensorDirection = true;
 
 		// initialize the encoders
-		e_FrontRight = new CANCoder(1);
+		e_FrontRight = new CANCoder(1, "Swerve");
 		// e_FrontRight.configAllSettings(config, 250);
-		e_FrontLeft = new CANCoder(2);
+		e_FrontLeft = new CANCoder(2, "Swerve");
 		// e_FrontLeft.configAllSettings(config, 250);
-		e_BackRight = new CANCoder(4);
+		e_BackRight = new CANCoder(4, "Swerve");
 		// e_BackRight.configAllSettings(config, 250);
-		e_BackLeft = new CANCoder(3);
+		e_BackLeft = new CANCoder(3, "Swerve");
 		// e_BackLeft.configAllSettings(config, 250);
 
 
@@ -277,14 +277,10 @@ public class Drive extends Mechanism {
 		m_DriveBackRight.set(power);
 		m_DriveBackLeft.set(power);
 		// Steer code
-		setFrontRightAngle(newAngle(angle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerFrontRight.getSensorPosition()));
-		setFrontLeftAngle(newAngle(angle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerFrontLeft.getSensorPosition()));
-		setBackRightAngle(newAngle(angle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerBackRight.getSensorPosition()));
-		setBackLeftAngle(newAngle(angle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerBackLeft.getSensorPosition()));
+		setFrontRightAngle(newAngle(angle, getCurrentAngle(m_SteerFrontRight)));
+		setFrontLeftAngle(newAngle(angle, getCurrentAngle(m_SteerFrontLeft)));
+		setBackRightAngle(newAngle(angle, getCurrentAngle(m_SteerBackRight)));
+		setBackLeftAngle(newAngle(angle, getCurrentAngle(m_SteerBackLeft)));
 	}
 
 	/**
@@ -342,19 +338,19 @@ public class Drive extends Mechanism {
 			flPower = NewMag(power, angle, JoystickTheta, 45);
 			brPower = NewMag(power, angle, JoystickTheta, -135);
 			blPower = NewMag(power, angle, JoystickTheta, -45);
-			frAngle = NewAng(power, angle, JoystickTheta, 135);
-			flAngle = NewAng(power, angle, JoystickTheta, 45);
-			brAngle = NewAng(power, angle, JoystickTheta, -135);
-			blAngle = NewAng(power, angle, JoystickTheta, -45);
+			frAngle = NewAng(power, angle, JoystickTheta, 45);
+			flAngle = NewAng(power, angle, JoystickTheta, -45);
+			brAngle = NewAng(power, angle, JoystickTheta, 135);
+			blAngle = NewAng(power, angle, JoystickTheta, -135);
 		} else {
 			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
 			flPower = NewMag(power, angle, Math.abs(JoystickTheta), -135);
 			brPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
 			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
-			frAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
-			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), -135);
-			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), 45);
-			blAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
+			frAngle = NewAng(power, angle, Math.abs(JoystickTheta), -135);
+			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
+			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
+			blAngle = NewAng(power, angle, Math.abs(JoystickTheta), 45);
 		}
 		if (Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower)) > 1) {
 			frPower /= Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower));
@@ -367,14 +363,10 @@ public class Drive extends Mechanism {
 		m_DriveBackRight.set(brPower);
 		m_DriveBackLeft.set(blPower);
 		// Steer code
-		setFrontRightAngle(newAngle(frAngle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerFrontRight.getSensorPosition()));
-		setFrontLeftAngle(newAngle(flAngle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerFrontLeft.getSensorPosition()));
-		setBackRightAngle(newAngle(brAngle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerBackRight.getSensorPosition()));
-		setBackLeftAngle(newAngle(blAngle, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-				* m_SteerBackLeft.getSensorPosition()));
+		setFrontRightAngle(newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
+		setFrontLeftAngle(newAngle(flAngle, getCurrentAngle(m_SteerFrontLeft)));
+		setBackRightAngle(newAngle(brAngle, getCurrentAngle(m_SteerBackRight)));
+		setBackLeftAngle(newAngle(blAngle, getCurrentAngle(m_SteerBackLeft)));
 	}
 
 	/**
@@ -394,33 +386,29 @@ public class Drive extends Mechanism {
 	public void turning(double Joystick) {
 		checkContextOwnership();
 		if (Joystick > 0) {
-			setFrontRightAngle(newAngle(135, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerFrontRight.getSensorPosition()));
-			setFrontLeftAngle(newAngle(45, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerFrontLeft.getSensorPosition()));
-			setBackRightAngle(newAngle(-135, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerBackRight.getSensorPosition()));
-			setBackLeftAngle(newAngle(-45, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerBackLeft.getSensorPosition()));
+			setFrontRightAngle(newAngle(135, getCurrentAngle(m_SteerFrontRight)));
+			setFrontLeftAngle(newAngle(45, getCurrentAngle(m_SteerFrontLeft)));
+			setBackRightAngle(newAngle(-135, getCurrentAngle(m_SteerBackRight)));
+			setBackLeftAngle(newAngle(-45, getCurrentAngle(m_SteerBackLeft)));
 			m_DriveFrontRight.set(Math.abs(Joystick));
 			m_DriveFrontLeft.set(Math.abs(Joystick));
 			m_DriveBackRight.set(Math.abs(Joystick));
 			m_DriveBackLeft.set(Math.abs(Joystick));
 		}
 		if (Joystick < 0) {
-			setFrontRightAngle(newAngle(-45, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerFrontRight.getSensorPosition()));
-			setFrontLeftAngle(newAngle(-135, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerFrontLeft.getSensorPosition()));
-			setBackRightAngle(newAngle(45, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerBackRight.getSensorPosition()));
-			setBackLeftAngle(newAngle(135, Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1)
-					* m_SteerBackLeft.getSensorPosition()));
+			setFrontRightAngle(newAngle(-45, getCurrentAngle(m_SteerFrontRight)));
+			setFrontLeftAngle(newAngle(-135, getCurrentAngle(m_SteerFrontLeft)));
+			setBackRightAngle(newAngle(45, getCurrentAngle(m_SteerBackRight)));
+			setBackLeftAngle(newAngle(135, getCurrentAngle(m_SteerBackLeft)));
 			m_DriveFrontRight.set(Math.abs(Joystick));
 			m_DriveFrontLeft.set(Math.abs(Joystick));
 			m_DriveBackRight.set(Math.abs(Joystick));
 			m_DriveBackLeft.set(Math.abs(Joystick));
 		}
+	}
+
+	private double getCurrentAngle(MotorController motor) {
+		return Math.pow((2048.0 / 360.0 * (150.0 / 7.0)), -1) * motor.getSensorPosition();
 	}
 
 	/**
@@ -431,7 +419,7 @@ public class Drive extends Mechanism {
 				+ " Back Right Encoder: " + getBackRight() + " Back Left Encoder: "
 				+ getBackLeft());
 	}
-	
+
 	/**
 	 * This method is used to set the front right encoder to the true position
 	 */
@@ -468,7 +456,8 @@ public class Drive extends Mechanism {
 	// To control each steering individually with a PID
 
 	/**
-	 * This method is used to set the front right steering motor to a certain angle. This uses a PID controller.
+	 * This method is used to set the front right steering motor to a certain angle. This uses a PID
+	 * controller.
 	 * 
 	 * @param angle The angle to set the front right wheel to
 	 */
@@ -479,7 +468,8 @@ public class Drive extends Mechanism {
 	}
 
 	/**
-	 * This method is used to set the front left steering motor to a certain angle. This uses a PID controller.
+	 * This method is used to set the front left steering motor to a certain angle. This uses a PID
+	 * controller.
 	 * 
 	 * @param angle The angle to set the front left wheel to
 	 */
@@ -490,7 +480,8 @@ public class Drive extends Mechanism {
 	}
 
 	/**
-	 * This method is used to set the back right steering motor to a certain angle. This uses a PID controller.
+	 * This method is used to set the back right steering motor to a certain angle. This uses a PID
+	 * controller.
 	 * 
 	 * @param angle The angle to set the back right wheel to
 	 */
@@ -501,7 +492,8 @@ public class Drive extends Mechanism {
 	}
 
 	/**
-	 * This method is used to set the back left steering motor to a certain angle. This uses a PID controller.
+	 * This method is used to set the back left steering motor to a certain angle. This uses a PID
+	 * controller.
 	 * 
 	 * @param angle The angle to set the back left wheel to
 	 */
@@ -568,10 +560,18 @@ public class Drive extends Mechanism {
 		return currentPosition;
 	}
 
+	public void setCross() {
+		checkContextOwnership();
+		setBackLeftAngle(newAngle(-45, getCurrentAngle(m_SteerBackLeft)));
+		setFrontLeftAngle(newAngle(45, getCurrentAngle(m_SteerFrontLeft)));
+		setFrontRightAngle(newAngle(135, getCurrentAngle(m_SteerFrontRight)));
+		setBackRightAngle(newAngle(-135, getCurrentAngle(m_SteerBackRight)));
+	}
+
 	public void resetCurrentPosition() {
 		swerveOdometry.setCurrentPosition(new Point(0, 0));
 	}
-	
+
 	/**
 	 * This method is used to reset the drive encoders.
 	 */
