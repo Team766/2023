@@ -572,14 +572,6 @@ public class Drive extends Mechanism {
 		swerveOdometry.setCurrentPosition(new Point(0, 0));
 	}
 	
-	public void setCross() {
-		checkContextOwnership();
-		setBackLeftAngle(newAngle(-45, getCurrentAngle(m_SteerBackLeft)));
-		setFrontLeftAngle(newAngle(45, getCurrentAngle(m_SteerFrontLeft)));
-		setFrontRightAngle(newAngle(135, getCurrentAngle(m_SteerFrontRight)));
-		setBackRightAngle(newAngle(-135, getCurrentAngle(m_SteerBackRight)));
-	}
-	
 	/**
 	 * This method is used to reset the drive encoders.
 	 */
