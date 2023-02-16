@@ -66,6 +66,10 @@ public class OI extends Procedure {
 			if (joystick0.getButtonPressed(3)) {
 				gol.reset(gameModes.HIVENUDGER);
 			}
+
+			if (joystick0.getButtonPressed(4)) {
+				gol.reset(gameModes.BEAR);
+			}
 			
 			switch (joystick0.getPOV()) {
 				case 0:
