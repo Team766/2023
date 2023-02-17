@@ -35,57 +35,36 @@ public class OI extends Procedure {
 			
 
 			RobotProvider.instance.refreshDriverStationData();
-
+			// Testing PID for the second arm and making it go to 7 eu
 			if(joystick0.getButton(14)){
 				Robot.arms.pidForArm2(7);
 			}
+			// Getting the encoder units for the second arm
 			if(joystick0.getButton(15)){
 				log(" h " + Robot.arms.findEU());
 			}
-			log(""+joystick0.getButton(8));
+			// Getting the encoder units for the first arm
 			if(joystick0.getButton(8)){
 				log("" + Robot.arms.getEncoderDistance());
 			}
-			if(joystick0.getButton(9)){
-				//Robot.arms.setPosition(6600);
-			}
-					Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
-					//Robot.arms.setA2(joystick1.getAxis(1));
+			// Manually moving the first arm
+			Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
 			
-			// Add driver controls here - make sure to take/release ownership
-			// of mechanisms when appropriate.
-			//ignore nightmarish variable names
-			//When you pronounce hiiiii, you must alot 1 second for each i.
-			log("button: "+joystick0.getButton(8));
+			//Manually moving the second arm, commented out rn because pid dosen't work with it
+			//Robot.arms.setA2(joystick1.getAxis(1));
+			
+			// Using the antigravity on the first arm
 			if(joystick0.getButton(2)){
 				Robot.arms.setFf();
 				log(" " + Robot.arms.getEncoderDistance());
 			}
-			boolean hiiiii = joystick0.getButton(8);
-				while(hiiiii) {
-					log("hi");
-					log("button in loop: "+joystick0.getButton(8));
-					if (Robot.arms.getEncoderDistance() > -100 && Robot.arms.getEncoderDistance() < 100) {
-						Robot.arms.setPulleyPower(0);
-					} else if (Robot.arms.getEncoderDistance() < -100) {
-						Robot.arms.setPulleyPower(0.12);
-					} else {
-						Robot.arms.setPulleyPower(-0.1);
-					}
-					hiiiii=false;
-				}
-				boolean hiiiiiiiiii = joystick0.getButton(16);
-				while(hiiiii) {
-					log("hiiiiiiiiiiii");
-					log("button in loop: "+joystick0.getButton(16));
-					Robot.arms.setPulleyPower(-Robot.arms.getEncoderDistance() * 0.000606);
-					hiiiiiiiiii=false;
-				}
-
+			
+			//Reseting the encoder if we are not using absolutes
 			if(joystick0.getButton(1)){
 				Robot.arms.resetEncoder();
 			}
-
+			
+			// Using pid on the first arm to set the arm to different angles
 			if (joystick0.getButton(5)) {
 				Robot.arms.pidtest(Robot.arms.degreesToEU(80));
 			} else if(joystick0.getButton(6)){
@@ -105,8 +84,3 @@ public class OI extends Procedure {
 		}
 	}
 }
-
-/* ~~ Code Review ~~
-    Learn what contexts are. Make procedures to do the arm PID and call them in OI.java.
-
- */
