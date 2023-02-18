@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public class ColorMatchMech extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();
-	private final int kMultiplexerAddress = 0x70;
 	//private final I2C.Port i2cPort = I2C.Port.kOnboard;
 	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 	//sensor checks which of these colors its reading is closest to
@@ -25,17 +24,11 @@ public class ColorMatchMech extends Mechanism {
 	private final Color white = new Color(1.0,1.0,1.0);
 	private final Color boxTube1 = new Color(0.359,0.460,0.181);
 	private final Color offWhite = new Color(0.381,0.463,0.157);
-
-	// The multiplexer I2C is static because it needs to be used for ALL of the multiplexer sensors,
-  	// and so by making it static all sensors can access it.
- 	private static I2C multiplexer;
- 	// The actual sensor. All of the methods call this sensor to get the data.
- 	private ColorSensorV3 sensor;
-  	// What port on the multiplexer the color sensor is plugged into.
-  	private final int port;
+	private ColorSensorV3 sensor;
+	private int port = 0;
 	
 	public ColorMatchMech(){
-		
+
 	}
 
 	//adds possible colors

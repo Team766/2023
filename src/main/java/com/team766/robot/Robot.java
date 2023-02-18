@@ -5,14 +5,12 @@ import edu.wpi.first.wpilibj.I2C;
 
 public class Robot {
 	// Declare mechanisms here
-	public static ColorSensorMech cSensor;
-	public static ColorMatchMech cMatcherA;
-	public static ColorMatchMech cMatcherB;
+	public static MultiplexedColorSensorV3 topColorSensor;
+	public static MultiplexedColorSensorV3 bottomColorSensor;
 
 	public static void robotInit() {
 		// Initialize mechanisms here
-		cSensor = new ColorSensorMech();
-		cMatcherA = new ColorMatchMech();
-		cMatcherB = new ColorMatchMech();
+		topColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 1);
+		bottomColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 7);
 	}
 }
