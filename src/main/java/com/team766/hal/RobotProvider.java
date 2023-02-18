@@ -113,6 +113,7 @@ public abstract class RobotProvider {
 			}
 			if (invertedConfig.valueOr(false)) {
 				motor.setInverted(true);
+				Logger.get(Category.CONFIGURATION).logData(Severity.DEBUG, "Motor %s is inverted", configName);
 			}
 			if (sensorInvertedConfig.valueOr(false)) {
 				motor.setSensorInverted(true);
