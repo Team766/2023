@@ -35,9 +35,12 @@ public class OI extends Procedure {
 			
 
 			RobotProvider.instance.refreshDriverStationData();
+
+			Robot.arms.setA2(joystick1.getAxis(1));
+
 			// Testing PID for the second arm and making it go to 7 eu
 			if(joystick0.getButton(14)){
-				Robot.arms.pidForArm2(7);
+				Robot.arms.pidForArm2(15);
 			}
 			// Getting the encoder units for the second arm
 			if(joystick0.getButton(15)){
@@ -51,7 +54,7 @@ public class OI extends Procedure {
 			Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
 			
 			//Manually moving the second arm, commented out rn because pid dosen't work with it
-			//Robot.arms.setA2(joystick1.getAxis(1));
+			
 			
 			// Using the antigravity on the first arm
 			if(joystick0.getButton(2)){
