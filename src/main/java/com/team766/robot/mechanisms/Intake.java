@@ -13,20 +13,29 @@ public class Intake extends Mechanism {
 
 	//for now this is just a copy of the 2020 intake so config names are most likely wrong
 	public Intake() {
-		m_frontIntakeWheel = RobotProvider.instance.getMotor("Intake.frontWheel");
-		m_middleIntakeWheel = RobotProvider.instance.getMotor("Intake.topWheel");
+		m_frontIntakeWheel = RobotProvider.instance.getMotor("intake.frontWheel");
+		m_middleIntakeWheel = RobotProvider.instance.getMotor("intake.topWheel");
 		m_intakeArm1 = RobotProvider.instance.getSolenoid("Intake.intakeArm1");
 		m_intakeArm2 = RobotProvider.instance.getSolenoid("Intake.intakeArm2");
 		m_frontIntakeWheel.setInverted(true);
 	}
 
-	public void startIntake() {
+	public void IntakeIn() {
 		checkContextOwnership();
 
 		m_intakeArm1.set(true);
 		m_intakeArm2.set(false);
 		m_frontIntakeWheel.set(1.0);
 		m_middleIntakeWheel.set(1.0);
+	}
+
+	public void IntakeOut(){
+		checkContextOwnership();
+
+		m_intakeArm1.set(true);
+		m_intakeArm2.set(false);
+		m_frontIntakeWheel.set(-1.0);
+		m_middleIntakeWheel.set(-1.0);
 	}
 
 	public void stopIntake() {
