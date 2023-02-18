@@ -1,6 +1,9 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+
+import java.io.IOException;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -26,6 +29,11 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.startAsync(new DisplayImage("cone.png", true));
+		int imageDisplayed = 0;
+
+		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png"};
+		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -33,6 +41,11 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			if (joystick0.getButtonPressed(1)) {
+				imageDisplayed = (++imageDisplayed) % imageList.length;
+
+				context.startAsync(new DisplayImage(imageList[imageDisplayed], true));
+			}
 		}
 	}
 }
