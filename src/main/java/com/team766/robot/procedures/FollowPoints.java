@@ -42,6 +42,8 @@ public class FollowPoints extends Procedure {
 		public Step(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
 			this.wayPoint = wayPoint;
 			this.procedure = procedure;
+			this.criticalPoint = criticalPoint;
+			this.stopRobot = stopRobot;
 		}
 	}
 
@@ -103,6 +105,7 @@ public class FollowPoints extends Procedure {
 	 */
 	private void addStep(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
 		steps.add(new Step(wayPoint, criticalPoint, procedure, stopRobot));
+		log(criticalPoint? "true" : "false");
 	}
 
 	/**
@@ -110,7 +113,9 @@ public class FollowPoints extends Procedure {
 	 */
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
-		addStep(new PointDir(4,0, 90), true, null /* don't execute procedure */, false);
+		addStep(new PointDir(4,0, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(4,4, 0), false, new DoNothing(), false);
+		addStep(new PointDir(0,4, 90), false, null /* don't execute procedure */, false);
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
 		addWaypoints();
 	}
@@ -313,7 +318,7 @@ public class FollowPoints extends Procedure {
 	 */
 	private boolean passedPoint(Point P) {
 		log(currentPos + " " + P + " " + currentPos.distance(P) + " " + ((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2) ? " true" : " false"));
-		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2);
+		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.4);
 	}
 
 	/**
