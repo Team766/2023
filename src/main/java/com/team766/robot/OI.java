@@ -40,7 +40,9 @@ public class OI extends Procedure {
 
 			// Testing PID for the second arm and making it go to 7 eu
 			if(joystick0.getButton(14)){
-				Robot.arms.pidForArm2(15);
+				Robot.arms.pidForArm2(-41.42);
+			} else{
+				
 			}
 			// Getting the encoder units for the second arm
 			if(joystick0.getButton(15)){

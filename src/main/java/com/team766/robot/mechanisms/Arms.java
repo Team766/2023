@@ -4,6 +4,7 @@ import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
@@ -73,11 +74,14 @@ public class Arms extends Mechanism {
     public double findEU(){
         return secondJoint.getSensorPosition();
     }
-	// antigrav arm 1
+	// antigrav
     public void setFf(){ // Use Encoder Units to Radians in the sine
         firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+        secondJoint.set((-Math.sin((Math.PI / 88) * findEU())) * .011);
         log("ff: " + (-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .021);
     }
+
+    
 
 	//changing degrees to encoder units for the non absolute encoder
     public double degreesToEU(double angle) {
@@ -91,7 +95,6 @@ public class Arms extends Mechanism {
 }
 
 /* ~~ Code Review ~~
-    Make Anti-Grav function better by putting an EU to radians converter inside the sine function
     Use Voltage Control Mode when setting power (refer to CANSparkMaxMotorController.java)
 
     Maybe use Nicholas's formula for degrees to EU
