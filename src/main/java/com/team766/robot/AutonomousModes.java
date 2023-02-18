@@ -12,7 +12,6 @@ public class AutonomousModes {
 		// define one or more different autonomous modes with it like this:
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
-
-		new AutonomousMode("DoNothing", () -> new DoNothing()),
+		new AutonomousMode("SolenoidTest", () -> new SolenoidTest()),
 	};
 }
