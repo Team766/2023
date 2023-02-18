@@ -3,19 +3,16 @@ package com.team766.robot.mechanisms;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
-import com.team766.framework.Mechanism;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import com.team766.framework.Mechanism;
 
-
-//identifies game pieces by color & checks if cones are held right
-/*NOTE: not fully confident on multiplexer stuff so I need to test it*/
-
-public class ColorMatchMech extends Mechanism {
+//NOTE: this class is just for altering ColorSensorMech without actually changing the file so i can mess with stuff
+public class SensorDupe extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();
-	private final int kMultiplexerAddress = 0x70;
+	
 	//private final I2C.Port i2cPort = I2C.Port.kOnboard;
-	private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+	//private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 	//sensor checks which of these colors its reading is closest to
 	private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   	private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
@@ -25,18 +22,15 @@ public class ColorMatchMech extends Mechanism {
 	private final Color white = new Color(1.0,1.0,1.0);
 	private final Color boxTube1 = new Color(0.359,0.460,0.181);
 	private final Color offWhite = new Color(0.381,0.463,0.157);
-
-	// The multiplexer I2C is static because it needs to be used for ALL of the multiplexer sensors,
-  	// and so by making it static all sensors can access it.
- 	private static I2C multiplexer;
+ 	
  	// The actual sensor. All of the methods call this sensor to get the data.
  	private ColorSensorV3 sensor;
-  	// What port on the multiplexer the color sensor is plugged into.
-  	private final int port;
+  	
 	
-	public ColorMatchMech(){
-		
+	public SensorDupe(int port){
+		sensor = new ColorSensorV3(I2C.Port.kOnboard);
 	}
+
 
 	//adds possible colors
 	
@@ -53,7 +47,7 @@ public class ColorMatchMech extends Mechanism {
 	}
 	//identifies held object by color
 	public String checkColor(){
-		
+		//setChannel();
 		Color detectedColor = sensor.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -65,7 +59,7 @@ public class ColorMatchMech extends Mechanism {
 		} else {
 			piece = "Other";
 		}
-		log("piece: "+piece+" port: "+port);
+		//log("piece: "+piece+" port: "+port);
 		//log("detected color: "+detectedColor);
 		//log("color: "+match.color);
 		//log("confidence: "+match.confidence);
@@ -73,7 +67,7 @@ public class ColorMatchMech extends Mechanism {
 	}
 
 	public String senseProx(){
-		
+		//setChannel();
 		int prox = sensor.getProximity();
 		String proxResult;
 		if(prox<200){
@@ -86,5 +80,4 @@ public class ColorMatchMech extends Mechanism {
 		return proxResult;
 	}
 
-	
 }

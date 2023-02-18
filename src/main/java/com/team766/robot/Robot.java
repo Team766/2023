@@ -12,7 +12,7 @@ public class Robot {
 	public static void robotInit() {
 		// Initialize mechanisms here
 		cSensor = new ColorSensorMech();
-		cMatcherA = new ColorMatchMech(I2C.Port.kOnboard, 3);
-		cMatcherB = new ColorMatchMech(I2C.Port.kOnboard, 7);
+		cMatcherA = new ColorMatchMech();
+		cMatcherB = new ColorMatchMech();
 	}
 }
