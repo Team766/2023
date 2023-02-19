@@ -23,6 +23,13 @@
       "request": "launch",
       "mainClass": "com.team766.hal.simulator.RobotMain",
       "args": ["-vr_connector"]
+    },
+    {
+      "type": "java",
+      "name": "Start Maroon simulation",
+      "request": "launch",
+      "mainClass": "com.team766.hal.simulator.RobotMain",
+      "args": ["-maroon_sim"]
     }
   ]
 }

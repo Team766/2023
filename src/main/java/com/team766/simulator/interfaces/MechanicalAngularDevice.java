@@ -23,5 +23,5 @@ public interface MechanicalAngularDevice {
 		public final double torque;
 	}
 	
-	public Output step(Input input);
+	public Output step(Input input, double dt);
 }

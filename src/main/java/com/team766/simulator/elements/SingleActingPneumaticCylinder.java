@@ -29,7 +29,7 @@ public class SingleActingPneumaticCylinder implements PneumaticDevice, Mechanica
 	}
 	
 	@Override
-	public PneumaticDevice.Output step(PneumaticDevice.Input input) {
+	public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
 		pneumaticState = input;
 		PneumaticDevice.Output output;
 		double deviceVolume = isExtended ? boreArea() * stroke : 0;
@@ -43,7 +43,7 @@ public class SingleActingPneumaticCylinder implements PneumaticDevice, Mechanica
 	}
 
 	@Override
-	public MechanicalDevice.Output step(MechanicalDevice.Input input) {
+	public MechanicalDevice.Output step(MechanicalDevice.Input input, double dt) {
 		Vector3D direction = isExtended ? FORWARD : FORWARD.negate();
 		double force = isExtended ? boreArea() * pneumaticState.pressure : returnSpringForce;
 		return new MechanicalDevice.Output(direction.scalarMultiply(force));

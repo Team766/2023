@@ -2,7 +2,7 @@ plugins {
     id "java"
     id 'java-library'
     id 'maven-publish'
-    id "edu.wpi.first.GradleRIO" version "2023.1.1"
+    id "edu.wpi.first.GradleRIO" version "2023.3.2"
     id 'com.google.protobuf' version '0.8.19'
 }
 
@@ -40,6 +40,31 @@ deploy {
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                    // This supposedly makes Java save a heap dump on OutOfMemoryError, but
+                    // unfortunately it doesn't seem to work when the error is raised due to a
+                    // native allocation. https://stackoverflow.com/q/27166267
+                    jvmArgs.add("-XX:+HeapDumpOnOutOfMemoryError")
+                    jvmArgs.add("-XX:HeapDumpPath=/home/lvuser")
+                    // This limits heap memory as a percentage (0-100) of physical memory size.
+                    // `MinRAMPercentage` is a misleading name, which suggests that it is used to
+                    // configure minimum heap size. Rather, the `-XX:MinRAMPercentage` JVM argument
+                    // will be used to compute the maximum Java heap size only if the overall memory
+                    // size in the physical machine is less than 250MB (approximately). Say suppose
+                    // you are configuring `-XX:MinRAMPercentage=50` and overall physical memory is
+                    // 100MB; then your java application's max heap size will be set to 50MB
+                    // (i.e., 50% of 100MB). `-XX:MaxRAMPercentage` has the same effect and applies
+                    // only when physical memory is larger than 250MB.
+                    // Effectively, this limit should apply to RoboRIO V1 (~240MB of RAM available),
+                    // but not RoboRIO V2 (~500MB of RAM available).
+                    // Without this, we get errors like
+                    //    OpenJDK Client VM warning: INFO: os::commit_memory(0xb3800000, 1048576, 0)
+                    //    failed; error='Not enough space' (errno=12)
+                    //    # There is insufficient memory for the Java Runtime Environment to continue.
+                    //    # Native memory allocation (mmap) failed to map 1048576 bytes for committing
+                    //    reserved memory.
+                    jvmArgs.add("-XX:MinRAMPercentage=15")
+                    // This makes the JVM print the heap memory size on startup.
+                    jvmArgs.add("-XshowSettings:vm")
                 }
 
                 // Static files artifact
