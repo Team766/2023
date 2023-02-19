@@ -35,6 +35,10 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			context.takeOwnership(Robot.topColorSensor);
 			context.takeOwnership(Robot.bottomColorSensor);
+			Robot.topColorSensor.getPiece();
+			Robot.bottomColorSensor.getPiece();
+			Robot.topColorSensor.getProximity();
+			Robot.bottomColorSensor.getProximity();
 			
 		}
 	}

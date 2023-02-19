@@ -22,7 +22,8 @@ public class MultiplexedColorSensorV3 extends Mechanism{
   // and so by making it static all sensors can access it.
   private static I2C multiplexer;
   // The actual sensor. All of the methods call this sensor to get the data.
-  private ColorSensorV3 sensor;
+  private ColorSensorV3 sensor1;
+  private ColorSensorV3 sensor2;
   // What port on the multiplexer the color sensor is plugged into.
   private final int port;
 
@@ -32,8 +33,12 @@ public class MultiplexedColorSensorV3 extends Mechanism{
     }
     this.port = port;
     setChannel();
-    sensor = new ColorSensorV3(i2cPort);
-    makeColorMatches();
+    if(port == 1){
+      sensor1 = new ColorSensorV3(i2cPort);
+    } else {
+      sensor2 = new ColorSensorV3(i2cPort);
+    }
+    
   }
 
   /**
@@ -51,7 +56,10 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 
   public String getPiece() {
     setChannel();
-    Color detectedColor = sensor.getColor();
+    //multiplexer.write(0x70, 1 << portNum);
+    makeColorMatches();
+    
+    Color detectedColor = sensor1.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -68,14 +76,15 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 
   public String getProximity() {
     setChannel();
-    int prox = sensor.getProximity();
+    //multiplexer.write(0x70, 1 << portNum);
+    int prox = sensor1.getProximity();
 		String proxResult;
 		if(prox<200){
 			proxResult = "object is out of range";
-			log("object is out of range");
+			log("object is out of range "+port);
 		} else {
 			proxResult = "sensing object :)";
-			log("sensing object :)");
+			log("sensing object :) "+port);
 		}
 		return proxResult;
   }
