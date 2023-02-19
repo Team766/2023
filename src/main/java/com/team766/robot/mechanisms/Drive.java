@@ -154,6 +154,31 @@ public class Drive extends Mechanism {
 	}
 
 	/**
+	 * Returns whether two angles are within 90 degrees of each other, used to see if the wheels
+	 * should move backwards or not
+	 * 
+	 * @param angle1 The first angle
+	 * @param angle2 The second angle
+	 * @return If they are within 90 degrees of each other
+	 */
+	public boolean withinHalfACircle(double angle1, double angle2) {
+		angle1 = mod(angle1, 360);
+		angle2 = mod(angle2, 360);
+		if (Math.abs(angle2 - angle1) > Math.abs(angle2 + 360 - angle1)) {
+			angle2 += 360;
+		}
+		if (Math.abs(angle2 - angle1) > Math.abs(angle2 - 360 - angle1)) {
+			angle2 -= 360;
+		}
+		return Math.abs(angle2 - angle1) <= 90;
+	}
+
+	// Returns mod(d1, d2), to use to circumvent java's weird % function
+	private static double mod(double d1, double d2) {
+		return d1 % d2 + (d1 < 0 ? d2 : 0);
+	}
+
+	/**
 	 * Rounds a number based on its value and places
 	 * 
 	 * @param value The number to be rounded
@@ -271,16 +296,38 @@ public class Drive extends Mechanism {
 		double angle = fieldAngle(getAngle(JoystickX, JoystickY), gyroValue);
 		log("Given angle: " + getAngle(JoystickX, JoystickY) + " || Gyro: " + gyroValue
 				+ " || New angle: " + angle);
-		// Temporary Drive code, kinda sucks
-		m_DriveFrontRight.set(power);
-		m_DriveFrontLeft.set(power);
-		m_DriveBackRight.set(power);
-		m_DriveBackLeft.set(power);
-		// Steer code
-		setFrontRightAngle(newAngle(angle, getCurrentAngle(m_SteerFrontRight)));
-		setFrontLeftAngle(newAngle(angle, getCurrentAngle(m_SteerFrontLeft)));
-		setBackRightAngle(newAngle(angle, getCurrentAngle(m_SteerBackRight)));
-		setBackLeftAngle(newAngle(angle, getCurrentAngle(m_SteerBackLeft)));
+
+		if (withinHalfACircle(angle, getCurrentAngle(m_SteerFrontRight))) {
+			m_DriveFrontRight.set(power);
+			setFrontRightAngle(newAngle(angle, getCurrentAngle(m_SteerFrontRight)));
+		} else {
+			m_DriveFrontRight.set(-power);
+			setFrontRightAngle(newAngle(180 + angle, getCurrentAngle(m_SteerFrontRight)));
+		}
+
+		if (withinHalfACircle(angle, getCurrentAngle(m_SteerFrontLeft))) {
+			m_DriveFrontLeft.set(power);
+			setFrontLeftAngle(newAngle(angle, getCurrentAngle(m_SteerFrontLeft)));
+		} else {
+			m_DriveFrontLeft.set(-power);
+			setFrontLeftAngle(newAngle(180 + angle, getCurrentAngle(m_SteerFrontLeft)));
+		}
+
+		if (withinHalfACircle(angle, getCurrentAngle(m_SteerBackRight))) {
+			m_DriveBackRight.set(power);
+			setBackRightAngle(newAngle(angle, getCurrentAngle(m_SteerBackRight)));
+		} else {
+			m_DriveBackRight.set(-power);
+			setBackRightAngle(newAngle(180 + angle, getCurrentAngle(m_SteerBackRight)));
+		}
+
+		if (withinHalfACircle(angle, getCurrentAngle(m_SteerBackLeft))) {
+			m_DriveBackLeft.set(power);
+			setBackLeftAngle(newAngle(angle, getCurrentAngle(m_SteerBackLeft)));
+		} else {
+			m_DriveBackLeft.set(-power);
+			setBackLeftAngle(newAngle(180 + angle, getCurrentAngle(m_SteerBackLeft)));
+		}
 	}
 
 	/**
@@ -358,15 +405,42 @@ public class Drive extends Mechanism {
 			brPower /= Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower));
 			blPower /= Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower));
 		}
-		m_DriveFrontRight.set(frPower);
-		m_DriveFrontLeft.set(flPower);
-		m_DriveBackRight.set(brPower);
-		m_DriveBackLeft.set(blPower);
-		// Steer code
-		setFrontRightAngle(newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
-		setFrontLeftAngle(newAngle(flAngle, getCurrentAngle(m_SteerFrontLeft)));
-		setBackRightAngle(newAngle(brAngle, getCurrentAngle(m_SteerBackRight)));
-		setBackLeftAngle(newAngle(blAngle, getCurrentAngle(m_SteerBackLeft)));
+
+		if (withinHalfACircle(frAngle, getCurrentAngle(m_SteerFrontRight))) {
+			m_DriveFrontRight.set(frPower);
+			setFrontRightAngle(newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
+			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Positive "
+					+ newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
+		} else {
+			m_DriveFrontRight.set(-frPower);
+			setFrontRightAngle(newAngle(180 + frAngle, getCurrentAngle(m_SteerFrontRight)));
+			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Negative "
+					+ newAngle(-frAngle, getCurrentAngle(m_SteerFrontRight)));
+		}
+
+		if (withinHalfACircle(flAngle, getCurrentAngle(m_SteerFrontLeft))) {
+			m_DriveFrontLeft.set(flPower);
+			setFrontLeftAngle(newAngle(flAngle, getCurrentAngle(m_SteerFrontLeft)));
+		} else {
+			m_DriveFrontLeft.set(-flPower);
+			setFrontLeftAngle(newAngle(180 + flAngle, getCurrentAngle(m_SteerFrontLeft)));
+		}
+
+		if (withinHalfACircle(brAngle, getCurrentAngle(m_SteerBackRight))) {
+			m_DriveBackRight.set(brPower);
+			setBackRightAngle(newAngle(brAngle, getCurrentAngle(m_SteerBackRight)));
+		} else {
+			m_DriveBackRight.set(-brPower);
+			setBackRightAngle(newAngle(180 + brAngle, getCurrentAngle(m_SteerBackRight)));
+		}
+
+		if (withinHalfACircle(blAngle, getCurrentAngle(m_SteerBackLeft))) {
+			m_DriveBackLeft.set(blPower);
+			setBackLeftAngle(newAngle(blAngle, getCurrentAngle(m_SteerBackLeft)));
+		} else {
+			m_DriveBackLeft.set(-blPower);
+			setBackLeftAngle(newAngle(180 + blAngle, getCurrentAngle(m_SteerBackLeft)));
+		}
 	}
 
 	/**
@@ -586,7 +660,7 @@ public class Drive extends Mechanism {
 	@Override
 	public void run() {
 		currentPosition = swerveOdometry.run();
-		log(currentPosition.toString());
+		// log(currentPosition.toString());
 	}
 }
 
