@@ -107,13 +107,13 @@ public class Odometry extends LoggingBase {
 		double radius;
 		double deltaX;
 		double deltaY;
-		gyroPosition = Robot.gyro.getGyroYaw();
+		gyroPosition = -Robot.gyro.getGyroYaw();
 		Point slopeFactor = new Point(Math.sqrt(Math.cos(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroPitch()) * Math.cos(Robot.gyro.getGyroPitch()) + Math.sin(Robot.gyro.getGyroYaw()) * Math.sin(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroRoll()) * Math.cos(Robot.gyro.getGyroRoll())), Math.sqrt(Math.sin(Robot.gyro.getGyroYaw()) * Math.sin(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroPitch()) * Math.cos(Robot.gyro.getGyroPitch()) + Math.cos(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroYaw()) * Math.cos(Robot.gyro.getGyroRoll()) * Math.cos(Robot.gyro.getGyroRoll())));
 
 		for (int i = 0; i < motorCount; i++) {
 			//prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
 			prevPositions[i].set(currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
-			currPositions[i].setHeading(CANCoderList[i].getAbsolutePosition() + gyroPosition);
+			currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 
 			if (angleChange != 0) {

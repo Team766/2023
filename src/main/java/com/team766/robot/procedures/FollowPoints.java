@@ -79,7 +79,7 @@ public class FollowPoints extends Procedure {
 	 * @param file filename for the waypoints file to load and use.
 	 * @throws IOException Thrown if file is not found.
 	 */
-	public FollowPoints(String file) throws IOException {
+	public FollowPoints(String file) {
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -92,8 +92,9 @@ public class FollowPoints extends Procedure {
 		
 		JSONArray points = new JSONObject(str).getJSONArray("points");
 		for (int i = 0; i < points.length(); i++) {
-			addStep(new PointDir(points.getJSONObject(0).getJSONArray("coordinates").getDouble(0), points.getJSONObject(0).getJSONArray("coordinates").getDouble(1), points.getJSONObject(0).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(0).getBoolean("critical"), null, false);
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
 		}
+		addWaypoints();
 	}
 
 	/**
@@ -105,7 +106,6 @@ public class FollowPoints extends Procedure {
 	 */
 	private void addStep(PointDir wayPoint, boolean criticalPoint, Procedure procedure, boolean stopRobot) {
 		steps.add(new Step(wayPoint, criticalPoint, procedure, stopRobot));
-		log(criticalPoint? "true" : "false");
 	}
 
 	/**
@@ -113,10 +113,10 @@ public class FollowPoints extends Procedure {
 	 */
 	public FollowPoints() {
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
-		addStep(new PointDir(4,0, 90), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(4,4, 0), false, new DoNothing(), false);
-		addStep(new PointDir(0,4, 90), false, null /* don't execute procedure */, false);
-		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
+		addStep(new PointDir(2,0, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(2,2, 0), false, new DoNothing(), false);
+		addStep(new PointDir(0,2, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 0), true, new DoNothing(), false);
 		addWaypoints();
 	}
 
@@ -127,7 +127,6 @@ public class FollowPoints extends Procedure {
 		pointList = new PointDir[steps.size()];
 		proceduresAtPoints = new Procedure[steps.size()];
 		stopRobotList = new boolean[pointList.length];
-		//TODO: Fix all critical points being read as false
 		criticalPointList = new boolean[pointList.length];
 		for (int i = 0; i < steps.size(); i++) {
 			if (steps.get(i).wayPoint == null) continue;
@@ -142,7 +141,6 @@ public class FollowPoints extends Procedure {
 				proceduresAtPoints[i] = new DoNothing();
 			}
 			criticalPointList[i] = steps.get(i).criticalPoint;
-			log(Boolean.toString(steps.get(i).criticalPoint));
 
 			stopRobotList[i] = steps.get(i).stopRobot;
 		}
@@ -188,22 +186,21 @@ public class FollowPoints extends Procedure {
 		//This resetCurrentPosition() call makes FollowPoints() robot-oriented instead of field-oriented
 		//If we need to make this method field-oriented, just remove this line
 		Robot.drive.resetCurrentPosition();
-		Robot.gyro.resetGyro();
 		targetNum = 0;
 
 		for (int i = 0; i < pointList.length; i++) {
-			log(Boolean.toString(criticalPointList[i]));
+			log(pointList[i].toString());
 		}
 		if (pointList.length > 0) {
 			Point targetPoint = new Point(0.0, 0.0);
 			currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
-			while (targetNum != pointList.length - 1 ||  !passedPoint(pointList[pointList.length - 1])) {
+			while (targetNum < pointList.length - 1 ||  !passedPoint(pointList[pointList.length - 1])) {
 				if (followLimiter.next()) {
 					lastPos = currentPos.clone();
 					currentPos.set(Robot.drive.getCurrentPosition().getX(), Robot.drive.getCurrentPosition().getY(), Robot.drive.getCurrentPosition().getHeading());
 					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
 					//Otherwise, it uses the checkIntersection() method to follow the circle
-					if (criticalPointList[targetNum]? passedPoint(pointList[targetNum]) : checkIntersection(pointList)) {
+					if (criticalPointList[targetNum]? (targetNum < pointList.length - 1 && passedPoint(pointList[targetNum])) : checkIntersection(pointList)) {
 						if (proceduresAtPoints.length < targetNum) {
 							if (stopRobotList[targetNum]) {
 								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
@@ -212,7 +209,7 @@ public class FollowPoints extends Procedure {
 							}
 						}
 						targetNum++;
-						log("Going to Next Point!");
+						log("Going to Next Point! " + pointList[targetNum]);
 					}
 					targetPoint = selectTargetPoint(targetNum, pointList);
 					//double diff = currentPos.getAngleDifference(targetPoint);
@@ -221,9 +218,9 @@ public class FollowPoints extends Procedure {
 					Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
 					Robot.drive.swerveDrive(driveSettings);
-					log("Current Position: " + currentPos.toString());
-					log("Target Point: " + targetPoint.toString());
-					log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())).toString());
+					//log("Current Position: " + currentPos.toString());
+					//log("Target Point: " + targetPoint.toString());
+					//log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())).toString());
 
 					context.yield();
 				} else {
@@ -317,7 +314,8 @@ public class FollowPoints extends Procedure {
 	 * @return If the robot is within a certain distance of P, and the distance to P is increasing, returns true. Otherwise, returns false.
 	 */
 	private boolean passedPoint(Point P) {
-		log(currentPos + " " + P + " " + currentPos.distance(P) + " " + ((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2) ? " true" : " false"));
+		//log(currentPos + " " + P + " " + currentPos.distance(P) + " " + ((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.2) ? " true" : " false"));
+		//log(((currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.4)) ? "true " : "false " + targetNum);
 		return (currentPos.distance(P) > lastPos.distance(P) && currentPos.distance(P) <= 0.4);
 	}
 

@@ -375,7 +375,7 @@ public class Drive extends Mechanism {
 	 * @param joystick The PointDir to use for the joystick values
 	 */
 	public void swerveDrive(PointDir joystick) {
-		swerveDrive(joystick.getY(), -1 * joystick.getX(), joystick.getHeading());
+		swerveDrive(-1 * joystick.getY(), -1 * joystick.getX(), joystick.getHeading());
 	}
 
 	/**

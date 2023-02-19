@@ -139,6 +139,7 @@ public class OI extends Procedure {
 					(LeftJoystick_X),
 			 		(LeftJoystick_Y),
 			 		(RightJoystick_X));
+				log("FRONT RIGHT: "+Robot.drive.getFrontRight());
 			} else {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
