@@ -107,13 +107,13 @@ public class PhotonVisionRevA extends Mechanism {
      */
     public Pose3d averagPose3d(HashMap<Pose3d, Double> poses){
         int numPoses = poses.size();
-        int weights = 0;
+        double weights = 0;
         Pose3d averagePose = new Pose3d(0.0,0.0,0.0, new Rotation3d(0.0,0.0,0.0));
         for(HashMap.Entry<Pose3d, Double> entry : poses.entrySet()){
             Pose3d pose = entry.getKey();
             Double weight = entry.getValue();
             averagePose = averagePose.plus(new Transform3d(new Pose3d(0.0,0.0,0.0, new Rotation3d(0.0,0.0,0.0)), pose.times(weight)));
-            weights += weight;
+            weights += weight.doubleValue();
         }
         if(weights != 0){
             return averagePose.times(1.0/weights);
