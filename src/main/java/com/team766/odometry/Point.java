@@ -1,6 +1,7 @@
 package com.team766.odometry;
 
 import com.team766.framework.LoggingBase;
+import edu.wpi.first.math.geometry.Pose3d;
 import java.lang.Math;
 
 /**
@@ -17,6 +18,15 @@ public class Point extends LoggingBase {
 	public Point(double x, double y){
 		this.x = x;
 		this.y = y;
+	}
+
+	public Point(Pose3d P) {
+		x = P.getX();
+		y = P.getY();
+	}
+
+	public static Point toPoint(Pose3d P) {
+		return new Point(P);
 	}
 
 	public double getX() {

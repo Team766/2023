@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.robot.mechanisms.*;
 
 import com.team766.logging.Category;
+import com.team766.odometry.Point;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -58,9 +59,6 @@ public class OI extends Procedure {
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			context.takeOwnership(Robot.drive);
-			Robot.drive.setArcadeDrivePower(joystick0.getAxis(2), -1*joystick0.getAxis(1));
-			context.releaseOwnership(Robot.drive);
 
 			//log("Is there a target? " + Robot.photonVision.hasTarget());
 			//log the x,y,z, and angle of the target
@@ -69,6 +67,7 @@ public class OI extends Procedure {
 				Pose3d pose = Robot.photonVision.getPose3d();
 				if(pose != null){
 					log("X: " + pose.getX() + "\n Y: " + pose.getY() + "\n Z: " + pose.getZ());
+					Robot.drive.setCurrentPosition(Point.toPoint(pose));
 				} else{
 					log("No pose");
 				}
@@ -137,7 +136,7 @@ public class OI extends Procedure {
 				Robot.gyro.resetGyro();
 
 			if(joystick0.getButtonPressed(11))
-				Robot.drive.resetCurrentPosition();
+				Robot.drive.setCurrentPosition(new Point(0, 0));
 
 			if(joystick1.getButtonPressed(1))
 				isCross = !isCross;
