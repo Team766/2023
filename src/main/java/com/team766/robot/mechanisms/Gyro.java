@@ -23,7 +23,7 @@ public class Gyro extends Mechanism {
 		loggerCategory = Category.GYRO;
 	}
 	public void resetGyro(){
-		g_gyro.setYaw(-90);
+		g_gyro.setYaw(0);
 	}
 	public double getGyroPitch() {
 		double angle = g_gyro.getPitch();
