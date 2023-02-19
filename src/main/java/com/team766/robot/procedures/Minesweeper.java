@@ -39,7 +39,8 @@ public class Minesweeper extends Procedure {
 		while (true) {
 			if (sweeperLimiter.next()) {
 				log("Inside RateLimiter");
-				showCursor = showCursor? false : true;
+				showCursor = !showCursor;
+				output(y, x);
 			}
 			context.yield();
 		}
@@ -48,72 +49,81 @@ public class Minesweeper extends Procedure {
 	public void moveRight() {
 		if (x == w - 1) {
 			x = 0;
+			output(y, w - 1);
 		} else {
 			x++;
+			output(y, x - 1);
 		}
 	}
 
 	public void moveLeft() {
 		if (x == 0) {
 			x = w - 1;
+			output(y, 0);
 		} else {
 			x--;
+			output(y, x + 1);
 		}
 	}
 
 	public void moveDown() {
 		if (y == h - 1) {
 			y = 0;
+			output(h - 1, x);
 		} else {
 			y++;
+			output(y - 1, x);
 		}
 	}
 
 	public void moveUp() {
 		if (y == 0) {
 			y = h - 1;
+			output(0, x);
 		} else {
 			y--;
+			output(y + 1, 0);
 		}
 	}
 
 	private void output(int i, int j) {
 		if (lost) {
-			Robot.candle.setColor(170, 170, 0, h * y + x + 8, w * h);
-		}
-		if (shown[i][j] == 0) {
-			Robot.candle.setColor(170, 170, 170, h * i + j + 8, 1);
+			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), w * h);
+		} else if (i == y && j == x) {
+			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
+		} else if (shown[i][j] == 0) {
+			Robot.candle.setColor(170, 170, 170, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 2) {
-			Robot.candle.setColor(255, 0, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 0) {
-			Robot.candle.setColor(0, 0, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == -1) {
 			//Yellow
-			Robot.candle.setColor(170, 170, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 1) {
 			//Blue
-			Robot.candle.setColor(0, 0, 255, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 0, 255, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 2) {
 			//Green
-			Robot.candle.setColor(0, 145, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 145, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 3) {
 			//Red-Orange
-			Robot.candle.setColor(187, 51, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(187, 51, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 4) {
 			//Purple
-			Robot.candle.setColor(94, 0, 170, h * i + j + 8, 1);
+			Robot.candle.setColor(94, 0, 170, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 5) {
 			//Plum
-			Robot.candle.setColor(102, 0, 85, h * i + j + 8, 1);
+			Robot.candle.setColor(102, 0, 85, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 6) {
 			//Cyan
-			Robot.candle.setColor(0, 128, 128, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 128, 128, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 7) {
 			//Pink
-			Robot.candle.setColor(255, 0, 85, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 0, 85, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 8) {
 			//White
-			Robot.candle.setColor(255, 255, 255, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		}
 	}
 
