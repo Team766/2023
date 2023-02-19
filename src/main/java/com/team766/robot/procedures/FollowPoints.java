@@ -185,7 +185,7 @@ public class FollowPoints extends Procedure {
 		log("Starting FollowPoints");
 		//This resetCurrentPosition() call makes FollowPoints() robot-oriented instead of field-oriented
 		//If we need to make this method field-oriented, just remove this line
-		Robot.drive.resetCurrentPosition();
+		Robot.drive.setCurrentPosition(new Point(0,0));
 		targetNum = 0;
 
 		for (int i = 0; i < pointList.length; i++) {
