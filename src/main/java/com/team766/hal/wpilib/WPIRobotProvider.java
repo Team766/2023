@@ -2,6 +2,7 @@ package com.team766.hal.wpilib;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.team766.config.ConfigFileReader;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -21,6 +22,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.library.ValueProvider;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -126,7 +128,8 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANVictorMotorController(index);
 				break;
 			case TalonFX:
-				motor = new CANTalonFxMotorController(index);
+				final ValueProvider<String> CANBus = ConfigFileReader.getInstance().getString(type + ".CANBus");
+				motor = new CANTalonFxMotorController(index, CANBus.get());
 				break;
 			case VictorSP:
 				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);

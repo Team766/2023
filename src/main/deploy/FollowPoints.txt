@@ -1,0 +1,32 @@
+{
+	"points": [
+		{
+			"coordinates": [1.88, 0.04, 15],
+			"critical": true
+		},
+		{
+			"coordinates": [2.63, 0.25, 0],
+			"critical": false
+		},
+		{
+			"coordinates": [2.95, 1.12, 0],
+			"critical": true
+		},
+		{
+			"coordinates": [2.37, 1.49, 15],
+			"critical": true
+		},
+		{
+			"coordinates": [1.57, 1.49, 30],
+			"critical": false
+		},
+		{
+			"coordinates": [0.83, 0.92, 360],
+			"critical": true
+		},
+		{
+			"coordinates": [0.33, 0.54, 0],
+			"critical": true
+		}
+	]
+}

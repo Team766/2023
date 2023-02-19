@@ -11,7 +11,7 @@ public class AirReservoir implements PneumaticDevice {
 	}
 	
 	@Override
-	public PneumaticDevice.Output step(PneumaticDevice.Input input) {
+	public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
 		return new PneumaticDevice.Output(0, volume);
 	}
 }

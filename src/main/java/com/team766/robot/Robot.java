@@ -10,6 +10,8 @@ public class Robot {
 	public static void robotInit() {
 
 		// Initialize mechanisms here
+		drive = new Drive();
+		gyro = new Gyro();
 		
 		drive = new Drive();
 		photonVision = new PhotonVision();
