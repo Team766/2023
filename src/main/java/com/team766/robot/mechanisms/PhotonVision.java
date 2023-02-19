@@ -34,7 +34,7 @@ public class PhotonVision extends Mechanism {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        robotToCam = new Transform3d(new Translation3d(0, 0.0, 3), new Rotation3d(0, 0, 0));
+        robotToCam = new Transform3d(new Translation3d(0, 0.0, 0), new Rotation3d(0, 0, 0));
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP, camera, robotToCam);
         // var result = camera.getLatestResult();
