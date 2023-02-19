@@ -32,7 +32,7 @@ public class OI extends Procedure {
 		context.startAsync(new DisplayImage("cone.png", true));
 		int imageDisplayed = 0;
 
-		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png"};
+		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png", "tnt.png", "torchflower.png"};
 		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
