@@ -79,41 +79,41 @@ public class Minesweeper extends Procedure {
 
 	private void output(int i, int j) {
 		if (lost) {
-			Robot.candle.setColor(0.2, 0.2, 0, h * y + x + 8, w * h);
+			Robot.candle.setColor(170, 170, 0, h * y + x + 8, w * h);
 		}
 		if (shown[i][j] == 0) {
-			Robot.candle.setColor(0.2, 0.2, 0.2, h * i + j + 8, 1);
+			Robot.candle.setColor(170, 170, 170, h * i + j + 8, 1);
 		} else if (shown[i][j] == 2) {
-			Robot.candle.setColor(0.3, 0, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 0, 0, h * i + j + 8, 1);
 		} else if (grid[i][j] == 0) {
 			Robot.candle.setColor(0, 0, 0, h * i + j + 8, 1);
 		} else if (grid[i][j] == -1) {
 			//Yellow
-			Robot.candle.setColor(0.2, 0.2, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(170, 170, 0, h * i + j + 8, 1);
 		} else if (grid[i][j] == 1) {
 			//Blue
-			Robot.candle.setColor(0, 0, 0.3, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 0, 255, h * i + j + 8, 1);
 		} else if (grid[i][j] == 2) {
 			//Green
-			Robot.candle.setColor(0, 0.17, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 145, 0, h * i + j + 8, 1);
 		} else if (grid[i][j] == 3) {
 			//Red-Orange
-			Robot.candle.setColor(0.22, 0.06, 0, h * i + j + 8, 1);
+			Robot.candle.setColor(187, 51, 0, h * i + j + 8, 1);
 		} else if (grid[i][j] == 4) {
 			//Purple
-			Robot.candle.setColor(0.11, 0, 0.2, h * i + j + 8, 1);
+			Robot.candle.setColor(94, 0, 170, h * i + j + 8, 1);
 		} else if (grid[i][j] == 5) {
 			//Plum
-			Robot.candle.setColor(0.12, 0, 0.1, h * i + j + 8, 1);
+			Robot.candle.setColor(102, 0, 85, h * i + j + 8, 1);
 		} else if (grid[i][j] == 6) {
 			//Cyan
-			Robot.candle.setColor(0, 0.15, 0.15, h * i + j + 8, 1);
+			Robot.candle.setColor(0, 128, 128, h * i + j + 8, 1);
 		} else if (grid[i][j] == 7) {
 			//Pink
-			Robot.candle.setColor(0.3, 0, 0.10, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 0, 85, h * i + j + 8, 1);
 		} else if (grid[i][j] == 8) {
 			//White
-			Robot.candle.setColor(0.3, 0.3, 0.3, h * i + j + 8, 1);
+			Robot.candle.setColor(255, 255, 255, h * i + j + 8, 1);
 		}
 	}
 

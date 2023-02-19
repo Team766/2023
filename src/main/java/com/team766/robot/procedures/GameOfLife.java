@@ -199,7 +199,7 @@ public class GameOfLife extends Procedure {
 					} else {
 						k = h * i + w - 1 - j + 8;
 					}
-					Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+					Robot.candle.setColor(255, 255, 255, k, 1);
 				}
 			}
 			golContext.waitForSeconds(0.001);
@@ -231,7 +231,7 @@ public class GameOfLife extends Procedure {
 							k = h * i + w - 1 - j + 8;
 						}
 						if (grid[i][j]) {
-							Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+							Robot.candle.setColor(255, 255, 255, k, 1);
 						}
 					}
 					golContext.waitForSeconds(0.001);
@@ -284,7 +284,7 @@ public class GameOfLife extends Procedure {
 					} else {
 						gridCheck[i][j] = (neighbors == 3);
 						if (gridCheck[i][j]) {
-							Robot.candle.setColor(0.3, 0.3, 0.3, k, 1);
+							Robot.candle.setColor(255, 255, 255, k, 1);
 						}
 					}
 					context.releaseOwnership(Robot.candle);

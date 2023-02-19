@@ -33,7 +33,7 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.candle);
-		Robot.candle.setColor(0,0,0);
+		Robot.candle.setColor(0, 0, 0);
 		context.releaseOwnership(Robot.candle);
 		GameOfLife gol = new GameOfLife(gameModes.GLIDER);
 		context.startAsync(gol);
