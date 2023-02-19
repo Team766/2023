@@ -196,7 +196,10 @@ public class Minesweeper extends Procedure {
 					}
 				}
 			}
-			clearZeros(y, x);
+			clearZeros(y - 1, x - 1);
+			clearZeros(y - 1, x + 1);
+			clearZeros(y + 1, x - 1);
+			clearZeros(y + 1, x + 1);
 		} else if (shown[y][x] == 0 && !lost) {
 			numOfClicks++;
 			clearZeros(y, x);
@@ -217,42 +220,50 @@ public class Minesweeper extends Procedure {
 	private void clearZeros(int y, int x) {
 		if (grid[y][x] == 0) {
 			if (y != 0) {
-				//Add if shown[][] condition for all of these
 				
-				shown[y - 1][x] = 1;
-				output(y - 1, x);
-				clearZeros(y - 1, x);
-				if (x != 0) {
+				if (shown[y - 1][x] == 0) {
+					shown[y - 1][x] = 1;
+					output(y - 1, x);
+					clearZeros(y - 1, x);
+				}
+
+				if (x != 0 && shown[y - 1][x - 1] == 0) {
 					shown[y - 1][x - 1] = 1;
 					output(y - 1, x - 1);
 					clearZeros(y - 1, x - 1);
 				}
-				if (x != w - 1) {
+
+				if (x != w - 1 && shown[y - 1][x + 1] == 0) {
 					shown[y - 1][x + 1] = 1;
 					output(y - 1, x + 1);
 					clearZeros(y - 1, x + 1);
 				}
 			}
-			if (x != 0) {
+
+			if (x != 0 && shown[y][x - 1] == 0) {
 				shown[y][x - 1] = 1;
 				output(y, x - 1);
 				clearZeros(y, x - 1);
 			}
-			if (x != w - 1) {
+
+			if (x != w - 1 && shown[y][x + 1] == 0) {
 				shown[y][x + 1] = 1;
 				output(y, x + 1);
 				clearZeros(y, x + 1);
 			}
+
 			if (y != h - 1) {
-				shown[y + 1][x] = 1;
-				output(y + 1, x);
-				clearZeros(y + 1, x);
-				if (x != 0) {
+				if (shown[y + 1][x] == 0) {
+					shown[y + 1][x] = 1;
+					output(y + 1, x);
+					clearZeros(y + 1, x);
+				}
+				if (x != 0 && shown[y + 1][x - 1] == 0) {
 					shown[y + 1][x - 1] = 1;
 					output(y + 1, x - 1);
 					clearZeros(y + 1, x - 1);
 				}
-				if (x != w - 1) {
+				if (x != w - 1 && shown[y + 1][x + 1] == 0) {
 					shown[y + 1][x + 1] = 1;
 					output(y + 1, x + 1);
 					clearZeros(y + 1, x + 1);
