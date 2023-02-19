@@ -194,12 +194,7 @@ public class GameOfLife extends Procedure {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (grid[i][j]) {
-					if (i % 2 == 0) {
-						k = h * i + j + 8;
-					} else {
-						k = h * i + w - 1 - j + 8;
-					}
-					Robot.candle.setColor(255, 255, 255, k, 1);
+					Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(j, i), 1);
 				}
 			}
 			golContext.waitForSeconds(0.001);
@@ -225,13 +220,8 @@ public class GameOfLife extends Procedure {
 				Robot.candle.setColor(0, 0, 0, 8, w * h);
 				for (int i = 0; i < h; i++) {
 					for (int j = 0; j < w; j++) {
-						if (i % 2 == 0) {
-							k = h * i + j + 8;
-						} else {
-							k = h * i + w - 1 - j + 8;
-						}
 						if (grid[i][j]) {
-							Robot.candle.setColor(255, 255, 255, k, 1);
+							Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(j, i), 1);
 						}
 					}
 					golContext.waitForSeconds(0.001);

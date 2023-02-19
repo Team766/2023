@@ -37,6 +37,7 @@ public class OI extends Procedure {
 		context.releaseOwnership(Robot.candle);
 		GameOfLife gol = new GameOfLife(gameModes.GLIDER);
 		context.startAsync(gol);
+		Minesweeper mine = new Minesweeper();
 		int lastPOV = -1;
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
@@ -75,28 +76,28 @@ public class OI extends Procedure {
 				case 0:
 				if (lastPOV != 0) {
 					lastPOV = 0;
-					Minesweeper.moveUp();
+					mine.moveUp();
 				}
 				break;
 
 				case 90:
 				if (lastPOV != 90) {
 					lastPOV = 90;
-					Minesweeper.moveRight();
+					mine.moveRight();
 				}
 				break;
 
 				case 180:
 				if (lastPOV != 180) {
 					lastPOV = 180;
-					Minesweeper.moveLeft();
+					mine.moveLeft();
 				}
 				break;
 
 				case 270:
 				if (lastPOV != 270) {
 					lastPOV = 270;
-					Minesweeper.moveUp();
+					mine.moveUp();
 				}
 				break;
 

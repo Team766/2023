@@ -8,26 +8,27 @@ import com.team766.library.RateLimiter;
 
 public class Minesweeper extends Procedure {
 
-	private static int w = 16;
-    private static int h = 16;
+	private int w = 16;
+    private int h = 16;
 	//0 through 8 are numbers, -1 is a mine
-	static int[][] grid;
+	int[][] grid;
 	//0 is hidden, 1 is already clicked on, 2 is flagged
-	static int[][] shown;
-	private RateLimiter sweeperLimiter;
-	static int numOfClicks;
-	static int x;
-	static int y;
+	int[][] shown;
+	RateLimiter sweeperLimiter;
+	int numOfClicks;
+	int x;
+	int y;
 	int timer;
-	private static boolean lost;
-	private final int NUM_OF_MINES = 100;
+	boolean lost;
+	boolean showCursor;
+	final int NUM_OF_MINES = 100;
 
 	public Minesweeper() {
 		reset();
 		sweeperLimiter = new RateLimiter(0.25);
 	}
 
-	public static void reset() {
+	public void reset() {
 		grid = new int[h][w];
 		shown = new int[h][w];
 		numOfClicks = 0;
@@ -38,14 +39,13 @@ public class Minesweeper extends Procedure {
 		while (true) {
 			if (sweeperLimiter.next()) {
 				log("Inside RateLimiter");
-				context.takeOwnership(Robot.candle);
-				context.releaseOwnership(Robot.candle);
+				showCursor = showCursor? false : true;
 			}
 			context.yield();
 		}
 	}
 
-	public static void moveRight() {
+	public void moveRight() {
 		if (x == w - 1) {
 			x = 0;
 		} else {
@@ -53,7 +53,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public static void moveLeft() {
+	public void moveLeft() {
 		if (x == 0) {
 			x = w - 1;
 		} else {
@@ -61,7 +61,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public static void moveDown() {
+	public void moveDown() {
 		if (y == h - 1) {
 			y = 0;
 		} else {
@@ -69,7 +69,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public static void moveUp() {
+	public void moveUp() {
 		if (y == 0) {
 			y = h - 1;
 		} else {
@@ -209,7 +209,7 @@ public class Minesweeper extends Procedure {
 		}
 	}
 
-	public static void flag() {
+	public void flag() {
 		if (shown[y][x] == 0) {
 			shown[y][x] = 2;
 		} else if (shown[y][x] == 2) {
@@ -220,7 +220,7 @@ public class Minesweeper extends Procedure {
 	private void clearZeros(int y, int x) {
 		if (grid[y][x] == 0) {
 			if (y != 0) {
-				
+
 				if (shown[y - 1][x] == 0) {
 					shown[y - 1][x] = 1;
 					output(y - 1, x);
