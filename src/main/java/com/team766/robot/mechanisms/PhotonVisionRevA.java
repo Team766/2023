@@ -95,14 +95,14 @@ public class PhotonVisionRevA extends Mechanism {
     leftPhotonPoseEstimator =
       new PhotonPoseEstimator(
         aprilTagFieldLayout,
-        PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS,
+        PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
         leftCamera,
         leftRobotToCam
       );
     rightPhotonPoseEstimator =
       new PhotonPoseEstimator(
         aprilTagFieldLayout,
-        PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS,
+        PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
         rightCamera,
         rightRobotToCam
       );
