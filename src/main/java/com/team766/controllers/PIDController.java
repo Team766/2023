@@ -209,7 +209,6 @@ public class PIDController {
 	/** Same as calculate() except that it prints debugging information
 	 * 
 	 * @param cur_input The current input to be plugged into the PID controller
-	 * @param smart True if you want the output to be dynamically adjusted to the motor controller
 	 */
 	public void calculateDebug(double cur_input) {
 		print = true;
@@ -290,6 +289,7 @@ public class PIDController {
 		prev_error = 0;
 		error_rate = 0;
 		total_error = 0;
+		lastTime = timeProvider.get();
 		needsUpdate = true;
 	}
 

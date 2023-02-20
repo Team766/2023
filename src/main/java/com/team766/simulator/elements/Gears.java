@@ -17,10 +17,10 @@ public class Gears implements MechanicalAngularDevice {
 	}
 
 	@Override
-	public MechanicalAngularDevice.Output step(MechanicalAngularDevice.Input input) {
+	public MechanicalAngularDevice.Output step(MechanicalAngularDevice.Input input, double dt) {
 		MechanicalAngularDevice.Input upstreamInput =
 			new MechanicalAngularDevice.Input(input.angularVelocity * torqueRatio);
-		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput);
+		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput, dt);
 		return new MechanicalAngularDevice.Output(upstreamOutput.torque * torqueRatio);
 	}
 }
