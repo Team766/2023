@@ -59,7 +59,7 @@ public class FollowPoints extends Procedure {
 	private boolean[] stopRobotList;
 
 	private int targetNum = 0;
-	private RateLimiter followLimiter = new RateLimiter(0.001);
+	private RateLimiter followLimiter = new RateLimiter(0.01);
 
 	//Radius defines the radius of the circle around the robot
 	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
