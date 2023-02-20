@@ -18,11 +18,18 @@ public class Minesweeper extends Procedure {
 	int numOfClicks;
 	int x;
 	int y;
-	int timer;
 	boolean lost;
 	boolean showCursor;
 	Context mineContext;
 	final int NUM_OF_MINES = 100;
+
+	public boolean isClicking = false;
+	public boolean isRight = false;
+	public boolean isLeft = false;
+	public boolean isUp = false;
+	public boolean isDown = false;
+	public boolean isFlagging = false;
+	public boolean isResetting = false;
 
 	public Minesweeper() {
 		reset();
@@ -36,7 +43,7 @@ public class Minesweeper extends Procedure {
 		lost = false;
 		if (mineContext != null) {
 			mineContext.takeOwnership(Robot.candle);
-			Robot.candle.setColor(10, 10, 10);
+			Robot.candle.setColor(20, 20, 20);
 			mineContext.releaseOwnership(Robot.candle);
 		}
 	}
@@ -44,7 +51,7 @@ public class Minesweeper extends Procedure {
 	public void run(Context context) {
 		mineContext = context;
 		context.takeOwnership(Robot.candle);
-		Robot.candle.setColor(50, 50, 50);
+		Robot.candle.setColor(10, 10, 10);
 		context.releaseOwnership(Robot.candle);
 		while (true) {
 			mineContext = context;
@@ -52,6 +59,34 @@ public class Minesweeper extends Procedure {
 				log(x + " " + y);
 				showCursor = !showCursor;
 				output(y, x);
+			}
+			if (isClicking) {
+				click();
+				isClicking = false;
+			}
+			if (isUp) {
+				moveUp();
+				isUp = false;
+			}
+			if (isDown) {
+				moveDown();
+				isDown = false;
+			}
+			if (isLeft) {
+				moveLeft();
+				isLeft = false;
+			}
+			if (isRight) {
+				moveRight();
+				isRight = false;
+			}
+			if (isFlagging) {
+				flag();
+				isFlagging = false;
+			}
+			if (isResetting) {
+				reset();
+				isResetting = false;
 			}
 			context.yield();
 		}
@@ -242,6 +277,7 @@ public class Minesweeper extends Procedure {
 	}
 
 	private void clearZeros(int y, int x) {
+		log("Clearing " + x + " " + y);
 		if (grid[y][x] == 0) {
 			if (y != 0) {
 

@@ -2,6 +2,7 @@ package com.team766.robot;
 
 import com.team766.framework.Procedure;
 import com.team766.framework.Context;
+import com.team766.framework.LaunchedContext;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
@@ -29,16 +30,17 @@ public class OI extends Procedure {
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
+		
 	}
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.candle);
 		Robot.candle.setColor(0, 0, 0);
 		context.releaseOwnership(Robot.candle);
+		Minesweeper mine = new Minesweeper();
+		context.startAsync(mine);
 		//GameOfLife gol = new GameOfLife(gameModes.GLIDER);
 		//context.startAsync(gol);
-		Minesweeper mine = new Minesweeper();
-		//context.startAsync(mine);
 		int lastPOV = -1;
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
@@ -59,12 +61,12 @@ public class OI extends Procedure {
 			*/
 			if (joystick0.getButtonPressed(1)) {
 				//gol.reset(gameModes.RANDOM);
-				mine.click();
+				mine.isClicking = true;
 			}
 
 			if (joystick0.getButtonPressed(2)) {
 				//gol.reset(gameModes.GLIDER);
-				mine.flag();
+				mine.i
 			}
 
 			if (joystick0.getButtonPressed(3)) {
@@ -112,10 +114,6 @@ public class OI extends Procedure {
 			/*if(joystick0.getButton(1)){
 				Robot.candle.Game();
 			}*/
-			
-			
-			
-			double cur_time = RobotProvider.instance.getClock().getTime();
 			
 		}
 	}
