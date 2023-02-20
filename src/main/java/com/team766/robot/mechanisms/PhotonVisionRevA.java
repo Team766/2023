@@ -119,6 +119,27 @@ public class PhotonVisionRevA extends Mechanism {
   ) {
     return photonPoseEstimator.update();
   }
+  
+  /**
+   * Gets a hashmap of the poses of the robot.
+   * 
+   * @return A hashmap of the poses of the robot with weights.
+   */
+   
+   public HashMap<Pose3d, Double> getHashPoses(){
+    Optional<EstimatedRobotPose> leftEstimate;
+    Optional<EstimatedRobotPose> rightEstimate;
+    leftEstimate = poseEstimate(leftPhotonPoseEstimator);
+    rightEstimate = poseEstimate(rightPhotonPoseEstimator);
+    HashMap<Pose3d, Double> poses = new HashMap<Pose3d, Double>();
+    if (leftEstimate != null && !leftEstimate.isEmpty()) {
+      poses.put(leftEstimate, leftCameraWeight);
+    }
+    if (rightEstimate != null && !rightEstimate.isEmpty()) {
+      poses.put(rightEstimate, rightCameraWeight);
+    }
+    return poses;
+   }
 
   /**
    * Get the pose of the robot if possible.
@@ -149,7 +170,7 @@ public class PhotonVisionRevA extends Mechanism {
   }
 
   /**
-   * Averages a HashMap of Pose3d objects.
+   * Averages a HashMap of Pose3d objects. It could be used for other purposes than vision poses.
    *
    * @param poses A HashMap of Pose3d objects and their weights.
    * @return The average Pose3d object or null if there are no weights.
