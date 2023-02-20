@@ -23,6 +23,7 @@ import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
+import com.team766.robot.constants.*;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
@@ -59,11 +60,11 @@ public class FollowPoints extends Procedure {
 	private boolean[] stopRobotList;
 
 	private int targetNum = 0;
-	private RateLimiter followLimiter = new RateLimiter(0.01);
+	private RateLimiter followLimiter = new RateLimiter(FollowPointsInputConstants.RATE_LIMITER_TIME);
 
 	//Radius defines the radius of the circle around the robot
-	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
-	private static double speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
+	private static double radius = FollowPointsInputConstants.RADIUS;
+	private static double speed = FollowPointsInputConstants.SPEED;
 	private static PointDir driveSettings = new PointDir(0, 0, 0);
 
 	/*public FollowPoints() {
@@ -180,7 +181,6 @@ public class FollowPoints extends Procedure {
 	}*/
 
 	public void run(Context context) {
-		speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
@@ -330,8 +330,8 @@ public class FollowPoints extends Procedure {
 	 * @return Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point.
 	 */
 	private double rotationSpeed(double currentRot, double targetRot) {
-		double maxSpeed = 0.2;
-		double angleDistanceForMaxSpeed = 90;
+		double maxSpeed = FollowPointsInputConstants.MAX_ROTATION_SPEED;
+		double angleDistanceForMaxSpeed = FollowPointsInputConstants.ANGLE_DISTANCE_FOR_MAX_SPEED;
 		currentRot = mod(currentRot, 360);
 		targetRot = mod(targetRot, 360);
 		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot + 360 - currentRot)) {

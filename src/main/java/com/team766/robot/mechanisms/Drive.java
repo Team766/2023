@@ -21,6 +21,7 @@ import com.team766.odometry.Odometry;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.robot.constants.*;
 
 public class Drive extends Mechanism {
 
@@ -49,8 +50,6 @@ public class Drive extends Mechanism {
 	private CANCoder[] CANCoderList;
 	private Point[] wheelPositions;
 	private Odometry swerveOdometry;
-
-	public static final double DISTANCE_BETWEEN_WHEELS = 24 * 2.54 / 100;
 
 	public Drive() {
 
@@ -119,15 +118,13 @@ public class Drive extends Mechanism {
 				m_DriveBackRight};
 		CANCoderList = new CANCoder[] {e_FrontRight, e_FrontLeft, e_BackLeft, e_BackRight};
 		wheelPositions =
-				new Point[] {new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
+				new Point[] {new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)};
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
-		// The wheelCircumference is somewhere between 30.4cm and 30.6cm
-		swerveOdometry =
-				new Odometry(motorList, CANCoderList, wheelPositions, 30.5 / 100, 6.75, 2048, 0.05);
+		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, OdometryInputConstants.WHEEL_CIRCUMFERENCE, OdometryInputConstants.GEAR_RATIO, OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT, OdometryInputConstants.RATE_LIMITER_TIME);
 	}
 
 	// A set of simple functions for the sake of adding vectors
