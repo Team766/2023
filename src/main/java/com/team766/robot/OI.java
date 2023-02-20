@@ -66,12 +66,12 @@ public class OI extends Procedure {
 
 			if (joystick0.getButtonPressed(2)) {
 				//gol.reset(gameModes.GLIDER);
-				mine.i
+				mine.isFlagging = true;
 			}
 
 			if (joystick0.getButtonPressed(3)) {
 				//gol.reset(gameModes.HIVENUDGER);
-				mine.reset();
+				mine.isResetting = true;
 			}
 
 			if (joystick0.getButtonPressed(4)) {
@@ -82,28 +82,28 @@ public class OI extends Procedure {
 				case 0:
 				if (lastPOV != 0) {
 					lastPOV = 0;
-					mine.moveUp();
+					mine.isUp = true;
 				}
 				break;
 
 				case 90:
 				if (lastPOV != 90) {
 					lastPOV = 90;
-					mine.moveRight();
+					mine.isRight = true;
 				}
 				break;
 
 				case 180:
 				if (lastPOV != 180) {
 					lastPOV = 180;
-					mine.moveLeft();
+					mine.isDown = true;
 				}
 				break;
 
 				case 270:
 				if (lastPOV != 270) {
 					lastPOV = 270;
-					mine.moveUp();
+					mine.isLeft = true;
 				}
 				break;
 

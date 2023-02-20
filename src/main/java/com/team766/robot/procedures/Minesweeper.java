@@ -43,7 +43,7 @@ public class Minesweeper extends Procedure {
 		lost = false;
 		if (mineContext != null) {
 			mineContext.takeOwnership(Robot.candle);
-			Robot.candle.setColor(20, 20, 20);
+			Robot.candle.setColor(30, 30, 30);
 			mineContext.releaseOwnership(Robot.candle);
 		}
 	}
@@ -51,42 +51,48 @@ public class Minesweeper extends Procedure {
 	public void run(Context context) {
 		mineContext = context;
 		context.takeOwnership(Robot.candle);
-		Robot.candle.setColor(10, 10, 10);
+		Robot.candle.setColor(30, 30, 30);
 		context.releaseOwnership(Robot.candle);
 		while (true) {
 			mineContext = context;
 			if (sweeperLimiter.next()) {
-				log(x + " " + y);
 				showCursor = !showCursor;
 				output(y, x);
 			}
 			if (isClicking) {
 				click();
 				isClicking = false;
+				log("Click");
 			}
 			if (isUp) {
 				moveUp();
 				isUp = false;
+				log("Up");
 			}
 			if (isDown) {
 				moveDown();
 				isDown = false;
+				log("Down");
 			}
 			if (isLeft) {
 				moveLeft();
 				isLeft = false;
+				log("Left");
 			}
 			if (isRight) {
 				moveRight();
 				isRight = false;
+				log("Right");
 			}
 			if (isFlagging) {
 				flag();
 				isFlagging = false;
+				log("Flag");
 			}
 			if (isResetting) {
 				reset();
 				isResetting = false;
+				log("Reset");
 			}
 			context.yield();
 		}
@@ -100,6 +106,7 @@ public class Minesweeper extends Procedure {
 			x++;
 			output(y, x - 1);
 		}
+		output(y, x);
 	}
 
 	public void moveLeft() {
@@ -110,6 +117,7 @@ public class Minesweeper extends Procedure {
 			x--;
 			output(y, x + 1);
 		}
+		output(y, x);
 	}
 
 	public void moveDown() {
@@ -120,6 +128,7 @@ public class Minesweeper extends Procedure {
 			y++;
 			output(y - 1, x);
 		}
+		output(y, x);
 	}
 
 	public void moveUp() {
@@ -130,6 +139,7 @@ public class Minesweeper extends Procedure {
 			y--;
 			output(y + 1, 0);
 		}
+		output(y, x);
 	}
 
 	private void output(int i, int j) {
@@ -139,7 +149,7 @@ public class Minesweeper extends Procedure {
 		} else if (showCursor && i == y && j == x) {
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 0) {
-			Robot.candle.setColor(10, 10, 10, Robot.candle.getMatrixID(i, j), 1);
+			Robot.candle.setColor(30, 30, 30, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 2) {
 			Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 0) {
@@ -179,79 +189,96 @@ public class Minesweeper extends Procedure {
 		if (numOfClicks == 0) {
 			numOfClicks++;
 			shown[y][x] = 1;
-			output(y, x);
 			if (y != 0) {
 				shown[y - 1][x] = 1;
-				output(y - 1, x);
 				if (x != 0) {
 					shown[y - 1][x - 1] = 1;
-					output(y - 1, x - 1);
 				}
 				if (x != w - 1) {
 					shown[y - 1][x + 1] = 1;
-					output(y - 1, x + 1);
 				}
 			}
 			if (x != 0) {
 				shown[y][x - 1] = 1;
-				output(y, x - 1);
 			}
 			if (x != w - 1) {
 				shown[y][x + 1] = 1;
-				output(y, x + 1);
 			}
 			if (y != h - 1) {
 				shown[y + 1][x] = 1;
 				if (x != 0) {
 					shown[y + 1][x - 1] = 1;
-					output(y + 1, x - 1);
 				}
 				if (x != w - 1) {
 					shown[y + 1][x + 1] = 1;
-					output(y + 1, x + 1);
 				}
 			}
 			int num = NUM_OF_MINES;
 			while (num > 0) {
 				int placeY = (int) (Math.random() * h);
-				int placeX = (int) (Math.random() * h);
-				if (shown[placeY][placeX] == 0 && grid[y][x] != -1) {
-					grid[y][x] = -1;
+				int placeX = (int) (Math.random() * w);
+				if (shown[placeY][placeX] == 0 && grid[placeY][placeX] != -1) {
+					grid[placeY][placeX] = -1;
 					num--;
+					log("" + num + " " + x + " " + y);
 				}
 			}
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					if (grid[i][j] != -1) {
-						if (y != 0) {
-							if (grid[y - 1][x] == -1) {
+						if (j != 0) {
+							if (grid[j - 1][i] == -1) {
 								grid[i][j]++;
 							}
-							if (x != 0 && grid[y - 1][x - 1] == -1) {
+							if (i != 0 && grid[j - 1][i - 1] == -1) {
 								grid[i][j]++;
 							}
-							if (x != w - 1 && grid[y - 1][x + 1] == -1) {
+							if (i != w - 1 && grid[j - 1][i + 1] == -1) {
 								grid[i][j]++;
 							}
 						}
-						if (x != 0 && grid[y][x - 1] == -1) {
+						if (i != 0 && grid[j][i - 1] == -1) {
 							grid[i][j]++;
 						}
-						if (x != w - 1 && grid[y][x + 1] == -1) {
+						if (i != w - 1 && grid[j][i + 1] == -1) {
 							grid[i][j]++;
 						}
-						if (y != h - 1) {
-							if (grid[y + 1][x] == -1) {
+						if (j != h - 1) {
+							if (grid[j + 1][i] == -1) {
 								grid[i][j]++;
 							}
-							if (x != 0 && grid[y + 1][x - 1] == -1) {
+							if (i != 0 && grid[j + 1][i - 1] == -1) {
 								grid[i][j]++;
 							}
-							if (x != w - 1 && grid[y + 1][x + 1] == -1) {
+							if (i != w - 1 && grid[j + 1][i + 1] == -1) {
 								grid[i][j]++;
 							}
 						}
 					}
+				}
+			}
+			if (y != 0) {
+				output(y - 1, x);
+				if (x != 0) {
+					output(y - 1, x - 1);
+				}
+				if (x != w - 1) {
+					output(y - 1, x + 1);
+				}
+			}
+			if (x != 0) {
+				output(y, x - 1);
+			}
+			if (x != w - 1) {
+				output(y, x + 1);
+			}
+			if (y != h - 1) {
+				output(y + 1, x);
+				if (x != 0) {
+					output(y + 1, x - 1);
+				}
+				if (x != w - 1) {
+					output(y + 1, x + 1);
 				}
 			}
 			clearZeros(y - 1, x - 1);
@@ -277,7 +304,7 @@ public class Minesweeper extends Procedure {
 	}
 
 	private void clearZeros(int y, int x) {
-		log("Clearing " + x + " " + y);
+		log("Clearing " + x + " " + y + " " + grid[y][x]);
 		if (grid[y][x] == 0) {
 			if (y != 0) {
 
