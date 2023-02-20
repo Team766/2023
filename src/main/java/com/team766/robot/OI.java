@@ -4,8 +4,10 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.simulator.Camera;
 import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -27,6 +29,7 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		CameraServer.startAutomaticCapture();
 		context.takeOwnership(Robot.drive);
 
 		while (true) {
