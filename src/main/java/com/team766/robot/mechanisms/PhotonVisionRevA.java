@@ -53,9 +53,9 @@ public class PhotonVisionRevA extends Mechanism {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// TODO: Change these values to match your robot.
-		leftRobotToCam = new Transform3d(new Translation3d(0, 0.0, 0), new Rotation3d(0, 0, 0));
-		rightRobotToCam = new Transform3d(new Translation3d(0, 0.0, 0), new Rotation3d(0, 0, 0));
+		//TODO test if rotation is correct (from robot to camera or camera to robot)	
+		leftRobotToCam = new Transform3d(new Translation3d(0.022, 0.358, 0.838), new Rotation3d(0, -15, 135));
+		rightRobotToCam = new Transform3d(new Translation3d(0.022, -0.358, 0.838), new Rotation3d(0, -15, -135));
 
 		leftPhotonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
 				PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, leftCamera, leftRobotToCam);
