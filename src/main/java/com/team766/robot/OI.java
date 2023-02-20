@@ -35,9 +35,10 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.candle);
 		Robot.candle.setColor(0, 0, 0);
 		context.releaseOwnership(Robot.candle);
-		GameOfLife gol = new GameOfLife(gameModes.GLIDER);
-		context.startAsync(gol);
+		//GameOfLife gol = new GameOfLife(gameModes.GLIDER);
+		//context.startAsync(gol);
 		Minesweeper mine = new Minesweeper();
+		//context.startAsync(mine);
 		int lastPOV = -1;
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
@@ -57,19 +58,22 @@ public class OI extends Procedure {
 			Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 			*/
 			if (joystick0.getButtonPressed(1)) {
-				gol.reset(gameModes.RANDOM);
+				//gol.reset(gameModes.RANDOM);
+				mine.click();
 			}
 
 			if (joystick0.getButtonPressed(2)) {
-				gol.reset(gameModes.GLIDER);
+				//gol.reset(gameModes.GLIDER);
+				mine.flag();
 			}
 
 			if (joystick0.getButtonPressed(3)) {
-				gol.reset(gameModes.HIVENUDGER);
+				//gol.reset(gameModes.HIVENUDGER);
+				mine.reset();
 			}
 
 			if (joystick0.getButtonPressed(4)) {
-				gol.reset(gameModes.BEAR);
+				//gol.reset(gameModes.BEAR);
 			}
 			
 			switch (joystick0.getPOV()) {

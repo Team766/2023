@@ -21,6 +21,7 @@ public class Minesweeper extends Procedure {
 	int timer;
 	boolean lost;
 	boolean showCursor;
+	Context mineContext;
 	final int NUM_OF_MINES = 100;
 
 	public Minesweeper() {
@@ -33,12 +34,22 @@ public class Minesweeper extends Procedure {
 		shown = new int[h][w];
 		numOfClicks = 0;
 		lost = false;
+		if (mineContext != null) {
+			mineContext.takeOwnership(Robot.candle);
+			Robot.candle.setColor(10, 10, 10);
+			mineContext.releaseOwnership(Robot.candle);
+		}
 	}
 
 	public void run(Context context) {
+		mineContext = context;
+		context.takeOwnership(Robot.candle);
+		Robot.candle.setColor(50, 50, 50);
+		context.releaseOwnership(Robot.candle);
 		while (true) {
+			mineContext = context;
 			if (sweeperLimiter.next()) {
-				log("Inside RateLimiter");
+				log(x + " " + y);
 				showCursor = !showCursor;
 				output(y, x);
 			}
@@ -87,12 +98,13 @@ public class Minesweeper extends Procedure {
 	}
 
 	private void output(int i, int j) {
+		mineContext.takeOwnership(Robot.candle);
 		if (lost) {
 			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), w * h);
-		} else if (i == y && j == x) {
+		} else if (showCursor && i == y && j == x) {
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 0) {
-			Robot.candle.setColor(170, 170, 170, Robot.candle.getMatrixID(i, j), 1);
+			Robot.candle.setColor(10, 10, 10, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 2) {
 			Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 0) {
@@ -125,6 +137,7 @@ public class Minesweeper extends Procedure {
 			//White
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		}
+		mineContext.releaseOwnership(Robot.candle);
 	}
 
 	public void click() {
@@ -225,6 +238,7 @@ public class Minesweeper extends Procedure {
 		} else if (shown[y][x] == 2) {
 			shown[y][x] = 0;
 		}
+		output(y, x);
 	}
 
 	private void clearZeros(int y, int x) {
