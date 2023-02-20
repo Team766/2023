@@ -39,24 +39,31 @@ public class PhotonVisionRevA extends Mechanism {
 		loggerCategory = Category.MECHANISMS;
 
 		// Initialize cameras. Make sure to use the same name you used in PhotonVision.
-		leftCamera = new PhotonCamera("leftCamera");
-		rightCamera = new PhotonCamera("rightCamera");
+		leftCamera = new PhotonCamera(CameraConstants.FRONT_LEFT_CAMERA_NAME);
+		rightCamera = new PhotonCamera(CameraConstants.FRONT_RIGHT_CAMERA_NAME);
 
 		// TODO: Set camera weights
-		leftCameraWeight = 1.0;
-		rightCameraWeight = 1.0;
+		leftCameraWeight = CameraConstants.FRONT_LEFT_CAMERA_WEIGHT;
+		rightCameraWeight = CameraConstants.FRONT_RIGHT_CAMERA_WEIGHT;
 
 		// Initialize field layout.
 		try {
 			aprilTagFieldLayout = new AprilTagFieldLayout(
-					Filesystem.getDeployDirectory().toPath().resolve("Field.JSON"));
+					Filesystem.getDeployDirectory().toPath().resolve(CameraConstants.FIELD_LAYOUT_FILE));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//TODO test if rotation is correct (from robot to camera or camera to robot)	
-		leftRobotToCam = new Transform3d(new Translation3d(0.022, 0.358, 0.838), new Rotation3d(0, -15, 135));
-		rightRobotToCam = new Transform3d(new Translation3d(0.022, -0.358, 0.838), new Rotation3d(0, -15, -135));
-
+		// TODO test if rotation is correct (from robot to camera or camera to robot)
+		/*leftRobotToCam = new Transform3d(new Translation3d(0.022, 0.358, 0.838),
+				new Rotation3d(0, -15, 135));
+		rightRobotToCam = new Transform3d(new Translation3d(0.022, -0.358, 0.838),
+				new Rotation3d(0, -15, -135));
+		*/
+		leftRobotToCam = new Transform3d(new Translation3d(CameraConstants.FRONT_LEFT_CAMERA_OFFSET_X, CameraConstants.FRONT_LEFT_CAMERA_OFFSET_Y, CameraConstants.FRONT_LEFT_CAMERA_OFFSET_Z),
+				new Rotation3d(CameraConstants.FRONT_LEFT_CAMERA_OFFSET_PITCH, CameraConstants.FRONT_LEFT_CAMERA_OFFSET_YAW, CameraConstants.FRONT_LEFT_CAMERA_OFFSET_ROLL));
+		rightRobotToCam = new Transform3d(new Translation3d(CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_X, CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_Y, CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_Z),
+				new Rotation3d(CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_PITCH, CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_YAW, CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_ROLL));
+		// Initialize pose estimators.
 		leftPhotonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
 				PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, leftCamera, leftRobotToCam);
 		rightPhotonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
