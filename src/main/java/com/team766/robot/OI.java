@@ -150,8 +150,12 @@ public class OI extends Procedure {
 			// turningValue = 0;
 			// }
 
+			// TODO: make context issues not happen
+
 			if (isCross) {
 				context.startAsync(new setCross());
+			// } else if (joystick0.getButtonPressed(3)) {
+			// 	context.startAsync(new AutoBalance(true));
 			} else if(Math.abs(LeftJoystick_X)+
 			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
 				Robot.drive.swerveDrive( 

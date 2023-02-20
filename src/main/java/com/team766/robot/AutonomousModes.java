@@ -17,7 +17,7 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 		new AutonomousMode("AutoBalance", () -> new AutoBalance(true)),
-		//new AutonomousMode("FollowPoints", () -> new FollowPoints()),
+		new AutonomousMode("FollowPoints", () -> new FollowPoints()),
 		new AutonomousMode("FollowPointsFile", () -> new FollowPoints("FollowPoints.txt")),
 		//new AutonomousMode("FollowPointsH", () -> new FollowPoints(new PointDir[]{new PointDir(0, 0), new PointDir(2, 0), new PointDir(1, 0), new PointDir(1, 1), new PointDir(2, 1), new PointDir(0, 1)})),
 		new AutonomousMode("DoNothing", () -> new DoNothing()),
