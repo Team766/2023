@@ -1,4 +1,4 @@
-package com.team766.robot.Constant;
+package com.team766.robot.constants;
 
 public final class FollowPointsInputConstants {
 	

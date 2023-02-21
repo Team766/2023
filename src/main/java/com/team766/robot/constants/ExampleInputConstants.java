@@ -1,4 +1,4 @@
-package com.team766.robot.Constant;
+package com.team766.robot.constants;
 
 /**
  * Constants used for the Operator Interface, eg for joyticks, buttons, dials, etc.

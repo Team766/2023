@@ -1,4 +1,4 @@
-package com.team766.robot.Constant;
+package com.team766.robot.constants;
 
 import com.team766.hal.MotorController;
 
