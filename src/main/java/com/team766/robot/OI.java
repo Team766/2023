@@ -4,8 +4,13 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.library.fsm.FiniteState;
+import com.team766.library.fsm.FiniteStateMachine;
 import com.team766.logging.Category;
+import com.team766.logging.Severity;
 import com.team766.robot.procedures.*;
+import com.team766.robot.states.ArmAutomatedControlState;
+import com.team766.robot.states.ArmControlFsm;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -13,96 +18,61 @@ import edu.wpi.first.wpilibj.DriverStation;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
-	private JoystickReader joystick0;
-	private JoystickReader joystick1;
-	private JoystickReader joystick2;
 
-	
+	private JoystickReader joystick0;
+
+	private ArmControlFsm armControlFsm;
+
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
 		joystick0 = RobotProvider.instance.getJoystick(0);
-		joystick1 = RobotProvider.instance.getJoystick(1);
-		joystick2 = RobotProvider.instance.getJoystick(2);
+
+		// create the fsm that links everything together
+		armControlFsm = ArmControlFsm.getInstance();
 	}
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.arms);
-		while (2>1) {
 
-			
-			// wait for driver station data (and refresh it using the WPILib APIs)
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-			
+		try {
+			armControlFsm.initialize();
+		} catch(Exception e) {
+			log(Severity.ERROR, e.toString());
+			log(Severity.ERROR, "Error initializing FSM");
+			return;
+		}
 
-			RobotProvider.instance.refreshDriverStationData();
+		while (true) {
 
-			Robot.arms.checkLimits(Robot.arms.getEncoderDistance(), Robot.arms.findEU());
-			
-			//Robot.arms.setA2(joystick1.getAxis(1));
+			try {
+				// TODO: we want to break this down to run the loop faster for animation / motor control purposes
+
+				// wait for driver station data (and refresh it using the WPILib APIs)
+				context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+				RobotProvider.instance.refreshDriverStationData();
+
+				// switch between states depending on button press
+				if(joystick0.getButtonPressed(5)) {
+					armControlFsm.switchState(armControlFsm.armControlAuto);
+
+				} else if(joystick0.getButtonPressed(6)) {
+					armControlFsm.switchState(armControlFsm.armControlManual);
+				}
+
+				// zero the arm
+				if(joystick0.getButtonPressed(7)) {
+					log(Severity.INFO, getName(), "Encoders reset");
+					Robot.arms.resetEncoders();
+				}
+
+				// run the current state
+
+				armControlFsm.run();
 				
-
-
-			// Testing PID for the second arm and making it go to 7 eu
-			if(joystick0.getButton(14)){
-				Robot.arms.pidForArm2(-41.42);
+			} catch (Exception e) {
+				log(Severity.ERROR, e.toString());
 			}
-
-				
-
-			
-			// Getting the encoder units for the second arm
-			if(joystick0.getButton(15)){
-				log(" h " + Robot.arms.findEU());
-			}
-			// Getting the encoder units for the first arm
-			if(joystick0.getButton(8)){
-				log("" + Robot.arms.getEncoderDistance());
-			}
-			// Manually moving the first arm
-			//Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
-
-
-			
-			//Manually moving the second arm, commented out rn because pid dosen't work with it
-			
-			
-			/*  Using the antigravity on the first arm
-			if(joystick0.getButton(2)){
-				Robot.arms.setFfA();
-				Robot.arms.setFfB();
-				log(" " + Robot.arms.getEncoderDistance());
-			}*/
-			
-			//Reseting the encoder if we are not using absolutes
-			if(joystick0.getButton(1)){
-				Robot.arms.resetEncoder();
-			}
-			
-			// Using pid on the first arm to set the arm to different angles
-			if (joystick0.getButton(5)) {
-				Robot.arms.pidtest(Robot.arms.degreesToEU(80));
-			
-			} else if(joystick0.getButton(6)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(60));
-				
-			} else if(joystick0.getButton(7)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(30));
-				
-			} else if(joystick0.getButton(8)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(0));
-				
-			} else if(joystick0.getButton(9)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-30));
-				
-			} else if(joystick0.getButton(10)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-60));
-				
-			} else {
-				
-			}
-
-			
 
 		}
 	}
