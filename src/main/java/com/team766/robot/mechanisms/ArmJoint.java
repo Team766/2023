@@ -1,8 +1,11 @@
 package com.team766.robot.mechanisms;
 
 import com.ctre.phoenix.time.StopWatch;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -18,6 +21,7 @@ public class ArmJoint {
 
 	private MotorController jointMotor;
 	private CANSparkMaxMotorController jointMotorEx;
+	private SparkMaxPIDController jointMotorPid;
 
 	private RelativeEncoder motorEncoder;
 	private SparkMaxAbsoluteEncoder motorAbsoluteEncoder;
@@ -46,6 +50,7 @@ public class ArmJoint {
 
 		this.jointMotor = jointMotor;
 		this.jointMotorEx = (CANSparkMaxMotorController)jointMotor;
+		this.jointMotorPid = jointMotorEx.getPIDController();
 
 		this.parent = parent;
 
@@ -54,6 +59,14 @@ public class ArmJoint {
 
 		periodicLoggingStopwatch = new StopWatch();
 		periodicLoggingStopwatch.start();
+
+		// Smart Motion parameters (probably wont be used by regular Position control)
+		// defaults from example is 1500 accel and 2k velocity
+		// jointMotorPid.setSmartMotionMaxAccel(500, 0);
+		// jointMotorPid.setSmartMotionMaxVelocity(1000, 0);
+
+		jointMotorEx.setClosedLoopRamp(0.5d);
+		jointMotorEx.setCurrentLimit(20.0d);
 	}
 
 
@@ -89,6 +102,8 @@ public class ArmJoint {
 		}
 
 		jointMotor.set(ControlMode.Position, (double)degreesToEncoderUnits(angle));
+		//jointMotorPid.setReference((double)degreesToEncoderUnits(angle), ControlType.kSmartMotion);
+
 	}
 
 	public double getMotorPosition() {

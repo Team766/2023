@@ -1,13 +1,22 @@
 package com.team766.robot.states;
 
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Random;
+import com.ctre.phoenix.time.StopWatch;
 import com.team766.library.fsm.FiniteState;
-import com.team766.library.fsm.FiniteStateMachine;
 import com.team766.logging.Severity;
+import com.team766.robot.Robot;
 
 public class ArmAutomatedControlState extends FiniteState {
+
+	StopWatch movementStopwatch = new StopWatch();
+
+	double targetAngle = 0;
+
+	double angleTolerance = 3.0d;
+
+	int movementState = 0;
+
+	Random rand = new Random();
 
 	public ArmAutomatedControlState() {
 		super();
@@ -40,8 +49,38 @@ public class ArmAutomatedControlState extends FiniteState {
 
 	@Override
 	public void run() throws Exception {
-		// TODO Auto-generated method stub
-		
+		switch(movementState) {
+			case 0:
+				// moving
+				if(!hasReachedTargetAngle()) {
+					Robot.arms.firstJoint.setMotorPosition(targetAngle);
+				} else {
+					movementStopwatch.start();
+					movementState++;
+				}
+
+				break;
+
+			case 1:
+				// pausing
+				if(movementStopwatch.getDurationMs() > 1000) {
+					movementState++;
+				}
+				break;
+
+			case 2:
+				// incrementing
+				targetAngle = rand.nextDouble(-25, 45);
+				movementState = 0;
+				break;
+		}
+	}
+
+	private boolean hasReachedTargetAngle() {
+		double motorAngle = Robot.arms.firstJoint.getMotorPosition();
+		if(motorAngle > targetAngle - angleTolerance && motorAngle < targetAngle + angleTolerance) return true;
+		return false;
+	
 	}
 	
 }

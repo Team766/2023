@@ -49,6 +49,8 @@ public class Arms extends Mechanism {
 
     public void periodicUpdate() {
         firstJoint.periodicUpdate();
+
+        // TODO: run 
     }
     
     // TODO: set ffa in spark
