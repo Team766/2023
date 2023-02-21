@@ -5,7 +5,9 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -52,32 +54,22 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			if(joystick1.getButton(2)){
-				Robot.drive.setGyro(0);
-			}else{
-				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-			}		
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
-				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-			} else {
-				RightJoystick_Y = 0;
-			}
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05){
-				RightJoystick_X = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;
-				if(joystick1.getButton(3)){
-					RightJoystick_X *= 2;
-				}	
-			} else {
-				RightJoystick_X = 0;	
-			}
+
+			LeftJoystick_Y = joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			
-			if(joystick0.getButtonPressed(1))
+			LeftJoystick_X = joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;	
+	
+			RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			
+			RightJoystick_X = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;	
+			
+			if(joystick0.getButtonPressed(InputConstants.RESET_GYRO))
 				Robot.gyro.resetGyro();
 
-			if(joystick0.getButtonPressed(11))
+			if(joystick0.getButtonPressed(InputConstants.RESET_CURRENT_POSITION))
 				Robot.drive.resetCurrentPosition();
 
-			if(joystick1.getButtonPressed(1))
+			if(joystick1.getButtonPressed(InputConstants.CROSS_DEFENSE))
 				isCross = !isCross;
 			
 			if (isCross)  {

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.team766.config.ConfigFileReader;
@@ -67,6 +68,8 @@ public class FollowPoints extends Procedure {
 	private static double speed = FollowPointsInputConstants.SPEED;
 	private static PointDir driveSettings = new PointDir(0, 0, 0);
 
+	private static HashMap<String, Procedure> mapOfProcedures = new HashMap<String, Procedure>();
+
 	/*public FollowPoints() {
 		parsePointL$ist();
 		proceduresAtPoints = new Procedure[pointList.length];
@@ -82,6 +85,8 @@ public class FollowPoints extends Procedure {
 	 * @throws IOException Thrown if file is not found.
 	 */
 	public FollowPoints(String file) {
+		mapOfProcedures.put("DoNothing()", new DoNothing());
+		mapOfProcedures.put(null, new DoNothing());
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -94,7 +99,14 @@ public class FollowPoints extends Procedure {
 		
 		JSONArray points = new JSONObject(str).getJSONArray("points");
 		for (int i = 0; i < points.length(); i++) {
-			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
+			JSONObject procedure = points.getJSONObject(i).getJSONObject("procedure");
+			Procedure pointProcedure = null;
+			boolean stopAtProcedure = false;
+			if (procedure != null) {
+				pointProcedure = mapOfProcedures.get(procedure.getString("name"));
+				stopAtProcedure = procedure.getBoolean("stop");
+			}
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), pointProcedure, stopAtProcedure);
 		}
 		addWaypoints();
 	}
