@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.robot.Robot;
+import com.team766.robot.constants.*;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
@@ -24,7 +25,6 @@ import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
-import com.team766.robot.constants.*;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via

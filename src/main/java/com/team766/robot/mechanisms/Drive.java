@@ -20,8 +20,8 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.team766.odometry.Odometry;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
-import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.robot.constants.*;
+import com.team766.hal.MotorControllerCommandFailedException;
 
 public class Drive extends Mechanism {
 
