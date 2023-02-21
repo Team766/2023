@@ -8,17 +8,17 @@ Description of how the mechanism works.
 
 Describe how it works within our code (no specific code yet).
 
-## Benefits of Mechanism
+## Benefits of mechanism
 
 * **Point 1.** Explanation.
 * **Point 2.** Explanation.
 
-## Limitations of Odometry
+## Limitations of mechanism
 
 * **Point 1.** Explanation.
 * **Point 2.** Explanation.
 
-## How to use Mechanism
+## How to use mechanism
 
 Explain how to use the mechanism.
 
@@ -26,10 +26,10 @@ Explain how to use the mechanism.
 
 Explain the initialization of the mechanism and its parameters.
 
-### Running Mechanism
+### Running mechanism
 
 How to use the mechanism? What procedures do what? 
 
-### Integrating Mechanism with other code
+### Integrating mechanism with other code
 
 How could one integrate this with other code? Could reference to the procedures explained above.
