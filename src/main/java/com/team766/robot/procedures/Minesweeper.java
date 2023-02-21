@@ -226,31 +226,31 @@ public class Minesweeper extends Procedure {
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					if (grid[i][j] != -1) {
-						if (j != 0) {
-							if (grid[j - 1][i] == -1) {
+						if (i != 0) {
+							if (grid[i - 1][j] == -1) {
 								grid[i][j]++;
 							}
-							if (i != 0 && grid[j - 1][i - 1] == -1) {
+							if (j != 0 && grid[i - 1][j - 1] == -1) {
 								grid[i][j]++;
 							}
-							if (i != w - 1 && grid[j - 1][i + 1] == -1) {
+							if (j != w - 1 && grid[i - 1][j + 1] == -1) {
 								grid[i][j]++;
 							}
 						}
-						if (i != 0 && grid[j][i - 1] == -1) {
+						if (j != 0 && grid[i][j - 1] == -1) {
 							grid[i][j]++;
 						}
-						if (i != w - 1 && grid[j][i + 1] == -1) {
+						if (j != w - 1 && grid[i][j + 1] == -1) {
 							grid[i][j]++;
 						}
-						if (j != h - 1) {
-							if (grid[j + 1][i] == -1) {
+						if (i != h - 1) {
+							if (grid[i + 1][j] == -1) {
 								grid[i][j]++;
 							}
-							if (i != 0 && grid[j + 1][i - 1] == -1) {
+							if (j != 0 && grid[i + 1][j - 1] == -1) {
 								grid[i][j]++;
 							}
-							if (i != w - 1 && grid[j + 1][i + 1] == -1) {
+							if (j != w - 1 && grid[i + 1][j + 1] == -1) {
 								grid[i][j]++;
 							}
 						}
