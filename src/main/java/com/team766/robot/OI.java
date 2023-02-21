@@ -57,7 +57,7 @@ public class OI extends Procedure {
 
 			LeftJoystick_Y = joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			
-			LeftJoystick_X = joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;	
+			LeftJoystick_X = joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT);	
 	
 			RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			
