@@ -21,4 +21,5 @@ public final class InputConstants {
 	public static final int RESET_GYRO = 1;
 	public static final int RESET_CURRENT_POSITION = 11;
 	//Other buttons
+
 }
