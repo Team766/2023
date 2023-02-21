@@ -10,7 +10,7 @@ import com.team766.library.fsm.FiniteStateMachine;
  */
 public class ArmControlFsm extends FiniteStateMachine {
 
-	private static ArmControlFsm instance;
+	private static ArmControlFsm instance = new ArmControlFsm();
 
 	public static ArmControlFsm getInstance() {
 		return instance;
@@ -19,7 +19,7 @@ public class ArmControlFsm extends FiniteStateMachine {
 	public FiniteState armControlManual;
 	public FiniteState armControlAuto;
 
-	private ArmControlFsm() throws Exception {
+	private ArmControlFsm() {
 		super();
 
 		// create states
@@ -32,6 +32,6 @@ public class ArmControlFsm extends FiniteStateMachine {
 		super.initialize(
 			new HashSet(
 				Arrays.asList(armControlAuto, armControlManual)),
-			armControlAuto);
+			armControlManual);
 	}
 }

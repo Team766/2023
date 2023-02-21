@@ -46,6 +46,10 @@ public class Arms extends Mechanism {
 
         // TODO: second joint
     }
+
+    public void periodicUpdate() {
+        firstJoint.periodicUpdate();
+    }
     
     // TODO: set ffa in spark
 	// getter method for getting the encoder position of arm 2

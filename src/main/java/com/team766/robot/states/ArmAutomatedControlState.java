@@ -14,18 +14,18 @@ public class ArmAutomatedControlState extends FiniteState {
 		//TODO Auto-generated constructor stub
 	}
 
-	private HashSet<Type> allowedTransitions = new HashSet<Type> (Arrays.asList(ArmManualControlState.class));
-
 	@Override
 	public void onEnterValidation(FiniteState previousState) throws Exception {
-		if(!allowedTransitions.contains(previousState.getClass())) throw new Exception("Invalid enter transition from previous state");
-		
+		// allow enter from null (initial) state
+		if(previousState == null) return;
+		if(previousState instanceof ArmManualControlState) return;
+		throw new Exception("Invalid enter transition from previous state");
 	}
 
 	@Override
 	public void onExitValidation(FiniteState nextState) throws Exception {
-		if(!allowedTransitions.contains(nextState.getClass())) throw new Exception("Invalid transition to next state");
-		
+		if(nextState instanceof ArmManualControlState) return;
+		throw new Exception("Invalid transition to next state");
 	}
 
 	@Override

@@ -37,6 +37,8 @@ public abstract class FiniteStateMachine {
 
 	// Typically only the state can switch to other states, but we'll leave this as public
 	public void switchState(FiniteState nextState) throws Exception {
+		// ignore if state == current state
+		if(nextState == currentState) return;
 		if(!states.contains(nextState)) throw new Exception("provided state does not exist in list of valid states in this machine");
 		this.nextState = nextState;
 	}
@@ -48,7 +50,7 @@ public abstract class FiniteStateMachine {
 			nextState.onEnterValidation(currentState);
 
 			// if no exceptions thrown, we continue
-			currentState.onExit();
+			if(currentState != null) currentState.onExit();
 			currentState = nextState;
 			nextState = null;
 			currentState.onEnter();

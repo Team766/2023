@@ -19,16 +19,18 @@ public class ArmManualControlState extends FiniteState {
 		debugJoystick = RobotProvider.instance.getJoystick(0);
 	}
 
-	private HashSet<Type> allowedTransitions = new HashSet<Type> (Arrays.asList(ArmAutomatedControlState.class));
-
 	@Override
 	public void onEnterValidation(FiniteState previousState) throws Exception {
-		if(!allowedTransitions.contains(previousState.getClass())) throw new Exception("Invalid enter transition from previous state");
+		// allow enter from null (initial) state
+		if(previousState == null) return;
+		if(previousState instanceof ArmAutomatedControlState) return;
+		throw new Exception("Invalid enter transition from previous state");
 	}
 
 	@Override
 	public void onExitValidation(FiniteState nextState) throws Exception {
-		if(!allowedTransitions.contains(nextState.getClass())) throw new Exception("Invalid transition to next state");
+		if(nextState instanceof ArmAutomatedControlState) return;
+		throw new Exception("Invalid transition to next state");
 	}
 
 	@Override

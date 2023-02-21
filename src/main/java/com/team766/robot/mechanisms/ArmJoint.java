@@ -52,6 +52,7 @@ public class ArmJoint {
 		motorEncoder = this.jointMotorEx.getEncoder();
 		motorAbsoluteEncoder = this.jointMotorEx.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
+		periodicLoggingStopwatch = new StopWatch();
 		periodicLoggingStopwatch.start();
 	}
 
@@ -59,7 +60,7 @@ public class ArmJoint {
 	/**
 	 * Run periodic jobs
 	 */
-	public void run() {
+	public void periodicUpdate() {
 
 		if(periodicLoggingStopwatch.getDurationMs() > 1000) {
 			periodicLoggingStopwatch.start();

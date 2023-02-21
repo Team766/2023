@@ -52,6 +52,9 @@ public class OI extends Procedure {
 				context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 				RobotProvider.instance.refreshDriverStationData();
 
+				// Update all mechanisms
+				Robot.arms.periodicUpdate();
+
 				// switch between states depending on button press
 				if(joystick0.getButtonPressed(5)) {
 					armControlFsm.switchState(armControlFsm.armControlAuto);
