@@ -86,10 +86,24 @@ public class OI extends Procedure {
 				}
 				break;
 
+				case 45:
+				if (lastPOV != 45) {
+					lastPOV = 45;
+					mine.isUpRight = true;
+				}
+				break;
+
 				case 90:
 				if (lastPOV != 90) {
 					lastPOV = 90;
 					mine.isRight = true;
+				}
+				break;
+
+				case 135:
+				if (lastPOV != 135) {
+					lastPOV = 135;
+					mine.isDownRight = true;
 				}
 				break;
 
@@ -100,10 +114,24 @@ public class OI extends Procedure {
 				}
 				break;
 
+				case 225:
+				if (lastPOV != 225) {
+					lastPOV = 225;
+					mine.isDownLeft = true;
+				}
+				break;
+
 				case 270:
 				if (lastPOV != 270) {
 					lastPOV = 270;
 					mine.isLeft = true;
+				}
+				break;
+
+				case 315:
+				if (lastPOV != 315) {
+					lastPOV = 315;
+					mine.isUpLeft = true;
 				}
 				break;
 

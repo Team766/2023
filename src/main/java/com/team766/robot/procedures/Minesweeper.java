@@ -19,15 +19,20 @@ public class Minesweeper extends Procedure {
 	int x;
 	int y;
 	boolean lost;
+	boolean won;
 	boolean showCursor;
 	Context mineContext;
-	final int NUM_OF_MINES = 100;
+	final int NUM_OF_MINES = 53;
 
 	public boolean isClicking = false;
 	public boolean isRight = false;
 	public boolean isLeft = false;
 	public boolean isUp = false;
 	public boolean isDown = false;
+	public boolean isUpRight = false;
+	public boolean isDownLeft = false;
+	public boolean isUpLeft = false;
+	public boolean isDownRight = false;
 	public boolean isFlagging = false;
 	public boolean isResetting = false;
 
@@ -41,6 +46,7 @@ public class Minesweeper extends Procedure {
 		shown = new int[h][w];
 		numOfClicks = 0;
 		lost = false;
+		won = false;
 		if (mineContext != null) {
 			mineContext.takeOwnership(Robot.candle);
 			Robot.candle.setColor(30, 30, 30);
@@ -64,6 +70,11 @@ public class Minesweeper extends Procedure {
 				isClicking = false;
 				log("Click");
 			}
+			if (isRight) {
+				moveRight();
+				isRight = false;
+				log("Right");
+			}
 			if (isUp) {
 				moveUp();
 				isUp = false;
@@ -79,10 +90,25 @@ public class Minesweeper extends Procedure {
 				isLeft = false;
 				log("Left");
 			}
-			if (isRight) {
-				moveRight();
-				isRight = false;
-				log("Right");
+			if (isUpRight) {
+				moveUpRight();
+				isUpRight = false;
+				log("Up Right");
+			}
+			if (isDownLeft) {
+				moveDownLeft();
+				isDownLeft = false;
+				log("Down Left");
+			}
+			if (isUpLeft) {
+				moveUpLeft();
+				isUpLeft = false;
+				log("Up Left");
+			}
+			if (isDownRight) {
+				moveDownRight();
+				isDownRight = false;
+				log("Down Right");
 			}
 			if (isFlagging) {
 				flag();
@@ -94,6 +120,7 @@ public class Minesweeper extends Procedure {
 				isResetting = false;
 				log("Reset");
 			}
+			checkForWin();
 			context.yield();
 		}
 	}
@@ -137,15 +164,37 @@ public class Minesweeper extends Procedure {
 			output(0, x);
 		} else {
 			y--;
-			output(y + 1, 0);
+			output(y + 1, x);
 		}
 		output(y, x);
+	}
+
+	public void moveUpRight() {
+		moveUp();
+		moveRight();
+	}
+
+	public void moveDownLeft() {
+		moveDown();
+		moveLeft();
+	}
+
+	public void moveDownRight() {
+		moveDown();
+		moveRight();
+	}
+
+	public void moveUpLeft() {
+		moveUp();
+		moveLeft();
 	}
 
 	private void output(int i, int j) {
 		mineContext.takeOwnership(Robot.candle);
 		if (lost) {
-			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), w * h);
+			Robot.candle.setColor(255, 0, 0);
+		} else if (won) {
+			Robot.candle.setColor(0, 255, 0);
 		} else if (showCursor && i == y && j == x) {
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		} else if (shown[i][j] == 0) {
@@ -154,9 +203,6 @@ public class Minesweeper extends Procedure {
 			Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 0) {
 			Robot.candle.setColor(0, 0, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == -1) {
-			//Yellow
-			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 1) {
 			//Blue
 			Robot.candle.setColor(0, 0, 255, Robot.candle.getMatrixID(i, j), 1);
@@ -170,8 +216,8 @@ public class Minesweeper extends Procedure {
 			//Purple
 			Robot.candle.setColor(94, 0, 170, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 5) {
-			//Plum
-			Robot.candle.setColor(102, 0, 85, Robot.candle.getMatrixID(i, j), 1);
+			//Yellow
+			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 6) {
 			//Cyan
 			Robot.candle.setColor(0, 128, 128, Robot.candle.getMatrixID(i, j), 1);
@@ -183,6 +229,18 @@ public class Minesweeper extends Procedure {
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		}
 		mineContext.releaseOwnership(Robot.candle);
+	}
+
+	public void checkForWin() {
+		boolean winning = true;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (grid[i][j] != -1 && shown[i][j] != 1) {
+					winning = false;
+				}
+			}
+		}
+		if (winning) won = true;
 	}
 
 	public void click() {
@@ -259,48 +317,125 @@ public class Minesweeper extends Procedure {
 			}
 			if (y != 0) {
 				output(y - 1, x);
+				clearZeros(y - 1, x);
 				if (x != 0) {
 					output(y - 1, x - 1);
+					clearZeros(y - 1, x - 1);
 				}
 				if (x != w - 1) {
 					output(y - 1, x + 1);
+					clearZeros(y - 1, x + 1);
 				}
 			}
 			if (x != 0) {
 				output(y, x - 1);
+				clearZeros(y, x - 1);
 			}
 			if (x != w - 1) {
 				output(y, x + 1);
+				clearZeros(y, x + 1);
 			}
 			if (y != h - 1) {
 				output(y + 1, x);
+				clearZeros(y + 1, x);
 				if (x != 0) {
 					output(y + 1, x - 1);
+					clearZeros(y + 1, x - 1);
 				}
 				if (x != w - 1) {
 					output(y + 1, x + 1);
+					clearZeros(y + 1, x + 1);
 				}
 			}
-			clearZeros(y - 1, x - 1);
-			clearZeros(y - 1, x + 1);
-			clearZeros(y + 1, x - 1);
-			clearZeros(y + 1, x + 1);
-		} else if (shown[y][x] == 0 && !lost) {
+		} else if (shown[y][x] == 0 && !lost && !won) {
 			numOfClicks++;
+			shown[y][x] = 1;
 			clearZeros(y, x);
+			output(y, x);
 			if (grid[y][x] == -1) {
 				lost = true;
 			}
+		} else if (shown[y][x] == 1 && !lost && !won) {
+			numOfClicks++;
+			moveUp();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveRight();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveDown();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveDown();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveLeft();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveLeft();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveUp();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveUp();
+			if (shown[y][x] == 0 && !lost && !won) {
+				click();
+			}
+			moveDownRight();
 		}
 	}
 
 	public void flag() {
-		if (shown[y][x] == 0) {
-			shown[y][x] = 2;
-		} else if (shown[y][x] == 2) {
-			shown[y][x] = 0;
+		if (numOfClicks > 0 && !won && !lost) {
+			if (shown[y][x] == 0) {
+				shown[y][x] = 2;
+			} else if (shown[y][x] == 2) {
+				shown[y][x] = 0;
+			} else {
+				moveUp();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveRight();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveDown();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveDown();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveLeft();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveLeft();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveUp();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveUp();
+				if (shown[y][x] == 0 && !lost && !won) {
+					flag();
+				}
+				moveDownRight();
+			}
+			output(y, x);
 		}
-		output(y, x);
 	}
 
 	private void clearZeros(int y, int x) {
