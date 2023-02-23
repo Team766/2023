@@ -36,9 +36,19 @@ public class Minesweeper extends Procedure {
 	public boolean isFlagging = false;
 	public boolean isResetting = false;
 
+	boolean isVisible = false;
+	boolean justShown = false;
+
 	public Minesweeper() {
 		reset();
 		sweeperLimiter = new RateLimiter(0.25);
+	}
+
+	public void changeVisible() {
+		isVisible = !isVisible;
+		if (isVisible) {
+			justShown = true;
+		}
 	}
 
 	public void reset() {
@@ -61,6 +71,20 @@ public class Minesweeper extends Procedure {
 		context.releaseOwnership(Robot.candle);
 		while (true) {
 			mineContext = context;
+			if (justShown) {
+				for (int i = 0; i < h; i += 2) {
+					for (int j = 0; j < w; j++) {
+						output(i, j);
+					}
+					context.waitForSeconds(0.01);
+				}
+				for (int i = 1; i < h; i += 2) {
+					for (int j = 0; j < w; j++) {
+						output(i, j);
+					}
+					context.waitForSeconds(0.01);
+				}
+			}
 			if (sweeperLimiter.next()) {
 				showCursor = !showCursor;
 				output(y, x);
@@ -190,45 +214,47 @@ public class Minesweeper extends Procedure {
 	}
 
 	private void output(int i, int j) {
-		mineContext.takeOwnership(Robot.candle);
-		if (lost) {
-			Robot.candle.setColor(255, 0, 0);
-		} else if (won) {
-			Robot.candle.setColor(0, 255, 0);
-		} else if (showCursor && i == y && j == x) {
-			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
-		} else if (shown[i][j] == 0) {
-			Robot.candle.setColor(30, 30, 30, Robot.candle.getMatrixID(i, j), 1);
-		} else if (shown[i][j] == 2) {
-			Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 0) {
-			Robot.candle.setColor(0, 0, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 1) {
-			// Blue
-			Robot.candle.setColor(0, 0, 255, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 2) {
-			// Green
-			Robot.candle.setColor(0, 145, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 3) {
-			// Red-Orange
-			Robot.candle.setColor(187, 51, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 4) {
-			// Purple
-			Robot.candle.setColor(94, 0, 170, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 5) {
-			// Yellow
-			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 6) {
-			// Cyan
-			Robot.candle.setColor(0, 128, 128, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 7) {
-			// Pink
-			Robot.candle.setColor(255, 0, 85, Robot.candle.getMatrixID(i, j), 1);
-		} else if (grid[i][j] == 8) {
-			// White
-			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
+		if (isVisible) {
+			mineContext.takeOwnership(Robot.candle);
+			if (lost) {
+				Robot.candle.setColor(255, 0, 0);
+			} else if (won) {
+				Robot.candle.setColor(0, 255, 0);
+			} else if (showCursor && i == y && j == x) {
+				Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
+			} else if (shown[i][j] == 0) {
+				Robot.candle.setColor(30, 30, 30, Robot.candle.getMatrixID(i, j), 1);
+			} else if (shown[i][j] == 2) {
+				Robot.candle.setColor(255, 0, 0, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 0) {
+				Robot.candle.setColor(0, 0, 0, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 1) {
+				// Blue
+				Robot.candle.setColor(0, 0, 255, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 2) {
+				// Green
+				Robot.candle.setColor(0, 145, 0, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 3) {
+				// Red-Orange
+				Robot.candle.setColor(187, 51, 0, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 4) {
+				// Purple
+				Robot.candle.setColor(94, 0, 170, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 5) {
+				// Yellow
+				Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 6) {
+				// Cyan
+				Robot.candle.setColor(0, 128, 128, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 7) {
+				// Pink
+				Robot.candle.setColor(255, 0, 85, Robot.candle.getMatrixID(i, j), 1);
+			} else if (grid[i][j] == 8) {
+				// White
+				Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
+			}
+			mineContext.releaseOwnership(Robot.candle);
 		}
-		mineContext.releaseOwnership(Robot.candle);
 	}
 
 	public void checkForWin() {

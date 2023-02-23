@@ -42,6 +42,7 @@ public class OI extends Procedure {
 		//GameOfLife gol = new GameOfLife(gameModes.GLIDER);
 		//context.startAsync(gol);
 		int lastPOV = -1;
+		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
