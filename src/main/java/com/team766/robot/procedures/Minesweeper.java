@@ -36,7 +36,7 @@ public class Minesweeper extends Procedure {
 	public boolean isFlagging = false;
 	public boolean isResetting = false;
 
-	boolean isVisible = false;
+	boolean isVisible = true;
 	boolean justShown = false;
 
 	public Minesweeper() {
