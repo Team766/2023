@@ -9,10 +9,10 @@ import com.team766.library.RateLimiter;
 public class Minesweeper extends Procedure {
 
 	private int w = 16;
-    private int h = 16;
-	//0 through 8 are numbers, -1 is a mine
+	private int h = 16;
+	// 0 through 8 are numbers, -1 is a mine
 	int[][] grid;
-	//0 is hidden, 1 is already clicked on, 2 is flagged
+	// 0 is hidden, 1 is already clicked on, 2 is flagged
 	int[][] shown;
 	RateLimiter sweeperLimiter;
 	int numOfClicks;
@@ -204,28 +204,28 @@ public class Minesweeper extends Procedure {
 		} else if (grid[i][j] == 0) {
 			Robot.candle.setColor(0, 0, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 1) {
-			//Blue
+			// Blue
 			Robot.candle.setColor(0, 0, 255, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 2) {
-			//Green
+			// Green
 			Robot.candle.setColor(0, 145, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 3) {
-			//Red-Orange
+			// Red-Orange
 			Robot.candle.setColor(187, 51, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 4) {
-			//Purple
+			// Purple
 			Robot.candle.setColor(94, 0, 170, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 5) {
-			//Yellow
+			// Yellow
 			Robot.candle.setColor(170, 170, 0, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 6) {
-			//Cyan
+			// Cyan
 			Robot.candle.setColor(0, 128, 128, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 7) {
-			//Pink
+			// Pink
 			Robot.candle.setColor(255, 0, 85, Robot.candle.getMatrixID(i, j), 1);
 		} else if (grid[i][j] == 8) {
-			//White
+			// White
 			Robot.candle.setColor(255, 255, 255, Robot.candle.getMatrixID(i, j), 1);
 		}
 		mineContext.releaseOwnership(Robot.candle);
@@ -240,7 +240,8 @@ public class Minesweeper extends Procedure {
 				}
 			}
 		}
-		if (winning) won = true;
+		if (winning)
+			won = true;
 	}
 
 	public void click() {
@@ -356,40 +357,90 @@ public class Minesweeper extends Procedure {
 				lost = true;
 			}
 		} else if (shown[y][x] == 1 && !lost && !won) {
-			numOfClicks++;
-			moveUp();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
+			int numAround = 0;
+			if (y != 0) {
+				numAround += shown[y - 1][x] == 2 ? 1 : 0;
+				if (x != 0) {
+					numAround += shown[y - 1][x - 1] == 2 ? 1 : 0;
+				}
+				if (x != w - 1) {
+					numAround += shown[y - 1][x + 1] == 2 ? 1 : 0;
+				}
 			}
-			moveRight();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
+			if (x != 0) {
+				numAround += shown[y][x - 1] == 2 ? 1 : 0;
 			}
-			moveDown();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
+			if (x != w - 1) {
+				numAround += shown[y][x + 1] == 2 ? 1 : 0;
 			}
-			moveDown();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
+			if (y != h - 1) {
+				numAround += shown[y + 1][x] == 2 ? 1 : 0;
+				if (x != 0) {
+					numAround += shown[y - 1][x - 1] == 2 ? 1 : 0;
+				}
+				if (x != w - 1) {
+					numAround += shown[y + 1][x + 1] == 2 ? 1 : 0;
+				}
 			}
-			moveLeft();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
+			if (numAround == grid[x][y]) {
+				numOfClicks++;
+				if (y != 0) {
+					moveUp();
+					if (shown[y][x] == 0 && !lost && !won) {
+						click();
+					}
+					moveDown();
+					if (x != 0) {
+						moveUpLeft();
+						if (shown[y][x] == 0 && !lost && !won) {
+							click();
+						}
+						moveDownRight();
+					}
+					if (x != w - 1) {
+						moveUpRight();
+						if (shown[y][x] == 0 && !lost && !won) {
+							click();
+						}
+						moveDownLeft();
+					}
+				}
+				if (x != 0) {
+					moveLeft();
+					if (shown[y][x] == 0 && !lost && !won) {
+						click();
+					}
+					moveRight();
+				}
+				if (x != w - 1) {
+					moveRight();
+					if (shown[y][x] == 0 && !lost && !won) {
+						click();
+					}
+					moveLeft();
+				}
+				if (y != h - 1) {
+					moveDown();
+					if (shown[y][x] == 0 && !lost && !won) {
+						click();
+					}
+					moveUp();
+					if (x != 0) {
+						moveDownLeft();
+						if (shown[y][x] == 0 && !lost && !won) {
+							click();
+						}
+						moveUpRight();
+					}
+					if (x != w - 1) {
+						moveDownRight();
+						if (shown[y][x] == 0 && !lost && !won) {
+							click();
+						}
+						moveUpLeft();
+					}
+				}
 			}
-			moveLeft();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
-			}
-			moveUp();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
-			}
-			moveUp();
-			if (shown[y][x] == 0 && !lost && !won) {
-				click();
-			}
-			moveDownRight();
 		}
 	}
 
@@ -400,39 +451,89 @@ public class Minesweeper extends Procedure {
 			} else if (shown[y][x] == 2) {
 				shown[y][x] = 0;
 			} else {
-				moveUp();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
+				int numAround = 0;
+				if (y != 0) {
+					numAround += shown[y - 1][x] == 1 ? 0 : 1;
+					if (x != 0) {
+						numAround += shown[y - 1][x - 1] == 1 ? 0 : 1;
+					}
+					if (x != w - 1) {
+						numAround += shown[y - 1][x + 1] == 1 ? 0 : 1;
+					}
 				}
-				moveRight();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
+				if (x != 0) {
+					numAround += shown[y][x - 1] == 1 ? 0 : 1;
 				}
-				moveDown();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
+				if (x != w - 1) {
+					numAround += shown[y][x + 1] == 1 ? 0 : 1;
 				}
-				moveDown();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
+				if (y != h - 1) {
+					numAround += shown[y + 1][x] == 1 ? 0 : 1;
+					if (x != 0) {
+						numAround += shown[y - 1][x - 1] == 1 ? 0 : 1;
+					}
+					if (x != w - 1) {
+						numAround += shown[y + 1][x + 1] == 1 ? 0 : 1;
+					}
 				}
-				moveLeft();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
+				if (numAround == grid[x][y]) {
+					if (y != 0) {
+						moveUp();
+						if (shown[y][x] == 0 && !lost && !won) {
+							flag();
+						}
+						moveDown();
+						if (x != 0) {
+							moveUpLeft();
+							if (shown[y][x] == 0 && !lost && !won) {
+								flag();
+							}
+							moveDownRight();
+						}
+						if (x != w - 1) {
+							moveUpRight();
+							if (shown[y][x] == 0 && !lost && !won) {
+								flag();
+							}
+							moveDownLeft();
+						}
+					}
+					if (x != 0) {
+						moveLeft();
+						if (shown[y][x] == 0 && !lost && !won) {
+							flag();
+						}
+						moveRight();
+					}
+					if (x != w - 1) {
+						moveRight();
+						if (shown[y][x] == 0 && !lost && !won) {
+							flag();
+						}
+						moveLeft();
+					}
+					if (y != h - 1) {
+						moveDown();
+						if (shown[y][x] == 0 && !lost && !won) {
+							flag();
+						}
+						moveUp();
+						if (x != 0) {
+							moveDownLeft();
+							if (shown[y][x] == 0 && !lost && !won) {
+								flag();
+							}
+							moveUpRight();
+						}
+						if (x != w - 1) {
+							moveDownRight();
+							if (shown[y][x] == 0 && !lost && !won) {
+								flag();
+							}
+							moveUpLeft();
+						}
+					}
 				}
-				moveLeft();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
-				}
-				moveUp();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
-				}
-				moveUp();
-				if (shown[y][x] == 0 && !lost && !won) {
-					flag();
-				}
-				moveDownRight();
 			}
 			output(y, x);
 		}
