@@ -1,3 +1,5 @@
+// todo: change variable names from firstJoint to joint
+
 package com.team766.robot.mechanisms;
 
 import com.team766.framework.Mechanism;
