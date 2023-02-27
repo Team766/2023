@@ -44,6 +44,8 @@ public class OI extends Procedure {
 		}
 
 		while (true) {
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+			RobotProvider.instance.refreshDriverStationData();
 
 			try {
 				// TODO: we want to break this down to run the loop faster for animation / motor control purposes
