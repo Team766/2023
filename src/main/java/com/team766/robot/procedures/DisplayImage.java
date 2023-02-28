@@ -20,9 +20,29 @@ public class DisplayImage extends Procedure {
 	final int w = Robot.candle.w;
 	String file;
 	boolean interlacing;
+
+	private int rotation = 0;
+
 	public DisplayImage(String file, boolean interlacing) {
 		this.file = file;
 		this.interlacing = interlacing;
+	}
+
+	public DisplayImage(String file) {
+		this.file = file;
+		this.interlacing = true;
+	}
+
+	public DisplayImage(String file, int rotation, boolean interlacing) {
+		this.file = file;
+		this.interlacing = interlacing;
+		this.rotation = rotation;
+	}
+
+	public DisplayImage(String file, int rotation) {
+		this.file = file;
+		this.interlacing = true;
+		this.rotation = rotation;
 	}
 
 	public void run(Context context) {
@@ -39,32 +59,58 @@ public class DisplayImage extends Procedure {
 			log(Severity.ERROR, "Could not load " + file);
 			return;
 		}
-		
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
-			}
+
+		switch (rotation) {
+			case 1:
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+					}
+				}
+				break;
+			case 2:
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+					}
+				}
+				break;
+			case 3:
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+					}
+				}
+				break;
+			default:
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+					}
+				}
 		}
-		
+
 		display(colors, context, interlacing);
 	}
 
 	public void display(Color[][] colors, Context context, boolean interlacing) {
 		if (interlacing) {
-			for (int i = 0; i < h; i+= 2) {
+			for (int i = 0; i < h; i += 2) {
 				for (int j = 0; j < w; j++) {
 					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
 					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
+							Robot.candle.getMatrixID(i, j), 1);
 					context.releaseOwnership(Robot.candle);
 				}
 				context.waitForSeconds(0.01);
 			}
-			for (int i = 1; i < h; i+= 2) {
+			for (int i = 1; i < h; i += 2) {
 				for (int j = 0; j < w; j++) {
 					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
 					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
+							Robot.candle.getMatrixID(i, j), 1);
 					context.releaseOwnership(Robot.candle);
 				}
 				context.waitForSeconds(0.01);
@@ -74,18 +120,20 @@ public class DisplayImage extends Procedure {
 				for (int j = 0; j < w; j++) {
 					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
 					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
+							Robot.candle.getMatrixID(i, j), 1);
 					context.releaseOwnership(Robot.candle);
 				}
 				context.waitForSeconds(0.01);
 			}
 		}
 	}
-	
+
 	public class Color {
 		public short r;
 		public short g;
 		public short b;
+
 		public Color(short r, short g, short b) {
 			this.r = r;
 			this.g = g;
