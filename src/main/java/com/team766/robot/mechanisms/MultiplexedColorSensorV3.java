@@ -24,7 +24,6 @@ public class MultiplexedColorSensorV3 extends Mechanism{
   private static I2C multiplexer;
   // The actual sensor. All of the methods call this sensor to get the data.
   private ColorSensorV3 sensor;
-  ArrayList<ColorSensorV3> colorSensors = new ArrayList<ColorSensorV3>();
   // What port on the multiplexer the color sensor is plugged into.
   private final int port;
   
@@ -36,7 +35,6 @@ public class MultiplexedColorSensorV3 extends Mechanism{
     this.port = port;
     setChannel();
     sensor = new ColorSensorV3(i2cPort);
-    colorSensors.add(new ColorSensorV3(i2cPort));
     
   }
 
@@ -89,6 +87,7 @@ public class MultiplexedColorSensorV3 extends Mechanism{
   }
  
   public void makeColorMatches(){
+    setChannel();
 		m_colorMatcher.addColorMatch(coneYellow);
 		m_colorMatcher.addColorMatch(cubePurple);
 		m_colorMatcher.addColorMatch(green);

@@ -39,7 +39,6 @@ public class OI extends Procedure {
 			Robot.bottomColorSensor.getPiece();
 			Robot.topColorSensor.getProximity();
 			Robot.bottomColorSensor.getProximity();
-			
 		}
 	}
 }

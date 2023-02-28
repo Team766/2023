@@ -9,7 +9,13 @@ import edu.wpi.first.wpilibj.util.Color;
 
 
 //identifies game pieces by color & checks if cones are held right
-/*NOTE: not fully confident on multiplexer stuff so I need to test it*/
+/*
+ * 
+ * 
+ * THIS CODE WILL NOT BE USED FOR THE FINAL ROBOT!!!!!
+ * 
+ * 
+*/
 
 public class ColorMatchMech extends Mechanism {
 	private final ColorMatch m_colorMatcher = new ColorMatch();

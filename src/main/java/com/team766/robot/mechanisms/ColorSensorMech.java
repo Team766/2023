@@ -5,6 +5,13 @@ import com.team766.framework.Mechanism;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
+/*
+ * 
+ * 
+ * THIS CODE WILL NOT BE USED FOR THE FINAL ROBOT!!!!!
+ * 
+ * 
+*/
 
 public class ColorSensorMech extends Mechanism {
 	private final I2C.Port i2cPort = I2C.Port.kOnboard;
