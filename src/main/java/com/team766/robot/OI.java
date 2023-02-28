@@ -34,23 +34,12 @@ public class OI extends Procedure {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
-
 			RobotProvider.instance.refreshDriverStationData();
 
-			Robot.arms.checkLimits(Robot.arms.getEncoderDistance(), Robot.arms.findEU());
-			
-			//Robot.arms.setA2(joystick1.getAxis(1));
-				
-
-
-			// Testing PID for the second arm and making it go to 7 eu
+			// Testing PID for the second arm and making it go to eu
 			if(joystick0.getButton(14)){
 				Robot.arms.pidForArm2(-41.42);
 			}
-
-				
-
-			
 			// Getting the encoder units for the second arm
 			if(joystick0.getButton(15)){
 				log(" h " + Robot.arms.findEU());
@@ -59,20 +48,13 @@ public class OI extends Procedure {
 			if(joystick0.getButton(8)){
 				log("" + Robot.arms.getEncoderDistance());
 			}
-			// Manually moving the first arm
-			//Robot.arms.setPulleyPower(joystick0.getAxis(1)*0.3);
-
-
-			
-			//Manually moving the second arm, commented out rn because pid dosen't work with it
 			
 			
-			/*  Using the antigravity on the first arm
+			// antigrav
 			if(joystick0.getButton(2)){
 				Robot.arms.setFfA();
 				Robot.arms.setFfB();
-				log(" " + Robot.arms.getEncoderDistance());
-			}*/
+			}
 			
 			//Reseting the encoder if we are not using absolutes
 			if(joystick0.getButton(1)){

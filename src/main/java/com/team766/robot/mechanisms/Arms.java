@@ -26,21 +26,9 @@ public class Arms extends Mechanism {
         firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
         secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
 
+        //MANUALLY CASTING THE MOTORS AS A CANSPARKMAXMOTORCONTROLLER SO THAT WE CAN USE CANSPARKMAX PID
         firstJointEx = (CANSparkMaxMotorController)firstJoint;
         secondJointEx = (CANSparkMaxMotorController)secondJoint;
-
-        /*firstJointEx.setP(0.1);
-        firstJointEx.setD(0.003);
-        firstJointEx.setOutputRange(-0.75, 0.75);
-        */
-        
-        
-	    
-	// We are able to tune the PID directly from the config file, so this is where we get the PID values set there
-        //pid = PIDController.loadFromConfig("ArmJoint1");
-        //pid4arm2 = PIDController.loadFromConfig("ArmJoint2");
-        
-
 
     }
     //This allows the pulley motor power to be changed, usually manually
