@@ -8,8 +8,8 @@ import com.team766.library.RateLimiter;
 
 public class Minesweeper extends Procedure {
 
-	private int w = 16;
-	private int h = 16;
+	private final int w = 16;
+	private final int h = 16;
 	// 0 through 8 are numbers, -1 is a mine
 	int[][] grid;
 	// 0 is hidden, 1 is already clicked on, 2 is flagged
@@ -402,13 +402,14 @@ public class Minesweeper extends Procedure {
 			if (y != h - 1) {
 				numAround += shown[y + 1][x] == 2 ? 1 : 0;
 				if (x != 0) {
-					numAround += shown[y - 1][x - 1] == 2 ? 1 : 0;
+					numAround += shown[y + 1][x - 1] == 2 ? 1 : 0;
 				}
 				if (x != w - 1) {
 					numAround += shown[y + 1][x + 1] == 2 ? 1 : 0;
 				}
 			}
-			if (numAround == grid[x][y]) {
+			log("" + numAround);
+			if (numAround == grid[y][x]) {
 				numOfClicks++;
 				if (y != 0) {
 					moveUp();
@@ -496,22 +497,25 @@ public class Minesweeper extends Procedure {
 				if (y != h - 1) {
 					numAround += shown[y + 1][x] == 1 ? 0 : 1;
 					if (x != 0) {
-						numAround += shown[y - 1][x - 1] == 1 ? 0 : 1;
+						numAround += shown[y + 1][x - 1] == 1 ? 0 : 1;
 					}
 					if (x != w - 1) {
 						numAround += shown[y + 1][x + 1] == 1 ? 0 : 1;
 					}
 				}
-				if (numAround == grid[x][y]) {
+				log("" + numAround + " " + grid[y][x]);
+				if (numAround == grid[y][x]) {
 					if (y != 0) {
 						moveUp();
 						if (shown[y][x] == 0 && !lost && !won) {
+							log("Up");
 							flag();
 						}
 						moveDown();
 						if (x != 0) {
 							moveUpLeft();
 							if (shown[y][x] == 0 && !lost && !won) {
+								log("UpLeft");
 								flag();
 							}
 							moveDownRight();
@@ -519,14 +523,18 @@ public class Minesweeper extends Procedure {
 						if (x != w - 1) {
 							moveUpRight();
 							if (shown[y][x] == 0 && !lost && !won) {
+								log("UpRight");
 								flag();
 							}
 							moveDownLeft();
+						} else {
+							log("Not UpRight " + w + " " + x);
 						}
 					}
 					if (x != 0) {
 						moveLeft();
 						if (shown[y][x] == 0 && !lost && !won) {
+							log("Right");
 							flag();
 						}
 						moveRight();
@@ -534,6 +542,7 @@ public class Minesweeper extends Procedure {
 					if (x != w - 1) {
 						moveRight();
 						if (shown[y][x] == 0 && !lost && !won) {
+							log("Left");
 							flag();
 						}
 						moveLeft();
@@ -541,12 +550,14 @@ public class Minesweeper extends Procedure {
 					if (y != h - 1) {
 						moveDown();
 						if (shown[y][x] == 0 && !lost && !won) {
+							log("Down");
 							flag();
 						}
 						moveUp();
 						if (x != 0) {
 							moveDownLeft();
 							if (shown[y][x] == 0 && !lost && !won) {
+								log("DownLeft");
 								flag();
 							}
 							moveUpRight();
@@ -554,6 +565,7 @@ public class Minesweeper extends Procedure {
 						if (x != w - 1) {
 							moveDownRight();
 							if (shown[y][x] == 0 && !lost && !won) {
+								log("DownRight");
 								flag();
 							}
 							moveUpLeft();
