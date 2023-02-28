@@ -10,7 +10,7 @@ public class Robot {
 
 	public static void robotInit() {
 		// Initialize mechanisms here
-		topColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 7);
-		bottomColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 1);
+		topColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 1);
+		bottomColorSensor = new MultiplexedColorSensorV3(I2C.Port.kOnboard, 7);
 	}
 }

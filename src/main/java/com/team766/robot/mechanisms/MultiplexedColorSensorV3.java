@@ -1,5 +1,6 @@
 package com.team766.robot.mechanisms;
 
+import java.util.ArrayList;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
@@ -22,10 +23,11 @@ public class MultiplexedColorSensorV3 extends Mechanism{
   // and so by making it static all sensors can access it.
   private static I2C multiplexer;
   // The actual sensor. All of the methods call this sensor to get the data.
-  private ColorSensorV3 sensor1;
-  private ColorSensorV3 sensor2;
+  private ColorSensorV3 sensor;
+  ArrayList<ColorSensorV3> colorSensors = new ArrayList<ColorSensorV3>();
   // What port on the multiplexer the color sensor is plugged into.
   private final int port;
+  
 
   public MultiplexedColorSensorV3 (I2C.Port i2cPort, int port) {
     if (multiplexer == null) {
@@ -33,11 +35,8 @@ public class MultiplexedColorSensorV3 extends Mechanism{
     }
     this.port = port;
     setChannel();
-    if(port == 1){
-      sensor1 = new ColorSensorV3(i2cPort);
-    } else {
-      sensor2 = new ColorSensorV3(i2cPort);
-    }
+    sensor = new ColorSensorV3(i2cPort);
+    colorSensors.add(new ColorSensorV3(i2cPort));
     
   }
 
@@ -59,7 +58,7 @@ public class MultiplexedColorSensorV3 extends Mechanism{
     //multiplexer.write(0x70, 1 << portNum);
     makeColorMatches();
     
-    Color detectedColor = sensor1.getColor();
+    Color detectedColor = sensor.getColor();
 		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -77,7 +76,7 @@ public class MultiplexedColorSensorV3 extends Mechanism{
   public String getProximity() {
     setChannel();
     //multiplexer.write(0x70, 1 << portNum);
-    int prox = sensor1.getProximity();
+    int prox = sensor.getProximity();
 		String proxResult;
 		if(prox<200){
 			proxResult = "object is out of range";
