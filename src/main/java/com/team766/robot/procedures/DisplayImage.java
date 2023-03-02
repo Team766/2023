@@ -64,21 +64,21 @@ public class DisplayImage extends Procedure {
 			case 1:
 				for (int i = 0; i < h; i++) {
 					for (int j = 0; j < w; j++) {
-						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+						colors[j][h - i - 1] = new Color(image.getData().getPixel(j, i, (double[]) null));
 					}
 				}
 				break;
 			case 2:
 				for (int i = 0; i < h; i++) {
 					for (int j = 0; j < w; j++) {
-						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+						colors[h - i - 1][w - j - 1] = new Color(image.getData().getPixel(j, i, (double[]) null));
 					}
 				}
 				break;
 			case 3:
 				for (int i = 0; i < h; i++) {
 					for (int j = 0; j < w; j++) {
-						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
+						colors[w - j - 1][i] = new Color(image.getData().getPixel(j, i, (double[]) null));
 					}
 				}
 				break;

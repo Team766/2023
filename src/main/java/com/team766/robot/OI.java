@@ -31,6 +31,7 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.startAsync(new DisplayImage("cone.png", true));
 		int imageDisplayed = 0;
+		int num = 0;
 
 		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png", "tnt.png", "torchflower.png", "quaver.png"};
 		
@@ -43,8 +44,9 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			if (joystick0.getButtonPressed(1)) {
 				imageDisplayed = (++imageDisplayed) % imageList.length;
+				num++;
 
-				context.startAsync(new DisplayImage(imageList[imageDisplayed], true));
+				context.startAsync(new DisplayImage(imageList[imageDisplayed], (num / imageList.length) % 4, true));
 			}
 		}
 	}
