@@ -80,8 +80,8 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 			proxResult = "object is out of range";
 			log("object is out of range "+port);
 		} else {
-			proxResult = "sensing object :)";
-			log("sensing object :) "+port);
+			proxResult = "sensing object :-)";
+			log("sensing object :-) "+port);
 		}
 		return proxResult;
   }
