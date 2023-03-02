@@ -24,6 +24,8 @@ public class OI extends Procedure {
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
+
+		Robot.arms.addArm(RobotProvider.instance.getMotor("arms.firstJoint"), RobotProvider.instance.getMotor("arms.secondJoint"));
 	}
 	
 	public void run(Context context) {

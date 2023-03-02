@@ -13,23 +13,18 @@ public class Arms extends Mechanism {
     //This enables the code to interact with the motor that controls the pulley
     private MotorController firstJoint;
     private MotorController secondJoint;
-    private EncoderReader firstJointReader;
-    private EncoderReader secondJointreader;
 
     private CANSparkMaxMotorController firstJointEx;
     private CANSparkMaxMotorController secondJointEx;
- 
-    // private EncoderReader pulleyEncoder;
+
 
     public Arms() {
-	// getting motors from config file
-        firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
-        secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
 
-        //MANUALLY CASTING THE MOTORS AS A CANSPARKMAXMOTORCONTROLLER SO THAT WE CAN USE CANSPARKMAX PID
-        firstJointEx = (CANSparkMaxMotorController)firstJoint;
-        secondJointEx = (CANSparkMaxMotorController)secondJoint;
-
+    }
+    
+    public void addArm(MotorController motor1, MotorController motor2){
+        firstJointEx = (CANSparkMaxMotorController)motor1;
+        secondJointEx = (CANSparkMaxMotorController)motor2;
     }
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
