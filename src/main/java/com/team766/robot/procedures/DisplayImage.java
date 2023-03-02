@@ -16,10 +16,10 @@ import java.awt.image.BufferedImage;
 
 public class DisplayImage extends Procedure {
 
-	final int h = Robot.candle.h;
-	final int w = Robot.candle.w;
-	String file;
-	boolean interlacing;
+	private final int h = Robot.candle.h;
+	private final int w = Robot.candle.w;
+	private String file;
+	private boolean interlacing;
 
 	private int rotation = 0;
 
@@ -124,7 +124,7 @@ public class DisplayImage extends Procedure {
 							Robot.candle.getMatrixID(i, j), 1);
 					context.releaseOwnership(Robot.candle);
 				}
-				context.waitForSeconds(0.01);
+				context.waitForSeconds(0.0001);
 			}
 		}
 	}
