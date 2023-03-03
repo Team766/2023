@@ -18,60 +18,57 @@ public class Arms extends Mechanism {
     private CANSparkMaxMotorController secondJointEx;
 
 
-    public Arms() {
+    public Arms(MotorController motor1, MotorController motor2) {
+        firstJoint = motor1;
+        secondJoint = motor2;
+
+        firstJointEx = (CANSparkMaxMotorController)motor1;
+        secondJointEx = (CANSparkMaxMotorController)motor2;
 
     }
     
-    public void addArm(MotorController motor1, MotorController motor2){
-        firstJointEx = (CANSparkMaxMotorController)motor1;
-        secondJointEx = (CANSparkMaxMotorController)motor2;
-    }
+
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
-    public void setPulleyPower(double power) {
+    public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
     }
     // Getter method for getting the first arms encoder distance
-    public double getEncoderDistance() {
+    public double getEncoderDistanceOfArmOne() {
         return firstJoint.getSensorPosition();
     }
     // resetting the encoder distance to zero for use without absolutes
-    public void resetEncoder(){
+    public void resetEncoders(){
         checkContextOwnership();
         firstJoint.setSensorPosition(0);
         secondJoint.setSensorPosition(0);
     }
 
 	// PID for first arm
-    public void pidtest(double value){
+    public void pidForArmOne(double value){
         firstJointEx.set(ControlMode.Position, value);
         log(" he" + value );
         
     }
 	// PID for second arm
-    public void pidForArm2(double height_encoderUnits){
+    public void pidForArmTwo(double height_encoderUnits){
         secondJointEx.set(ControlMode.Position, height_encoderUnits);
     }
 	
 	// resetting time for use with the I in PID.
 	
 	// getter method for getting the encoder position of arm 2
-    public double findEU(){
+    public double getEncoderDistanceOfArmTwo(){
         return secondJoint.getSensorPosition();
     }
 	// antigrav
-    public void setFfA(){ // Use Encoder Units to Radians in the sine
+    public void holdArms(){ // Use Encoder Units to Radians in the sine
         firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-        
-        log("ff: " + (-Math.sin(Math.PI / 88) * firstJoint.getSensorPosition()) * .021);
-    }
-
-    public void setFfB(){
         secondJoint.set((-Math.sin((Math.PI / 88) * findEU())) * .011);
-    }
+        
 
-    
+    }
 
 	//changing degrees to encoder units for the non absolute encoder
     public double degreesToEU(double angle) {
@@ -79,7 +76,7 @@ public class Arms extends Mechanism {
     }
 	
 	// manual changing of arm 2.
-    public void setA2(double set){
+    public void manuallySetArmTwoPower(double set){
         secondJoint.set(set);
     }
 

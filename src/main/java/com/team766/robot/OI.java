@@ -25,7 +25,7 @@ public class OI extends Procedure {
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
 
-		Robot.arms.addArm(RobotProvider.instance.getMotor("arms.firstJoint"), RobotProvider.instance.getMotor("arms.secondJoint"));
+
 	}
 	
 	public void run(Context context) {
@@ -38,53 +38,40 @@ public class OI extends Procedure {
 			
 			RobotProvider.instance.refreshDriverStationData();
 
-			// Testing PID for the second arm and making it go to eu
-			if(joystick0.getButton(14)){
-				Robot.arms.pidForArm2(-41.42);
-			}
-			// Getting the encoder units for the second arm
-			if(joystick0.getButton(15)){
-				log(" h " + Robot.arms.findEU());
-			}
-			// Getting the encoder units for the first arm
-			if(joystick0.getButton(8)){
-				log("" + Robot.arms.getEncoderDistance());
-			}
-			
-			
-			// antigrav
-			if(joystick0.getButton(2)){
-				Robot.arms.setFfA();
-				Robot.arms.setFfB();
-			}
-			
-			//Reseting the encoder if we are not using absolutes
 			if(joystick0.getButton(1)){
-				Robot.arms.resetEncoder();
+				Robot.arms.resetEncoders();
 			}
-			
-			// Using pid on the first arm to set the arm to different angles
-			if (joystick0.getButton(5)) {
-				Robot.arms.pidtest(Robot.arms.degreesToEU(80));
-			
-			} else if(joystick0.getButton(6)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(60));
-				
-			} else if(joystick0.getButton(7)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(30));
-				
-			} else if(joystick0.getButton(8)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(0));
-				
-			} else if(joystick0.getButton(9)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-30));
-				
-			} else if(joystick0.getButton(10)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-60));
-				
-			} else {
-				
+
+			if(joystick0.getButton(2)){
+				Robot.arms.holdArms();
 			}
+
+
+			if(joystick0.getButton(3)){
+				Robot.arms.pidForArmTwo(15);
+			}
+
+			if(joystick0.getButton(4)){
+				Robot.arms.pidForArmTwo(-15);
+			}
+
+			if(joystick0.getButton(5)){
+				Robot.arms.pidForArmTwo(0);
+			}
+
+			
+			if(joystick0.getButton(6)){
+				Robot.arms.pidForArmOne(15);
+			}
+
+			if(joystick0.getButton(7)){
+				Robot.arms.pidForArmOne(-15);
+			}
+
+			if(joystick0.getButton(8)){
+				Robot.arms.pidForArmOne(0);
+			}
+
 
 			
 
