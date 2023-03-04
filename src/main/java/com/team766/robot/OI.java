@@ -42,6 +42,7 @@ public class OI extends Procedure {
 
 			//determines cone orientation
 			//i have no idea where to put this so it's in oi for now...
+			//probably gonna put this stuff somewhere else once we've put the intake and sensor code together
 			boolean topColor = Robot.topColorSensor.getPiece() != "Other";
 			boolean bottomColor = Robot.bottomColorSensor.getPiece() != "Other";
 			String orientation = "no piece";
