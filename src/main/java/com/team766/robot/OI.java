@@ -46,7 +46,9 @@ public class OI extends Procedure {
 				imageDisplayed = (++imageDisplayed) % imageList.length;
 				num++;
 
-				context.startAsync(new DisplayImage(imageList[imageDisplayed].substring(0, 7).equals("filter_"), imageList[imageDisplayed], (num / imageList.length) % 4, true));
+				boolean filter = imageList[imageDisplayed].substring(0, 7).equals("filter_");
+
+				context.startAsync(new DisplayImage(filter, filter? imageList[imageDisplayed].substring(7) : imageList[imageDisplayed], (num / imageList.length) % 4, true));
 			}
 		}
 	}
