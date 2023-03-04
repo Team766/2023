@@ -31,17 +31,10 @@ import java.awt.image.Raster;
 
 public class CANdleMech extends Mechanism {
 
-	
-
 	private final CANdle m_candle = new CANdle(5);
-	private int matrixStart;
-	public int w;
-	public int h;
 
-	public CANdleMech(int matrixStart, int w, int h) {
-		this.matrixStart = matrixStart;
-		this.w = w;
-		this.h = h;
+	public CANdleMech() {
+		
 	}
 
 	public void setColor(short r, short g, short b, int index, int count) {

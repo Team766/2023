@@ -8,6 +8,6 @@ public class Robot {
 
 	public static void robotInit() {
 		// Initialize mechanisms here
-		candle = new CANdleMech(8, 16, 16);
+		candle = new CANdleMech();
 	}
 }
