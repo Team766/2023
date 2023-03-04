@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class MultiplexedColorSensorV3 extends Mechanism{
+  //setting all the possible colors the sensors could decide it is seeing (only coneYellow and cubePurple matter)
   private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
 	private final Color green = new Color(0.197, 0.561, 0.240);
@@ -17,6 +18,7 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 	private final Color white = new Color(1.0,1.0,1.0);
 	private final Color boxTube1 = new Color(0.359,0.460,0.181);
 	private final Color offWhite = new Color(0.381,0.463,0.157);
+
   private final int kMultiplexerAddress = 0x70;
   private final ColorMatch m_colorMatcher = new ColorMatch();
   // The multiplexer I2C is static because it needs to be used for ALL of the multiplexer sensors,
@@ -46,14 +48,10 @@ public class MultiplexedColorSensorV3 extends Mechanism{
     multiplexer.write(kMultiplexerAddress, 1 << port);
   }
 
-  /*-----------------------------------------------------------------------*/
-  /* Below are all of the methods used for the color sensor. */
-  /* All this does is set the channel, then run the command on the sensor. */
-  /*-----------------------------------------------------------------------*/
-
+  //returns what the sensor sees: cone, piece, or other
   public String getPiece() {
     setChannel();
-    //multiplexer.write(0x70, 1 << portNum);
+    
     makeColorMatches();
     
     Color detectedColor = sensor.getColor();
@@ -70,10 +68,10 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 		log("piece: "+piece+" port: "+port);
 		return piece;
   }
-
+  //sensor will return whether or not an object is <= ~4cm from it
   public String getProximity() {
     setChannel();
-    //multiplexer.write(0x70, 1 << portNum);
+    
     int prox = sensor.getProximity();
 		String proxResult;
 		if(prox<200){
@@ -85,7 +83,7 @@ public class MultiplexedColorSensorV3 extends Mechanism{
 		}
 		return proxResult;
   }
- 
+  //gives sensors options of how to identify colors they are seeing
   public void makeColorMatches(){
     setChannel();
 		m_colorMatcher.addColorMatch(coneYellow);
