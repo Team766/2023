@@ -29,27 +29,11 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		int color = 0;
-		context.takeOwnership(Robot.candle);
-		Robot.candle.setColor(0, 0, 0);
-		context.releaseOwnership(Robot.candle);
 		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
-
-			if (joystick0.getButtonPressed(1)) {
-				color = (++color) % 3; 
-				context.takeOwnership(Robot.candle);
-				log(color + " ");
-				switch (color) {
-					case 0: Robot.candle.setColor(0, 0, 0); break;
-					case 1: Robot.candle.setColor(255, 0, 255); break;
-					case 2: Robot.candle.setColor(255, 255, 0); break;
-				}
-				context.releaseOwnership(Robot.candle);
-			}
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
