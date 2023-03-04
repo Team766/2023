@@ -29,27 +29,31 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		context.startAsync(new DisplayImage("cone.png", true));
-		int imageDisplayed = 0;
-		int num = 0;
-
-		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png", "tnt.png", "torchflower.png", "quaver.png", "brian.png", "filter_adrian.png", "filter_raj.png"};
-		//context.startAsync(new PlayAnimation("anim", 4, 12, true));
+		int color = 0;
+		context.takeOwnership(Robot.candle);
+		Robot.candle.setColor(0, 0, 0);
+		context.releaseOwnership(Robot.candle);
+		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
 
+			if (joystick0.getButtonPressed(1)) {
+				color = (++color) % 3; 
+				context.takeOwnership(Robot.candle);
+				log(color + " ");
+				switch (color) {
+					case 0: Robot.candle.setColor(0, 0, 0); break;
+					case 1: Robot.candle.setColor(255, 0, 255); break;
+					case 2: Robot.candle.setColor(255, 255, 0); break;
+				}
+				context.releaseOwnership(Robot.candle);
+			}
+
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			if (joystick0.getButtonPressed(1)) {
-				imageDisplayed = (++imageDisplayed) % imageList.length;
-				num++;
-
-				boolean filter = imageList[imageDisplayed].substring(0, 7).equals("filter_");
-
-				context.startAsync(new DisplayImage(filter, filter? imageList[imageDisplayed].substring(7) : imageList[imageDisplayed], (num / imageList.length) % 4, true));
-			}
+			
 		}
 	}
 }

@@ -46,16 +46,12 @@ public class CANdleMech extends Mechanism {
 
 	public void setColor(short r, short g, short b, int index, int count) {
 		checkContextOwnership();
-		m_candle.setLEDs(r / 3, g / 3, b / 3, 0, index, count);
+		m_candle.setLEDs(r / 5, g / 5, b / 5, 0, index, count);
 	}
 
-	public int getMatrixID(int x, int y) {
-		if (y % 2 == 0) {
-			return h * y + x + matrixStart;
-		} else {
-			return h * y + w - 1 - x + matrixStart;
-		}
+	public void setColor(int r, int g, int b) {
+		checkContextOwnership();
+		m_candle.setLEDs(r / 5, g / 5, b / 5);
 	}
-
 	
 }
