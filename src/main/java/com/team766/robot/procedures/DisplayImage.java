@@ -20,6 +20,7 @@ public class DisplayImage extends Procedure {
 	private final int w = Robot.candle.w;
 	private String file;
 	private boolean interlacing;
+	private boolean filter = false;
 
 	private int rotation = 0;
 
@@ -43,6 +44,32 @@ public class DisplayImage extends Procedure {
 		this.file = file;
 		this.interlacing = true;
 		this.rotation = rotation;
+	}
+
+	public DisplayImage(boolean filter, String file, boolean interlacing) {
+		this.file = file;
+		this.interlacing = interlacing;
+		this.filter = filter;
+	}
+
+	public DisplayImage(boolean filter, String file) {
+		this.file = file;
+		this.interlacing = true;
+		this.filter = filter;
+	}
+
+	public DisplayImage(boolean filter, String file, int rotation, boolean interlacing) {
+		this.file = file;
+		this.interlacing = interlacing;
+		this.rotation = rotation;
+		this.filter = filter;
+	}
+
+	public DisplayImage(boolean filter, String file, int rotation) {
+		this.file = file;
+		this.interlacing = true;
+		this.rotation = rotation;
+		this.filter = filter;
 	}
 
 	public void run(Context context) {
@@ -88,6 +115,19 @@ public class DisplayImage extends Procedure {
 						colors[i][j] = new Color(image.getData().getPixel(j, i, (double[]) null));
 					}
 				}
+		}
+
+		if (filter) {
+			int min = 100;
+			int max = 255;
+			double factor = max - min;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					colors[i][j].r = (short) ((Math.min(Math.max(min, colors[i][j].r), max) - min) * (255 / factor));
+					colors[i][j].g = (short) ((Math.min(Math.max(min, colors[i][j].g), max) - min) * (255 / factor));
+					colors[i][j].b = (short) ((Math.min(Math.max(min, colors[i][j].b), max) - min) * (255 / factor));
+				}
+			}
 		}
 
 		display(colors, context, interlacing);

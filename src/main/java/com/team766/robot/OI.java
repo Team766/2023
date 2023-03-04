@@ -33,8 +33,8 @@ public class OI extends Procedure {
 		int imageDisplayed = 0;
 		int num = 0;
 
-		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png", "tnt.png", "torchflower.png", "quaver.png", "brian.png"};
-		context.startAsync(new PlayAnimation("anim", 4, 12, true));
+		String[] imageList = {"cone.png", "cone-2.png", "cube.png", "cube-2.png", "progamer.png", "tnt.png", "torchflower.png", "quaver.png", "brian.png", "filter_adrian.png", "filter_raj.png"};
+		//context.startAsync(new PlayAnimation("anim", 4, 12, true));
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -42,12 +42,12 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			/*if (joystick0.getButtonPressed(1)) {
+			if (joystick0.getButtonPressed(1)) {
 				imageDisplayed = (++imageDisplayed) % imageList.length;
 				num++;
 
-				context.startAsync(new DisplayImage(imageList[imageDisplayed], (num / imageList.length) % 4, true));
-			}*/
+				context.startAsync(new DisplayImage(imageList[imageDisplayed].substring(0, 7).equals("filter_"), imageList[imageDisplayed], (num / imageList.length) % 4, true));
+			}
 		}
 	}
 }
