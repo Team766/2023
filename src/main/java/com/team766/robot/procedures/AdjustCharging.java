@@ -20,14 +20,14 @@ public class AdjustCharging extends Procedure {
 		context.takeOwnership(Robot.gyro);
 	}
 
-	private PointDir calculateGyroValue() { 
-		//TODO: test whether gyro value is absolute, and if so, is it roll or pitch
-		//assuming it is absolute and yaw
-		PointDir gyroValue = new PointDir(0, 0, 0);
-		if (pitch < LEVEL) {
-			return gyroValue;
-		} //else if ()
-	}
+	// private PointDir calculateGyroValue() { 
+	// 	//TODO: test whether gyro value is absolute, and if so, is it roll or pitch
+	// 	//assuming it is absolute and yaw
+	// 	PointDir gyroValue = new PointDir(0, 0, 0);
+	// 	if (pitch < LEVEL) {
+	// 		return gyroValue;
+	// 	} //else if ()
+	// }
 
 	private int adjustSign(double angle) {
 		return (angle > 0) ? (1) : (-1);

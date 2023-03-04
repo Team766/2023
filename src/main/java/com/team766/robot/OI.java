@@ -144,6 +144,10 @@ public class OI extends Procedure {
 				Robot.drive.setBackRightEncoders();
 				Robot.drive.setBackLeftEncoders();
 			}
+
+			log("Pitch" + Robot.gyro.getGyroPitch());
+			log("Roll" + Robot.gyro.getGyroRoll());
+
 			// if(joystick1.getButton(1)){
 			// turningValue = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			// } else {
