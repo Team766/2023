@@ -49,6 +49,9 @@ public class OI extends Procedure {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
+			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
+			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
@@ -57,19 +60,8 @@ public class OI extends Procedure {
 			}else{
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 			}		
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
-				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-			} else {
-				RightJoystick_Y = 0;
-			}
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05){
-				RightJoystick_X = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;
-				if(joystick1.getButton(3)){
-					RightJoystick_X *= 2;
-				}	
-			} else {
-				RightJoystick_X = 0;	
-			}
+			
+			
 			
 			if(joystick0.getButtonPressed(1))
 				Robot.gyro.resetGyro();
