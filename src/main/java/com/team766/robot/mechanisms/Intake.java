@@ -64,7 +64,7 @@ public class Intake extends Mechanism {
 	*	conveyorBelt.set(power);
 	* }
 	* a different method will check if the sensor sees stuff
-	* if(colorSensor.getStorage) stop the motors and arms
+	* if(sensor1.getStorage || sensor2.getStrorage) stop the motors and arms
 	*/
 
 	public void startArms(){
