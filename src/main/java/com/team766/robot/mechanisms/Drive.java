@@ -639,6 +639,10 @@ public class Drive extends Mechanism {
 		setBackRightAngle(newAngle(-135, getCurrentAngle(m_SteerBackRight)));
 	}
 
+	public void setCurrentPosition(Point P) {
+		swerveOdometry.setCurrentPosition(P);
+	}
+
 	public void resetCurrentPosition() {
 		swerveOdometry.setCurrentPosition(new Point(0, 0));
 	}

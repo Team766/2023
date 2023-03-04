@@ -58,6 +58,7 @@ public class FollowPoints extends Procedure {
 	private Procedure[] proceduresAtPoints;
 	private boolean[] criticalPointList;
 	private boolean[] stopRobotList;
+	private Point startingPoint = null;
 
 	private int targetNum = 0;
 	private RateLimiter followLimiter = new RateLimiter(FollowPointsInputConstants.RATE_LIMITER_TIME);
@@ -77,11 +78,36 @@ public class FollowPoints extends Procedure {
 	}*/
 
 	/**
-	 * Constructor to create a new FollowPoints instance.
+	 * Constructor to create a new robot-oriented FollowPoints instance.
 	 * @param file filename for the waypoints file to load and use.
 	 * @throws IOException Thrown if file is not found.
 	 */
 	public FollowPoints(String file) {
+		String str;
+		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
+		try {
+			str = Files.readString(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			log(Severity.ERROR, "Could not load " + file);
+			return;
+		}
+		
+		JSONArray points = new JSONObject(str).getJSONArray("points");
+		for (int i = 0; i < points.length(); i++) {
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
+		}
+		addWaypoints();
+	}
+
+	/**
+	 * Constructor to create a new field-oriented FollowPoints instance.
+	 * @param startingPoint The original position of the robot
+	 * @param file filename for the waypoints file to load and use.
+	 * @throws IOException Thrown if file is not found.
+	 */
+	public FollowPoints(Point startingPoint, String file) {
+		this.startingPoint = startingPoint;
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -111,9 +137,22 @@ public class FollowPoints extends Procedure {
 	}
 
 	/**
-	 * Default FollowPoints Constructor. Steps must be added in-code.
+	 * Default FollowPoints Constructor. Steps must be added in-code. This is robot-oriented.
 	 */
 	public FollowPoints() {
+		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
+		addStep(new PointDir(2,0, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(2,2, 0), false, new DoNothing(), false);
+		addStep(new PointDir(0,2, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 0), true, new DoNothing(), false);
+		addWaypoints();
+	}
+
+	/**
+	 * Default FollowPoints Constructor but with starting point. Steps must be added in-code. This is field-oriented.
+	 */
+	public FollowPoints(Point startingPoint) {
+		this.startingPoint = startingPoint;
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
 		addStep(new PointDir(2,0, 90), false, null /* don't execute procedure */, false);
 		addStep(new PointDir(2,2, 0), false, new DoNothing(), false);
@@ -150,10 +189,26 @@ public class FollowPoints extends Procedure {
 
 
 	/**
-	 * Constructor which takes an array of points.
+	 * Constructor which takes an array of points, and is robot-oriented.
 	 * @param points Array of PointDir objects for the robot to follow, consisting of x- and y- coordinates, as well as a target header for the robot.
 	 */
 	public FollowPoints(PointDir[] points) {
+		pointList = points;
+		proceduresAtPoints = new Procedure[pointList.length];
+		for (int i = 0; i < proceduresAtPoints.length; i++) {
+			proceduresAtPoints[i] = new DoNothing();
+		}
+		criticalPointList = new boolean[pointList.length];
+		stopRobotList = new boolean[pointList.length];
+		loggerCategory = Category.AUTONOMOUS;
+	}
+
+	/**
+	 * Constructor which takes an array of points, and is field-oriented.
+	 * @param points Array of PointDir objects for the robot to follow, consisting of x- and y- coordinates, as well as a target header for the robot.
+	 */
+	public FollowPoints(Point startingPoint, PointDir[] points) {
+		this.startingPoint = startingPoint;
 		pointList = points;
 		proceduresAtPoints = new Procedure[pointList.length];
 		for (int i = 0; i < proceduresAtPoints.length; i++) {
@@ -184,9 +239,14 @@ public class FollowPoints extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
-		//This resetCurrentPosition() call makes FollowPoints() robot-oriented instead of field-oriented
-		//If we need to make this method field-oriented, just remove this line
-		Robot.drive.resetCurrentPosition();
+		
+		if (startingPoint == null) {
+			for (int i = 0; i < pointList.length; i++) {
+				pointList[i].add(Robot.drive.getCurrentPosition());
+			}
+		} else {
+			Robot.drive.setCurrentPosition(startingPoint);
+		}
 		targetNum = 0;
 
 		for (int i = 0; i < pointList.length; i++) {
