@@ -38,6 +38,9 @@ public class OI extends Procedure {
 			
 			RobotProvider.instance.refreshDriverStationData();
 
+			Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.3);
+			Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
+
 			if(joystick0.getButton(1)){
 				Robot.arms.resetEncoders();
 			}
@@ -49,6 +52,7 @@ public class OI extends Procedure {
 
 			if(joystick0.getButton(3)){
 				Robot.arms.pidForArmTwo(15);
+				log("It works");
 			}
 
 			if(joystick0.getButton(4)){

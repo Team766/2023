@@ -11,14 +11,23 @@ import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
     //This enables the code to interact with the motor that controls the pulley
-    private MotorController firstJoint;
-    private MotorController secondJoint;
+    private MotorController firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
+    private MotorController secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
 
-    private CANSparkMaxMotorController firstJointEx;
-    private CANSparkMaxMotorController secondJointEx;
+    private CANSparkMaxMotorController firstJointEx = (CANSparkMaxMotorController)firstJoint;
+    private CANSparkMaxMotorController secondJointEx = (CANSparkMaxMotorController)secondJoint;
+
+    
+
+    public Arms(){
+        
+    }
 
 
-    public Arms(MotorController motor1, MotorController motor2) {
+    //This allows the pulley motor power to be changed, usually manually
+    //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
+
+    public void addArms(MotorController motor1, MotorController motor2){
         firstJoint = motor1;
         secondJoint = motor2;
 
@@ -26,10 +35,6 @@ public class Arms extends Mechanism {
         secondJointEx = (CANSparkMaxMotorController)motor2;
 
     }
-    
-
-    //This allows the pulley motor power to be changed, usually manually
-    //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
     public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
@@ -54,6 +59,7 @@ public class Arms extends Mechanism {
 	// PID for second arm
     public void pidForArmTwo(double height_encoderUnits){
         secondJointEx.set(ControlMode.Position, height_encoderUnits);
+        log("zao jong wo shin zai wa yo bing chilling");
     }
 	
 	// resetting time for use with the I in PID.
@@ -65,7 +71,7 @@ public class Arms extends Mechanism {
 	// antigrav
     public void holdArms(){ // Use Encoder Units to Radians in the sine
         firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-        secondJoint.set((-Math.sin((Math.PI / 88) * findEU())) * .011);
+        secondJoint.set((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011);
         
 
     }
@@ -76,20 +82,14 @@ public class Arms extends Mechanism {
     }
 	
 	// manual changing of arm 2.
-    public void manuallySetArmTwoPower(double set){
-        secondJoint.set(set);
+    public void manuallySetArmTwoPower(double power){
+        checkContextOwnership();
+        secondJoint.set(power);
     }
 
-    public boolean checkLimits(double a1_pos, double a2_pos){
-        if(a1_pos < 40 && a1_pos > -30 && a2_pos > -40 && a2_pos < 40 ){
-            return true;
-        } else {
-            firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-            secondJoint.set((-Math.sin((Math.PI / 88) * findEU())) * .011);
-            return false;
-        }
+    
         
-    }
+    
 
     
     }
