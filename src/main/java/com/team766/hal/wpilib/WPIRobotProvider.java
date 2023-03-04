@@ -206,9 +206,7 @@ public class WPIRobotProvider extends RobotProvider {
 	@Override
 	public DigitalInputReader getDigitalInput(int index) {
 		if (digInputs[index] == null) {
-		if (digInputs[index] == null) {
 			digInputs[index] = new DigitalInput(index);
-		}
 		}
 		return digInputs[index];
 	}
