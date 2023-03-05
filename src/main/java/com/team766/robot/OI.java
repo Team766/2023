@@ -29,12 +29,12 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		context.startAsync(new DisplayImage("cone.png", true));
+		//context.startAsync(new DisplayImage("cone.png", true));
 		int imageDisplayed = 0;
 		int num = 0;
 
 		//String[] imageList = {"cone.png", "cube.png", "progamer.png", "quaver.png", "adrian.png", "raj.png"};
-		context.startAsync(new PlayAnimation("rickroll", 400, 25, true));
+		context.startAsync(new PlayAnimation("rickroll", 5000, 25, true));
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());

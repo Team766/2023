@@ -18,15 +18,21 @@ public class DisplayImage extends Procedure {
 
 	private final int h = Robot.candle.h;
 	private final int w = Robot.candle.w;
+	private int half = -1;
 	private String file;
 	private boolean interlacing;
-	private int filter = 0;
 
 	private int rotation = 0;
 
 	public DisplayImage(String file, boolean interlacing) {
 		this.file = file;
 		this.interlacing = interlacing;
+	}
+
+	public DisplayImage(String file, boolean interlacing, int half) {
+		this.file = file;
+		this.interlacing = interlacing;
+		this.half = half;
 	}
 
 	public DisplayImage(String file) {
@@ -52,6 +58,7 @@ public class DisplayImage extends Procedure {
 		fileObj = path.toFile();
 		BufferedImage image;
 		Color[][] colors = new Color[h][w];
+		Color[][] previousColors = new Color[h][w];
 
 		try {
 			image = ImageIO.read(fileObj);
@@ -100,43 +107,61 @@ public class DisplayImage extends Procedure {
 			}
 		}
 
-		display(colors, context, interlacing);
+		display(colors, previousColors, context, interlacing);
 	}
 
-	public void display(Color[][] colors, Context context, boolean interlacing) {
+	public void display(Color[][] colors, Color[][] previousColors, Context context, boolean interlacing) {
 		if (interlacing) {
-			for (int i = 0; i < h; i += 2) {
-				for (int j = 0; j < w; j++) {
-					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
-					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
-							Robot.candle.getMatrixID(i, j), 1);
-					context.releaseOwnership(Robot.candle);
+			if (half != 0) {
+				for (int i = 0; i < h; i += 2) {
+					for (int j = 0; j < w; j++) {
+						log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
+						if (colors[i][j] != previousColors[i][j]) {
+							context.takeOwnership(Robot.candle);
+							Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+							context.releaseOwnership(Robot.candle);
+						}
+					}
+					context.waitForSeconds(0.0001);
 				}
-				context.waitForSeconds(0.01);
 			}
-			for (int i = 1; i < h; i += 2) {
-				for (int j = 0; j < w; j++) {
-					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
-					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
-							Robot.candle.getMatrixID(i, j), 1);
-					context.releaseOwnership(Robot.candle);
+			if (half != 1) {
+				for (int i = 1; i < h; i += 2) {
+					for (int j = 0; j < w; j++) {
+						log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
+						if (colors[i][j] != previousColors[i][j]) {
+							context.takeOwnership(Robot.candle);
+							Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+							context.releaseOwnership(Robot.candle);
+						}
+					}
+					context.waitForSeconds(0.0001);
 				}
-				context.waitForSeconds(0.01);
 			}
 		} else {
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					log(colors[i][j].r + " " + colors[i][j].g + " " + colors[i][j].b);
-					context.takeOwnership(Robot.candle);
-					Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b,
-							Robot.candle.getMatrixID(i, j), 1);
-					context.releaseOwnership(Robot.candle);
+					if (colors[i][j] != previousColors[i][j]) {
+						context.takeOwnership(Robot.candle);
+						Robot.candle.setColor(colors[i][j].r, colors[i][j].g, colors[i][j].b, Robot.candle.getMatrixID(i, j), 1);
+						context.releaseOwnership(Robot.candle);
+					}
 				}
 				context.waitForSeconds(0.0001);
 			}
 		}
+		previousColors = clone(colors);
+	}
+
+	private static Color[][] clone(Color[][] M) {
+		Color[][] newMatrix = new Color[M.length][M[0].length];
+		for (int i = 0; i < M.length; i++) {
+			for (int j = 0; j < M[0].length; j++) {
+				newMatrix[i][j] = M[i][j];
+			}
+		}
+		return newMatrix;
 	}
 
 	public class Color {
