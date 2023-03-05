@@ -1,6 +1,8 @@
 package com.team766.robot.mechanisms;
 
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -17,9 +19,27 @@ public class Arms extends Mechanism {
     private CANSparkMaxMotorController firstJointEx = (CANSparkMaxMotorController)firstJoint;
     private CANSparkMaxMotorController secondJointEx = (CANSparkMaxMotorController)secondJoint;
 
+    private CANSparkMax secondJointTest = (CANSparkMax)secondJoint;
+    private SparkMaxPIDController secondJointPID = secondJointTest.getPIDController();
+
+
     
 
     public Arms(){
+        //secondJointEx.setP(0.13);
+        //secondJointEx.setI(0.001);
+        //secondJointEx.setD(0.001);
+
+        secondJointPID.setP(0.00008599997090641409);
+        secondJointPID.setI(0);
+        secondJointPID.setD(0);
+        secondJointPID.setFF(0.0008699999307282269);
+        secondJointPID.setSmartMotionMaxVelocity(2500, 0);
+        secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
+        secondJointPID.setSmartMotionMaxAccel(1500, 0);
+        secondJointPID.setOutputRange(-1, 1);
+
+        
         
     }
 
@@ -58,8 +78,9 @@ public class Arms extends Mechanism {
     }
 	// PID for second arm
     public void pidForArmTwo(double height_encoderUnits){
-        secondJointEx.set(ControlMode.Position, height_encoderUnits);
-        log("zao jong wo shin zai wa yo bing chilling");
+        
+        secondJointPID.setReference(height_encoderUnits, CANSparkMax.ControlType.kSmartMotion);
+        
     }
 	
 	// resetting time for use with the I in PID.

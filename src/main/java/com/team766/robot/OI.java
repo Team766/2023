@@ -17,6 +17,7 @@ public class OI extends Procedure {
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
 
+	boolean manualControl = true;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -31,17 +32,27 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.arms);
 		while (2>1) {
-
+			
 			
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
+			if(joystick0.getButton(14)){
+				manualControl = true;
+			} else if (joystick0.getButton(15)){
+				manualControl = false;
+			}
 
-			Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.3);
-			Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
+			if(manualControl == true){
+				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
+				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.3);
+			}
+
+
 
 			if(joystick0.getButton(1)){
+
 				Robot.arms.resetEncoders();
 			}
 
@@ -50,29 +61,36 @@ public class OI extends Procedure {
 			}
 
 
-			if(joystick0.getButton(3)){
-				Robot.arms.pidForArmTwo(15);
-				log("It works");
+
+			if(joystick0.getButton(3) && manualControl == false){
+				
+				Robot.arms.pidForArmTwo(90);
+				log("3");
 			}
 
-			if(joystick0.getButton(4)){
-				Robot.arms.pidForArmTwo(-15);
+			if(joystick0.getButton(4) && manualControl == false){
+				log("4");
+				Robot.arms.pidForArmTwo(-90);
 			}
 
-			if(joystick0.getButton(5)){
+			if(joystick0.getButton(5) && manualControl == false){
+				log("5");
 				Robot.arms.pidForArmTwo(0);
 			}
 
 			
-			if(joystick0.getButton(6)){
+			if(joystick0.getButton(6) && manualControl == false){
+				log("6");
 				Robot.arms.pidForArmOne(15);
 			}
 
-			if(joystick0.getButton(7)){
+			if(joystick0.getButton(7) && manualControl == false){
+				log("7");
 				Robot.arms.pidForArmOne(-15);
 			}
 
-			if(joystick0.getButton(8)){
+			if(joystick0.getButton(8) && manualControl == false){
+				log("8");
 				Robot.arms.pidForArmOne(0);
 			}
 
