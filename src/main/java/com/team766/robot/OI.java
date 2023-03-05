@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.mechanisms.*;
 
 import com.team766.logging.Category;

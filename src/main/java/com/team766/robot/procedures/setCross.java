@@ -11,6 +11,7 @@ public class setCross extends Procedure {
 		Robot.drive.stopDriveMotors();
 		Robot.drive.stopSteerMotors();
 		Robot.drive.setCross();
+		context.releaseOwnership(Robot.drive);
 	}
 	
 }

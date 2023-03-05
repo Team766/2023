@@ -6,31 +6,12 @@ import com.team766.framework.Context;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.PointDir;
+import com.team766.robot.constants.ChargeConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class ChargeStationPathFinder {
 
 	private static final Logger logger = Logger.get(Category.PROCEDURES);
-
-	public static final double BLUE_BALANCE_TARGET_X = 3.9417625;
-	public static final double BLUE_BALANCE_LEFT_EDGE = 2.974975;
-	public static final double BLUE_BALANCE_RIGHT_EDGE = 4.90855;
-
-	public static final double RED_BALANCE_TARGET_X = 12.5999875;
-	public static final double RED_BALANCE_LEFT_EDGE = 11.6332;
-	public static final double RED_BALANCE_RIGHT_EDGE = 13.566775;
-
-	public static final double X_ALIGNMENT_THRESHOLD = 0.5;
-	public static final double Y_ALIGNMENT_THRESHOLD = 0.5;
-
-	public static final double BLUE_LEFT_PT = BLUE_BALANCE_LEFT_EDGE - X_ALIGNMENT_THRESHOLD;
-	public static final double BLUE_RIGHT_PT = BLUE_BALANCE_RIGHT_EDGE + X_ALIGNMENT_THRESHOLD;
-	public static final double RED_LEFT_PT = RED_BALANCE_LEFT_EDGE - X_ALIGNMENT_THRESHOLD;
-	public static final double RED_RIGHT_PT = RED_BALANCE_RIGHT_EDGE + X_ALIGNMENT_THRESHOLD;
-
-	public static final double CHARGE_TOP_EDGE = 3.96875;
-	public static final double CHARGE_BOTTOM_EDGE = 1.4986;
-	public static final double MIDDLE = 2.733675;
 
 	private final Alliance alliance;
 	private final boolean setMid;
@@ -50,12 +31,12 @@ public class ChargeStationPathFinder {
 		List<PointDir> points = new ArrayList<PointDir>();
 		switch (alliance) {
 			case Red:
-				align(points, curX, curY, BLUE_BALANCE_TARGET_X, BLUE_BALANCE_LEFT_EDGE, BLUE_BALANCE_LEFT_EDGE);
+				align(points, curX, curY, ChargeConstants.BLUE_BALANCE_TARGET_X, ChargeConstants.BLUE_LEFT_PT, ChargeConstants.BLUE_RIGHT_PT);
 
 				break;
 				
 			case Blue:
-				align(points, curX, curY, RED_BALANCE_TARGET_X, RED_BALANCE_LEFT_EDGE, RED_BALANCE_LEFT_EDGE);
+				align(points, curX, curY, ChargeConstants.RED_BALANCE_TARGET_X, ChargeConstants.RED_LEFT_PT, ChargeConstants.RED_RIGHT_PT);
 
 				break;
 
@@ -80,15 +61,15 @@ public class ChargeStationPathFinder {
 				points.add(new PointDir(left, height));
 			}
 
-			points.add(new PointDir(RED_BALANCE_TARGET_X, MIDDLE));
+			points.add(new PointDir(ChargeConstants.RED_BALANCE_TARGET_X, ChargeConstants.MIDDLE));
 		}
 
 
 		private void align(List<PointDir> points, double curX, double curY, double target, double left, double right) {
 			if (setMid) {
-				addPoints(points, curX, curY, target, left, right, MIDDLE);
+				addPoints(points, curX, curY, target, left, right, ChargeConstants.MIDDLE);
 
-			} else if (curY < CHARGE_TOP_EDGE - Y_ALIGNMENT_THRESHOLD && curY > CHARGE_BOTTOM_EDGE + Y_ALIGNMENT_THRESHOLD) {
+			} else if (curY < ChargeConstants.CHARGE_TOP_EDGE - ChargeConstants.Y_ALIGNMENT_THRESHOLD && curY > ChargeConstants.CHARGE_BOTTOM_EDGE + ChargeConstants.Y_ALIGNMENT_THRESHOLD) {
 				addPoints(points, curX, curY, target, left, right, curY);
 
 			} else {

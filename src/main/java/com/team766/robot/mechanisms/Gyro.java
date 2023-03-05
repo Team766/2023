@@ -51,4 +51,8 @@ public class Gyro extends Mechanism {
 		 	log("Yaw: " + gyroArray[0] + "// Real yaw: " + getGyroYaw() + " || Pitch: " + gyroArray[1] + " || Roll: " + gyroArray[2]);
 		 }
 	}
+
+	public double getAbsoluteTilt() {
+		return Math.acos(Math.sqrt(Math.pow(Math.cos(Math.toRadians(getGyroPitch())), 2) + Math.pow(Math.toRadians(getGyroRoll()), 2)));
+	}
 }
