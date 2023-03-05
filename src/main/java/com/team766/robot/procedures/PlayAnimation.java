@@ -33,7 +33,7 @@ public class PlayAnimation extends Procedure {
 	public void run(Context context) {
 		do {
 			for (int i = 0; i < length; i++) {
-				context.startAsync(new DisplayImage(folder + "/" + i + ".png", true, i % 2));
+				context.startAsync(new DisplayImage(folder + Integer.toString(i % 5000) + "/" + i + ".png", true, i % 2));
 				context.yield();
 				context.waitForSeconds(1 / framerate);
 			}
