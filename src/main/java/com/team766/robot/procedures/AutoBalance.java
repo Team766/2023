@@ -32,4 +32,8 @@ public class AutoBalance extends Procedure {
 		points = new ArrayList<PointDir>();
 	}
 
+	public AutoBalance() {
+		this(true);
+	}
+
 }

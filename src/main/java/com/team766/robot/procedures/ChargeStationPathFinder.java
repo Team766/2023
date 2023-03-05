@@ -2,7 +2,6 @@ package com.team766.robot.procedures;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.team766.framework.Context;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.PointDir;
@@ -48,17 +47,19 @@ public class ChargeStationPathFinder {
 		return points.toArray(new PointDir[points.size()]);	
 	}
 
-		private void addPoints(List<PointDir> points, double curX, double curY, double target, double left, double right, double height) {
-			if (curX > target) {
-				if (curX < right)
-					points.add(new PointDir(right, curY));	
+		private void addPoints(List<PointDir> points, double curX, double curY, double target, double left, double right, double height, boolean isMid) {
+			if (isMid) {
+				if (curX > target) { // TODO: account for if robot is already on the charge station
+					if (curX < right)
+						points.add(new PointDir(right, curY));	
 
-				points.add(new PointDir(right, height));
-			} else {
-				if (curX > left)
-					points.add(new PointDir(left, curY));
+					points.add(new PointDir(right, height));
+				} else {
+					if (curX > left)
+						points.add(new PointDir(left, curY));
 
-				points.add(new PointDir(left, height));
+					points.add(new PointDir(left, height));
+				}
 			}
 
 			points.add(new PointDir(ChargeConstants.RED_BALANCE_TARGET_X, ChargeConstants.MIDDLE));
@@ -67,10 +68,10 @@ public class ChargeStationPathFinder {
 
 		private void align(List<PointDir> points, double curX, double curY, double target, double left, double right) {
 			if (setMid) {
-				addPoints(points, curX, curY, target, left, right, ChargeConstants.MIDDLE);
+				addPoints(points, curX, curY, target, left, right, ChargeConstants.MIDDLE, true);
 
 			} else if (curY < ChargeConstants.CHARGE_TOP_EDGE - ChargeConstants.Y_ALIGNMENT_THRESHOLD && curY > ChargeConstants.CHARGE_BOTTOM_EDGE + ChargeConstants.Y_ALIGNMENT_THRESHOLD) {
-				addPoints(points, curX, curY, target, left, right, curY);
+				addPoints(points, curX, curY, target, left, right, curY, true);
 
 			} else {
 				logger.logRaw(null, "Robot not aligned with charging station");
