@@ -224,7 +224,8 @@ public abstract class RobotProvider {
 
 			return getGyro(port.get());
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Gyro %s not found in config file, using mock gyro instead", configName);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Error getting configuration for gyro %s, using mock gyro instead.\nDetailed error: %s", 
+			configName, LoggerExceptionUtils.exceptionToString(ex));
 			return new MockGyro();
 		}
 	}
