@@ -12,13 +12,12 @@ import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
-    //This enables the code to interact with the motor that controls the pulley
+    
     private MotorController firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
+    private CANSparkMax firstJointCANSparkMax = (CANSparkMax)firstJoint;
+    private SparkMaxPIDController firstJointPIDController  = firstJointCANSparkMax.getPIDController();
+
     private MotorController secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
-
-    private CANSparkMaxMotorController firstJointEx = (CANSparkMaxMotorController)firstJoint;
-    private CANSparkMaxMotorController secondJointEx = (CANSparkMaxMotorController)secondJoint;
-
     private CANSparkMax secondJointTest = (CANSparkMax)secondJoint;
     private SparkMaxPIDController secondJointPID = secondJointTest.getPIDController();
 
@@ -26,9 +25,19 @@ public class Arms extends Mechanism {
     
 
     public Arms(){
-        //secondJointEx.setP(0.13);
-        //secondJointEx.setI(0.001);
-        //secondJointEx.setD(0.001);
+        /*
+        Please dont actually use these pid values rn bc they havent been tested!!!!
+        */
+        
+        firstJointPIDController.setP(0);
+        firstJointPIDController.setI(0);
+        firstJointPIDController.setD(0);
+        firstJointPIDController.setFF(0);
+        firstJointPIDController.setSmartMotionMaxVelocity(1250, 0);
+        firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
+        firstJointPIDController.setSmartMotionMaxVelocity(750, 0);
+        firstJointPIDController.setOutPutRange(-0.75, 0.75);
+
 
         secondJointPID.setP(0.00008599997090641409);
         secondJointPID.setI(0);
@@ -38,6 +47,8 @@ public class Arms extends Mechanism {
         secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPID.setSmartMotionMaxAccel(1500, 0);
         secondJointPID.setOutputRange(-1, 1);
+
+
 
         
         
@@ -51,10 +62,10 @@ public class Arms extends Mechanism {
         firstJoint = motor1;
         secondJoint = motor2;
 
-        firstJointEx = (CANSparkMaxMotorController)motor1;
-        secondJointEx = (CANSparkMaxMotorController)motor2;
-
+        firstJointCANSparkMax = (CANSparkMax)firstJoint;
+        secondJointTest = (CANSparkMax)secondJoint;
     }
+
     public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
