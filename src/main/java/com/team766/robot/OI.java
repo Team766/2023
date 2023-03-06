@@ -17,6 +17,7 @@ public class OI extends Procedure {
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
 
+	boolean manualControl = true;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -24,65 +25,75 @@ public class OI extends Procedure {
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
+
+
 	}
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.arms);
 		while (2>1) {
-
+			
 			
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
-
-			// Testing PID for the second arm and making it go to eu
 			if(joystick0.getButton(14)){
-				Robot.arms.pidForArm2(-41.42);
+				manualControl = true;
+			} else if (joystick0.getButton(15)){
+				manualControl = false;
 			}
-			// Getting the encoder units for the second arm
-			if(joystick0.getButton(15)){
-				log(" h " + Robot.arms.findEU());
+
+			if(manualControl == true){
+				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
+				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.3);
 			}
-			// Getting the encoder units for the first arm
-			if(joystick0.getButton(8)){
-				log("" + Robot.arms.getEncoderDistance());
-			}
-			
-			
-			// antigrav
-			if(joystick0.getButton(2)){
-				Robot.arms.setFfA();
-				Robot.arms.setFfB();
-			}
-			
-			//Reseting the encoder if we are not using absolutes
+
+
+
 			if(joystick0.getButton(1)){
-				Robot.arms.resetEncoder();
+
+				Robot.arms.resetEncoders();
 			}
-			
-			// Using pid on the first arm to set the arm to different angles
-			if (joystick0.getButton(5)) {
-				Robot.arms.pidtest(Robot.arms.degreesToEU(80));
-			
-			} else if(joystick0.getButton(6)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(60));
-				
-			} else if(joystick0.getButton(7)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(30));
-				
-			} else if(joystick0.getButton(8)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(0));
-				
-			} else if(joystick0.getButton(9)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-30));
-				
-			} else if(joystick0.getButton(10)){
-				Robot.arms.pidtest(Robot.arms.degreesToEU(-60));
-				
-			} else {
-				
+
+			if(joystick0.getButton(2)){
+				Robot.arms.holdArms();
 			}
+
+
+
+			if(joystick0.getButton(3) && manualControl == false){
+				
+				Robot.arms.pidForArmTwo(90);
+				log("3");
+			}
+
+			if(joystick0.getButton(4) && manualControl == false){
+				log("4");
+				Robot.arms.pidForArmTwo(-90);
+			}
+
+			if(joystick0.getButton(5) && manualControl == false){
+				log("5");
+				Robot.arms.pidForArmTwo(0);
+			}
+
+			
+			if(joystick0.getButton(6) && manualControl == false){
+				log("6");
+				Robot.arms.pidForArmOne(15);
+			}
+
+			if(joystick0.getButton(7) && manualControl == false){
+				log("7");
+				Robot.arms.pidForArmOne(-15);
+			}
+
+			if(joystick0.getButton(8) && manualControl == false){
+				log("8");
+				Robot.arms.pidForArmOne(0);
+			}
+
 
 			
 

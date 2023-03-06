@@ -1,10 +1,11 @@
 package com.team766.robot;
 
-import com.team766.robot.mechanisms.*;
 
+import com.team766.robot.mechanisms.Arms;
 public class Robot {
 	// Declare mechanisms here
 	public static Arms arms;
+	
 
 	
 
