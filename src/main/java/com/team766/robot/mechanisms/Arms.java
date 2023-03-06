@@ -36,7 +36,7 @@ public class Arms extends Mechanism {
         firstJointPIDController.setSmartMotionMaxVelocity(1250, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxVelocity(750, 0);
-        firstJointPIDController.setOutPutRange(-0.75, 0.75);
+        firstJointPIDController.setOutputRange(-0.75, 0.75);
 
 
         secondJointPID.setP(0.00008599997090641409);
