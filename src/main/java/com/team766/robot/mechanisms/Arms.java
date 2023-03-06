@@ -83,7 +83,7 @@ public class Arms extends Mechanism {
 
 	// PID for first arm
     public void pidForArmOne(double value){
-        firstJointEx.set(ControlMode.Position, value);
+        firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
         log(" he" + value );
         
     }
