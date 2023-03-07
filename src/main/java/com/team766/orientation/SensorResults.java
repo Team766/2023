@@ -19,11 +19,13 @@ public class SensorResults {
 
 	//determines cone orientation
 	public static int getConeOrientation(){
-		boolean topColor = Robot.topColorSensor.getPiece() != "Other";
-		boolean bottomColor = Robot.bottomColorSensor.getPiece() != "Other";
+		String topPiece = Robot.topColorSensor.getPiece();
+		String bottomPiece = Robot.bottomColorSensor.getPiece();
+		String bottomProx = Robot.bottomColorSensor.getProximity();
+		boolean topColor = !topPiece.equals("Other");
+		boolean bottomColor = !bottomPiece.equals("Other");
 		int orientation = 0; // orientation 0 = undetermined orientation
-
-		if(Robot.topColorSensor.getPiece() == "Cone" || Robot.bottomColorSensor.getPiece() == "Cone"){
+		if(topPiece.equals("Cone") || bottomPiece.equals("Cone")){
 			//if only 1 sensor sees the cone, the top of the cone is coming in first
 			orientation = 1; // orientation 1 = Robot.topColorSensor first
 			/*
@@ -34,12 +36,12 @@ public class SensorResults {
 			* the Robot.bottomColorSensor sensor if it is the base. I have to test this. Thank you for reading my paragraph-long comment.
 			*/
 			//if both sensors see the cone or the bottom one sees the base, the base of the cone is coming in first
-			if((topColor && bottomColor)||(!topColor && Robot.bottomColorSensor.getProximity() == "sensing object :-)")){
+			if((topColor && bottomColor)||(!topColor && bottomProx.equals("sensing object :-)"))){
 				orientation = 2; // orientation 2 = base first
 			}
 		}
 
-		if(Robot.topColorSensor.getPiece() == "Cube" || Robot.bottomColorSensor.getPiece() == "Cube"){
+		if(topPiece.equals("Cube") || bottomPiece.equals("Cube")){
 			orientation = 3; // orientation 3 = cube
 		}
 		
