@@ -8,7 +8,7 @@ import com.team766.framework.Mechanism;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
-public class MultiplexedColorSensorV3 extends Mechanism{
+public class MultiplexedColorSensorV3 extends Mechanism {
   //setting all the possible colors the sensors could decide it is seeing (only coneYellow and cubePurple matter)
   private static final Color coneYellow = new Color(0.387, 0.56, 0.052);
   private static final Color cubePurple = new Color(0.208, 0.31, 0.48);
