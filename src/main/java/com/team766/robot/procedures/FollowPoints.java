@@ -94,6 +94,10 @@ public class FollowPoints extends Procedure {
 		}
 		
 		JSONArray points = new JSONObject(str).getJSONArray("points");
+		JSONArray start = new JSONObject(str).getJSONArray("start");
+
+		startingPoint.set(start.getDouble(0), start.getDouble(1));
+		
 		for (int i = 0; i < points.length(); i++) {
 			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
 		}
