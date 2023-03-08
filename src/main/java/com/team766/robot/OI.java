@@ -17,8 +17,6 @@ public class OI extends Procedure {
 
 	private JoystickReader joystick0;
 
-	private boolean manualArmControl = false;
-
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
@@ -33,21 +31,9 @@ public class OI extends Procedure {
 
 			// switch between states depending on button press
 			if(joystick0.getButtonPressed(5)) {
-				manualArmControl = false;
 				context.startAsync(new ArmAutomatedControl());
 			} else if(joystick0.getButtonPressed(6)) {
-				manualArmControl = true;
-				context.takeOwnership(Robot.arms);
-			}
-
-			if (manualArmControl) {
-				double axisValue = joystick0.getAxis(1);
-
-				// scale degrees per (rough) iteration from -1 thru 1 to ...
-				double angularIncrement = axisValue * 10.0d;
-				
-				double motorAngle = Robot.arms.firstJoint.getMotorPosition();
-				Robot.arms.firstJoint.setMotorPosition(motorAngle + angularIncrement);
+				context.startAsync(new ArmManualControl(() -> joystick0.getAxis(1)));
 			}
 
 			// zero the arm
