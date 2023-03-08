@@ -1,16 +1,15 @@
 package com.team766.robot.mechanisms;
 
-import com.ctre.phoenix.time.StopWatch;
-import com.revrobotics.CANSparkMax;
+import java.util.Objects;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
+import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -33,7 +32,7 @@ public class ArmJoint {
 	private RelativeEncoder motorEncoder;
 	private SparkMaxAbsoluteEncoder motorAbsoluteEncoder;
 
-	private StopWatch periodicLoggingStopwatch;
+	private RateLimiter periodicLoggingRate;
 
 	private final ArmJointConfig config;
 
@@ -45,10 +44,10 @@ public class ArmJoint {
 	 * @param jointMotor
 	 * @throws Exception
 	 */
-	public ArmJoint(Mechanism parent, MotorController jointMotor, ArmJointConfig config) throws Exception {
-		if(parent == null) throw new Exception("parent cannot be null");
-		if(jointMotor == null) throw new Exception("jointMotor cannot be null");
-		if(!(jointMotor instanceof CANSparkMaxMotorController)) throw new Exception("only SparkMax is supported for jointMotor");
+	public ArmJoint(Mechanism parent, MotorController jointMotor, ArmJointConfig config) {
+		Objects.requireNonNull(parent, "parent cannot be null");
+		Objects.requireNonNull(jointMotor, "jointMotor cannot be null");
+		if(!(jointMotor instanceof CANSparkMaxMotorController)) throw new ClassCastException("only SparkMax is supported for jointMotor");
 
 		logger = Logger.get(Category.MECHANISMS);
 
@@ -64,8 +63,7 @@ public class ArmJoint {
 		motorEncoder = this.jointMotorEx.getEncoder();
 		motorAbsoluteEncoder = this.jointMotorEx.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-		periodicLoggingStopwatch = new StopWatch();
-		periodicLoggingStopwatch.start();
+		periodicLoggingRate = new RateLimiter(1.000);
 
 		// Apply config to motor driver
 		
@@ -91,9 +89,7 @@ public class ArmJoint {
 	 */
 	public void periodicUpdate() {
 
-		if(periodicLoggingStopwatch.getDurationMs() > 1000) {
-			periodicLoggingStopwatch.start();
-
+		if(periodicLoggingRate.next()) {
 			// log motor encoder and abs encoder
 			logger.logRaw(Severity.INFO, "enc=" + motorEncoder.getPosition() + " absEnc=" + motorAbsoluteEncoder.getPosition());
 		}
@@ -101,6 +97,8 @@ public class ArmJoint {
 
 
 	public void resetMotorEncoderPosition() {
+		parent.checkContextOwnership();
+
 		motorEncoder.setPosition(0);
 	}
 
@@ -109,6 +107,8 @@ public class ArmJoint {
 	// TODO: max acceleration
 
 	public void setMotorPosition(double angle) {
+		parent.checkContextOwnership();
+
 		if(angle < config.angleMin) {
 			angle = config.angleMin;
 			logger.logRaw(Severity.ERROR, "Exceed MIN LIMIT with " + angle);

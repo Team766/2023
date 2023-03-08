@@ -39,7 +39,7 @@ public abstract class Mechanism extends LoggingBase {
 		return this.getClass().getName();
 	}
 	
-	protected void checkContextOwnership() {
+	public void checkContextOwnership() {
 		if (Context.currentContext() != m_owningContext && m_runningPeriodic == null) {
 			String message = getName() + " tried to be used by " + Context.currentContext().getContextName();
 			if (m_owningContext != null) {

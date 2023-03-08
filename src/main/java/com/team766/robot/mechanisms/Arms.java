@@ -18,7 +18,7 @@ public class Arms extends Mechanism {
      * NOTE: motors are configured from config file
      * @throws Exception
      */
-    public Arms() throws Exception {
+    public Arms() {
         firstJointConfig = new ArmJointConfig(
             -25, 45,
             0.00008599997090641409d,
@@ -58,7 +58,8 @@ public class Arms extends Mechanism {
         // TODO: second joint
     }
 
-    public void periodicUpdate() {
+    @Override
+    public void run() {
         firstJoint.periodicUpdate();
 
         // TODO: run 
