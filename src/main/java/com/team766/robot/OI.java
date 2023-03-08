@@ -38,10 +38,12 @@ public class OI extends Procedure {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
-			if(joystick0.getButton(14)){
+			if(joystick0.getButtonPressed(14)){
 				manualControl = true;
-			} else if (joystick0.getButton(15)){
+			} else if (joystick0.getButtonPressed(15)){
 				manualControl = false;
+				Robot.arms.manuallySetArmTwoPower(0);
+				Robot.arms.manuallySetArmOnePower(0);
 			}
 
 			if(manualControl == true){
