@@ -10,6 +10,7 @@ import com.team766.logging.Severity;
 public class Arms extends Mechanism {
 
     public ArmJoint firstJoint;
+    private ArmJointConfig firstJointConfig;
     
     /**
      * Initialize Arms composed of joints and other things
@@ -18,12 +19,20 @@ public class Arms extends Mechanism {
      * @throws Exception
      */
     public Arms() throws Exception {
+        firstJointConfig = new ArmJointConfig(
+            -25, 45,
+            0.00008599997090641409d,
+            0,
+            0,
+            0.0008699999307282269d,
+            -0.5, 0.5,
+            0, 3000,
+            2000);
+
         firstJoint = new ArmJoint(
             this,
             RobotProvider.instance.getMotor("arms.firstJoint"),
-            -25,
-            45);
-
+            firstJointConfig);
     }
 
     // resetting the encoder distance to zero for use without absolutes

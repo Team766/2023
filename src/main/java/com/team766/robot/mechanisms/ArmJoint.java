@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -14,6 +15,12 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
+/**
+ * Control for a single Arm Joint
+ * 
+ * Reference: Spark Max Library:
+ * https://codedocs.revrobotics.com/java/com/revrobotics/package-summary.html
+ */
 public class ArmJoint {
 
 	private Mechanism parent;
@@ -28,8 +35,7 @@ public class ArmJoint {
 
 	private StopWatch periodicLoggingStopwatch;
 
-	private final float angleLimitMin;
-	private final float angleLimitMax;
+	private final ArmJointConfig config;
 
 
 	/**
@@ -39,14 +45,15 @@ public class ArmJoint {
 	 * @param jointMotor
 	 * @throws Exception
 	 */
-	public ArmJoint(Mechanism parent, MotorController jointMotor, float angleLimitMin, float angleLimitMax) throws Exception {
+	public ArmJoint(Mechanism parent, MotorController jointMotor, ArmJointConfig config) throws Exception {
 		if(parent == null) throw new Exception("parent cannot be null");
 		if(jointMotor == null) throw new Exception("jointMotor cannot be null");
 		if(!(jointMotor instanceof CANSparkMaxMotorController)) throw new Exception("only SparkMax is supported for jointMotor");
 
 		logger = Logger.get(Category.MECHANISMS);
-		this.angleLimitMax = angleLimitMax;
-		this.angleLimitMin = angleLimitMin;
+
+		// apply arm config
+		this.config = config;
 
 		this.jointMotor = jointMotor;
 		this.jointMotorEx = (CANSparkMaxMotorController)jointMotor;
@@ -60,13 +67,22 @@ public class ArmJoint {
 		periodicLoggingStopwatch = new StopWatch();
 		periodicLoggingStopwatch.start();
 
-		// Smart Motion parameters (probably wont be used by regular Position control)
-		// defaults from example is 1500 accel and 2k velocity
-		// jointMotorPid.setSmartMotionMaxAccel(500, 0);
-		// jointMotorPid.setSmartMotionMaxVelocity(1000, 0);
+		// Apply config to motor driver
+		
+		jointMotorPid.setP(config.p);
+		jointMotorPid.setI(config.i);
+		jointMotorPid.setD(config.d);
+		jointMotorPid.setFF(config.ff);
+		jointMotorPid.setSmartMotionMaxVelocity(config.velocityMax, 0);
+		jointMotorPid.setSmartMotionMinOutputVelocity(config.outputVelocityMin, 0);
+		jointMotorPid.setSmartMotionMaxAccel(config.accelMax, 0);
+		jointMotorPid.setOutputRange(config.powerMin, config.powerMax);
 
-		jointMotorEx.setClosedLoopRamp(0.5d);
-		jointMotorEx.setCurrentLimit(20.0d);
+		// enable brake mode always
+		jointMotorEx.setIdleMode(IdleMode.kBrake);
+
+		//jointMotorEx.setClosedLoopRamp(0.5d);
+		//jointMotorEx.setCurrentLimit(20.0d);
 	}
 
 
@@ -93,11 +109,11 @@ public class ArmJoint {
 	// TODO: max acceleration
 
 	public void setMotorPosition(double angle) {
-		if(angle < angleLimitMin) {
-			angle = angleLimitMin;
+		if(angle < config.angleMin) {
+			angle = config.angleMin;
 			logger.logRaw(Severity.ERROR, "Exceed MIN LIMIT with " + angle);
-		} else if(angle > angleLimitMax) {
-			angle = angleLimitMax;
+		} else if(angle > config.angleMax) {
+			angle = config.angleMax;
 			logger.logRaw(Severity.ERROR, "Exceed MAX LIMIT with " + angle);
 		}
 

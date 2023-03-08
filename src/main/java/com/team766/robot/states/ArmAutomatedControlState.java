@@ -2,11 +2,13 @@ package com.team766.robot.states;
 
 import java.util.Random;
 import com.ctre.phoenix.time.StopWatch;
-import com.team766.library.fsm.FiniteState;
+import com.team766.framework.Context;
+import com.team766.library.states.ProcedureState;
+import com.team766.library.states.ProcedureStateException;
 import com.team766.logging.Severity;
 import com.team766.robot.Robot;
 
-public class ArmAutomatedControlState extends FiniteState {
+public class ArmAutomatedControlState extends ProcedureState {
 
 	StopWatch movementStopwatch = new StopWatch();
 
@@ -24,31 +26,31 @@ public class ArmAutomatedControlState extends FiniteState {
 	}
 
 	@Override
-	public void onEnterValidation(FiniteState previousState) throws Exception {
+	public void onEnterValidation(ProcedureState previousState) throws ProcedureStateException {
 		// allow enter from null (initial) state
 		if(previousState == null) return;
 		if(previousState instanceof ArmManualControlState) return;
-		throw new Exception("Invalid enter transition from previous state");
+		throw new ProcedureStateException("Invalid enter transition from previous state");
 	}
 
 	@Override
-	public void onExitValidation(FiniteState nextState) throws Exception {
+	public void onExitValidation(ProcedureState nextState) throws ProcedureStateException {
 		if(nextState instanceof ArmManualControlState) return;
-		throw new Exception("Invalid transition to next state");
+		throw new ProcedureStateException("Invalid transition to next state");
 	}
 
 	@Override
-	public void onEnter() throws Exception {
-		logger.logRaw(Severity.WARNING, ">>> State : ArmAutomatedControlState Entered");
+	public void onEnter() throws ProcedureStateException {
+		log(Severity.WARNING, ">>> State : ArmAutomatedControlState Entered");
 	}
 
 	@Override
-	public void onExit() throws Exception {
-		logger.logRaw(Severity.WARNING, ">>> State : ArmAutomatedControlState Exited");
+	public void onExit() throws ProcedureStateException {
+		log(Severity.WARNING, ">>> State : ArmAutomatedControlState Exited");
 	}
 
 	@Override
-	public void run() throws Exception {
+	public void run(Context ctx) {
 		switch(movementState) {
 			case 0:
 				// moving

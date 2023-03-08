@@ -7,6 +7,7 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
 		public void run(Context context) {
 		}
 	}
+	
 	public static final Procedure NO_OP = new NoOpProcedure();
 
 	private static int c_idCounter = 0;

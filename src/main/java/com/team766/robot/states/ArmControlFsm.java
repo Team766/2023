@@ -2,13 +2,13 @@ package com.team766.robot.states;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import com.team766.library.fsm.FiniteState;
-import com.team766.library.fsm.FiniteStateMachine;
+import com.team766.library.states.ProcedureState;
+import com.team766.library.states.ProcedureStateExecutor;
 
 /**
  * Note: Singleton FSM
  */
-public class ArmControlFsm extends FiniteStateMachine {
+public class ArmControlFsm extends ProcedureStateExecutor {
 
 	private static ArmControlFsm instance = new ArmControlFsm();
 
@@ -16,8 +16,8 @@ public class ArmControlFsm extends FiniteStateMachine {
 		return instance;
 	}
 
-	public FiniteState armControlManual;
-	public FiniteState armControlAuto;
+	public ProcedureState armControlManual;
+	public ProcedureState armControlAuto;
 
 	private ArmControlFsm() {
 		super();

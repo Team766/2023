@@ -1,15 +1,14 @@
 package com.team766.robot.states;
 
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashSet;
+import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.library.fsm.FiniteState;
+import com.team766.library.states.ProcedureState;
+import com.team766.library.states.ProcedureStateException;
 import com.team766.logging.Severity;
 import com.team766.robot.Robot;
 
-public class ArmManualControlState extends FiniteState {
+public class ArmManualControlState extends ProcedureState {
 
 	private JoystickReader debugJoystick;
 
@@ -20,31 +19,31 @@ public class ArmManualControlState extends FiniteState {
 	}
 
 	@Override
-	public void onEnterValidation(FiniteState previousState) throws Exception {
+	public void onEnterValidation(ProcedureState previousState) throws ProcedureStateException {
 		// allow enter from null (initial) state
 		if(previousState == null) return;
 		if(previousState instanceof ArmAutomatedControlState) return;
-		throw new Exception("Invalid enter transition from previous state");
+		throw new ProcedureStateException("Invalid enter transition from previous state");
 	}
 
 	@Override
-	public void onExitValidation(FiniteState nextState) throws Exception {
+	public void onExitValidation(ProcedureState nextState) throws ProcedureStateException {
 		if(nextState instanceof ArmAutomatedControlState) return;
-		throw new Exception("Invalid transition to next state");
+		throw new ProcedureStateException("Invalid transition to next state");
 	}
 
 	@Override
-	public void onEnter() throws Exception  {
-		logger.logRaw(Severity.WARNING, ">>> State : ArmManualControlState Entered");
+	public void onEnter() throws ProcedureStateException  {
+		log(Severity.WARNING, ">>> State : ArmManualControlState Entered");
 	}
 
 	@Override
-	public void onExit() throws Exception {
-		logger.logRaw(Severity.WARNING, ">>> State : ArmManualControlState Exited");
+	public void onExit() throws ProcedureStateException {
+		log(Severity.WARNING, ">>> State : ArmManualControlState Exited");
 	}
 
 	@Override
-	public void run() throws Exception {
+	public void run(Context ctx) {
 
 		double axisValue = debugJoystick.getAxis(1);
 

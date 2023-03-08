@@ -4,8 +4,8 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.library.fsm.FiniteState;
-import com.team766.library.fsm.FiniteStateMachine;
+import com.team766.library.states.ProcedureState;
+import com.team766.library.states.ProcedureStateExecutor;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.robot.procedures.*;
@@ -73,7 +73,7 @@ public class OI extends Procedure {
 
 				// run the current state
 
-				armControlFsm.run();
+				armControlFsm.run(context);
 				
 			} catch (Exception e) {
 				log(Severity.ERROR, e.toString());

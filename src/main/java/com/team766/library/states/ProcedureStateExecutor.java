@@ -1,28 +1,24 @@
-package com.team766.library.fsm;
+package com.team766.library.states;
 
 import java.util.HashSet;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
+import com.team766.framework.Context;
 
 /**
- * A simple FSM container
+ * A simple Finite State Machine container based on Procedure
  * 
  * - Imnplementation is not totally foolproof, human error may still violate state expectations
  *  TODO: add more checks, guards
  *  TODO: we should really have an FSM-specific Exception container
  */
-public abstract class FiniteStateMachine {
-	private HashSet<FiniteState> states;
-	private FiniteState currentState;
-	private FiniteState nextState;
+public class ProcedureStateExecutor {
+	private HashSet<ProcedureState> states;
+	private ProcedureState currentState;
+	private ProcedureState nextState;
 
-	protected Logger logger;
-
-	public FiniteStateMachine() {
-		logger = Logger.get(Category.FRAMEWORK);
+	public ProcedureStateExecutor() {
 	}
 
-	public void initialize(HashSet<FiniteState> finiteStates, FiniteState initialState) throws Exception {
+	public void initialize(HashSet<ProcedureState> finiteStates, ProcedureState initialState) throws Exception {
 		this.states = finiteStates;
 
 		this.currentState = null;
@@ -31,19 +27,19 @@ public abstract class FiniteStateMachine {
 		switchState(initialState);
 	}
 
-	public FiniteState getCurrentState() {
+	public ProcedureState getCurrentState() {
 		return currentState;
 	}
 
 	// Typically only the state can switch to other states, but we'll leave this as public
-	public void switchState(FiniteState nextState) throws Exception {
+	public void switchState(ProcedureState nextState) throws ProcedureStateException {
 		// ignore if state == current state
 		if(nextState == currentState) return;
-		if(!states.contains(nextState)) throw new Exception("provided state does not exist in list of valid states in this machine");
+		if(!states.contains(nextState)) throw new ProcedureStateException("provided state does not exist in list of valid states in this machine");
 		this.nextState = nextState;
 	}
 
-	public void run() throws Exception {
+	public void run(Context ctx) throws Exception {
 		// switch state if there is something to switch to
 		if(nextState != null) {
 			if(currentState != null) currentState.onExitValidation(nextState);
@@ -56,6 +52,6 @@ public abstract class FiniteStateMachine {
 			currentState.onEnter();
 		}
 
-		if(this.currentState != null) this.currentState.run();
+		if(this.currentState != null) this.currentState.run(ctx);
 	}
 }
