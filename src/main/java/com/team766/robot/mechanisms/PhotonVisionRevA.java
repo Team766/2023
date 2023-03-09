@@ -126,12 +126,12 @@ public class PhotonVisionRevA extends Mechanism {
    * @return A hashmap of the poses of the robot with weights.
    */
    
-   public HashMap<Pose3d, Double> getHashPoses(){
+   public HashMap<Double, Pose3d> getHashPoses(){
     Optional<EstimatedRobotPose> leftEstimate;
     Optional<EstimatedRobotPose> rightEstimate;
     leftEstimate = poseEstimate(leftPhotonPoseEstimator);
     rightEstimate = poseEstimate(rightPhotonPoseEstimator);
-    HashMap<Pose3d, Double> poses = new HashMap<Pose3d, Double>();
+    HashMap<Double, Pose3d> poses = new HashMap<Double, Pose3d>();
     if (leftEstimate != null && !leftEstimate.isEmpty()) {
       poses.put(leftEstimate, leftCameraWeight);
     }
@@ -140,65 +140,42 @@ public class PhotonVisionRevA extends Mechanism {
     }
     return poses;
    }
+   
+   public Pose3d finalPose(HashMap<Double, Pose3d> poses){
+    double x = 0;
+    double y = 0;
+    double z = 0;
+    double pitchSin = 0;
+    double pitchCos = 0;
+    double yawSin = 0;
+    double yawCos = 0;
+    double rollSin = 0;
+    double rollCos = 0;
 
-  /**
-   * Get the pose of the robot if possible.
-   *
-   * @return The pose of the robot.
-   */
-  public Pose3d getPose3d() {
-    Optional<EstimatedRobotPose> leftEstimate;
-    Optional<EstimatedRobotPose> rightEstimate;
-    leftEstimate = poseEstimate(leftPhotonPoseEstimator);
-    rightEstimate = poseEstimate(rightPhotonPoseEstimator);
-
-    if (leftEstimate == null || leftEstimate.isEmpty()) {
-      if (rightEstimate == null || rightEstimate.isEmpty()) {
-        return null;
-      } else {
-        return rightEstimate.get().estimatedPose;
-      }
-    } else {
-      if (rightEstimate == null || rightEstimate.isEmpty()) {
-        return leftEstimate.get().estimatedPose;
-      }
-    }
-    HashMap<Pose3d, Double> poses = new HashMap<Pose3d, Double>();
-    poses.put(leftEstimate.get().estimatedPose, leftCameraWeight);
-    poses.put(rightEstimate.get().estimatedPose, rightCameraWeight);
-    return averagPose3d(poses);
-  }
-
-  /**
-   * Averages a HashMap of Pose3d objects. It could be used for other purposes than vision poses.
-   *
-   * @param poses A HashMap of Pose3d objects and their weights.
-   * @return The average Pose3d object or null if there are no weights.
-   */
-  public Pose3d averagPose3d(HashMap<Pose3d, Double> poses) {
-    int numPoses = poses.size();
     double weights = 0;
-    Pose3d averagePose = new Pose3d(
-      0.0,
-      0.0,
-      0.0,
-      new Rotation3d(0.0, 0.0, 0.0)
-    );
-    for (HashMap.Entry<Pose3d, Double> entry : poses.entrySet()) {
-      Pose3d pose = entry.getKey();
-      Double weight = entry.getValue();
-      averagePose =
-        averagePose.plus(
-          new Transform3d(
-            new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0)),
-            pose.times(weight)
-          )
-        );
-      weights += weight.doubleValue();
-    }
-    if (weights != 0) {
-      return averagePose.times(1.0 / weights);
-    }
-    return null;
-  }
+    for (HashMap.Entry<Double, Pose3d> entry : poses.entrySet()) {
+      x += entry.getValue().getTranslation().getX() * entry.getKey();
+      y += entry.getValue().getTranslation().getY() * entry.getKey();
+      z += entry.getValue().getTranslation().getZ() * entry.getKey();
+      pitchSin += Math.sin(entry.getValue().getRotation().getPitch()) * entry.getKey();
+      pitchCos += Math.cos(entry.getValue().getRotation().getPitch()) * entry.getKey();
+      yawSin += Math.sin(entry.getValue().getRotation().getYaw()) * entry.getKey();
+      yawCos += Math.cos(entry.getValue().getRotation().getYaw()) * entry.getKey();
+      rollSin += Math.sin(entry.getValue().getRotation().getRoll()) * entry.getKey();
+      rollCos += Math.cos(entry.getValue().getRotation().getRoll()) * entry.getKey();
+      weights += entry.getKey();
+   }
+    x /= weights;
+    y /= weights;
+    z /= weights;
+    pitchSin /= weights;
+    pitchCos /= weights;
+    yawSin /= weights;
+    yawCos /= weights;
+    rollSin /= weights;
+    rollCos /= weights;
+    double pitch = Math.atan2(pitchSin, pitchCos);
+    double yaw = Math.atan2(yawSin, yawCos);
+    double roll = Math.atan2(rollSin, rollCos);
+    return new Pose3d(new Translation3d(x, y, z), new Rotation3d(pitch, yaw, roll));
 }
