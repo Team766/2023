@@ -8,10 +8,14 @@ import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.team766.robot.Robot;
+import com.team766.library.RateLimiter;
 
 //all-purpose class for when other mechanisms need cone orientation
 //this probably shouldn't be in mechanisms
 public class SensorResults {
+
+	private RateLimiter sensorLimiter = new RateLimiter(0.5);
+	private boolean goAgain = true;
 
 	public SensorResults(){
 		
@@ -27,11 +31,11 @@ public class SensorResults {
 		int orientation = 0; // orientation 0 = undetermined orientation
 		if(topPiece.equals("Cone") || bottomPiece.equals("Cone")){
 			//if only 1 sensor sees the cone, the top of the cone is coming in first
-			orientation = 1; // orientation 1 = Robot.topColorSensor first
+			orientation = 1; // orientation 1 = top first
 			/*
 			* When the cone comes in "base first," the Robot.bottomColorSensor sensor could see the base for a split second before the Robot.topColorSensor 
 			* sensor does and accidentaly decide that the cone is moving in "Robot.topColorSensor first" (because when the cone ACTUALLY
-			* enters base first, only the Robot.bottomColorSensor sensoor sees it). Hopefully checking if the Robot.bottomColorSensor sensor is seeing
+			* enters base first, only the Robot.bottomColorSensor sensor sees it). Hopefully checking if the Robot.bottomColorSensor sensor is seeing
 			* the cone very close up will deal with this issue, because the cone should (almost always) only be close to
 			* the Robot.bottomColorSensor sensor if it is the base. I have to test this. Thank you for reading my paragraph-long comment.
 			*/
@@ -47,6 +51,15 @@ public class SensorResults {
 		
 		return orientation;
 
+	}
+
+	private void doReset(){
+		if(goAgain){
+			sensorLimiter.reset();
+			goAgain = false;
+		} else {
+			goAgain = true;
+		}
 	}
 
 }

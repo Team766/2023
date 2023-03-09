@@ -24,4 +24,8 @@ public class RateLimiter {
 			return false;
 		}
 	}
+
+	public void reset(){
+		nextTime = RobotProvider.getTimeProvider().get();
+	}
 }

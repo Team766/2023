@@ -36,11 +36,12 @@ public class MultiplexedColorSensorV3 extends Mechanism {
     }
     this.port = port;
     setChannel();
+    makeColorMatches();
     sensor = new ColorSensorV3(i2cPort);
     
   }
 
-  /**
+  /*
    * Helper method. This just sets the multiplexer to the correct port before
    * using the color sensor.
    */
@@ -52,7 +53,7 @@ public class MultiplexedColorSensorV3 extends Mechanism {
   public String[] getPiece() {
     setChannel();
     
-    makeColorMatches();
+    //makeColorMatches() used to be here but was put in the constructor for efficiency. 
     
     Color detectedColor = sensor.getColor();
 		String[] piece = new String[2];
