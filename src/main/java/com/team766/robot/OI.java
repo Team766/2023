@@ -8,7 +8,9 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -19,6 +21,16 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
+	private double RightJoystick_X = 0;
+	private double RightJoystick_Y = 0;
+	private double RightJoystick_Z = 0;
+	private double RightJoystick_Theta = 0;
+	private double LeftJoystick_X = 0;
+	private double LeftJoystick_Y = 0;
+	private double LeftJoystick_Z = 0;
+	private double LeftJoystick_Theta = 0;
+	private boolean isCross = false;
+	double turningValue = 0;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -29,7 +41,6 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -37,7 +48,7 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
+
 		}
 	}
 }
