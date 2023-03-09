@@ -19,9 +19,9 @@ public class SensorResults {
 
 	//determines cone orientation
 	public static int getConeOrientation(){
-		String topPiece = Robot.topColorSensor.getPiece();
-		String bottomPiece = Robot.bottomColorSensor.getPiece();
-		String bottomProx = Robot.bottomColorSensor.getProximity();
+		String topPiece = (Robot.topColorSensor.getPiece())[0];
+		String bottomPiece = (Robot.bottomColorSensor.getPiece())[0];
+		String bottomProx = (Robot.bottomColorSensor.getPiece())[1];
 		boolean topColor = !topPiece.equals("Other");
 		boolean bottomColor = !bottomPiece.equals("Other");
 		int orientation = 0; // orientation 0 = undetermined orientation
