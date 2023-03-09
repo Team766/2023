@@ -140,7 +140,7 @@ public class PhotonVisionRevA extends Mechanism {
     }
     return poses;
    }
-   
+
    public Pose3d finalPose(HashMap<Double, Pose3d> poses){
     double x = 0;
     double y = 0;

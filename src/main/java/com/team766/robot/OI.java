@@ -38,13 +38,13 @@ public class OI extends Procedure {
 
       // Add driver controls here - make sure to take/release ownership
       // of mechanisms when appropriate.
-      context.takeOwnership(Robot.drive);
+      /*context.takeOwnership(Robot.drive);
       Robot.drive.setArcadeDrivePower(
         joystick0.getAxis(2),
         -1 * joystick0.getAxis(1)
       );
       context.releaseOwnership(Robot.drive);
-
+      */
       // log("Is there a target? " + Robot.photonVision.hasTarget());
       // log the x,y,z, and angle of the target
       context.takeOwnership(Robot.photonVision);
@@ -67,5 +67,22 @@ public class OI extends Procedure {
       }
       context.releaseOwnership(Robot.photonVision);
     }
-  }
+    //REV A code
+    /*context.takeOwnership(Robot.PhotonVisionRevA);
+    HashMap<Double, Pose3d> poses = Robot.PhotonVisionRevA.getHashPoses();
+    if (poses != null) {
+      for (Map.Entry<Double, Pose3d> entry : poses.entrySet()) {
+        log(
+          "X: " +
+          entry.getValue().getX() +
+          "\n Y: " +
+          entry.getValue().getY() +
+          "\n Z: " +
+          entry.getValue().getZ()
+        );
+      }
+    } else {
+      log("No poses");
+    } 
+  }*/
 }

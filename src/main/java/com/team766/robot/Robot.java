@@ -6,6 +6,7 @@ public class Robot {
 	// Declare mechanisms here
 	public static Drive drive;
 	public static PhotonVision photonVision;
+	public static PhotonVisionRevA photonVisionRevA;
 	public static Gyro gyro;
 	public static void robotInit() {
 
@@ -14,5 +15,6 @@ public class Robot {
 		drive = new Drive();
 		photonVision = new PhotonVision();
 		gyro = new Gyro(); 
+		photonVisionRevA = new PhotonVisionRevA();
 	}
 }
