@@ -66,7 +66,7 @@ public class OI extends Procedure {
 
 			if(joystick0.getButton(3) && manualControl == false){
 				
-				Robot.arms.pidForArmTwo(90);
+				Robot.arms.pidForArmTwo(15);
 				log("3");
 			}
 
