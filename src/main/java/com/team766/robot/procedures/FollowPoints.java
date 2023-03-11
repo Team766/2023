@@ -269,6 +269,10 @@ public class FollowPoints extends Procedure {
 					if (criticalPointList[targetNum]? (targetNum < pointList.length - 1 && passedPoint(pointList[targetNum])) : checkIntersection(pointList)) {
 						if (proceduresAtPoints.length < targetNum) {
 							if (stopRobotList[targetNum]) {
+								driveSettings.set(0, 0);
+								while (rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()) > 0.03) {
+									updateRotation();
+								}
 								Robot.drive.setCross();
 								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
 							} else {
@@ -295,6 +299,11 @@ public class FollowPoints extends Procedure {
 				}
 			}
 			Robot.drive.drive2D(0, 0);
+			driveSettings.set(0, 0);
+			targetNum = pointList.length - 1;
+			while (rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()) > 0.03) {
+				updateRotation();
+			}
 			Robot.drive.setCross();
 			log("Finished method!");
 		} else {
