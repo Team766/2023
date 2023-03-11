@@ -34,7 +34,7 @@ Optionally, an array of procedures may be provided as an input. If given, once t
 
 ## Desmos Integration
 
-For the 2023 season, FollowPoints has been integrated with [the Desmos model of the field](https://www.desmos.com/calculator/qgjgrwb7tx).
+For the 2023 season, FollowPoints has been integrated with [the Desmos model of the field](https://www.desmos.com/calculator/v6mpw9cwbn).
 
 ![Image](images/desmosFieldModel.png)
 

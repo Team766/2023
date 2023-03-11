@@ -1,11 +1,16 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+
+import java.io.IOException;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -36,15 +41,6 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
-		double prev_time = RobotProvider.instance.getClock().getTime();
-		context.takeOwnership(Robot.gyro);
-		context.takeOwnership(Robot.drive);
-		//Robot.gyro.resetGyro();
-		Robot.drive.setFrontRightEncoders();
-		Robot.drive.setFrontLeftEncoders();
-		Robot.drive.setBackRightEncoders();
-		Robot.drive.setBackLeftEncoders();
-
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -61,30 +57,11 @@ public class OI extends Procedure {
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 			}		
 			
-			
+		
 			
 			if(joystick0.getButtonPressed(1))
 				Robot.gyro.resetGyro();
 
-			if(joystick0.getButtonPressed(11))
-				Robot.drive.resetCurrentPosition();
-
-			if(joystick1.getButtonPressed(1))
-				isCross = !isCross;
-			
-			if (isCross)  {
-				context.startAsync(new setCross());
-			} else if(Math.abs(LeftJoystick_X)+
-			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
-				Robot.drive.swerveDrive( 
-					(LeftJoystick_X),
-			 		(LeftJoystick_Y),
-			 		(RightJoystick_X));
-				log("FRONT RIGHT: " + Robot.drive.getFrontRight());
-			} else {
-				Robot.drive.stopDriveMotors();
-				Robot.drive.stopSteerMotors();				
-			} 
 		}
 	}
 }
