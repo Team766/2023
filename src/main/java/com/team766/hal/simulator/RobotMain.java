@@ -36,7 +36,7 @@ public class RobotMain {
 				ProgramInterface.RobotMode prevRobotMode = null;
 				
 				@Override
-				public void step() {
+				public void step(double dt) {
 					switch (ProgramInterface.robotMode) {
 						case DISABLED:
 							if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {

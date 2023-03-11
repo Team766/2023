@@ -1,12 +1,17 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+
+import java.io.IOException;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.simulator.Camera;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 

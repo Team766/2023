@@ -18,4 +18,12 @@ public class CanMotorController extends MotorController {
 		return ProgramInterface.canMotorControllerChannels[address].command.output;
 	}
 
+	public void setSensorPosition(double position) {
+		ProgramInterface.canMotorControllerChannels[address].status.sensorPosition = position;
+	}
+
+	public void setSensorVelocity(double velocity) {
+		ProgramInterface.canMotorControllerChannels[address].status.sensorVelocity = velocity;
+	}
+
 }
