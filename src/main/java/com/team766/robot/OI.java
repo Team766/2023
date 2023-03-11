@@ -45,9 +45,22 @@ public class OI extends Procedure {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
+			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
+			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			if(joystick1.getButton(2)){
+				Robot.drive.setGyro(0);
+			}else{
+				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+			}		
+			
+		
+			
+			if(joystick0.getButtonPressed(1))
+				Robot.gyro.resetGyro();
 
 		}
 	}
