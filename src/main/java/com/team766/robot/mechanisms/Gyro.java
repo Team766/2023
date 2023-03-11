@@ -48,11 +48,11 @@ public class Gyro extends Mechanism {
 			 gyroArray[1] = getGyroPitch();
 			 gyroArray[2] = getGyroRoll();
 			 g_gyro.getYawPitchRoll(gyroArray);
-		 	log("Yaw: " + gyroArray[0] + "// Real yaw: " + getGyroYaw() + " || Pitch: " + gyroArray[1] + " || Roll: " + gyroArray[2]);
+		 	//log("Yaw: " + gyroArray[0] + "// Real yaw: " + getGyroYaw() + " || Pitch: " + gyroArray[1] + " || Roll: " + gyroArray[2]);
 		 }
 	}
 
 	public double getAbsoluteTilt() {
-		return Math.acos(Math.sqrt(Math.pow(Math.cos(Math.toRadians(getGyroPitch())), 2) + Math.pow(Math.toRadians(getGyroRoll()), 2)));
+		return Math.toDegrees(Math.acos(Math.cos(Math.toRadians(getGyroRoll()))*Math.cos(Math.toRadians(getGyroPitch()))));
 	}
 }

@@ -51,6 +51,7 @@ public class AdjustCharging extends Procedure {
 		context.takeOwnership(Robot.drive);
 		double curX = Robot.drive.getCurrentPosition().getX();
 
+
 		// Sets movement direction and if on ground
 		setDir(curX);
 
@@ -66,10 +67,15 @@ public class AdjustCharging extends Procedure {
 		do {
 			prevState = curState;
 			setState(curX);
+			tilt = Robot.gyro.getAbsoluteTilt();
 
 			if (alliance == Alliance.Red ^ direction == Direction.LEFT) {
 				speed *= -1;
 			}
+
+			log("Direction: " + direction);
+			log("tilt: " + tilt);
+			log("Current state:" + curState + ", previous state: " + prevState);
 
 			Robot.drive.swerveDrive(0, speed, 0);
 			context.yield();

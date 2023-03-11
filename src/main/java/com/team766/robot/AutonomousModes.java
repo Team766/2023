@@ -5,6 +5,8 @@ import com.team766.robot.procedures.*;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.framework.Procedure;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 
 public class AutonomousModes {
 
@@ -16,6 +18,7 @@ public class AutonomousModes {
 		// define one or more different autonomous modes with it like this:
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+		new AutonomousMode("AdjustCharging", () -> new AdjustCharging(Alliance.Blue)),
 		new AutonomousMode("AutoBalance", () -> new AutoBalance(true)),
 		new AutonomousMode("FollowPoints", () -> new FollowPoints()),
 		new AutonomousMode("FollowPointsFile", () -> new FollowPoints("FollowPoints.txt")),

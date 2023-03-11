@@ -137,6 +137,8 @@ public class OI extends Procedure {
 
 			if (joystick1.getButtonPressed(1))
 				isCross = !isCross;
+			
+			if (joystick1.getButtonPressed(m_id))
 
 
 			if (joystick0.getButtonPressed(2)) {
@@ -146,9 +148,6 @@ public class OI extends Procedure {
 				Robot.drive.setBackLeftEncoders();
 			}
 
-			log("Pitch" + Robot.gyro.getGyroPitch());
-			log("Roll" + Robot.gyro.getGyroRoll());
-
 			// if(joystick1.getButton(1)){
 			// turningValue = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			// } else {
@@ -156,6 +155,8 @@ public class OI extends Procedure {
 			// }
 
 			// TODO: make context issues not happen
+
+			log("pos: " + Robot.drive.getCurrentPosition());
 
 			if (isCross) {
 				context.startAsync(new setCross());
