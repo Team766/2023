@@ -1,2 +1,0 @@
-Files placed in this directory will be deployed to the RoboRIO into the
-'deploy' directory in the home folder. Use "Filesystem.getDeployDirectory().toPath().resolve("FileName.type")"
