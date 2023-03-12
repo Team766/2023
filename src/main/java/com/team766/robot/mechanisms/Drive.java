@@ -77,13 +77,13 @@ public class Drive extends Mechanism {
 		config.sensorDirection = true;
 
 		// initialize the encoders
-		e_FrontRight = new CANCoder(1, "Swerve");
+		e_FrontRight = new CANCoder(22, "Swervavore");
 		// e_FrontRight.configAllSettings(config, 250);
-		e_FrontLeft = new CANCoder(2, "Swerve");
+		e_FrontLeft = new CANCoder(23, "Swervavore");
 		// e_FrontLeft.configAllSettings(config, 250);
-		e_BackRight = new CANCoder(4, "Swerve");
+		e_BackRight = new CANCoder(21, "Swervavore");
 		// e_BackRight.configAllSettings(config, 250);
-		e_BackLeft = new CANCoder(3, "Swerve");
+		e_BackLeft = new CANCoder(24, "Swervavore");
 		// e_BackLeft.configAllSettings(config, 250);
 
 
@@ -598,7 +598,7 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft.setP(0.2);
 		m_SteerBackLeft.setI(0);
 		m_SteerBackLeft.setD(0.1);
-		m_SteerBackLeft.setFF(0);
+		// m_SteerBackLeft.setFF(0);
 
 		// pid values from sds for Flacons 500: P = 0.2 I = 0.0 D = 0.1 FF = 0.0
 
