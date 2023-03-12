@@ -1,7 +1,12 @@
 package com.team766.robot.mechanisms;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkMax;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
@@ -16,11 +21,21 @@ public class Arms extends Mechanism {
     private MotorController firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
     private CANSparkMax firstJointCANSparkMax = (CANSparkMax)firstJoint;
     private SparkMaxPIDController firstJointPIDController  = firstJointCANSparkMax.getPIDController();
+    private SparkMaxAbsoluteEncoder altEncoder = firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    private RelativeEncoder mainEncoder = firstJointCANSparkMax.getEncoder();
 
     private MotorController secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
     private CANSparkMax secondJointTest = (CANSparkMax)secondJoint;
     private SparkMaxPIDController secondJointPID = secondJointTest.getPIDController();
 
+    private static double doubleDeadZone = 0.004d;
+    private boolean firstJointReached = false;
+    private double lastPosition = -10;
+    /* 
+    private MotorController thirdJoint = RobotProvider.instance.getMotor("arms.thirdJoint");
+    private CANSparkMax thirdJointCSM = (CANSparkMax)thirdJoint;
+    private SparkMaxPIDController thirdJointPID = thirdJointCSM.getPIDController();
+    */
 
     
 
@@ -28,21 +43,23 @@ public class Arms extends Mechanism {
         /*
         Please dont actually use these pid values rn bc they havent been tested!!!!
         */
-        
+
+        firstJointPIDController.setFeedbackDevice(altEncoder);
+        firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setP(0);
         firstJointPIDController.setI(0);
-        firstJointPIDController.setD(0);
-        firstJointPIDController.setFF(0);
-        firstJointPIDController.setSmartMotionMaxVelocity(1250, 0);
+        firstJointPIDController.setD(0.0005000000237487257);
+        firstJointPIDController.setFF(0.0018999995663762093);
+        firstJointPIDController.setSmartMotionMaxVelocity(6000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
-        firstJointPIDController.setSmartMotionMaxVelocity(750, 0);
+        firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
         firstJointPIDController.setOutputRange(-0.75, 0.75);
 
 
-        secondJointPID.setP(0.00009999998292187229);
+        secondJointPID.setP(0.00008599997090641409);
         secondJointPID.setI(0);
         secondJointPID.setD(0);
-        secondJointPID.setFF(0.00029999998514540493);
+        secondJointPID.setFF(0.0008699999307282269);
         secondJointPID.setSmartMotionMaxVelocity(2500, 0);
         secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPID.setSmartMotionMaxAccel(1500, 0);
@@ -83,14 +100,37 @@ public class Arms extends Mechanism {
 
 	// PID for first arm
     public void pidForArmOne(double value){
-        firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
-        log(" he" + value );
+        log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
+        
+        if(lastPosition != value) {
+            if(firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
+                firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
+                
+                firstJointPIDController.setFeedbackDevice(mainEncoder);
+                firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+                lastPosition = value;
+                log("it worked");
+            }else{
+                firstJointPIDController.setFeedbackDevice(altEncoder);
+                firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
+                log("it went back in");
+            }
+
+        } else {
+            firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+        }
+        
+
+        
+
+
         
     }
+
 	// PID for second arm
-    public void pidForArmTwo(double height_encoderUnits){
+    public void pidForArmTwo(double value){
         
-        secondJointPID.setReference(height_encoderUnits, CANSparkMax.ControlType.kSmartMotion);
+        secondJointPID.setReference(value, CANSparkMax.ControlType.kSmartMotion);
         
     }
 	
@@ -101,6 +141,26 @@ public class Arms extends Mechanism {
         return secondJoint.getSensorPosition();
     }
 	// antigrav
+
+    public static void calcabs1(double cur_position){
+
+    }
+
+    public static void calcabs2(double cur_position){
+        // calculate() to get what abs eu it should be at
+        /*
+         * if(calculate() != arm2.getAbsEnc()){
+         *  condition
+         * } 
+         * 
+         * 
+         */
+       }
+
+    public void iabsolutleyhatewillem(double input){
+
+    }
+
     public void holdArms(){ // Use Encoder Units to Radians in the sine
         firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
         secondJoint.set((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011);

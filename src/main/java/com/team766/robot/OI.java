@@ -48,7 +48,7 @@ public class OI extends Procedure {
 
 			if(manualControl == true){
 				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
-				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.3);
+				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.5);
 			}
 
 
@@ -83,17 +83,17 @@ public class OI extends Procedure {
 			
 			if(joystick0.getButton(6) && manualControl == false){
 				log("6");
-				Robot.arms.pidForArmOne(15);
+				Robot.arms.pidForArmOne(0.6);
 			}
 
 			if(joystick0.getButton(7) && manualControl == false){
 				log("7");
-				Robot.arms.pidForArmOne(-15);
+				Robot.arms.pidForArmOne(0.85);
 			}
 
 			if(joystick0.getButton(8) && manualControl == false){
 				log("8");
-				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmOne(0.757);
 			}
 
 
