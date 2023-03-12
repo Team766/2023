@@ -58,7 +58,7 @@ public class Arms extends Mechanism {
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
         firstJointPIDController.setOutputRange(-0.75, 0.75);
 
-
+        secondJointPID.setFeedbackDevice(altEncoder2);
         secondJointPID.setP(0.00008599997090641409);
         secondJointPID.setI(0);
         secondJointPID.setD(0);
@@ -132,7 +132,7 @@ public class Arms extends Mechanism {
 
 	// PID for second arm
     public void pidForArmTwo(double value){
-        if(lastPosition != value) {
+        if(lastPosition2 != value) {
             if(secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
                 secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
                 
@@ -141,7 +141,7 @@ public class Arms extends Mechanism {
                 lastPosition2 = value;
                 log("it worked");
             }else{
-                secondJointPID.setFeedbackDevice(altEncoder);
+                secondJointPID.setFeedbackDevice(altEncoder2);
                 secondJointPID.setReference(value, CANSparkMax.ControlType.kSmartMotion);
                 log("it went back in");
             }
