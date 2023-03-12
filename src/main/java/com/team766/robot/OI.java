@@ -67,10 +67,10 @@ public class OI extends Procedure {
 			try {
 				Pose3d pose = Robot.photonVision.getPose3d();
 				if (pose != null) {
-					log("X: " + pose.getX() + "\n Y: " + pose.getY() + "\n Z: " + pose.getZ());
+					//log("X: " + pose.getX() + "\n Y: " + pose.getY() + "\n Z: " + pose.getZ());
 					Robot.drive.setCurrentPosition(Point.toPoint(pose));
 				} else {
-					log("No pose");
+					//log("No pose");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -138,8 +138,6 @@ public class OI extends Procedure {
 			if (joystick1.getButtonPressed(1))
 				isCross = !isCross;
 			
-			if (joystick1.getButtonPressed(m_id))
-
 
 			if (joystick0.getButtonPressed(2)) {
 				Robot.drive.setFrontRightEncoders();
@@ -168,7 +166,6 @@ public class OI extends Procedure {
 					(LeftJoystick_X),
 			 		(LeftJoystick_Y),
 			 		(RightJoystick_X));
-				log("FRONT RIGHT: " + Robot.drive.getFrontRight());
 			} else {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();
