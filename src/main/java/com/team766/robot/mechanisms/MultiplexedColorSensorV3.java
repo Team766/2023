@@ -50,24 +50,23 @@ public class MultiplexedColorSensorV3 extends Mechanism {
   }
 
   //returns what the sensor sees: cone, piece, or other
-  public String[] getPiece() {
+  public String getPiece() {
     setChannel();
     
     //makeColorMatches() used to be here but was put in the constructor for efficiency. 
     
     Color detectedColor = sensor.getColor();
-		String[] piece = new String[2];
+		String piece;
 		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
 		if(match.color == coneYellow){
-			piece[0] = "Cone";
+			piece = "Cone";
 		} else if (match.color == cubePurple){
-			piece[0] = "Cube";
+			piece = "Cube";
 		} else {
-			piece[0] = "Other";
+			piece = "Other";
 		} 
-		log("piece: "+piece[0]+" port: "+port);
-    piece[1] = getProximity();
+		log("piece: "+piece+" port: "+port);
 		return piece;
   }
   //sensor will return whether or not an object is <= ~4cm from it

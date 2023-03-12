@@ -14,8 +14,8 @@ import com.team766.library.RateLimiter;
 //this probably shouldn't be in mechanisms
 public class SensorResults {
 
-	private RateLimiter sensorLimiter = new RateLimiter(0.5);
-	private boolean goAgain = true;
+	public static RateLimiter sensorLimiter = new RateLimiter(0.5);
+	public static boolean goAgain = true;
 
 	public SensorResults(){
 		
