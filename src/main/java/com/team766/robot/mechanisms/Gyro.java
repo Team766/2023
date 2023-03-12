@@ -2,7 +2,7 @@ package com.team766.robot.mechanisms;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.I2C.Port;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team766.framework.Mechanism;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.RobotProvider;
@@ -44,10 +44,13 @@ public class Gyro extends Mechanism {
 	@Override
 	public void run() {
 		 if (l_loggingRate.next()) {
-			 gyroArray[0] = getGyroYaw();
-			 gyroArray[1] = getGyroPitch();
-			 gyroArray[2] = getGyroRoll();
-			 g_gyro.getYawPitchRoll(gyroArray);
+			gyroArray[0] = getGyroYaw();
+			gyroArray[1] = getGyroPitch();
+			gyroArray[2] = getGyroRoll();
+			g_gyro.getYawPitchRoll(gyroArray);
+			SmartDashboard.putNumber("Yaw", gyroArray[0]);
+			SmartDashboard.putNumber("Pitch", gyroArray[1]);
+			SmartDashboard.putNumber("Roll", gyroArray[2]);
 		 	log("Yaw: " + gyroArray[0] + "// Real yaw: " + getGyroYaw() + " || Pitch: " + gyroArray[1] + " || Roll: " + gyroArray[2]);
 		 }
 	}

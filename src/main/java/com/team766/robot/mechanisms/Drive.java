@@ -291,8 +291,7 @@ public class Drive extends Mechanism {
 		// double power = pythagorean((JoystickX), correctedJoysticks(JoystickY))/Math.sqrt(2);
 		double power = Math.max(Math.abs(JoystickX), Math.abs(JoystickY));
 		double angle = fieldAngle(getAngle(JoystickX, JoystickY), gyroValue);
-		log("Given angle: " + getAngle(JoystickX, JoystickY) + " || Gyro: " + gyroValue
-				+ " || New angle: " + angle);
+
 
 		if (withinHalfACircle(angle, getCurrentAngle(m_SteerFrontRight))) {
 			m_DriveFrontRight.set(power);
@@ -406,13 +405,9 @@ public class Drive extends Mechanism {
 		if (withinHalfACircle(frAngle, getCurrentAngle(m_SteerFrontRight))) {
 			m_DriveFrontRight.set(frPower);
 			setFrontRightAngle(newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
-			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Positive "
-					+ newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
 		} else {
 			m_DriveFrontRight.set(-frPower);
 			setFrontRightAngle(newAngle(180 + frAngle, getCurrentAngle(m_SteerFrontRight)));
-			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Negative "
-					+ newAngle(-frAngle, getCurrentAngle(m_SteerFrontRight)));
 		}
 
 		if (withinHalfACircle(flAngle, getCurrentAngle(m_SteerFrontLeft))) {
