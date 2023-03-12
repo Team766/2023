@@ -2,6 +2,7 @@ package com.team766.odometry;
 
 import com.team766.framework.LoggingBase;
 import java.lang.Math;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
  * Class of two-coordinate objects, an x-coordinate and a y-coordinate.
@@ -76,6 +77,10 @@ public class Point extends LoggingBase {
 
 	public Point add(Point p) {
 		return new Point(getX() + p.getX(), getY() + p.getY());
+	}
+
+	public Point add(Vector2D v) {
+		return new Point(getX() + v.getX(), getY() + v.getY());
 	}
 
 	public String toString() {
