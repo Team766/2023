@@ -383,8 +383,8 @@ public class Drive extends Mechanism {
 			brPower = NewMag(power, angle, JoystickTheta, -135);
 			blPower = NewMag(power, angle, JoystickTheta, -45);
 			frAngle = NewAng(power, angle, JoystickTheta, 45);
-			flAngle = NewAng(power, angle, JoystickTheta, -45);
-			brAngle = NewAng(power, angle, JoystickTheta, 135);
+			flAngle = NewAng(power, angle, JoystickTheta, 135);
+			brAngle = NewAng(power, angle, JoystickTheta, -45);
 			blAngle = NewAng(power, angle, JoystickTheta, -135);
 		} else {
 			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
@@ -392,8 +392,8 @@ public class Drive extends Mechanism {
 			brPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
 			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
 			frAngle = NewAng(power, angle, Math.abs(JoystickTheta), -135);
-			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
-			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
+			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
+			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
 			blAngle = NewAng(power, angle, Math.abs(JoystickTheta), 45);
 		}
 		if (Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower)) > 1) {

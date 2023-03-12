@@ -176,12 +176,12 @@ public class OI extends Procedure {
 			if (isCross)  {
 				context.startAsync(new setCross());
 			} else if (joystick0.getButton(3)) {
-				Robot.drive.swerveDrive(0, -0.2, 0);
+				Robot.drive.swerveDrive(0, 0.2, 0);
 			} else if(Math.abs(LeftJoystick_X)+
 			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
 				Robot.drive.swerveDrive( 
 					(LeftJoystick_X),
-			 		(LeftJoystick_Y),
+			 		(-LeftJoystick_Y),
 			 		(RightJoystick_X));
 			} else {
 				Robot.drive.stopDriveMotors();
