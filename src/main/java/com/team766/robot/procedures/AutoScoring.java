@@ -12,11 +12,19 @@ public class AutoScoring extends Procedure{
 	Point currentPos;
 	double minDistance;
 	Point targetPoint;
+	Nodes targetNode;
 
-	public AutoScoring() {
+	public enum Nodes {
+		HYBRID,
+		MEDIUM,
+		HIGH
+	}
+
+	public AutoScoring(Nodes node) {
 		currentPos = Robot.drive.getCurrentPosition().clone();
 		minDistance = currentPos.distance(RobotTargets.NODES[0]);
 		targetPoint = RobotTargets.NODES[0];
+		targetNode = node;
 
 		for (int i = 1; i < RobotTargets.NODES.length; i++) {
 			if (currentPos.distance(RobotTargets.NODES[i]) < minDistance) {
