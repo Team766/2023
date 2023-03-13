@@ -10,7 +10,6 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
-import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
