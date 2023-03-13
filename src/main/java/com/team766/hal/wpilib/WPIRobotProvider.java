@@ -2,6 +2,7 @@ package com.team766.hal.wpilib;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.team766.config.ConfigFileReader;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -21,6 +22,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.library.ValueProvider;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -126,7 +128,8 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANVictorMotorController(index);
 				break;
 			case TalonFX:
-				motor = new CANTalonFxMotorController(index);
+				final ValueProvider<String> CANBus = ConfigFileReader.getInstance().getString(type + ".CANBus");
+				motor = new CANTalonFxMotorController(index, CANBus.get());
 				break;
 			case VictorSP:
 				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
@@ -149,7 +152,7 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public EncoderReader getEncoder(int index1, int index2) {
-		if(encoders[index1] == null) {
+		if (encoders[index1] == null) {
 			encoders[index1] = new Encoder(index1, index2);
 		}
 		return encoders[index1];
@@ -157,7 +160,7 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public SolenoidController getSolenoid(int index) {
-		if(solenoids[index] == null) {
+		if (solenoids[index] == null) {
 			solenoids[index] = new Solenoid(index);
 		}
 		return solenoids[index];
@@ -173,9 +176,9 @@ public class WPIRobotProvider extends RobotProvider {
 				Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, "Invalid gyro port "
 						+ index + ". Must be -2, -1, or a non-negative integer");
 				return new MockGyro();
-			} else if(index == -2) {
+			} else if (index == -2) {
 				gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
-			} else if(index == -1) {
+			} else if (index == -1) {
 				gyros[index + 2] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 			} else {
 				gyros[index + 2] = new AnalogGyro(index);
@@ -192,7 +195,7 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public JoystickReader getJoystick(int index) {
-		if(joysticks[index] == null) {
+		if (joysticks[index] == null) {
 			joysticks[index] = new Joystick(index);
 		}
 		return joysticks[index];
@@ -212,8 +215,8 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public AnalogInputReader getAnalogInput(int index){
-		if(angInputs[index] == null) {
+	public AnalogInputReader getAnalogInput(int index) {
+		if (angInputs[index] == null) {
 			angInputs[index] = new AnalogInput(index);
 		}
 		return angInputs[index];
@@ -221,7 +224,7 @@ public class WPIRobotProvider extends RobotProvider {
 
 	@Override
 	public RelayOutput getRelay(int index) {
-		if(relays[index] == null) {
+		if (relays[index] == null) {
 			relays[index] = new Relay(index);
 		}
 		return relays[index];
@@ -231,10 +234,8 @@ public class WPIRobotProvider extends RobotProvider {
 	public PositionReader getPositionSensor() {
 		if (positionSensor == null) {
 			positionSensor = new MockPositionSensor();
-			Logger.get(Category.CONFIGURATION).logRaw(
-				Severity.ERROR,
-				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
-			);
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0");
 		}
 		return positionSensor;
 	}

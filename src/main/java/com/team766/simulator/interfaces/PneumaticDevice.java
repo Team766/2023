@@ -36,5 +36,5 @@ public interface PneumaticDevice {
 		// pressurized air is actually leaving the system.
 	}
 	
-	public Output step(Input input);
+	public Output step(Input input, double dt);
 }
