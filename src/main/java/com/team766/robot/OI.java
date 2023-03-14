@@ -17,6 +17,9 @@ public class OI extends Procedure {
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
 
+	private long periodicUpdateTimestamp = System.currentTimeMillis();
+	private static final long periodicUpdateIntervalMs = 20;
+
 	boolean manualControl = true;
 	
 	public OI() {
@@ -25,80 +28,80 @@ public class OI extends Procedure {
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
-
-
 	}
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.arms);
 		while (2>1) {
-			
-			
-			// wait for driver station data (and refresh it using the WPILib APIs)
-			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-			
-			RobotProvider.instance.refreshDriverStationData();
-			if(joystick0.getButtonPressed(14)){
-				manualControl = true;
-			} else if (joystick0.getButtonPressed(15)){
-				manualControl = false;
-				Robot.arms.manuallySetArmTwoPower(0);
-				Robot.arms.manuallySetArmOnePower(0);
+
+			long now = System.currentTimeMillis();
+			if(now - periodicUpdateTimestamp >= periodicUpdateIntervalMs) {
+				// Check if at least 20ms has elapsed
+				periodicUpdateTimestamp = now;
+
+				// Do things that should happen every 20ms instead of being clocked by OI data
+				Robot.arms.run();
 			}
 
-			if(manualControl == true){
-				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.3);
-				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.5);
-			}
+			if(RobotProvider.instance.hasNewDriverStationData()) {
+				// check for driver station data (and refresh it using the WPILib APIs)
 
+				RobotProvider.instance.refreshDriverStationData();
+				if(joystick0.getButtonPressed(14)) {
+					manualControl = true;
+				} else if (joystick0.getButtonPressed(15)) {
+					manualControl = false;
+					Robot.arms.setFirstJointPower(0);
+					Robot.arms.setSecondJointPower(0);
+				}
 
+				if(manualControl == true) {
+					// TODO : improvement: why don't we try to set target positions instead of using power control ?
+					Robot.arms.setFirstJointPower(joystick0.getAxis(1) * 0.5);
+					Robot.arms.setSecondJointPower(joystick0.getAxis(0) * 0.3);
+				}
 
-			if(joystick0.getButton(1)){
+				if(joystick0.getButton(1)) {
+					Robot.arms.resetEncoders();
+				}
 
-				Robot.arms.resetEncoders();
-			}
+				if(joystick0.getButton(2)) {
+					Robot.arms.updateArmsAntigrav();
+				}
 
-			if(joystick0.getButton(2)){
-				Robot.arms.holdArms();
-			}
+				if(joystick0.getButton(3) && manualControl == false) {
+					
+					Robot.arms.setAutomaticSecondJointTarget(0.25);
+					log("3");
+				}
 
+				if(joystick0.getButton(4) && manualControl == false) {
+					log("4");
+					Robot.arms.setAutomaticSecondJointTarget(0.75);
+				}
 
-
-			if(joystick0.getButton(3) && manualControl == false){
+				if(joystick0.getButton(5) && manualControl == false) {
+					log("5");
+					Robot.arms.setAutomaticSecondJointTarget(0.5);
+				}
 				
-				Robot.arms.pidForArmTwo(0.25);
-				log("3");
+				if(joystick0.getButton(6) && manualControl == false) {
+					log("6");
+					Robot.arms.setAutomaticFirstJointTarget(0.6);
+				}
+
+				if(joystick0.getButton(7) && manualControl == false) {
+					log("7");
+					Robot.arms.setAutomaticFirstJointTarget(0.85);
+				}
+
+				if(joystick0.getButton(8) && manualControl == false) {
+					log("8");
+					Robot.arms.setAutomaticFirstJointTarget(0.757);
+				}
 			}
 
-			if(joystick0.getButton(4) && manualControl == false){
-				log("4");
-				Robot.arms.pidForArmTwo(0.75);
-			}
-
-			if(joystick0.getButton(5) && manualControl == false){
-				log("5");
-				Robot.arms.pidForArmTwo(0.5);
-			}
-
-			
-			if(joystick0.getButton(6) && manualControl == false){
-				log("6");
-				Robot.arms.pidForArmOne(0.6);
-			}
-
-			if(joystick0.getButton(7) && manualControl == false){
-				log("7");
-				Robot.arms.pidForArmOne(0.85);
-			}
-
-			if(joystick0.getButton(8) && manualControl == false){
-				log("8");
-				Robot.arms.pidForArmOne(0.757);
-			}
-
-
-			
-
+			context.yield();
 		}
 	}
 }
