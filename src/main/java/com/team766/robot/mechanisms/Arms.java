@@ -104,7 +104,7 @@ public class Arms extends Mechanism {
         return firstJoint.getSensorPosition();
     }
 
-    public double getEncoderOfSecondJoint() {
+    public double getEncoderDistanceOfSecondJoint() {
         return secondJoint.getSensorPosition();
     }
 
