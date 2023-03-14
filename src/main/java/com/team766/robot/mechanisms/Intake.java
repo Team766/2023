@@ -32,7 +32,7 @@ public class Intake extends Mechanism {
 		startArms();
 		topIntakeWheels.set(power);
 		bottomIntakeWheels.set(power);
-		conveyorBelt.set(power);
+		conveyorBelt.set(power*0.5);
 
 	}
 
@@ -87,7 +87,7 @@ public class Intake extends Mechanism {
 
 		topIntakeWheels.set(-power);
 		bottomIntakeWheels.set(-power);
-		conveyorBelt.set(-power);
+		conveyorBelt.set(-power*0.5);
 
 		startArms();
 	}
