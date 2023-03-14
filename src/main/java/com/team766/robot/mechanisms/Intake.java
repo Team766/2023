@@ -20,8 +20,8 @@ public class Intake extends Mechanism {
 		bottomIntakeWheels = RobotProvider.instance.getMotor("Intake.bottomWheels");
 		conveyorBelt = RobotProvider.instance.getMotor("Intake.conveyorBelt");
 
-		intakeArm1 = RobotProvider.instance.getSolenoid("Intake.intakeArm1");
-		intakeArm2 = RobotProvider.instance.getSolenoid("Intake.intakeArm2");
+		intakeArm1 = RobotProvider.instance.getSolenoid("Intake.leftPiston");
+		intakeArm2 = RobotProvider.instance.getSolenoid("Intake.rightPiston");
 
 	}
 
