@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.library.RateLimiter;
 
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
@@ -35,6 +36,9 @@ public class Arms extends Mechanism {
     private static final double jointDeadZone = 0.004d;
 
     private boolean automaticMode = false;
+
+    // we only want to update at most once per 20ms
+    private RateLimiter runRateLimiter = new RateLimiter(0.02);
 
     /* 
     private MotorController thirdJoint = RobotProvider.instance.getMotor("arms.thirdJoint");
@@ -167,6 +171,9 @@ public class Arms extends Mechanism {
      */
     @Override
     public void run () {
+        // limits to once every X ms
+        if(!runRateLimiter.next()) return;
+
         checkContextOwnership();
 
         // automatically move and stop
