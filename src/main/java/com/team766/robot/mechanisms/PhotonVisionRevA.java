@@ -145,12 +145,12 @@ public class PhotonVisionRevA extends Mechanism {
     double x = 0;
     double y = 0;
     double z = 0;
-    double pitchSin = 0;
-    double pitchCos = 0;
-    double yawSin = 0;
-    double yawCos = 0;
-    double rollSin = 0;
-    double rollCos = 0;
+    //double pitchSin = 0;
+    //double pitchCos = 0;
+    //double yawSin = 0;
+    //double yawCos = 0;
+    //double rollSin = 0;
+    //double rollCos = 0;
 
     double weights = 0;
     for (HashMap.Entry<Double, Pose3d> entry : poses.entrySet()) {
