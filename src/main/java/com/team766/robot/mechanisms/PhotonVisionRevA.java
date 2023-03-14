@@ -73,9 +73,9 @@ public class PhotonVisionRevA extends Mechanism {
           CameraConstants.FRONT_LEFT_CAMERA_OFFSET_Z
         ),
         new Rotation3d(
-          CameraConstants.FRONT_LEFT_CAMERA_OFFSET_PITCH,
-          CameraConstants.FRONT_LEFT_CAMERA_OFFSET_YAW,
-          CameraConstants.FRONT_LEFT_CAMERA_OFFSET_ROLL
+          Math.toRadians(CameraConstants.FRONT_LEFT_CAMERA_OFFSET_PITCH),
+          Math.toRadians(CameraConstants.FRONT_LEFT_CAMERA_OFFSET_YAW),
+          Math.toRadians(CameraConstants.FRONT_LEFT_CAMERA_OFFSET_ROLL)
         )
       );
     rightRobotToCam =
@@ -86,9 +86,9 @@ public class PhotonVisionRevA extends Mechanism {
           CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_Z
         ),
         new Rotation3d(
-          CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_PITCH,
-          CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_YAW,
-          CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_ROLL
+          Math.toRadians(CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_PITCH),
+          Math.toRadians(CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_YAW),
+          Math.toRadians(CameraConstants.FRONT_RIGHT_CAMERA_OFFSET_ROLL)
         )
       );
     // Initialize pose estimators.
