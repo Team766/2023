@@ -133,10 +133,10 @@ public class PhotonVisionRevA extends Mechanism {
     rightEstimate = poseEstimate(rightPhotonPoseEstimator);
     HashMap<Double, Pose3d> poses = new HashMap<Double, Pose3d>();
     if (leftEstimate != null && !leftEstimate.isEmpty()) {
-      poses.put(leftEstimate, leftCameraWeight);
+      poses.put(leftCameraWeight, leftEstimate.get().estimatedPose);
     }
     if (rightEstimate != null && !rightEstimate.isEmpty()) {
-      poses.put(rightEstimate, rightCameraWeight);
+      poses.put(rightCameraWeight, rightEstimate.get().estimatedPose);
     }
     return poses;
    }
@@ -157,25 +157,26 @@ public class PhotonVisionRevA extends Mechanism {
       x += entry.getValue().getTranslation().getX() * entry.getKey();
       y += entry.getValue().getTranslation().getY() * entry.getKey();
       z += entry.getValue().getTranslation().getZ() * entry.getKey();
-      pitchSin += Math.sin(entry.getValue().getRotation().getPitch()) * entry.getKey();
-      pitchCos += Math.cos(entry.getValue().getRotation().getPitch()) * entry.getKey();
-      yawSin += Math.sin(entry.getValue().getRotation().getYaw()) * entry.getKey();
-      yawCos += Math.cos(entry.getValue().getRotation().getYaw()) * entry.getKey();
-      rollSin += Math.sin(entry.getValue().getRotation().getRoll()) * entry.getKey();
-      rollCos += Math.cos(entry.getValue().getRotation().getRoll()) * entry.getKey();
+      //pitchSin += Math.sin(entry.getValue().getRotation().) * entry.getKey();
+      //pitchCos += Math.cos(entry.getValue().getRotation().getPitch()) * entry.getKey();
+      //yawSin += Math.sin(entry.getValue().getRotation().getYaw()) * entry.getKey();
+      //yawCos += Math.cos(entry.getValue().getRotation().getYaw()) * entry.getKey();
+      //rollSin += Math.sin(entry.getValue().getRotation().getRoll()) * entry.getKey();
+      // rollCos += Math.cos(entry.getValue().getRotation().getRoll()) * entry.getKey();
       weights += entry.getKey();
    }
     x /= weights;
     y /= weights;
     z /= weights;
-    pitchSin /= weights;
-    pitchCos /= weights;
-    yawSin /= weights;
-    yawCos /= weights;
-    rollSin /= weights;
-    rollCos /= weights;
-    double pitch = Math.atan2(pitchSin, pitchCos);
-    double yaw = Math.atan2(yawSin, yawCos);
-    double roll = Math.atan2(rollSin, rollCos);
-    return new Pose3d(new Translation3d(x, y, z), new Rotation3d(pitch, yaw, roll));
+    //pitchSin /= weights;
+    //pitchCos /= weights;
+    //yawSin /= weights;
+    //yawCos /= weights;
+    //rollSin /= weights;
+    //rollCos /= weights;
+    //double pitch = Math.atan2(pitchSin, pitchCos);
+    //double yaw = Math.atan2(yawSin, yawCos);
+    //double roll = Math.atan2(rollSin, rollCos);
+    return new Pose3d(x,y,z, new Rotation3d());
+  }
 }
