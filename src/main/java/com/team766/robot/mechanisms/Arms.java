@@ -24,6 +24,8 @@ public class Arms extends Mechanism {
     private SparkMaxAbsoluteEncoder altEncoder = firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
     private RelativeEncoder mainEncoder = firstJointCANSparkMax.getEncoder();
     private double lastPosition = -1;
+    private double maxLocation = 1;
+    private double minLocation = 0;
 
     private MotorController secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
     private CANSparkMax secondJointTest = (CANSparkMax)secondJoint;
@@ -31,6 +33,9 @@ public class Arms extends Mechanism {
     private SparkMaxAbsoluteEncoder altEncoder2 = secondJointTest.getAbsoluteEncoder(Type.kDutyCycle);
     private RelativeEncoder mainEncoder2 = secondJointTest.getEncoder();
     private double lastPosition2 = -1;
+    private double maxLocation2 = 1;
+    private double minLocation2 = 0;
+
 
     private static double doubleDeadZone = 0.004d;
 
@@ -56,7 +61,7 @@ public class Arms extends Mechanism {
         firstJointPIDController.setSmartMotionMaxVelocity(6000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
-        firstJointPIDController.setOutputRange(-0.75, 0.75);
+        firstJointPIDController.setOutputRange(-0.1, 0.1);
 
         secondJointPID.setFeedbackDevice(altEncoder2);
         secondJointPID.setP(0.00008599997090641409);
@@ -66,7 +71,7 @@ public class Arms extends Mechanism {
         secondJointPID.setSmartMotionMaxVelocity(2500, 0);
         secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPID.setSmartMotionMaxAccel(1500, 0);
-        secondJointPID.setOutputRange(-1, 1);
+        secondJointPID.setOutputRange(-.25, .25);
 
 
 
@@ -104,7 +109,11 @@ public class Arms extends Mechanism {
 	// PID for first arm
     public void pidForArmOne(double value){
         log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
-        
+        if(value > maxLocation){
+            value = maxLocation;
+        } else if( value < minLocation){
+            value = minLocation;
+        }
         if(lastPosition != value) {
             if(firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
                 firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
@@ -132,6 +141,11 @@ public class Arms extends Mechanism {
 
 	// PID for second arm
     public void pidForArmTwo(double value){
+        if(value > maxLocation2){
+            value = maxLocation2;
+        } else if( value < minLocation2){
+            value = minLocation2;
+        }
         if(lastPosition2 != value) {
             if(secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
                 secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
