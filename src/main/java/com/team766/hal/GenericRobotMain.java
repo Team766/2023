@@ -122,13 +122,13 @@ public final class GenericRobotMain {
 			m_autonMode = null;
 		}
 		
-		if (m_oiContext == null) {
+		if (m_oiContext == null && m_oi != null) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 		}
 	}
 
 	public void teleopPeriodic() {
-		if (m_oiContext.isDone()) {
+		if (m_oiContext != null && m_oiContext.isDone()) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 			Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.WARNING, "Restarting OI context");
 		}
