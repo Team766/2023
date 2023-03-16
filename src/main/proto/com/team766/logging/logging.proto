@@ -37,6 +37,8 @@ enum Category {
 	TRAJECTORY = 9;
 	OPERATOR_INTERFACE = 10;
 	DRIVE = 11;
+	GYRO = 12;
+	ODOMETRY = 13;
 }
 
 // `Value` represents a dynamically typed value which can be either a number,
