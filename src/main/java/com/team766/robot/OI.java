@@ -10,7 +10,6 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
-import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -61,11 +60,14 @@ public class OI extends Procedure {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
+			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
+			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
 
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			/* if (joystick0.getButtonPressed(1)){
+			/* if (joystick0.getButtonPressed(15)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakeIn();
 					Robot.storage.beltIn();
@@ -77,7 +79,7 @@ public class OI extends Procedure {
 				}
 			}
 
-			if (joystick0.getButtonPressed(2)){
+			if (joystick0.getButtonPressed(16)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakeOut();
 					Robot.storage.beltOut();
@@ -94,6 +96,7 @@ public class OI extends Procedure {
 			}else{
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 			}		
+
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
@@ -175,8 +178,8 @@ public class OI extends Procedure {
 
 			if (isCross)  {
 				context.startAsync(new setCross());
-			} else if (joystick0.getButton(3)) {
-				Robot.drive.swerveDrive(0, 0.2, 0);
+			/*} else if (joystick0.getButton(3)) {
+				Robot.drive.swerveDrive(0, 0.2, 0);*/
 			} else if(Math.abs(LeftJoystick_X)+
 			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
 				Robot.drive.swerveDrive( 
@@ -187,6 +190,12 @@ public class OI extends Procedure {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			} 
+			
+		
+			
+			if(joystick0.getButtonPressed(1))
+				Robot.gyro.resetGyro();
+
 
 		}
 	}

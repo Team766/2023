@@ -378,19 +378,19 @@ public class Drive extends Mechanism {
 		double brAngle;
 		double blAngle;
 		if (JoystickTheta >= 0) {
-			frPower = NewMag(power, angle, JoystickTheta, 135);
-			flPower = NewMag(power, angle, JoystickTheta, 45);
-			brPower = NewMag(power, angle, JoystickTheta, -135);
-			blPower = NewMag(power, angle, JoystickTheta, -45);
+			frPower = NewMag(power, angle, JoystickTheta, 45);
+			flPower = NewMag(power, angle, JoystickTheta, -45);
+			brPower = NewMag(power, angle, JoystickTheta, 135);
+			blPower = NewMag(power, angle, JoystickTheta, -135);
 			frAngle = NewAng(power, angle, JoystickTheta, 45);
 			flAngle = NewAng(power, angle, JoystickTheta, 135);
 			brAngle = NewAng(power, angle, JoystickTheta, -45);
 			blAngle = NewAng(power, angle, JoystickTheta, -135);
 		} else {
-			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
-			flPower = NewMag(power, angle, Math.abs(JoystickTheta), -135);
-			brPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
-			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
+			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -135);
+			flPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
+			brPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
+			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
 			frAngle = NewAng(power, angle, Math.abs(JoystickTheta), -135);
 			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
 			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
