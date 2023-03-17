@@ -25,5 +25,12 @@ The enum `State` has four different values: `GROUND`, `RAMP_TRANSITION`, `RAMP_T
 	* It is set if the `prevState` is `RAMP_TILT` and `tilt` is less than the constant `LEVEL`.
 	* The robot speed is set to `-speed` in order to correct for overshooting later.
 
+The robot then moves towards the ramp at the set `speed`. Once it reaches `RAMP_LEVEL`, it briefly moves backwards in order to correct for overshooting, and crosses its wheels.
 
+## Initialization and tweaking
+
+The `AdjustCharging()` constructor has one paramater, which is `alliance`. 
+
+In order to tweak the point that the robot stops and locks its wheels, change the `LEVEL` constant, as a higher value will make it stop sooner and therefore balance quicker but will also make it less consistent. 
+Additionally, to adjust speed at certain states, adjust the correspoinding constants. If these values are changed, it might also be necessary to adjust the `CORRECTION_DELAY` to make sure it fully balances.
 

@@ -35,6 +35,8 @@ public class AdjustCharging extends Procedure {
 	private final Alliance alliance;
 
 	private final double LEVEL = 9;
+	private final double CORRECTION_DELAY = 0.25;
+
 	private final double TOP_TILT = 15.0;
 	private final double FLAP_TILT = 11;
 
@@ -83,7 +85,7 @@ public class AdjustCharging extends Procedure {
 		}
 		while (!(curState == State.RAMP_LEVEL || abort));
 
-		context.waitForSeconds(.25);
+		context.waitForSeconds(CORRECTION_DELAY);
 
 		
 		context.startAsync(new setCross());
