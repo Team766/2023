@@ -13,6 +13,7 @@ public class AutoScoring extends Procedure{
 	double minDistance;
 	Point targetPoint;
 	Nodes targetNode;
+	Piece targetPiece;
 
 	public enum Nodes {
 		HYBRID,
@@ -20,14 +21,45 @@ public class AutoScoring extends Procedure{
 		HIGH
 	}
 
+	public enum Piece {
+		HYBRID,
+		CUBE,
+		CONE
+	}
+
 	public AutoScoring(Nodes node) {
+		this(node, Piece.HYBRID);
+
+		if (node == Nodes.HYBRID) {
+			targetPiece = Piece.HYBRID;
+		} else {
+			targetPiece = Piece.CONE;
+			for (int i = 0; i < RobotTargets.CUBE_ROWS.length; i++) {
+				if (targetPoint.getY() == RobotTargets.CUBE_ROWS[i]) {
+					targetPiece = Piece.CUBE;
+				}
+			}
+		}
+	}
+
+	public AutoScoring(Nodes node, Piece piece) {
+
+		Point[] pointList;
+		switch (piece) {
+			case CUBE: pointList = RobotTargets.CUBE_NODES;
+			case CONE: pointList = RobotTargets.CONE_NODES;
+			default: pointList = RobotTargets.NODES;
+		}
+
+		targetPiece = piece;
+
 		currentPos = Robot.drive.getCurrentPosition().clone();
 		minDistance = currentPos.distance(RobotTargets.NODES[0]);
 		targetPoint = RobotTargets.NODES[0];
 		targetNode = node;
 
-		for (int i = 1; i < RobotTargets.NODES.length; i++) {
-			if (currentPos.distance(RobotTargets.NODES[i]) < minDistance) {
+		for (int i = 1; i < pointList.length; i++) {
+			if (currentPos.distance(pointList[i]) < minDistance) {
 				minDistance = currentPos.distance(RobotTargets.NODES[i]);
 				targetPoint = RobotTargets.NODES[i];
 			}
