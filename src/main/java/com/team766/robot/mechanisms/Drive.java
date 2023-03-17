@@ -486,19 +486,19 @@ public class Drive extends Mechanism {
 	 * Simple encoder logging method
 	 */
 	public void logs() {
-		log("Front Right Encoder: " + getFrontRight() + " Front Left Encoder: " + getFrontLeft()
+		/*log("Front Right Encoder: " + getFrontRight() + " Front Left Encoder: " + getFrontLeft()
 				+ " Back Right Encoder: " + getBackRight() + " Back Left Encoder: "
-				+ getBackLeft());
+				+ getBackLeft());*/
 	}
 
 	/**
 	 * This method is used to set the front right encoder to the true position
 	 */
 	public void setFrontRightEncoders() {
-		log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
+		//log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
 		m_SteerFrontRight.setSensorPosition((int) Math
 				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontRight.getAbsolutePosition()));
-		log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
+		//log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
 
 	}
 
@@ -664,7 +664,7 @@ public class Drive extends Mechanism {
 	@Override
 	public void run() {
 		currentPosition = swerveOdometry.run();
-		//log(currentPosition.toString());
+		log(currentPosition.toString());
 		SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
 		SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
 		SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());

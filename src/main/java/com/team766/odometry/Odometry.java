@@ -100,6 +100,12 @@ public class Odometry extends LoggingBase {
 		}
 	}
 
+	private static Vector2D rotate(Vector2D v, double angle) {
+		return new Vector2D(
+			v.getX() * Math.cos(angle) - Math.sin(angle) * v.getY(),
+			v.getY() * Math.cos(angle) + v.getX() * Math.sin(angle));
+	}
+
 	/**
 	 * Updates the position of each wheel of the robot by assuming each wheel moved in an arc.
 	 */
@@ -149,8 +155,10 @@ public class Odometry extends LoggingBase {
 				//oldWheelY = ((currEncoderValues[i] - prevEncoderValues[i]) * Math.sin(Math.toRadians(prevPositions[i].getHeading())) * slopeFactor.getY() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
 			}
 			wheelMotion = wheelMotion.scalarMultiply(WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
+			wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
 			//log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY - wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current Method: " + wheelMotion.getX() + ", " + wheelMotion.getY());
-			currPositions[i].add(wheelMotion);
+			//log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " + currPositions[i].add(wheelMotion));
+			currPositions[i].set(currPositions[i].add(wheelMotion));
 		}
 	}
 
@@ -161,8 +169,9 @@ public class Odometry extends LoggingBase {
 		double sumX = 0;
 		double sumY = 0;
 		for (int i = 0; i < motorCount; i++) {
-			sumX += currPositions[i].getX();
+			sumX -= currPositions[i].getX();
 			sumY += currPositions[i].getY();
+			//log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}
 		currentPosition.set(sumX / motorCount, sumY / motorCount, gyroPosition);
 	}
@@ -173,6 +182,7 @@ public class Odometry extends LoggingBase {
 			setCurrentEncoderValues();
 			updateCurrentPositions();
 			findRobotPosition();
+			log(currentPosition.toString());
 		}
 		return currentPosition;
 	}

@@ -59,7 +59,7 @@ public class FollowPoints extends Procedure {
 	private Procedure[] proceduresAtPoints;
 	private boolean[] criticalPointList;
 	private boolean[] stopRobotList;
-	private Point startingPoint = null;
+	private Point startingPoint = new Point(0, 0);
 
 	private int targetNum = 0;
 	private RateLimiter followLimiter = new RateLimiter(FollowPointsInputConstants.RATE_LIMITER_TIME);
@@ -308,8 +308,9 @@ public class FollowPoints extends Procedure {
 					//double diff = currentPos.getAngleDifference(targetPoint);
 					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 					
-					Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+					driveSettings.set(-driveSettings.getX(), driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
 					//log("Current Position: " + currentPos.toString());
 					//log("Target Point: " + targetPoint.toString());
@@ -337,7 +338,7 @@ public class FollowPoints extends Procedure {
 	 * Method which keeps updating how much the robot should turn between rateLimiter calls.
 	 */
 	public void updateRotation() {
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+		Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 		driveSettings.setHeading(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
 		Robot.drive.swerveDrive(driveSettings);
 	}
