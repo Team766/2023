@@ -90,11 +90,9 @@ public class OI extends Procedure {
 				}
 			} */
 
-			if(joystick1.getButton(2)){
-				Robot.drive.setGyro(0);
-			}else{
-				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-			}		
+			
+				Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+				
 
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
@@ -177,8 +175,8 @@ public class OI extends Procedure {
 
 			if (isCross)  {
 				context.startAsync(new setCross());
-			/*} else if (joystick0.getButton(3)) {
-				Robot.drive.swerveDrive(0, 0.2, 0);*/
+			} else if (joystick0.getButton(3)) {
+				Robot.drive.swerveDrive(0, 0.2, 0);
 			} else if(Math.abs(LeftJoystick_X)+
 			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
 				Robot.drive.swerveDrive( 
