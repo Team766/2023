@@ -24,7 +24,7 @@ public abstract class RobotProvider {
 	public static RobotProvider instance;
 	
 	protected EncoderReader[] encoders = new EncoderReader[20];
-	protected SolenoidController[] solenoids = new SolenoidController[10];
+	protected SolenoidController[] solenoids = new SolenoidController[20];
 	protected GyroReader[] gyros = new GyroReader[13];
 	protected HashMap<String, CameraReader> cams = new HashMap<String, CameraReader>();
 	protected JoystickReader[] joysticks = new JoystickReader[8];
@@ -212,7 +212,7 @@ public abstract class RobotProvider {
 					.toArray(SolenoidController[]::new));
 			return new DoubleSolenoid(forwardSolenoids, reverseSolenoids);
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead", configName);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead %s", configName, ex.toString());
 			return new DoubleSolenoid(null, null);
 		}
 	}

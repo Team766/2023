@@ -1,12 +1,16 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+
+import java.io.IOException;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -27,36 +31,71 @@ public class OI extends Procedure {
 	private boolean isCross = false;
 	double turningValue = 0;
 	
+	enum IntakeState {
+		IDLE,
+		SPINNINGOUT,
+		SPINNINGIN
+	}
+	IntakeState intakeState = IntakeState.IDLE;
+
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
+
 	}
 	
 	public void run(Context context) {
-		double prev_time = RobotProvider.instance.getClock().getTime();
-		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.drive);
-		//Robot.gyro.resetGyro();
-		Robot.drive.setFrontRightEncoders();
-		Robot.drive.setFrontLeftEncoders();
-		Robot.drive.setBackRightEncoders();
-		Robot.drive.setBackLeftEncoders();
-
+		context.takeOwnership(Robot.intake);
+		context.takeOwnership(Robot.arms);
+		context.takeOwnership(Robot.grabber);
+		context.takeOwnership(Robot.storage);
+		context.takeOwnership(Robot.gyro);
+		
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
+			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
+			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
 
+			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			/* if (joystick0.getButtonPressed(15)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.intakeIn();
+					Robot.storage.beltIn();
+					intakeState = IntakeState.SPINNINGIN;
+				} else {
+					Robot.intake.intakeIdle();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			}
+
+			if (joystick0.getButtonPressed(16)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.intakeOut();
+					Robot.storage.beltOut();
+					intakeState = IntakeState.SPINNINGOUT;
+				} else {
+					Robot.intake.intakeIdle();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			} */
+
 			if(joystick1.getButton(2)){
 				Robot.drive.setGyro(0);
 			}else{
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 			}		
+
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
@@ -130,20 +169,33 @@ public class OI extends Procedure {
 			// } else {
 			// 	turningValue = 0;
 			// }
-			
+
+			SmartDashboard.putNumber("Front left", Robot.drive.getFrontLeft());
+			SmartDashboard.putNumber("Front right", Robot.drive.getFrontRight());
+			SmartDashboard.putNumber("Back left", Robot.drive.getBackLeft());
+			SmartDashboard.putNumber("Back right", Robot.drive.getBackRight());
+
 			if (isCross)  {
 				context.startAsync(new setCross());
+			/*} else if (joystick0.getButton(3)) {
+				Robot.drive.swerveDrive(0, 0.2, 0);*/
 			} else if(Math.abs(LeftJoystick_X)+
 			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
 				Robot.drive.swerveDrive( 
 					(LeftJoystick_X),
-			 		(LeftJoystick_Y),
+			 		(-LeftJoystick_Y),
 			 		(RightJoystick_X));
-				log("FRONT RIGHT: " + Robot.drive.getFrontRight());
 			} else {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			} 
+			
+		
+			
+			if(joystick0.getButtonPressed(1))
+				Robot.gyro.resetGyro();
+
+
 		}
 	}
 }

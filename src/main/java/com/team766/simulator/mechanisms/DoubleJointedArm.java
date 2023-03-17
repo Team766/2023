@@ -110,14 +110,14 @@ public class DoubleJointedArm {
 	// L = 1/2 * I1 * theta1'^2 + 1/2 * I2 * theta2'^2 + Ix * cos(theta1 - theta2) * theta1' * theta2' + g1 * cos(theta1) + g2 * cos(theta2)
 	//
 	// Euler-Lagrangian:
-	// d/dt ∂L/∂theta' - ∂L/∂theta = tau
+	// d/dt [Partial]L/[Partial]theta' - [Partial]L/[Partial]theta = tau
 	// 
-	// d/dt ∂L/∂theta1' - ∂L/∂theta1 = I1 * theta1'' + Ix * cos(theta1 - theta2) * theta2'' - Ix * sin(theta1 - theta2) * (theta1' - theta2') * theta2'
+	// d/dt [Partial]L/[Partial]theta1' - [Partial]L/[Partial]theta1 = I1 * theta1'' + Ix * cos(theta1 - theta2) * theta2'' - Ix * sin(theta1 - theta2) * (theta1' - theta2') * theta2'
 	//                                 + Ix * sin(theta1 - theta2) * theta1' * theta2' + g1 * sin(theta1)
 	//                               = I1 * theta1'' + Ix * cos(theta1 - theta2) * theta2'' + Ix * sin(theta1 - theta2) * theta2'^2 + g1 * sin(theta1)
 	//                               = tau1
 	//
-	// d/dt ∂L/∂theta2' - ∂L/∂theta2 = I2 * theta2'' + Ix * cos(theta1 - theta2) * theta1'' - Ix * sin(theta1 - theta2) * (theta1' - theta2') * theta1'
+	// d/dt [Partial]L/[Partial]theta2' - [Partial]L/[Partial]theta2 = I2 * theta2'' + Ix * cos(theta1 - theta2) * theta1'' - Ix * sin(theta1 - theta2) * (theta1' - theta2') * theta1'
 	//                                 - Ix * sin(theta1 - theta2) * theta1' * theta2' + g2 * sin(theta2))
 	//                               = I2 * theta2'' + Ix * cos(theta1 - theta2) * theta1'' - Ix * sin(theta1 - theta2) * theta1'^2 + g2 * sin(theta2)
 	//                               = tau2
