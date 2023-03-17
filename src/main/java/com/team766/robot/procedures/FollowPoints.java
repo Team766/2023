@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.robot.Robot;
+import com.team766.robot.constants.*;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
@@ -15,15 +16,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
 import com.team766.config.ConfigFileReader;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
+import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
-import com.team766.robot.constants.*;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
@@ -68,6 +69,8 @@ public class FollowPoints extends Procedure {
 	private static double speed = FollowPointsInputConstants.SPEED;
 	private static PointDir driveSettings = new PointDir(0, 0, 0);
 
+	private static HashMap<String, Procedure> mapOfProcedures = new HashMap<String, Procedure>();
+
 	/*public FollowPoints() {
 		parsePointL$ist();
 		proceduresAtPoints = new Procedure[pointList.length];
@@ -83,6 +86,14 @@ public class FollowPoints extends Procedure {
 	 * @throws IOException Thrown if file is not found.
 	 */
 	public FollowPoints(String file) {
+		mapOfProcedures.put("DoNothing()", new DoNothing());
+		mapOfProcedures.put(null, new DoNothing());
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HIGH)", new AutoScoring(AutoScoring.Nodes.HIGH));
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.MEDIUM)", new AutoScoring(AutoScoring.Nodes.MEDIUM));
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HYBRID)", new AutoScoring(AutoScoring.Nodes.HYBRID));
+		mapOfProcedures.put("WaitFiveSeconds()", new WaitFiveSeconds());
+		mapOfProcedures.put("setCross()", new setCross());
+
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -124,7 +135,14 @@ public class FollowPoints extends Procedure {
 		
 		JSONArray points = new JSONObject(str).getJSONArray("points");
 		for (int i = 0; i < points.length(); i++) {
-			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
+			JSONObject procedure = points.getJSONObject(i).getJSONObject("procedure");
+			Procedure pointProcedure = null;
+			boolean stopAtProcedure = false;
+			if (procedure != null) {
+				pointProcedure = mapOfProcedures.get(procedure.getString("name"));
+				stopAtProcedure = procedure.getBoolean("stop");
+			}
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), pointProcedure, stopAtProcedure);
 		}
 		addWaypoints();
 	}
@@ -274,7 +292,11 @@ public class FollowPoints extends Procedure {
 									updateRotation();
 								}
 								Robot.drive.setCross();
+								context.releaseOwnership(Robot.drive);
+								context.releaseOwnership(Robot.gyro);
 								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
+								context.takeOwnership(Robot.drive);
+								context.takeOwnership(Robot.gyro);
 							} else {
 								context.startAsync(proceduresAtPoints[targetNum]);
 							}
