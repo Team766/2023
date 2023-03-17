@@ -30,6 +30,7 @@ public class AdjustCharging extends Procedure {
 	private State prevState;
 	private State curState;
 	private Direction direction;
+	private boolean abort = false;
 	
 	private final Alliance alliance;
 
@@ -77,24 +78,13 @@ public class AdjustCharging extends Procedure {
 				driveSpeed = speed;
 			}
 
-			log("Pos: " + Robot.drive.getCurrentPosition());
-			log("Direction: " + direction);
-			log("tilt: " + tilt);
-			log("Current state:" + curState + ", previous state: " + prevState);
-			log("driveSpeed: " + driveSpeed);
-			log("normal speed: " + speed);
-
 			Robot.drive.swerveDrive(0, driveSpeed, 0);
 			context.yield();
 		}
-		while (!(curState == State.RAMP_LEVEL));
-		log("driveSpeed: " + driveSpeed);
-		log("normal speed: " + speed);
+		while (!(curState == State.RAMP_LEVEL || abort));
 
 		context.waitForSeconds(.25);
-		log("driveSpeed: " + driveSpeed);
-		log("normal speed: " + speed);
-		log("trying to go back");
+
 		
 		context.startAsync(new setCross());
 
@@ -115,29 +105,27 @@ public class AdjustCharging extends Procedure {
 			curState = State.RAMP_LEVEL;
 			speed = -speed;
 			log("Level, prevState: " + prevState + ", curState: " + curState);
-		} else if (prevState == State.RAMP_LEVEL && tilt > LEVEL) {
-			curState = State.RAMP_TILT;
-			speed = SPEED_TILT;
-			log("back into tilt, prevState: " + prevState + ", curState: " + curState);
-		}
+		} // else if (prevState == State.RAMP_LEVEL && tilt > LEVEL) {
+		// 	curState = State.RAMP_TILT;
+		// 	speed = SPEED_TILT;
+		// 	log("back into tilt, prevState: " + prevState + ", curState: " + curState);
+		// }
 		if (curState == State.GROUND) {
 			speed = SPEED_GROUND;
 		}
 	}
 
-	private void setDir(double curX) {
+	private void setDir(double curX) { //TODO: behave differently if the robot is directly over or under the charging station
 		switch (alliance) {
 			case Red:
 				if (curX > ChargeConstants.RED_BALANCE_TARGET_X) {
 					if (tilt < LEVEL && curX > ChargeConstants.RED_RIGHT_PT) {
 						curState = State.GROUND;
-						log("curX: " + curX);
 					}
 					direction = Direction.LEFT;
 				} else {
 					if (tilt < LEVEL && curX < ChargeConstants.RED_LEFT_PT) {
 						curState = State.GROUND;
-						log("curX: " + curX);
 					}
 					direction = Direction.RIGHT;
 				}
@@ -146,13 +134,11 @@ public class AdjustCharging extends Procedure {
 				if (curX > ChargeConstants.BLUE_BALANCE_TARGET_X) {
 					if (tilt < LEVEL && curX > ChargeConstants.BLUE_RIGHT_PT) {
 						curState = State.GROUND;
-						log("curX: " + curX);
 					}
 					direction = Direction.LEFT;
 				} else {
 					if (tilt < LEVEL && curX < ChargeConstants.BLUE_LEFT_PT) {
 						curState = State.GROUND;
-						log("curX: " + curX);
 					}
 					direction = Direction.RIGHT;
 				}
@@ -161,5 +147,9 @@ public class AdjustCharging extends Procedure {
 			default: 
 				log("Invalid alliance");
 		} 
+	}
+
+	public void abort() {
+		abort = true;
 	}
 }
