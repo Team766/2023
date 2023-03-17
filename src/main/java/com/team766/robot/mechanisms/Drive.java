@@ -67,14 +67,14 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft = RobotProvider.instance.getMotor("drive.SteerBackLeft");
 
 		// Setting up the "config"
-		CANCoderConfiguration config = new CANCoderConfiguration();
-		config.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
+		//CANCoderConfiguration config = new CANCoderConfiguration();
+		//config.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
 		// The encoders output "encoder" values, so we need to convert that to degrees (because that
 		// is what the cool kids are using)
-		config.sensorCoefficient = 360.0 / 4096.0;
+		//config.sensorCoefficient = 360.0 / 4096.0;
 		// The offset is going to be changed in ctre, but we can change it here too.
 		// config.magnetOffsetDegrees = Math.toDegrees(configuration.getOffset());
-		config.sensorDirection = true;
+		//config.sensorDirection = true;
 
 		// initialize the encoders
 		e_FrontRight = new CANCoder(22, "Swervavore");
@@ -110,6 +110,9 @@ public class Drive extends Mechanism {
 		m_SteerFrontLeft.setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		m_SteerBackRight.setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		m_SteerBackLeft.setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+		resetSteerMotorEncoders();
+
 		configPID();
 
 		// Sets up odometry
@@ -492,36 +495,14 @@ public class Drive extends Mechanism {
 	}
 
 	/**
-	 * This method is used to set the front right encoder to the true position
+	 * Reset all steer motor encoder current positions to be relative to CANCoder positions
 	 */
-	public void setFrontRightEncoders() {
-		m_SteerFrontRight.setSensorPosition((int) Math
-				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontRight.getAbsolutePosition()));
-	}
-
-	/**
-	 * This method is used to set the front left encoder to the true position
-	 */
-	public void setFrontLeftEncoders() {
-		m_SteerFrontLeft.setSensorPosition((int) Math
-				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontLeft.getAbsolutePosition()));
-
-	}
-
-	/**
-	 * This method is used to set the back right encoder to the true position
-	 */
-	public void setBackRightEncoders() {
-		m_SteerBackRight.setSensorPosition((int) Math
-				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_BackRight.getAbsolutePosition()));
-	}
-
-	/**
-	 * This method is used to set the back left encoder to the true position
-	 */
-	public void setBackLeftEncoders() {
-		m_SteerBackLeft.setSensorPosition((int) Math
-				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_BackLeft.getAbsolutePosition()));
+	public void resetSteerMotorEncoders() {
+		final double sensorRatio = 2048.0 / 360.0 * (150.0 / 7.0);
+		m_SteerFrontRight.setSensorPosition((int) Math.round(sensorRatio * e_FrontRight.getAbsolutePosition()));
+		m_SteerFrontLeft.setSensorPosition((int) Math.round(sensorRatio * e_FrontLeft.getAbsolutePosition()));
+		m_SteerBackRight.setSensorPosition((int) Math.round(sensorRatio * e_BackRight.getAbsolutePosition()));
+		m_SteerBackLeft.setSensorPosition((int) Math.round(sensorRatio * e_BackLeft.getAbsolutePosition()));
 	}
 
 	// To control each steering individually with a PID
@@ -577,7 +558,7 @@ public class Drive extends Mechanism {
 	/**
 	 * Method to configure PID values. The values were pre-tuned and are not expected to change.
 	 */
-	public void configPID() {
+	private void configPID() {
 		// PID for turning the various steering motors. Here is a good link to a tuning website:
 		// https://www.robotsforroboticists.com/pid-control/
 		m_SteerFrontRight.setP(0.2);
@@ -598,7 +579,7 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft.setP(0.2);
 		m_SteerBackLeft.setI(0);
 		m_SteerBackLeft.setD(0.1);
-		// m_SteerBackLeft.setFF(0);
+		m_SteerBackLeft.setFF(0);
 
 		// pid values from sds for Flacons 500: P = 0.2 I = 0.0 D = 0.1 FF = 0.0
 

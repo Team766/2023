@@ -160,11 +160,8 @@ public class OI extends Procedure {
 			
 			
 			if(joystick0.getButtonPressed(2)){
-				Robot.drive.setFrontRightEncoders();
-				Robot.drive.setFrontLeftEncoders();
-				Robot.drive.setBackRightEncoders();
-				Robot.drive.setBackLeftEncoders();
 			}
+			
 			// if(joystick1.getButton(1)){
 			// 	turningValue = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT); 
 			// } else {
