@@ -1,4 +1,4 @@
-# The AdjustCharing() procedure
+# The AdjustCharging() procedure
 
 
 ## What is AdjustCharging?
