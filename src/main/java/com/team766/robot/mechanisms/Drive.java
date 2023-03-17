@@ -11,6 +11,7 @@ import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.simulator.ProgramInterface.RobotMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -125,6 +126,10 @@ public class Drive extends Mechanism {
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
 		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, OdometryInputConstants.WHEEL_CIRCUMFERENCE, OdometryInputConstants.GEAR_RATIO, OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT, OdometryInputConstants.RATE_LIMITER_TIME);
+		setFrontRightEncoders();
+		setFrontLeftEncoders();
+		setBackRightEncoders();
+		setBackLeftEncoders();
 	}
 
 	// A set of simple functions for the sake of adding vectors
@@ -495,8 +500,11 @@ public class Drive extends Mechanism {
 	 * This method is used to set the front right encoder to the true position
 	 */
 	public void setFrontRightEncoders() {
+		log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
 		m_SteerFrontRight.setSensorPosition((int) Math
 				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontRight.getAbsolutePosition()));
+		log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
+
 	}
 
 	/**
@@ -657,7 +665,11 @@ public class Drive extends Mechanism {
 	@Override
 	public void run() {
 		currentPosition = swerveOdometry.run();
-		log(currentPosition.toString());
+		//log(currentPosition.toString());
+		SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
+		SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
+		SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());
+		SmartDashboard.putNumber("Back Left Motor Encoder", m_SteerBackLeft.getSensorPosition());
 	}
 }
 
