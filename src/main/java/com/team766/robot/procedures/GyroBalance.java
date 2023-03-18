@@ -2,17 +2,17 @@ package com.team766.robot.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.odometry.PointDir;
 import com.team766.robot.Robot;
 import com.team766.robot.constants.ChargeConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * {@link Procedure} to use the gyro to automatically balance on the charge station.
+ * See GyroBalance.md for more details
  */
 public class GyroBalance extends Procedure {
 
-	// State machine with 4 states for position on ramp, see more in GyroBalance.md
+	// State machine with 4 states for position on ramp
 	private enum State {
 		GROUND,
 		RAMP_TRANSITION,
@@ -112,7 +112,7 @@ public class GyroBalance extends Procedure {
 		context.releaseOwnership(Robot.gyro);
 	} 
 
-	// Sets state in state machine, more details in GyroBalance.md
+	// Sets state in state machine
 	private void setState() { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
