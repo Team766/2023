@@ -6,6 +6,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.hal.wpilib.Solenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
 	
@@ -13,12 +15,14 @@ public class Intake extends Mechanism {
 	private MotorController topBelt;
 	private SolenoidController leftPiston;
 	private SolenoidController rightPiston;
+	private PneumaticHub ph;
 
 	public Intake(){
 		bottomWheels = RobotProvider.instance.getMotor("intake.bottomWheels");
 		topBelt = RobotProvider.instance.getMotor("intake.topWheels");
 		leftPiston = RobotProvider.instance.getSolenoid("intake.leftPiston");
 		rightPiston = RobotProvider.instance.getSolenoid("intake.rightPiston");
+		ph = new PneumaticHub();
 	}
 
 	public void intakeIn(){
@@ -40,5 +44,9 @@ public class Intake extends Mechanism {
 		topBelt.set(0);
 		leftPiston.set(false);
 		rightPiston.set(false);
+	}
+
+	public void run(){
+		SmartDashboard.putNumber("Storage PSI",ph.getPressure(0));
 	}
 }

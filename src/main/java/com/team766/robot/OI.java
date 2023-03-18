@@ -91,6 +91,30 @@ public class OI extends Procedure {
 				}
 			} 
 
+			if (joystick0.getButton(13)){
+				Robot.arms.wristForward(0.1);
+			} else if (joystick0.getButton(14)){
+				Robot.arms.wristBackward(0.1);
+			} else {
+				Robot.arms.wristForward(0);
+			}
+
+			if (joystick1.getButton(13)){
+				Robot.arms.firstJointForward(0.1);
+			} else if (joystick1.getButton(14)){
+				Robot.arms.firstJointBackward(0.1);
+			} else {
+				Robot.arms.firstJointForward(0);
+			}
+
+			if (joystick1.getButton(15)){
+				Robot.arms.secondJointForward(0.1);
+			} else if (joystick1.getButton(16)){
+				Robot.arms.secondJointBackward(0.1);
+			} else {
+				Robot.arms.secondJointForward(0);
+			}
+
 			if (joystick0.getButtonPressed(9)){
 				Robot.grabber.grabIn();
 			} 
@@ -156,7 +180,7 @@ public class OI extends Procedure {
 			if(joystick0.getButtonPressed(1))
 				Robot.gyro.resetGyro();
 
-			if(joystick0.getButtonPressed(11))
+			if(joystick0.getButtonPressed(2))
 				Robot.drive.resetCurrentPosition();
 
 			if(joystick1.getButtonPressed(1))
@@ -204,3 +228,25 @@ public class OI extends Procedure {
 		}
 	}
 }
+
+/*
+	"wrist": {
+	"sensorScale": null,
+	"port": null,
+	"sensorInverted": null,
+	"analogInput": null,
+	"pid": {
+		"outputMaxHigh": null,
+		"iGain": null,
+		"dGain": null,
+		"ffGain": null,
+		"pGain": null,
+		"outputMaxLow": null,
+		"threshold": null
+	},
+	"inverted": null,
+	"type": "SparkMax",
+	"encoder": null,
+	"deviceId": 2
+	}
+ */
