@@ -110,7 +110,14 @@ public class FollowPoints extends Procedure {
 		startingPoint.set(start.getDouble(0), start.getDouble(1));
 		
 		for (int i = 0; i < points.length(); i++) {
-			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
+			JSONObject procedure = points.getJSONObject(i).getJSONObject("procedure");
+			Procedure pointProcedure = null;
+			boolean stopAtProcedure = false;
+			if (procedure != null) {
+				pointProcedure = mapOfProcedures.get(procedure.getString("name"));
+				stopAtProcedure = procedure.getBoolean("stop");
+			}
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), pointProcedure, stopAtProcedure);
 		}
 		addWaypoints();
 	}
@@ -273,6 +280,7 @@ public class FollowPoints extends Procedure {
 
 		for (int i = 0; i < pointList.length; i++) {
 			log(pointList[i].toString());
+			log("Stop: " + stopRobotList[i]);
 		}
 		if (pointList.length > 0) {
 			Point targetPoint = new Point(0.0, 0.0);
@@ -285,11 +293,14 @@ public class FollowPoints extends Procedure {
 					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
 					//Otherwise, it uses the checkIntersection() method to follow the circle
 					if (criticalPointList[targetNum]? (targetNum < pointList.length - 1 && passedPoint(pointList[targetNum])) : checkIntersection(pointList)) {
-						if (proceduresAtPoints.length < targetNum) {
+						log("Procedure List Length: " + proceduresAtPoints.length);
+						if (proceduresAtPoints.length > targetNum) {
+							log("stopRobotList: " + stopRobotList[targetNum]);
 							if (stopRobotList[targetNum]) {
 								driveSettings.set(0, 0);
-								while (rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()) > 0.03) {
+								while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
 									updateRotation();
+									context.yield();
 								}
 								Robot.drive.setCross();
 								context.releaseOwnership(Robot.drive);
@@ -324,10 +335,12 @@ public class FollowPoints extends Procedure {
 			Robot.drive.drive2D(0, 0);
 			driveSettings.set(0, 0);
 			targetNum = pointList.length - 1;
-			while (rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()) > 0.03) {
+			while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
 				updateRotation();
+				context.yield();
 			}
-			Robot.drive.setCross();
+			context.releaseOwnership(Robot.drive);
+			context.startAsync(new setCross());
 			log("Finished method!");
 		} else {
 			log("No points!");
@@ -437,7 +450,7 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			return (currentRot - targetRot) / angleDistanceForMaxSpeed * maxSpeed;
+			return Math.cbrt((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed;
 		}
 		return maxSpeed * Math.signum(currentRot - targetRot);
 	}

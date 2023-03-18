@@ -2,8 +2,16 @@
 	"start": [0, 0],
 	"points": [
 		{
-			"coordinates": [1, 0, 90],
-			"critical": false,
+			"coordinates": [0.2, 0, 180],
+			"critical": true,
+			"procedure": {
+				"name" : "WaitFiveSeconds()",
+				"stop" : true
+			}
+		},
+		{
+			"coordinates": [0, 0, 0],
+			"critical": true,
 			"procedure": {
 				"name" : "DoNothing()",
 				"stop" : true
