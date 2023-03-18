@@ -25,6 +25,9 @@ The enum `State` has four different values: `GROUND`, `RAMP_TRANSITION`, `RAMP_T
 	* It is set if the `prevState` is `RAMP_TILT` and `tilt` is less than the constant `LEVEL`.
 	* The robot speed is set to `-speed` in order to correct for overshooting later.
 
+Below is an image of a tilted charge station and its angles.
+![Image](images/TiltedRamp.png)
+
 The robot then moves towards the ramp at the set `speed`. Once it reaches `RAMP_LEVEL`, it briefly moves backwards in order to correct for overshooting, and crosses its wheels.
 
 ## Initialization and tweaking

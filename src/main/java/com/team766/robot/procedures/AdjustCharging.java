@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AdjustCharging extends Procedure {
 
-	//TODO: Make code not suck
-
 	private enum State {
 		GROUND,
 		RAMP_TRANSITION,
