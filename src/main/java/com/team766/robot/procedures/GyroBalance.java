@@ -7,9 +7,12 @@ import com.team766.robot.Robot;
 import com.team766.robot.constants.ChargeConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-
+/**
+ * {@link Procedure} to use the gyro to automatically balance on the charge station.
+ */
 public class GyroBalance extends Procedure {
 
+	// State machine with 4 states for position on ramp, see more in GyroBalance.md
 	private enum State {
 		GROUND,
 		RAMP_TRANSITION,
@@ -17,31 +20,38 @@ public class GyroBalance extends Procedure {
 		RAMP_LEVEL
 	}
 
+	// Direction determines which direction the robot moves
 	private enum Direction {
 		LEFT,
 		RIGHT,
 		STOP,
 	}
 
+	// tilt is the overall combination of pitch and roll
 	private double tilt = Robot.gyro.getAbsoluteTilt();
-	private double speed;
+
+	// absSpeed is unsigned speed value
+	private double absSpeed;
 	private State prevState;
 	private State curState;
 	private Direction direction;
 	private boolean abort = false;
-	
 	private final Alliance alliance;
-
-	private final double LEVEL = 7;
-	private final double CORRECTION_DELAY = 0.5;
 
 	private final double TOP_TILT = 15.0;
 	private final double FLAP_TILT = 11;
 
+	// Tweak these values to adjust how the robot balances
+	private final double LEVEL = 7;
+	private final double CORRECTION_DELAY = 0.5;
 	private final double SPEED_GROUND = .3;
 	private final double SPEED_TRANSITION = .25;
 	private final double SPEED_TILT = .18;
 
+	/** 
+	 * Constructor to create a new GyroBalance instance
+	 * @param alliance Alliance for setting direction towards charge station
+	*/
 	public GyroBalance(Alliance alliance) {
 		this.alliance = alliance;
 	}
@@ -49,10 +59,14 @@ public class GyroBalance extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.drive);
+
+		// curX is current robot x position
 		double curX = Robot.drive.getCurrentPosition().getX();
+
+		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
 
-		// Sets movement direction and if on ground
+		// Sets movement direction ground state if on ground
 		setDir(curX);
 
 		// sets starting state if not on ground
@@ -65,54 +79,65 @@ public class GyroBalance extends Procedure {
 		}
 
 		do {
+			// Sets prevState to the current state and calculates curState
 			prevState = curState;
 			curX = Robot.drive.getCurrentPosition().getX();
 			tilt = Robot.gyro.getAbsoluteTilt();
 			log("curX:" + curX);
 			log("direction: " + direction);
-			setState(curX);
+			setState();
 
+			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
-				driveSpeed = -speed; 
+				driveSpeed = -absSpeed; 
 			} else {
-				driveSpeed = speed;
+				driveSpeed = absSpeed;
 			}
 
+			// Drives the robot with the calculated speed and direction
 			Robot.drive.swerveDrive(0, -driveSpeed, 0);
 			context.yield();
 		}
+		// Loops until robot is level or until a call to the abort() method
 		while (!(curState == State.RAMP_LEVEL || abort));
 
+		// After the robot is level, drives for correctionDelay seconds.
+		// Direction is opposite due to inversion of speed in setState() so it corrects for overshooting
 		context.waitForSeconds(CORRECTION_DELAY);
-
 		
+		// Locks wheels once balanced
 		context.startAsync(new setCross());
 
 		context.releaseOwnership(Robot.drive);
 		context.releaseOwnership(Robot.gyro);
 	} 
 
-	//sets state in state machine
-	private void setState(double curX) { 
+	// Sets state in state machine, more details in GyroBalance.md
+	private void setState() { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
-			speed = SPEED_TRANSITION;
+			absSpeed = SPEED_TRANSITION;
 			log("Transition, prevState: " + prevState + ", curState: " + curState);
 		} else if (prevState == State.RAMP_TRANSITION && tilt < TOP_TILT && tilt > FLAP_TILT) {
 			curState = State.RAMP_TILT;
-			speed = SPEED_TILT;
+			absSpeed = SPEED_TILT;
 			log("Tilt, prevState: " + prevState + ", curState: " + curState);
 		} else if (prevState == State.RAMP_TILT && tilt < LEVEL) {
 			curState = State.RAMP_LEVEL;
-			speed = -speed;
+			// If level, sets speed to negative to correct for overshooting
+			absSpeed = -absSpeed;
 			log("Level, prevState: " + prevState + ", curState: " + curState);
 		} 
 		if (curState == State.GROUND) {
-			speed = SPEED_GROUND;
+			absSpeed = SPEED_GROUND;
 		}
 	}
 
-	//sets direction needed and ground state if on ground
+	/**
+	 * Sets direction towards desired charge station
+	 * If robot is level and outside of charge station boundaries, sets state to ground
+	 * @param curX current robot x position
+	 */
 	private void setDir(double curX) {
 		switch (alliance) {
 			case Red:
@@ -147,6 +172,7 @@ public class GyroBalance extends Procedure {
 		} 
 	}
 
+	// Stops while loop in run()
 	public void abort() {
 		abort = true;
 	}

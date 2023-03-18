@@ -37,5 +37,5 @@ And the image below shows an example of a path in which `setMid` is false and th
 ## Initialization
 
 There are two constructors for AlignCharger():
-* A boolean will set `setMid`
-* A default constructor will set `setMid` to true
+* A boolean and an enum Alliance (which can be passed through DriverStation.getAlliance()) will set the boolean `setMid` and the Alliance `alliance`
+* An enum Alliance will set `setMid` to true and `alliance`
