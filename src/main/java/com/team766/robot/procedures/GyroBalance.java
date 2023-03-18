@@ -8,7 +8,7 @@ import com.team766.robot.constants.ChargeConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 
-public class AdjustCharging extends Procedure {
+public class GyroBalance extends Procedure {
 
 	private enum State {
 		GROUND,
@@ -42,7 +42,7 @@ public class AdjustCharging extends Procedure {
 	private final double SPEED_TRANSITION = .25;
 	private final double SPEED_TILT = .18;
 
-	public AdjustCharging(Alliance alliance) {
+	public GyroBalance(Alliance alliance) {
 		this.alliance = alliance;
 	}
 

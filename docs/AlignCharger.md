@@ -1,19 +1,19 @@
-# The AutoBalance() Procedure
+# The AlignCharger() Procedure
 
 
-## What is AutoBalancing?
+## What is AlignCharger?
 
-AutoBalancing is a procedure that automatically moves the robot to the charging station and balances it.
+AlignCharger is a procedure that automatically moves the robot to the charging station so it can easily be balanced.
 
 
-## How does AutoBalancing work?
+## How does AlignCharger work?
 
-AutoBalancing uses the ChargeStationPathFinder object, which takes the alliance color and constants of the location of each charging station. It creates an ArrayList of pointDir objects, and adds a number of points to this list that allow the robot to reach the center of the charging station.
+AlignCharger uses the ChargeStationPathFinder object, which takes the alliance color and constants of the location of each charging station. It creates an ArrayList of pointDir objects, and adds a number of points to this list that allow the robot to reach the center of the charging station.
 
 
 ## Paramaters and Path
 
-AutoBalancing uses the `boolean setMid` paramater, which determines whether the robot will travel to the center of the charging station (most likely in Autonomous Mode) or to the point on it with the robot's current height (most likely in Endgame). 
+AlignCharger uses the `boolean setMid` paramater, which determines whether the robot will travel to the center of the charging station (most likely in Autonomous Mode) or to the point on it with the robot's current height (most likely in Endgame). 
 
 The path that the robot takes depends on `setMid`, such that:
 * If `setMid` is true, 
@@ -36,6 +36,6 @@ And the image below shows an example of a path in which `setMid` is false and th
 
 ## Initialization
 
-There are two constructors for AutoBalance():
+There are two constructors for AlignCharger():
 * A boolean will set `setMid`
 * A default constructor will set `setMid` to true

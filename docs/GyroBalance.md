@@ -1,13 +1,13 @@
-# The AdjustCharging() procedure
+# The GyroBalance() procedure
 
 
-## What is AdjustCharging?
+## What is GyroBalance?
 
-AdjustCharging is a procedure that uses gyro values to automatically adjust the robot to the balanced state on the charging station.
+GyroBalance is a procedure that uses gyro values to automatically adjust the robot to the balanced state on the charging station.
 
-## How does AdjustCharging work?
+## How does GyroBalance work?
 
-AdjustCharging uses a state machine to determine the appropirate direction and speed to move the robot, and when to stop. Once the robot reaches the `LEVEL` state, it stops and locks its wheels using the `setCross()` procedure. The states are determined with gyro values, and is almost completely independent from localization, which is only necessary to determine the direction and starting position. Since pitch and roll, the two values that are necessary to find the robot's tilt, are relative to the robot, this procedure uses an absolute tilt level stored in `double tilt` which combines pitch and roll.
+GyroBalance uses a state machine to determine the appropirate direction and speed to move the robot, and when to stop. Once the robot reaches the `LEVEL` state, it stops and locks its wheels using the `setCross()` procedure. The states are determined with gyro values, and is almost completely independent from localization, which is only necessary to determine the direction and starting position. Since pitch and roll, the two values that are necessary to find the robot's tilt, are relative to the robot, this procedure uses an absolute tilt level stored in `double tilt` which combines pitch and roll.
 
 ## States
 
@@ -32,7 +32,7 @@ The robot then moves towards the ramp at the set `speed`. Once it reaches `RAMP_
 
 ## Initialization and tweaking
 
-The `AdjustCharging()` constructor has one paramater, which is `alliance`. 
+The `GyroBalance()` constructor has one paramater, which is `alliance`. 
 
 In order to tweak the point that the robot stops and locks its wheels, change the `LEVEL` constant, as a higher value will make it stop sooner and therefore balance quicker but will also make it less consistent. 
 Additionally, to adjust speed at certain states, adjust the correspoinding constants. If these values are changed, it might also be necessary to adjust the `CORRECTION_DELAY` to make sure it fully balances.
