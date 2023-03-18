@@ -16,6 +16,9 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
+	//setting buttons to use
+	private int inButton = 5;
+	private int outButton = 10;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -35,10 +38,6 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			context.takeOwnership(Robot.intake);
 			context.takeOwnership(Robot.storage);
-
-			//setting buttons to use
-			int inButton = 5;
-			int outButton = 10;
 
 			if(joystick0.getButton(inButton)){
 				Robot.intake.startIntake();
