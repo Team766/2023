@@ -119,8 +119,8 @@ public class Arms extends Mechanism {
      * Set joint target positions
      * - This enables automatic joint movement and holding
      * - Does not need to be called repeatedly
-     * @param firstJointPosition in encoder units
-     * @param secondJointPosition in encoder units
+     * @param firstJointPosition in encoder units, right now is absolute encoder units.
+     * @param secondJointPosition in encoder units, right now is absolute encoder units.
      */
     public void setAutomaticJointTarget(double firstJointPosition, double secondJointPosition) {
         setAutomaticFirstJointTarget(firstJointPosition);
