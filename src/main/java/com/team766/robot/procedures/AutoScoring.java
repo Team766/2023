@@ -67,6 +67,7 @@ public class AutoScoring extends Procedure{
 	}
 
 	public void run(Context context) {
+		log("Starting AutoScoring");
 		context.startAsync(new FollowPoints(Robot.drive.getCurrentPosition().clone(), new PointDir[]{new PointDir(targetPoint, 0)}));
 		//Do the actual scoring (arm movements, etc.)
 	}

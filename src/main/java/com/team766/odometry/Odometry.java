@@ -136,7 +136,7 @@ public class Odometry extends LoggingBase {
 			Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
 			Vector2D wheelMotion;
 
-			log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
+			//log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
 
 			//double oldWheelX;
 			//double oldWheelY;
@@ -161,7 +161,7 @@ public class Odometry extends LoggingBase {
 			//wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
 			//log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY - wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current Method: " + wheelMotion.getX() + ", " + wheelMotion.getY());
 			//log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " + currPositions[i].add(wheelMotion));
-			currPositions[i].set(currPositions[i].add(wheelMotion));
+			currPositions[i].set(currPositions[i].subtract(wheelMotion));
 		}
 	}
 
@@ -172,8 +172,8 @@ public class Odometry extends LoggingBase {
 		double sumX = 0;
 		double sumY = 0;
 		for (int i = 0; i < motorCount; i++) {
-			sumX -= currPositions[i].getX();
-			sumY -= currPositions[i].getY();
+			sumX += currPositions[i].getX();
+			sumY += currPositions[i].getY();
 			//log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}
 		currentPosition.set(sumX / motorCount, sumY / motorCount, gyroPosition);

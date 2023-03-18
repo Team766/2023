@@ -1,19 +1,11 @@
 {
-	"start": [0, 0],
+	"start": [1, 1],
 	"points": [
 		{
-			"coordinates": [0.2, 0, 180],
+			"coordinates": [1.5, 1, 0],
 			"critical": true,
 			"procedure": {
-				"name" : "WaitFiveSeconds()",
-				"stop" : true
-			}
-		},
-		{
-			"coordinates": [0, 0, 0],
-			"critical": true,
-			"procedure": {
-				"name" : "DoNothing()",
+				"name" : "AutoScoring(AutoScoring.Nodes.HIGH)",
 				"stop" : true
 			}
 		}

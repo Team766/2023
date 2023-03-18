@@ -83,6 +83,10 @@ public class Point extends LoggingBase {
 		return new Point(getX() + v.getX(), getY() + v.getY());
 	}
 
+	public Point subtract(Vector2D v) {
+		return new Point(getX() - v.getX(), getY() - v.getY());
+	}
+
 	public String toString() {
 		return "X: " + getX() + " Y: " + getY();
 	}

@@ -450,7 +450,10 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			return Math.cbrt((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed;
+			if (Math.abs(targetRot - currentRot) <= 3) {
+				return ((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed;
+			}
+			return 0;
 		}
 		return maxSpeed * Math.signum(currentRot - targetRot);
 	}
