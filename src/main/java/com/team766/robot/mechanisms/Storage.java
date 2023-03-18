@@ -4,7 +4,6 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
-import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
 public class Storage extends Mechanism {
 	

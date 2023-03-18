@@ -1,11 +1,9 @@
-package com.team766.frc2022.mechanisms;
+package com.team766.robot.mechanisms;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
-import com.team766.hal.wpilib.CANSparkMaxMotorController;
-import com.team766.hal.wpilib.Solenoid;
 
 public class Intake extends Mechanism {
 	private SolenoidController leftPiston;

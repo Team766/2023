@@ -37,14 +37,14 @@ public class OI extends Procedure {
 			context.takeOwnership(Robot.storage);
 
 			if(joystick0.getButton(5)){
-				Robot.intake.IntakeIn();
-				Robot.belt.beltIn();
+				Robot.intake.startIntake();
+				Robot.storage.beltIn();
 			} else if(joystick0.getButton(10)){
-				Robot.intake.IntakeOut();
-				Robot.belt.beltOut();
+				Robot.intake.reverseIntake();
+				Robot.storage.beltOut();
 			} else {
 				Robot.intake.stopIntake();
-				Robot.belt.beltIdle();
+				Robot.storage.beltIdle();
 			}
 
 
