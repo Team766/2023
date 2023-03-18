@@ -51,10 +51,8 @@ public class AdjustCharging extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.drive);
-		Robot.drive.setCurrentPosition(new PointDir(6, 2.6)); // DELETE THIS ONCE DONE TESTING THIS WILL BE VERY BAD IF WE DONT
 		double curX = Robot.drive.getCurrentPosition().getX();
 		double driveSpeed = 1;
-
 
 		// Sets movement direction and if on ground
 		setDir(curX);
@@ -96,7 +94,8 @@ public class AdjustCharging extends Procedure {
 		context.releaseOwnership(Robot.gyro);
 	} 
 
-	private void setState(double curX) { //TODO: Check robot behavior falling off of ramp
+	//sets state in state machine
+	private void setState(double curX) { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
 			speed = SPEED_TRANSITION;
@@ -109,17 +108,14 @@ public class AdjustCharging extends Procedure {
 			curState = State.RAMP_LEVEL;
 			speed = -speed;
 			log("Level, prevState: " + prevState + ", curState: " + curState);
-		} // else if (prevState == State.RAMP_LEVEL && tilt > LEVEL) {
-		// 	curState = State.RAMP_TILT;
-		// 	speed = SPEED_TILT;
-		// 	log("back into tilt, prevState: " + prevState + ", curState: " + curState);
-		// }
+		} 
 		if (curState == State.GROUND) {
 			speed = SPEED_GROUND;
 		}
 	}
 
-	private void setDir(double curX) { //TODO: behave differently if the robot is directly over or under the charging station
+	//sets direction needed and ground state if on ground
+	private void setDir(double curX) {
 		switch (alliance) {
 			case Red:
 				if (curX > ChargeConstants.RED_BALANCE_TARGET_X) {

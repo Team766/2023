@@ -49,7 +49,7 @@ public class ChargeStationPathFinder {
 
 		private void addPoints(List<PointDir> points, double curX, double curY, double target, double left, double right, double height, boolean isMid) {
 			if (isMid) {
-				if (curX > target) { // TODO: account for if robot is already on the charge station
+				if (curX > target) { 
 					if (curX < right)
 						points.add(new PointDir(right, curY));	
 
