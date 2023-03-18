@@ -34,18 +34,19 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 			context.takeOwnership(Robot.intake);
+			context.takeOwnership(Robot.storage);
 
-			if(joystick0.getButton(1)){
+			if(joystick0.getButton(5)){
 				Robot.intake.IntakeIn();
+				Robot.belt.beltIn();
+			} else if(joystick0.getButton(10)){
+				Robot.intake.IntakeOut();
+				Robot.belt.beltOut();
 			} else {
 				Robot.intake.stopIntake();
+				Robot.belt.beltIdle();
 			}
 
-			if(joystick0.getButton(2)){
-				Robot.intake.IntakeOut();
-			} else {
-				Robot.intake.stopIntake();
-			}
 
 		}
 	}
