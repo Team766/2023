@@ -34,15 +34,15 @@ public class AdjustCharging extends Procedure {
 	
 	private final Alliance alliance;
 
-	private final double LEVEL = 9;
-	private final double CORRECTION_DELAY = 0.25;
+	private final double LEVEL = 7;
+	private final double CORRECTION_DELAY = 0.5;
 
 	private final double TOP_TILT = 15.0;
 	private final double FLAP_TILT = 11;
 
 	private final double SPEED_GROUND = .3;
 	private final double SPEED_TRANSITION = .25;
-	private final double SPEED_TILT = .22;
+	private final double SPEED_TILT = .18;
 
 	public AdjustCharging(Alliance alliance) {
 		this.alliance = alliance;
@@ -72,6 +72,8 @@ public class AdjustCharging extends Procedure {
 			prevState = curState;
 			curX = Robot.drive.getCurrentPosition().getX();
 			tilt = Robot.gyro.getAbsoluteTilt();
+			log("curX:" + curX);
+			log("direction: " + direction);
 			setState(curX);
 
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
@@ -80,7 +82,7 @@ public class AdjustCharging extends Procedure {
 				driveSpeed = speed;
 			}
 
-			Robot.drive.swerveDrive(0, driveSpeed, 0);
+			Robot.drive.swerveDrive(0, -driveSpeed, 0);
 			context.yield();
 		}
 		while (!(curState == State.RAMP_LEVEL || abort));
