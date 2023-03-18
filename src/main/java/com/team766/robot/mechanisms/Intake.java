@@ -23,7 +23,7 @@ public class Intake extends Mechanism {
 
 	public void intakeIn(){
 		bottomWheels.set(1);
-		topBelt.set(1);
+		topBelt.set(0.5);
 		leftPiston.set(true);
 		rightPiston.set(true);
 	}
@@ -31,8 +31,8 @@ public class Intake extends Mechanism {
 	public void intakeOut(){
 		bottomWheels.set(-1);
 		topBelt.set(-1);
-		leftPiston.set(true);
-		rightPiston.set(true);
+		// leftPiston.set(true);
+		// rightPiston.set(true);
 	}
 
 	public void intakeIdle(){

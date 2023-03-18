@@ -8,9 +8,12 @@ public class Arms extends Mechanism {
 
 	private MotorController firstJoint;
 	private MotorController secondJoint;
+	private MotorController wrist;
 
 	public Arms(){
 		firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
 		secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
+		wrist = RobotProvider.instance.getMotor("arms.wrist");
 	}
+	
 }

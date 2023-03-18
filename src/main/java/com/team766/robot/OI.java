@@ -67,7 +67,7 @@ public class OI extends Procedure {
 			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			/* if (joystick0.getButtonPressed(15)){
+			if (joystick0.getButtonPressed(15)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakeIn();
 					Robot.storage.beltIn();
@@ -89,12 +89,18 @@ public class OI extends Procedure {
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
-			} */
+			} 
 
-			
-				Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+			if (joystick0.getButtonPressed(9)){
+				Robot.grabber.grabIn();
+			} 
+
+			if (joystick0.getButtonPressed(10)) {
+				Robot.grabber.grabOut();
+			}
+
+			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 				
-
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
