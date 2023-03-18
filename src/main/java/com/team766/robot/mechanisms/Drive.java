@@ -11,6 +11,7 @@ import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.simulator.ProgramInterface.RobotMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -21,6 +22,7 @@ import com.team766.odometry.Odometry;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.robot.constants.*;
 
 public class Drive extends Mechanism {
 
@@ -50,8 +52,6 @@ public class Drive extends Mechanism {
 	private Point[] wheelPositions;
 	private Odometry swerveOdometry;
 
-	public static final double DISTANCE_BETWEEN_WHEELS = 24 * 2.54 / 100;
-
 	public Drive() {
 
 		loggerCategory = Category.DRIVE;
@@ -78,13 +78,13 @@ public class Drive extends Mechanism {
 		config.sensorDirection = true;
 
 		// initialize the encoders
-		e_FrontRight = new CANCoder(1, "Swerve");
+		e_FrontRight = new CANCoder(22, "Swervavore");
 		// e_FrontRight.configAllSettings(config, 250);
-		e_FrontLeft = new CANCoder(2, "Swerve");
+		e_FrontLeft = new CANCoder(23, "Swervavore");
 		// e_FrontLeft.configAllSettings(config, 250);
-		e_BackRight = new CANCoder(4, "Swerve");
+		e_BackRight = new CANCoder(21, "Swervavore");
 		// e_BackRight.configAllSettings(config, 250);
-		e_BackLeft = new CANCoder(3, "Swerve");
+		e_BackLeft = new CANCoder(24, "Swervavore");
 		// e_BackLeft.configAllSettings(config, 250);
 
 
@@ -119,15 +119,17 @@ public class Drive extends Mechanism {
 				m_DriveBackRight};
 		CANCoderList = new CANCoder[] {e_FrontRight, e_FrontLeft, e_BackLeft, e_BackRight};
 		wheelPositions =
-				new Point[] {new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2),
-						new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
+				new Point[] {new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)};
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
-		// The wheelCircumference is somewhere between 30.4cm and 30.6cm
-		swerveOdometry =
-				new Odometry(motorList, CANCoderList, wheelPositions, 30.5 / 100, 6.75, 2048, 0.05);
+		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, OdometryInputConstants.WHEEL_CIRCUMFERENCE, OdometryInputConstants.GEAR_RATIO, OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT, OdometryInputConstants.RATE_LIMITER_TIME);
+		setFrontRightEncoders();
+		setFrontLeftEncoders();
+		setBackRightEncoders();
+		setBackLeftEncoders();
 	}
 
 	// A set of simple functions for the sake of adding vectors
@@ -381,22 +383,22 @@ public class Drive extends Mechanism {
 		double brAngle;
 		double blAngle;
 		if (JoystickTheta >= 0) {
-			frPower = NewMag(power, angle, JoystickTheta, 135);
-			flPower = NewMag(power, angle, JoystickTheta, 45);
-			brPower = NewMag(power, angle, JoystickTheta, -135);
-			blPower = NewMag(power, angle, JoystickTheta, -45);
+			frPower = NewMag(power, angle, JoystickTheta, 45);
+			flPower = NewMag(power, angle, JoystickTheta, -45);
+			brPower = NewMag(power, angle, JoystickTheta, 135);
+			blPower = NewMag(power, angle, JoystickTheta, -135);
 			frAngle = NewAng(power, angle, JoystickTheta, 45);
-			flAngle = NewAng(power, angle, JoystickTheta, -45);
-			brAngle = NewAng(power, angle, JoystickTheta, 135);
+			flAngle = NewAng(power, angle, JoystickTheta, 135);
+			brAngle = NewAng(power, angle, JoystickTheta, -45);
 			blAngle = NewAng(power, angle, JoystickTheta, -135);
 		} else {
-			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
-			flPower = NewMag(power, angle, Math.abs(JoystickTheta), -135);
-			brPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
-			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
+			frPower = NewMag(power, angle, Math.abs(JoystickTheta), -135);
+			flPower = NewMag(power, angle, Math.abs(JoystickTheta), 135);
+			brPower = NewMag(power, angle, Math.abs(JoystickTheta), -45);
+			blPower = NewMag(power, angle, Math.abs(JoystickTheta), 45);
 			frAngle = NewAng(power, angle, Math.abs(JoystickTheta), -135);
-			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
-			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
+			flAngle = NewAng(power, angle, Math.abs(JoystickTheta), -45);
+			brAngle = NewAng(power, angle, Math.abs(JoystickTheta), 135);
 			blAngle = NewAng(power, angle, Math.abs(JoystickTheta), 45);
 		}
 		if (Math.max(Math.max(frPower, flPower), Math.max(brPower, blPower)) > 1) {
@@ -498,8 +500,11 @@ public class Drive extends Mechanism {
 	 * This method is used to set the front right encoder to the true position
 	 */
 	public void setFrontRightEncoders() {
+		log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
 		m_SteerFrontRight.setSensorPosition((int) Math
 				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontRight.getAbsolutePosition()));
+		log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
+
 	}
 
 	/**
@@ -601,7 +606,7 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft.setP(0.2);
 		m_SteerBackLeft.setI(0);
 		m_SteerBackLeft.setD(0.1);
-		m_SteerBackLeft.setFF(0);
+		// m_SteerBackLeft.setFF(0);
 
 		// pid values from sds for Flacons 500: P = 0.2 I = 0.0 D = 0.1 FF = 0.0
 
@@ -660,7 +665,11 @@ public class Drive extends Mechanism {
 	@Override
 	public void run() {
 		currentPosition = swerveOdometry.run();
-		log(currentPosition.toString());
+		//log(currentPosition.toString());
+		SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
+		SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
+		SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());
+		SmartDashboard.putNumber("Back Left Motor Encoder", m_SteerBackLeft.getSensorPosition());
 	}
 }
 

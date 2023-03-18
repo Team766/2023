@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.team766.config.ConfigFileReader;
@@ -23,6 +24,7 @@ import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
+import com.team766.robot.constants.*;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
@@ -58,12 +60,14 @@ public class FollowPoints extends Procedure {
 	private boolean[] stopRobotList;
 
 	private int targetNum = 0;
-	private RateLimiter followLimiter = new RateLimiter(0.05);
+	private RateLimiter followLimiter = new RateLimiter(FollowPointsInputConstants.RATE_LIMITER_TIME);
 
 	//Radius defines the radius of the circle around the robot
-	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
-	private static double speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
+	private static double radius = FollowPointsInputConstants.RADIUS;
+	private static double speed = FollowPointsInputConstants.SPEED;
 	private static PointDir driveSettings = new PointDir(0, 0, 0);
+
+	private static HashMap<String, Procedure> mapOfProcedures = new HashMap<String, Procedure>();
 
 	/*public FollowPoints() {
 		parsePointList();
@@ -80,6 +84,8 @@ public class FollowPoints extends Procedure {
 	 * @throws IOException Thrown if file is not found.
 	 */
 	public FollowPoints(String file) {
+		mapOfProcedures.put("DoNothing()", new DoNothing());
+		mapOfProcedures.put(null, new DoNothing());
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -92,7 +98,14 @@ public class FollowPoints extends Procedure {
 		
 		JSONArray points = new JSONObject(str).getJSONArray("points");
 		for (int i = 0; i < points.length(); i++) {
-			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), null, false);
+			JSONObject procedure = points.getJSONObject(i).getJSONObject("procedure");
+			Procedure pointProcedure = null;
+			boolean stopAtProcedure = false;
+			if (procedure != null) {
+				pointProcedure = mapOfProcedures.get(procedure.getString("name"));
+				stopAtProcedure = procedure.getBoolean("stop");
+			}
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), pointProcedure, stopAtProcedure);
 		}
 		addWaypoints();
 	}
@@ -179,7 +192,6 @@ public class FollowPoints extends Procedure {
 	}*/
 
 	public void run(Context context) {
-		speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
@@ -326,8 +338,8 @@ public class FollowPoints extends Procedure {
 	 * @return Returns a value between -1 and 1 corresponding to how much the robot should turn to reach the target point.
 	 */
 	private double rotationSpeed(double currentRot, double targetRot) {
-		double maxSpeed = 0.2;
-		double angleDistanceForMaxSpeed = 90;
+		double maxSpeed = FollowPointsInputConstants.MAX_ROTATION_SPEED;
+		double angleDistanceForMaxSpeed = FollowPointsInputConstants.ANGLE_DISTANCE_FOR_MAX_SPEED;
 		currentRot = mod(currentRot, 360);
 		targetRot = mod(targetRot, 360);
 		if (Math.abs(targetRot - currentRot) > Math.abs(targetRot + 360 - currentRot)) {
