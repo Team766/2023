@@ -10,7 +10,6 @@ public class Intake extends Mechanism {
 	private SolenoidController rightPiston;
 	private MotorController topBelt;
 	private MotorController bottomWheels;
-	private boolean beltGoing = false;
 	
 	public Intake() {
 		topBelt = RobotProvider.instance.getMotor("Intake.topWheels");
@@ -23,7 +22,6 @@ public class Intake extends Mechanism {
 
 	public void startIntake() {
 		checkContextOwnership();
-		//double power = ConfigFileReader.getInstance().getDouble("Intake.intakePower").get();
 		
 		startArms();
 		topBelt.set(1.0);
@@ -38,28 +36,6 @@ public class Intake extends Mechanism {
 		bottomWheels.set(0.0);
 		stopArms();
 	}
-	/*
-	* Intake code that would use color sensor 
-	* to automatically stop intake when piece reaches end of belt.
-	* Can  be manually stopped by pressing button again.
-	*
-	* checkContextOwnership();
-	* double power = ConfigFileReader.getInstance().getDouble("Intake.intakePower").get();
-    *
-	* if(beltGoing){
-	*	topBelt.set(0.0);
-	*   bottomWheels.set(0.0);
-	*	conveyorBelt.set(0.0);
-	*	stopArms();
-	* } else {
-	*	startArms();
-	*	topBelt.set(1.0);
-	*	bottomWheels.set(1.0);
-	*	conveyorBelt.set(1.0);
-	* }
-	* a different method will check if the sensor sees stuff
-	* if(sensor1.getStorage || sensor2.getStrorage) stop the motors and arms
-	*/
 
 	public void startArms(){
 		checkContextOwnership();
@@ -77,7 +53,6 @@ public class Intake extends Mechanism {
 
 	public void reverseIntake(){
 		checkContextOwnership();
-		//double power = ConfigFileReader.getInstance().getDouble("Intake.intakePower").get();
 
 		topBelt.set(-1.0);
 		bottomWheels.set(-1.0);

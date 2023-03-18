@@ -3,7 +3,6 @@ package com.team766.robot.mechanisms;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.SolenoidController;
 
 public class Storage extends Mechanism {
 	
@@ -14,14 +13,14 @@ public class Storage extends Mechanism {
 	}
 
 	public void beltIn(){
-		belt.set(1);
+		belt.set(0.5);
 	}
 
 	public void beltOut(){
-		belt.set(-1);
+		belt.set(-1.0);
 	}
 
 	public void beltIdle(){
-		belt.set(0);
+		belt.set(0.0);
 	}
 }
