@@ -26,7 +26,7 @@ public class Intake extends Mechanism {
 	public void startIntake() {
 		checkContextOwnership();
 		
-		startArms();
+		pistonsOut();
 		topBelt.set(1.0);
 		bottomWheels.set(1.0);
 
@@ -37,17 +37,17 @@ public class Intake extends Mechanism {
 		
 		topBelt.set(0.0);
 		bottomWheels.set(0.0);
-		stopArms();
+		pistonsIn();
 	}
 
-	public void startArms(){
+	public void pistonsOut(){
 		checkContextOwnership();
 
 		leftPiston.set(true);
 		rightPiston.set(true);
 	}
 
-	public void stopArms(){
+	public void pistonsIn(){
 		checkContextOwnership();
 
 		leftPiston.set(false);
@@ -60,6 +60,6 @@ public class Intake extends Mechanism {
 		topBelt.set(-1.0);
 		bottomWheels.set(-1.0);
 
-		startArms();
+		pistonsIn();
 	}
 }
