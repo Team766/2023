@@ -25,7 +25,7 @@ import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
 
-    private RateLimiter rateLimiter = new RateLimiter(0.5);
+    private RateLimiter rateLimiter = new RateLimiter(0.05);
     private ValueProvider<Double> ANTI_GRAV_FIRST_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravFirstJoint");
     private ValueProvider<Double> ANTI_GRAV_SECOND_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravSecondJoint");
 
@@ -64,6 +64,13 @@ public class Arms extends Mechanism {
     private SparkMaxPIDController thirdJointPID = thirdJointCSM.getPIDController();
     */
 
+    enum ArmState{
+        MOVING,
+        HOLDING
+    };
+
+    public ArmState firstJointState = ArmState.HOLDING;
+    public ArmState secondJointState = ArmState.HOLDING;
     
     
 
@@ -178,7 +185,9 @@ public class Arms extends Mechanism {
 
 	// PID for first arm
     public void pidForArmOne(double value){
-        log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
+        checkContextOwnership();
+
+        // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
         if(value > maxLocation){
             value = maxLocation;
         } else if( value < minLocation){
@@ -189,28 +198,23 @@ public class Arms extends Mechanism {
                 firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
                 
                 firstJointPIDController.setFeedbackDevice(mainEncoder);
-                firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
                 lastPosition = value;
                 log("it worked");
+                firstJointState = ArmState.HOLDING;
             }else{
                 firstJointPIDController.setFeedbackDevice(altEncoder1);
                 firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
                 log("it went back in");
+                firstJointState = ArmState.MOVING;
             }
 
-        } else {
-            firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
         }
-        
-
-        
-
-
-        
     }
 
 	// PID for second arm
     public void pidForArmTwo(double value){
+        checkContextOwnership();
+
         if(value > maxLocation2){
             value = maxLocation2;
         } else if( value < minLocation2){
@@ -221,20 +225,16 @@ public class Arms extends Mechanism {
                 secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
                 
                 secondJointPID.setFeedbackDevice(mainEncoder2);
-                secondJoint.set(((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011));
                 lastPosition2 = value;
+                secondJointState = ArmState.HOLDING;
                 log("it worked");
             }else{
                 secondJointPID.setFeedbackDevice(altEncoder2);
                 secondJointPID.setReference(value, CANSparkMax.ControlType.kSmartMotion);
+                secondJointState = ArmState.MOVING;
                 log("it went back in");
             }
-
-        } else {
-            secondJoint.set((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011);
         }
-        
-        
     }
 
     public void antiGravFirstJoint(){
@@ -249,7 +249,7 @@ public class Arms extends Mechanism {
         double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
         double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
         double power = -1* Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
-        log("AntiGravFirstJoint: "+power);
+        // log("AntiGravFirstJoint: "+power);
         return power;
     }
 
@@ -257,7 +257,7 @@ public class Arms extends Mechanism {
         double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
         double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
         double power = -1* Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
-        log("AntiGravSecondJoint: "+power);
+        // log("AntiGravSecondJoint: "+power);
         return power;
     }
 	
@@ -269,12 +269,12 @@ public class Arms extends Mechanism {
     }
 
 	// antigrav
-    public void holdArms(){ // Use Encoder Units to Radians in the sine
-        firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-        secondJoint.set((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011);
+    // public void holdArms(){ // Use Encoder Units to Radians in the sine
+    //     firstJoint.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+    //     secondJoint.set((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011);
         
 
-    }
+    // }
 
 	//changing degrees to encoder units for the non absolute encoder
     // 1 abs = 360 degrees
@@ -298,10 +298,12 @@ public class Arms extends Mechanism {
     @Override
     public void run(){
         if (rateLimiter.next()){
-            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Absolute encoder 1: "+altEncoder1.getPosition());
-            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Relative encoder 1: "+EUTodegrees(firstJointCANSparkMax.getEncoder().getPosition()));
-            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Absolute encoder 2: "+altEncoder2.getPosition());
-            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Relative encoder 2: "+EUTodegrees(secondJointCANSparkMax.getEncoder().getPosition()));
+            if (firstJointState == ArmState.HOLDING){
+                antiGravFirstJoint();
+            }
+            if (secondJointState == ArmState.HOLDING){
+                antiGravSecondJoint();
+            }
         }
     }
 }

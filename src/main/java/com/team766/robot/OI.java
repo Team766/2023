@@ -74,17 +74,19 @@ public class OI extends Procedure {
 			// 	log("3");
 			// }
 
-			if(joystick0.getButtonPressed(3)){
-				Robot.arms.antiGravFirstJoint();
-				log("AntiGravFirstJoint");
+			if(joystick0.getButton(3)){
+				Robot.arms.pidForArmOne(0.25);
+				Robot.arms.pidForArmTwo(0.03);
+				log("Storage Grab State");
+				
 			}
 
-			if(joystick0.getButtonPressed(4)){
-				Robot.arms.antiGravSecondJoint();
-				log("AntiGravSecondJoint");
+			if(joystick0.getButton(4)){
+				Robot.arms.pidForArmOne(0.27);
+				Robot.arms.pidForArmTwo(0.17);
+				log("Score Ready State");
 			}
 
-			
 			// if(joystick0.getButton(6) && manualControl == false){
 			// 	log("6");
 			// 	Robot.arms.pidForArmOne(0.82);
