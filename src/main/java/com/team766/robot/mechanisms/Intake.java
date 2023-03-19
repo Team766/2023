@@ -13,32 +13,53 @@ public class Intake extends Mechanism {
 	private MotorController topBelt;
 	private SolenoidController leftPiston;
 	private SolenoidController rightPiston;
+	
+	public Intake() {
+		topBelt = RobotProvider.instance.getMotor("Intake.topWheels");
+		bottomWheels = RobotProvider.instance.getMotor("Intake.bottomWheels");
 
-	public Intake(){
-		bottomWheels = RobotProvider.instance.getMotor("intake.bottomWheels");
-		topBelt = RobotProvider.instance.getMotor("intake.topWheels");
-		leftPiston = RobotProvider.instance.getSolenoid("intake.leftPiston");
-		rightPiston = RobotProvider.instance.getSolenoid("intake.rightPiston");
+		leftPiston = RobotProvider.instance.getSolenoid("Intake.leftPiston");
+		rightPiston = RobotProvider.instance.getSolenoid("Intake.rightPiston");
+
 	}
 
-	public void intakeIn(){
-		bottomWheels.set(1);
-		topBelt.set(1);
+	public void startIntake() {
+		checkContextOwnership();
+		
+		pistonsOut();
+		topBelt.set(1.0);
+		bottomWheels.set(1.0);
+
+	}
+
+	public void stopIntake() {
+		checkContextOwnership();
+		
+		topBelt.set(0.0);
+		bottomWheels.set(0.0);
+		pistonsIn();
+	}
+
+	public void pistonsOut() {
+		checkContextOwnership();
+
 		leftPiston.set(true);
 		rightPiston.set(true);
 	}
 
-	public void intakeOut(){
-		bottomWheels.set(-1);
-		topBelt.set(-1);
-		leftPiston.set(true);
-		rightPiston.set(true);
-	}
+	public void pistonsIn() {
+		checkContextOwnership();
 
-	public void intakeIdle(){
-		bottomWheels.set(0);
-		topBelt.set(0);
 		leftPiston.set(false);
 		rightPiston.set(false);
+	}
+
+	public void reverseIntake() {
+		checkContextOwnership();
+
+		topBelt.set(-1.0);
+		bottomWheels.set(-1.0);
+
+		pistonsIn();
 	}
 }

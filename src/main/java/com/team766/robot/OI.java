@@ -1,8 +1,8 @@
 package com.team766.robot;
 
-import com.team766.framework.Procedure;
-
 import java.io.IOException;
+
+import com.team766.framework.Procedure;
 
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
@@ -12,6 +12,7 @@ import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.team766.robot.mechanisms.Drive;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -21,31 +22,26 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
-	private double RightJoystick_X = 0;
+	private double rightJoystickX = 0;
 	private double RightJoystick_Y = 0;
 	private double RightJoystick_Z = 0;
 	private double RightJoystick_Theta = 0;
-	private double LeftJoystick_X = 0;
-	private double LeftJoystick_Y = 0;
+	private double leftJoystickX = 0;
+	private double leftJoystickY = 0;
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
 	private boolean isCross = false;
 	double turningValue = 0;
+	//setting buttons to use
+	private int inButton = 5;
+	private int outButton = 10;
 	
-	enum IntakeState {
-		IDLE,
-		SPINNINGOUT,
-		SPINNINGIN
-	}
-	IntakeState intakeState = IntakeState.IDLE;
-
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
-
 	}
 	
 	public void run(Context context) {
@@ -55,16 +51,14 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.grabber);
 		context.takeOwnership(Robot.storage);
 		context.takeOwnership(Robot.gyro);
-		
+
 		while (true) {
-			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
-			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
-			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
-			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
+			leftJoystickX = Drive.correctedJoysticks(joystick0.getAxis(0));
+			leftJoystickY = Drive.correctedJoysticks(joystick0.getAxis(1));
+			rightJoystickX = Drive.correctedJoysticks(joystick1.getAxis(0));;
 
-			
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 			/* if (joystick0.getButtonPressed(15)){
@@ -78,7 +72,6 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			}
-
 			if (joystick0.getButtonPressed(16)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakeOut();
@@ -91,44 +84,43 @@ public class OI extends Procedure {
 				}
 			} */
 
-			
-				Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
-				
+			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
+			if (Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
 				RightJoystick_Y = 0;
 			}
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05){
-				RightJoystick_X = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;
+			if (Math.abs(joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
+				rightJoystickX = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;
 				if(joystick1.getButton(3)){
-					RightJoystick_X *= 2;
+					rightJoystickX *= 2;
 				}	
 			} else {
-				RightJoystick_X = 0;	
+				rightJoystickX = 0;	
 			}
-			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_TWIST)) > 0.05){
+			if (Math.abs(joystick1.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
 				RightJoystick_Theta = joystick1.getAxis(InputConstants.AXIS_TWIST);
 			} else {
 				RightJoystick_Theta = 0;
 			}
-			if(Math.abs(joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
-				LeftJoystick_Y = joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			if (Math.abs(joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
+				leftJoystickY = joystick0.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
-				LeftJoystick_Y = 0;
+				leftJoystickY = 0;
 			}
-			if(Math.abs(joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05){
-				LeftJoystick_X = joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			if (Math.abs(joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
+				leftJoystickX = joystick0.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			} else {
-				LeftJoystick_X = 0;
+				leftJoystickX = 0;
 			}
-			if(Math.abs(joystick0.getAxis(InputConstants.AXIS_TWIST)) > 0.05){
+			if (Math.abs(joystick0.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
 				LeftJoystick_Theta = joystick0.getAxis(InputConstants.AXIS_TWIST);
 			} else {
 				LeftJoystick_Theta = 0;
 			}
-			//log(Robot.gyro.getGyroYaw());			
+
+						//log(Robot.gyro.getGyroYaw());			
 			//TODO: fix defense: the robot basically locks up if there is defense
 			// if(joystick0.getButton(InputConstants.CROSS_DEFENSE)){
 			// 	context.startAsync(new DefenseCross());
@@ -147,22 +139,26 @@ public class OI extends Procedure {
 				Robot.drive.stopSteerMotors();
 				}
 			}*/
-			if(joystick0.getButtonPressed(1))
+			if (joystick0.getButtonPressed(1)) {
 				Robot.gyro.resetGyro();
+			}
 
-			if(joystick0.getButtonPressed(11))
+			if (joystick0.getButtonPressed(11)) {
 				Robot.drive.resetCurrentPosition();
+			}
 
-			if(joystick1.getButtonPressed(1))
+			if (joystick1.getButtonPressed(1)) {
 				isCross = !isCross;
+			}
 			
 			
-			if(joystick0.getButtonPressed(2)){
+			if (joystick0.getButtonPressed(2)) {
 				Robot.drive.setFrontRightEncoders();
 				Robot.drive.setFrontLeftEncoders();
 				Robot.drive.setBackRightEncoders();
 				Robot.drive.setBackLeftEncoders();
 			}
+
 			// if(joystick1.getButton(1)){
 			// 	turningValue = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT); 
 			// } else {
@@ -174,25 +170,36 @@ public class OI extends Procedure {
 			SmartDashboard.putNumber("Back left", Robot.drive.getBackLeft());
 			SmartDashboard.putNumber("Back right", Robot.drive.getBackRight());
 
-			if (isCross)  {
+			if (isCross) {
 				context.startAsync(new setCross());
 			} else if (joystick0.getButton(3)) {
 				Robot.drive.swerveDrive(0, 0.2, 0);
-			} else if(Math.abs(LeftJoystick_X)+
-			Math.abs(LeftJoystick_Y) +  Math.abs(RightJoystick_X) > 0) {
-				Robot.drive.swerveDrive( 
-					(LeftJoystick_X),
-			 		(-LeftJoystick_Y),
-			 		(RightJoystick_X));
+			} else if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {
+				Robot.drive.swerveDrive( (leftJoystickX), (-leftJoystickY), (rightJoystickX) );
 			} else {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			} 
 			
-		
-			
-			if(joystick0.getButtonPressed(1))
+			if (joystick0.getButtonPressed(1)) {
 				Robot.gyro.resetGyro();
+			}
+
+			// Add driver controls here - make sure to take/release ownership
+			// of mechanisms when appropriate.
+			context.takeOwnership(Robot.intake);
+			context.takeOwnership(Robot.storage);
+
+			if (joystick0.getButton(inButton)) {
+				Robot.intake.startIntake();
+				Robot.storage.beltIn();
+			} else if (joystick0.getButton(outButton)) {
+				Robot.intake.reverseIntake();
+				Robot.storage.beltOut();
+			} else {
+				Robot.intake.stopIntake();
+				Robot.storage.beltIdle();
+			}
 
 
 		}
