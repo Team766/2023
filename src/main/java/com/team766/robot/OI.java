@@ -1,12 +1,17 @@
 package com.team766.robot;
 
+import java.io.IOException;
+
 import com.team766.framework.Procedure;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -16,6 +21,16 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
+	private double RightJoystick_X = 0;
+	private double RightJoystick_Y = 0;
+	private double RightJoystick_Z = 0;
+	private double RightJoystick_Theta = 0;
+	private double LeftJoystick_X = 0;
+	private double LeftJoystick_Y = 0;
+	private double LeftJoystick_Z = 0;
+	private double LeftJoystick_Theta = 0;
+	private boolean isCross = false;
+	double turningValue = 0;
 	//setting buttons to use
 	private int inButton = 5;
 	private int outButton = 10;
@@ -29,7 +44,19 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.drive);
+		context.takeOwnership(Robot.intake);
+		context.takeOwnership(Robot.arms);
+		context.takeOwnership(Robot.grabber);
+		context.takeOwnership(Robot.storage);
+		context.takeOwnership(Robot.gyro);
+		
 		while (true) {
+			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+			RobotProvider.instance.refreshDriverStationData();
+			LeftJoystick_X = Robot.drive.correctedJoysticks(joystick0.getAxis(0));
+			LeftJoystick_Y = Robot.drive.correctedJoysticks(joystick0.getAxis(1));
+			RightJoystick_X = Robot.drive.correctedJoysticks(joystick1.getAxis(0));;
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();

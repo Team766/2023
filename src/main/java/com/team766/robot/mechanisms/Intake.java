@@ -4,12 +4,15 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.wpilib.CANSparkMaxMotorController;
+import com.team766.hal.wpilib.Solenoid;
 
 public class Intake extends Mechanism {
+	
+	private MotorController bottomWheels;
+	private MotorController topBelt;
 	private SolenoidController leftPiston;
 	private SolenoidController rightPiston;
-	private MotorController topBelt;
-	private MotorController bottomWheels;
 	
 	public Intake() {
 		topBelt = RobotProvider.instance.getMotor("Intake.topWheels");
