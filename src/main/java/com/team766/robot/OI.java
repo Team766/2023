@@ -38,6 +38,9 @@ public class OI extends Procedure {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
+
+			log("E1: " + Robot.arms.getEncoderDistanceOfArmOne());
+			log("E2: " + Robot.arms.getEncoderDistanceOfArmTwo());
 			if(joystick0.getButtonPressed(14)){
 				manualControl = true;
 			} else if (joystick0.getButtonPressed(15)){
@@ -47,8 +50,8 @@ public class OI extends Procedure {
 			}
 
 			if(manualControl == true){
-				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0) * 0.25);
-				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.1);
+				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0)*0.2);
+				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
 			}
 
 
@@ -66,34 +69,34 @@ public class OI extends Procedure {
 
 			if(joystick0.getButton(3) && manualControl == false){
 				
-				Robot.arms.pidForArmTwo(0.75);
+				Robot.arms.pidForArmTwo(0.231);
 				log("3");
 			}
 
-			if(joystick0.getButton(4) && manualControl == false){
-				log("4");
-				Robot.arms.pidForArmTwo(0.85);
-			}
+			// if(joystick0.getButton(4) && manualControl == false){
+			// 	log("4");
+			// 	Robot.arms.pidForArmTwo(0.85);
+			// }
 
-			if(joystick0.getButton(5) && manualControl == false){
-				log("5");
-				Robot.arms.pidForArmTwo(0.95);
-			}
+			// if(joystick0.getButton(5) && manualControl == false){
+			// 	log("5");
+			// 	Robot.arms.pidForArmTwo(0.95);
+			// }
 
 			
-			if(joystick0.getButton(6) && manualControl == false){
-				log("6");
-				Robot.arms.pidForArmOne(0.82);
-			}
+			// if(joystick0.getButton(6) && manualControl == false){
+			// 	log("6");
+			// 	Robot.arms.pidForArmOne(0.82);
+			// }
 
-			if(joystick0.getButton(7) && manualControl == false){
-				log("7");
-				Robot.arms.pidForArmOne(0.89);
-			}
+			// if(joystick0.getButton(7) && manualControl == false){
+			// 	log("7");
+			// 	Robot.arms.pidForArmOne(0.89);
+			// }
 
 			if(joystick0.getButton(8) && manualControl == false){
 				log("8");
-				Robot.arms.pidForArmOne(0.94);
+				Robot.arms.pidForArmOne(0.216);
 			}
 
 

@@ -14,6 +14,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
+import com.team766.robot.Robot;
 import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
@@ -35,10 +36,18 @@ public class Arms extends Mechanism {
     private double lastPosition2 = -1;
     private double maxLocation2 = 1;
     private double minLocation2 = 0;
-
-
+/* 
+    private MotorController wrist = RobotProvider.instance.getMotor("arms.wrist");
+    private CANSparkMax wristJointCSM = (CANSparkMax)wrist;
+    private SparkMaxPIDController wristPID = wristJointCSM.getPIDController();
+    private SparkMaxAbsoluteEncoder altEncoderWrist = wristJointCSM.getAbsoluteEncoder(Type.kDutyCycle);
+    private RelativeEncoder regular = wristJointCSM.getEncoder();
+    private double lastPosition3 = -1.0;
     private static double doubleDeadZone = 0.004d;
 
+*/
+
+private static double doubleDeadZone = 0.004d;
     /* 
     private MotorController thirdJoint = RobotProvider.instance.getMotor("arms.thirdJoint");
     private CANSparkMax thirdJointCSM = (CANSparkMax)thirdJoint;
@@ -56,50 +65,76 @@ public class Arms extends Mechanism {
         firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setP(0);
         firstJointPIDController.setI(0);
-        firstJointPIDController.setD(0.0005000000237487257);
+        firstJointPIDController.setD(0);
         firstJointPIDController.setFF(0.0018999995663762093);
         firstJointPIDController.setSmartMotionMaxVelocity(6000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
-        firstJointPIDController.setOutputRange(-0.1, 0.1);
+        firstJointPIDController.setOutputRange(-0.25, 0.25);
 
         secondJointPID.setFeedbackDevice(altEncoder2);
-        secondJointPID.setP(0.00008599997090641409);
+        secondJointPID.setP(0.0);
         secondJointPID.setI(0);
         secondJointPID.setD(0);
-        secondJointPID.setFF(0.0018699999307282269);
-        secondJointPID.setSmartMotionMaxVelocity(2500, 0);
+        secondJointPID.setFF(0.002099999724328518);
+        secondJointPID.setSmartMotionMaxVelocity(6000, 0);
         secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
-        secondJointPID.setSmartMotionMaxAccel(1500, 0);
-        secondJointPID.setOutputRange(-.25, .25);
+        secondJointPID.setSmartMotionMaxAccel(3000, 0);
+        secondJointPID.setOutputRange(-1, 1);
+/* 
+        wristPID.setFeedbackDevice(altEncoderWrist);
+        wristPID.setP(0);
+        wristPID.setI(0);
+        wristPID.setD(0);
+        wristPID.setFF(0);
+        wristPID.setSmartMotionMaxVelocity(6000, 0);
+        wristPID.setSmartMotionMinOutputVelocity(0, 0);
+        wristPID.setSmartMotionMaxAccel(3000, 0);
+        wristPID.setOutputRange(-0.25, 0.25);
 
 
-
-        
+        */
         
     }
 
 
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
+    /* 
+    public void pid3(double value){
+        if(value > maxLocation){
+            value = maxLocation;
+        } else if( value < minLocation){
+            value = minLocation;
+        }
+        if(lastPosition3 != value) {
+            if(wristJointCSM.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
+                wristJointCSM.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
+                
+                wristPID.setFeedbackDevice(mainEncoder);
+                wrist.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+                lastPosition3 = value;
+                log("it worked");
+            }else{
+                wristPID.setFeedbackDevice(altEncoderWrist);
+                wristPID.setReference(value, CANSparkMax.ControlType.kSmartMotion);
+                log("it went back in");
+            }
 
-    public void addArms(MotorController motor1, MotorController motor2){
-        firstJoint = motor1;
-        secondJoint = motor2;
-
-        firstJointCANSparkMax = (CANSparkMax)firstJoint;
-        secondJointTest = (CANSparkMax)secondJoint;
+        } else {
+            wrist.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
+        }
     }
-
+*/
     public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
     }
     // Getter method for getting the first arms encoder distance
     public double getEncoderDistanceOfArmOne() {
-        return firstJoint.getSensorPosition();
+        return altEncoder.getPosition();
     }
-    // resetting the encoder distance to zero for use without absolutes
+    // resetting the encoder distance to     zero for use without absolutes
     public void resetEncoders(){
         checkContextOwnership();
         firstJoint.setSensorPosition(0);
@@ -171,7 +206,7 @@ public class Arms extends Mechanism {
 	
 	// getter method for getting the encoder position of arm 2
     public double getEncoderDistanceOfArmTwo(){
-        return secondJoint.getSensorPosition();
+        return altEncoder2.getPosition();
     }
 
 	// antigrav
