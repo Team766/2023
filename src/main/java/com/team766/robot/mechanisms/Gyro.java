@@ -53,4 +53,12 @@ public class Gyro extends Mechanism {
 			 g_gyro.getYawPitchRoll(gyroArray);
 		 }
 	}
+
+	/**
+	 * @return combined pitch and roll values of gyro
+	 */
+	public double getAbsoluteTilt() {
+		return Math.toDegrees(Math.acos(Math.cos(Math.toRadians(getGyroRoll()))*Math.cos(Math.toRadians(getGyroPitch()))));
+	}
+	
 }
