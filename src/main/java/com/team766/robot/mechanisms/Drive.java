@@ -233,10 +233,11 @@ public class Drive extends Mechanism {
 	 * @returnThe corrected joystick value
 	 */
 	public static double correctedJoysticks(double Joystick) {
-		if (Joystick >= 0)
+		if (Joystick >= 0) {
 			return (3.0 * Math.pow(Joystick, 2) - 2.0 * Math.pow(Joystick, 3));
-		else
+		} else {
 			return (-1 * 3.0 * Math.pow(-1 * Joystick, 2) + 2.0 * Math.pow(-1 * Joystick, 3));
+		}
 	}
 
 	/**
