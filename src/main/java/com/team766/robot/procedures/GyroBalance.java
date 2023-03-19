@@ -35,7 +35,6 @@ public class GyroBalance extends Procedure {
 	private State prevState;
 	private State curState;
 	private Direction direction;
-	private boolean abort = false;
 	private final Alliance alliance;
 
 	private final double TOP_TILT = 15.0;
@@ -99,7 +98,7 @@ public class GyroBalance extends Procedure {
 			context.yield();
 		}
 		// Loops until robot is level or until a call to the abort() method
-		while (!(curState == State.RAMP_LEVEL || abort));
+		while (!(curState == State.RAMP_LEVEL));
 
 		// After the robot is level, drives for correctionDelay seconds.
 		// Direction is opposite due to inversion of speed in setState() so it corrects for overshooting
@@ -176,8 +175,4 @@ public class GyroBalance extends Procedure {
 		} 
 	}
 
-	// Stops while loop in run()
-	public void abort() {
-		abort = true;
-	}
 }
