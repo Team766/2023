@@ -112,7 +112,7 @@ public class GyroBalance extends Procedure {
 		context.releaseOwnership(Robot.gyro);
 	} 
 
-	// Sets state in state machine
+	// Sets state in state machine, see more details in GyroBalance.md
 	private void setState() { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
@@ -141,11 +141,14 @@ public class GyroBalance extends Procedure {
 	private void setDir(double curX) {
 		switch (alliance) {
 			case Red:
+				// If to the right of the charge station, go left
 				if (curX > ChargeConstants.RED_BALANCE_TARGET_X) {
+					// If level and outside of charge station boundaries, set state to ground
 					if (tilt < LEVEL && curX > ChargeConstants.RED_RIGHT_PT) {
 						curState = State.GROUND;
 					}
 					direction = Direction.LEFT;
+				// If to the left of the charge station, go right
 				} else {
 					if (tilt < LEVEL && curX < ChargeConstants.RED_LEFT_PT) {
 						curState = State.GROUND;
@@ -154,6 +157,7 @@ public class GyroBalance extends Procedure {
 				}
 				break;
 			case Blue:
+				// Same logic for blue alliance coordinates
 				if (curX > ChargeConstants.BLUE_BALANCE_TARGET_X) {
 					if (tilt < LEVEL && curX > ChargeConstants.BLUE_RIGHT_PT) {
 						curState = State.GROUND;
