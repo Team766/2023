@@ -8,31 +8,41 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkMax;
+import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
+import com.team766.library.RateLimiter;
+import com.team766.library.ValueProvider;
 import com.team766.robot.Robot;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 public class Arms extends Mechanism {
-    
+
+    private RateLimiter rateLimiter = new RateLimiter(0.5);
+    private ValueProvider<Double> ANTI_GRAV_FIRST_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravFirstJoint");
+    private ValueProvider<Double> ANTI_GRAV_SECOND_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravSecondJoint");
+
     private MotorController firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
     private CANSparkMax firstJointCANSparkMax = (CANSparkMax)firstJoint;
     private SparkMaxPIDController firstJointPIDController  = firstJointCANSparkMax.getPIDController();
-    private SparkMaxAbsoluteEncoder altEncoder = firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    private SparkMaxAbsoluteEncoder altEncoder1 = firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
     private RelativeEncoder mainEncoder = firstJointCANSparkMax.getEncoder();
     private double lastPosition = -1;
     private double maxLocation = 1;
     private double minLocation = 0;
 
     private MotorController secondJoint = RobotProvider.instance.getMotor("arms.secondJoint");
-    private CANSparkMax secondJointTest = (CANSparkMax)secondJoint;
-    private SparkMaxPIDController secondJointPID = secondJointTest.getPIDController();
-    private SparkMaxAbsoluteEncoder altEncoder2 = secondJointTest.getAbsoluteEncoder(Type.kDutyCycle);
-    private RelativeEncoder mainEncoder2 = secondJointTest.getEncoder();
+    private CANSparkMax secondJointCANSparkMax = (CANSparkMax)secondJoint;
+    private SparkMaxPIDController secondJointPID = secondJointCANSparkMax.getPIDController();
+    private SparkMaxAbsoluteEncoder altEncoder2 = secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    private RelativeEncoder mainEncoder2 = secondJointCANSparkMax.getEncoder();
     private double lastPosition2 = -1;
     private double maxLocation2 = 1;
     private double minLocation2 = 0;
@@ -47,7 +57,7 @@ public class Arms extends Mechanism {
 
 */
 
-private static double doubleDeadZone = 0.004d;
+    private static double doubleDeadZone = 0.004d;
     /* 
     private MotorController thirdJoint = RobotProvider.instance.getMotor("arms.thirdJoint");
     private CANSparkMax thirdJointCSM = (CANSparkMax)thirdJoint;
@@ -55,13 +65,15 @@ private static double doubleDeadZone = 0.004d;
     */
 
     
+    
 
     public Arms(){
         /*
         Please dont actually use these pid values rn bc they havent been tested!!!!
         */
+        loggerCategory = Category.OPERATOR_INTERFACE;
 
-        firstJointPIDController.setFeedbackDevice(altEncoder);
+        firstJointPIDController.setFeedbackDevice(altEncoder1);
         firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setP(0);
         firstJointPIDController.setI(0);
@@ -126,19 +138,42 @@ private static double doubleDeadZone = 0.004d;
         }
     }
 */
+    
     public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
     }
+
+    // manual changing of arm 2.
+    public void manuallySetArmTwoPower(double power){
+        checkContextOwnership();
+        secondJoint.set(power);
+    }
+
     // Getter method for getting the first arms encoder distance
     public double getEncoderDistanceOfArmOne() {
-        return altEncoder.getPosition();
+        return altEncoder1.getPosition();
     }
     // resetting the encoder distance to     zero for use without absolutes
     public void resetEncoders(){
         checkContextOwnership();
-        firstJoint.setSensorPosition(0);
-        secondJoint.setSensorPosition(0);
+
+        // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
+        double firstJointAbsEncoder = altEncoder1.getPosition();
+        double altEncoder1Offset = 0.25;
+        double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset);
+
+        // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
+        double secondJointAbsEncoder = altEncoder2.getPosition();
+        double altEncoder2Offset = 0.5;
+        double secondJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset+secondJointAbsEncoder-altEncoder2Offset);
+
+        // set the sensor positions of our rel encoders
+        firstJoint.setSensorPosition(firstJointRelEncoder);
+        secondJoint.setSensorPosition(secondJointRelEncoder);
+
+        lastPosition = EUTodegrees(firstJointRelEncoder);
+        lastPosition2 = EUTodegrees(secondJointRelEncoder);
     }
 
 	// PID for first arm
@@ -158,7 +193,7 @@ private static double doubleDeadZone = 0.004d;
                 lastPosition = value;
                 log("it worked");
             }else{
-                firstJointPIDController.setFeedbackDevice(altEncoder);
+                firstJointPIDController.setFeedbackDevice(altEncoder1);
                 firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
                 log("it went back in");
             }
@@ -182,8 +217,8 @@ private static double doubleDeadZone = 0.004d;
             value = minLocation2;
         }
         if(lastPosition2 != value) {
-            if(secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
-                secondJointTest.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
+            if(secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
+                secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
                 
                 secondJointPID.setFeedbackDevice(mainEncoder2);
                 secondJoint.set(((-Math.sin((Math.PI / 88)* secondJoint.getSensorPosition())) * .011));
@@ -200,6 +235,30 @@ private static double doubleDeadZone = 0.004d;
         }
         
         
+    }
+
+    public void antiGravFirstJoint(){
+        firstJoint.set(getAntiGravFirstJoint());
+    }
+
+    public void antiGravSecondJoint(){
+        secondJoint.set(getAntiGravSecondJoint());
+    }
+
+    public double getAntiGravFirstJoint(){
+        double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
+        double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
+        double power = -1* Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
+        log("AntiGravFirstJoint: "+power);
+        return power;
+    }
+
+    public double getAntiGravSecondJoint(){
+        double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
+        double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
+        double power = -1* Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
+        log("AntiGravSecondJoint: "+power);
+        return power;
     }
 	
 	// resetting time for use with the I in PID.
@@ -218,22 +277,34 @@ private static double doubleDeadZone = 0.004d;
     }
 
 	//changing degrees to encoder units for the non absolute encoder
+    // 1 abs = 360 degrees
+
     public double degreesToEU(double angle) {
-        return angle * (44.0 / 90);
-    }
-	
-	// manual changing of arm 2.
-    public void manuallySetArmTwoPower(double power){
-        checkContextOwnership();
-        secondJoint.set(power);
+        return angle * (44.0 / 90) * (25.0 / 16);
     }
 
-    
-        
-    
-
-    
+    public double AbsToEU(double abs) {
+        return degreesToEU(360*abs);
     }
+
+    public double EUTodegrees(double eu) {
+        return eu * (90 / 44.0) * (16.0 / 25);
+    }
+
+    public double EUtoabs(double eu) {
+        return EUTodegrees(eu)/360.0;
+    }
+
+    @Override
+    public void run(){
+        if (rateLimiter.next()){
+            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Absolute encoder 1: "+altEncoder1.getPosition());
+            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Relative encoder 1: "+EUTodegrees(firstJointCANSparkMax.getEncoder().getPosition()));
+            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Absolute encoder 2: "+altEncoder2.getPosition());
+            Logger.get(Category.MECHANISMS).logRaw(Severity.INFO, "Relative encoder 2: "+EUTodegrees(secondJointCANSparkMax.getEncoder().getPosition()));
+        }
+    }
+}
 
 
 /* ~~ Code Review ~~

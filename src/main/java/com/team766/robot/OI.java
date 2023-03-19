@@ -39,8 +39,8 @@ public class OI extends Procedure {
 			
 			RobotProvider.instance.refreshDriverStationData();
 
-			log("E1: " + Robot.arms.getEncoderDistanceOfArmOne());
-			log("E2: " + Robot.arms.getEncoderDistanceOfArmTwo());
+			// log("E1: " + Robot.arms.getEncoderDistanceOfArmOne());
+			// log("E2: " + Robot.arms.getEncoderDistanceOfArmTwo());
 			if(joystick0.getButtonPressed(14)){
 				manualControl = true;
 			} else if (joystick0.getButtonPressed(15)){
@@ -49,39 +49,40 @@ public class OI extends Procedure {
 				Robot.arms.manuallySetArmOnePower(0);
 			}
 
-			if(manualControl == true){
-				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0)*0.2);
-				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
-			}
+			// if(manualControl == true){
+			// 	Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0)*0.2);
+			// 	Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
+			// }
 
 
 
-			if(joystick0.getButton(1)){
+			if(joystick0.getButtonPressed(1)){
 
 				Robot.arms.resetEncoders();
 			}
 
-			if(joystick0.getButton(2)){
-				Robot.arms.holdArms();
+			if(joystick0.getButtonPressed(2)){
+				Robot.arms.manuallySetArmOnePower(0);
+				Robot.arms.manuallySetArmTwoPower(0);
 			}
 
 
 
-			if(joystick0.getButton(3) && manualControl == false){
+			// if(joystick0.getButton(3) && manualControl == false){
 				
-				Robot.arms.pidForArmTwo(0.231);
-				log("3");
+			// 	Robot.arms.pidForArmTwo(0.231);
+			// 	log("3");
+			// }
+
+			if(joystick0.getButtonPressed(3)){
+				Robot.arms.antiGravFirstJoint();
+				log("AntiGravFirstJoint");
 			}
 
-			// if(joystick0.getButton(4) && manualControl == false){
-			// 	log("4");
-			// 	Robot.arms.pidForArmTwo(0.85);
-			// }
-
-			// if(joystick0.getButton(5) && manualControl == false){
-			// 	log("5");
-			// 	Robot.arms.pidForArmTwo(0.95);
-			// }
+			if(joystick0.getButtonPressed(4)){
+				Robot.arms.antiGravSecondJoint();
+				log("AntiGravSecondJoint");
+			}
 
 			
 			// if(joystick0.getButton(6) && manualControl == false){
