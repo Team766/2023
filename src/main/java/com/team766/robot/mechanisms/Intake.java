@@ -40,21 +40,21 @@ public class Intake extends Mechanism {
 		pistonsIn();
 	}
 
-	public void pistonsOut(){
+	public void pistonsOut() {
 		checkContextOwnership();
 
 		leftPiston.set(true);
 		rightPiston.set(true);
 	}
 
-	public void pistonsIn(){
+	public void pistonsIn() {
 		checkContextOwnership();
 
 		leftPiston.set(false);
 		rightPiston.set(false);
 	}
 
-	public void reverseIntake(){
+	public void reverseIntake() {
 		checkContextOwnership();
 
 		topBelt.set(-1.0);

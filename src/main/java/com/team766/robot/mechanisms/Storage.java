@@ -8,19 +8,19 @@ public class Storage extends Mechanism {
 	
 	private MotorController belt;
 
-	public Storage(){
+	public Storage() {
 		belt = RobotProvider.instance.getMotor("belt");
 	}
 
-	public void beltIn(){
+	public void beltIn() {
 		belt.set(0.5);
 	}
 
-	public void beltOut(){
+	public void beltOut() {
 		belt.set(-1.0);
 	}
 
-	public void beltIdle(){
+	public void beltIdle() {
 		belt.set(0.0);
 	}
 }
