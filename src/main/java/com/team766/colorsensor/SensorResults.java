@@ -1,4 +1,4 @@
-package com.team766.orientation;
+package com.team766.colorsensor;
 
 import com.team766.framework.Procedure;
 import com.team766.framework.Context;
@@ -23,9 +23,9 @@ public class SensorResults {
 
 	//determines cone orientation
 	public static int getConeOrientation(){
-		String topPiece = (Robot.topColorSensor.getPiece())[0];
-		String bottomPiece = (Robot.bottomColorSensor.getPiece())[0];
-		String bottomProx = (Robot.bottomColorSensor.getPiece())[1];
+		String topPiece = Robot.topColorSensor.getPiece();
+		String bottomPiece = Robot.bottomColorSensor.getPiece();
+		String bottomProx = Robot.bottomColorSensor.getPiece();
 		boolean topColor = !topPiece.equals("Other");
 		boolean bottomColor = !bottomPiece.equals("Other");
 		int orientation = 0; // orientation 0 = undetermined orientation

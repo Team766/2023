@@ -7,7 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import com.team766.orientation.SensorResults;
+import com.team766.colorsensor.SensorResults;
 
 /**
  * This class is the glue that binds the controls on the physical operator
