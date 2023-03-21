@@ -31,7 +31,7 @@ public class Arms extends Mechanism {
     
 
     // Non-motor constants
-    private static double doubleDeadZone = 0.004d;
+    private static double doubleDeadZone = 5;
 
     enum ArmState{
         PID, // Moving
@@ -118,12 +118,12 @@ public class Arms extends Mechanism {
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();
-        double altEncoder1Offset = 0.32;
+        double altEncoder1Offset = 0.25;
         double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset);
 
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
         double secondJointAbsEncoder = altEncoder2.getPosition();
-        double altEncoder2Offset = 0.32;
+        double altEncoder2Offset = 0.5;
         double secondJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset+secondJointAbsEncoder-altEncoder2Offset);
 
         // set the sensor positions of our rel encoders
@@ -184,7 +184,7 @@ public class Arms extends Mechanism {
     }
 
     // These next 2 antiGravs are used.
-    private double getAntiGravFirstJoint(){
+    private double betterGetAntiGravFirstJoint(){
         double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
         double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
         double massRatio = 2; //ratio between firstJoint and secondJoint
@@ -195,6 +195,12 @@ public class Arms extends Mechanism {
         double firstSecondJointAngle = firstRelEncoderAngle+lawOfSines(triangleSide3,middleAngle,triangleSide2);
         double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
         return (-1*Math.signum(firstRelEncoderAngle) * Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT) + (-1*Math.signum(firstSecondJointAngle)*triangleSide3 * Math.sin((Math.PI / 180)*firstSecondJointAngle) * ANTI_GRAV_FIRSTSECOND_JOINT);
+    }
+
+    private double getAntiGravFirstJoint(){
+        double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
+        double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
+        return Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_SECOND_JOINT);
     }
 
     private double getAntiGravSecondJoint(){
@@ -211,23 +217,23 @@ public class Arms extends Mechanism {
         log("Absolute Encoder 2: "+altEncoder2.getPosition());
         log("Relative Encoder 2: "+secondJoint.getSensorPosition());
 
-        // if (firstJointState == ArmState.ANTIGRAV) {
-        //     firstJointPIDController.setReference(degreesToEU(firstJointPosition), ControlType.kSmartMotion,0,getAntiGravFirstJoint());
-        // } else {
-        //     firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
-        //     if (Math.abs(altEncoder1.getPosition()-firstJointPosition) <= doubleDeadZone){
-        //         firstJointState = ArmState.ANTIGRAV;
-        //     }
-        // }
+        if (firstJointState == ArmState.ANTIGRAV) {
+            firstJointPIDController.setReference(degreesToEU(firstJointPosition), ControlType.kSmartMotion,0,getAntiGravFirstJoint());
+        } else {
+            firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
+            if (Math.abs(altEncoder1.getPosition()-firstJointPosition) <= doubleDeadZone){
+                firstJointState = ArmState.ANTIGRAV;
+            }
+        }
         
-        // if (secondJointState == ArmState.ANTIGRAV) {
-        //     secondJointPIDController.setReference(degreesToEU(firstJointPosition), ControlType.kSmartMotion,0,getAntiGravSecondJoint());
-        // } else {
-        //     secondJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
-        //     if (Math.abs(altEncoder2.getPosition()-secondJointPosition) <= doubleDeadZone){
-        //         secondJointState = ArmState.ANTIGRAV;
-        //     }
-        // }
+        if (secondJointState == ArmState.ANTIGRAV) {
+            secondJointPIDController.setReference(degreesToEU(firstJointPosition), ControlType.kSmartMotion,0,getAntiGravSecondJoint());
+        } else {
+            secondJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
+            if (Math.abs(altEncoder2.getPosition()-secondJointPosition) <= doubleDeadZone){
+                secondJointState = ArmState.ANTIGRAV;
+            }
+        }
     }
 
     // Helper classes to convert from degrees to EU to absEU
