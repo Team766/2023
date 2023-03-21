@@ -91,7 +91,6 @@ public class FollowPoints extends Procedure {
 		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HIGH)", new AutoScoring(AutoScoring.Nodes.HIGH));
 		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.MEDIUM)", new AutoScoring(AutoScoring.Nodes.MEDIUM));
 		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HYBRID)", new AutoScoring(AutoScoring.Nodes.HYBRID));
-		mapOfProcedures.put("WaitFiveSeconds()", new WaitFiveSeconds());
 		mapOfProcedures.put("setCross()", new setCross());
 
 		String str;
