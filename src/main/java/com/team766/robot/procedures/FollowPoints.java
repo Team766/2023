@@ -281,6 +281,7 @@ public class FollowPoints extends Procedure {
 		for (int i = 0; i < pointList.length; i++) {
 			log(pointList[i].toString());
 			log("Stop: " + stopRobotList[i]);
+			log("Procedure: " + proceduresAtPoints[i]);
 		}
 		if (pointList.length > 0) {
 			Point targetPoint = new Point(0.0, 0.0);
@@ -293,9 +294,7 @@ public class FollowPoints extends Procedure {
 					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
 					//Otherwise, it uses the checkIntersection() method to follow the circle
 					if (criticalPointList[targetNum]? (targetNum < pointList.length - 1 && passedPoint(pointList[targetNum])) : checkIntersection(pointList)) {
-						log("Procedure List Length: " + proceduresAtPoints.length);
-						if (proceduresAtPoints.length > targetNum) {
-							log("stopRobotList: " + stopRobotList[targetNum]);
+						if (targetNum != stopRobotList.length - 1 && proceduresAtPoints.length > targetNum) {
 							if (stopRobotList[targetNum]) {
 								driveSettings.set(0, 0);
 								while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
@@ -330,6 +329,23 @@ public class FollowPoints extends Procedure {
 					context.yield();
 				} else {
 					updateRotation();
+				}
+			}
+			if (proceduresAtPoints.length > targetNum) {
+				if (stopRobotList[stopRobotList.length - 1]) {
+					driveSettings.set(0, 0);
+					while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[stopRobotList.length - 1].getHeading())) > 0.03) {
+						updateRotation();
+						context.yield();
+					}
+					Robot.drive.setCross();
+					context.releaseOwnership(Robot.drive);
+					context.releaseOwnership(Robot.gyro);
+					context.waitFor(context.startAsync(proceduresAtPoints[stopRobotList.length - 1])); 
+					context.takeOwnership(Robot.drive);
+					context.takeOwnership(Robot.gyro);
+				} else {
+					context.startAsync(proceduresAtPoints[stopRobotList.length - 1]);
 				}
 			}
 			Robot.drive.drive2D(0, 0);

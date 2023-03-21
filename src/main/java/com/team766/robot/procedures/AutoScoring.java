@@ -14,6 +14,7 @@ public class AutoScoring extends Procedure{
 	Point targetPoint;
 	Nodes targetNode;
 	Piece targetPiece;
+	Point[] pointList;
 
 	public enum Nodes {
 		HYBRID,
@@ -44,7 +45,7 @@ public class AutoScoring extends Procedure{
 
 	public AutoScoring(Nodes node, Piece piece) {
 
-		Point[] pointList;
+		
 		switch (piece) {
 			case CUBE: pointList = RobotTargets.CUBE_NODES;
 			case CONE: pointList = RobotTargets.CONE_NODES;
@@ -52,23 +53,30 @@ public class AutoScoring extends Procedure{
 		}
 
 		targetPiece = piece;
-
-		currentPos = Robot.drive.getCurrentPosition().clone();
-		minDistance = currentPos.distance(RobotTargets.NODES[0]);
-		targetPoint = RobotTargets.NODES[0];
+		targetPoint = pointList[0];
 		targetNode = node;
-
-		for (int i = 1; i < pointList.length; i++) {
-			if (currentPos.distance(pointList[i]) < minDistance) {
-				minDistance = currentPos.distance(RobotTargets.NODES[i]);
-				targetPoint = RobotTargets.NODES[i];
-			}
-		}
+		
 	}
 
 	public void run(Context context) {
-		log("Starting AutoScoring");
-		context.startAsync(new FollowPoints(Robot.drive.getCurrentPosition().clone(), new PointDir[]{new PointDir(targetPoint, 0)}));
+		log("Starting AutoScoring " + targetPoint.toString());
+
+		currentPos = Robot.drive.getCurrentPosition().clone();
+		minDistance = currentPos.distance(pointList[0]);
+		log("First Distance: " + minDistance);
+		
+
+		for (int i = 1; i < pointList.length; i++) {
+			if (currentPos.distance(pointList[i]) < minDistance) {
+				minDistance = currentPos.distance(pointList[i]);
+				targetPoint = pointList[i];
+			}
+		}
+		log("Final Distance: " + minDistance);
+
+
+		context.waitFor(context.startAsync(new FollowPoints(Robot.drive.getCurrentPosition().clone(), new PointDir[]{new PointDir(targetPoint, 0)})));
 		//Do the actual scoring (arm movements, etc.)
+		log("Finishing AutoScoring");
 	}
 }

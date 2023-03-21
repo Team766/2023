@@ -83,10 +83,12 @@ public class Odometry extends LoggingBase {
 	 */
 	public void setCurrentPosition(Point P) {
 		currentPosition.set(P);
+		log("Set Current Position to: " + P.toString());
 		for (int i = 0; i < motorCount; i++) {
 			prevPositions[i].set(currentPosition.add(wheelPositions[i]));
 			currPositions[i].set(currentPosition.add(wheelPositions[i]));
 		}
+		log("Current Position: " + currentPosition.toString());
 	}
 	
 
@@ -185,7 +187,7 @@ public class Odometry extends LoggingBase {
 			setCurrentEncoderValues();
 			updateCurrentPositions();
 			findRobotPosition();
-			log(currentPosition.toString());
+			//log(currentPosition.toString());
 		}
 		return currentPosition;
 	}
