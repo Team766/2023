@@ -6,6 +6,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.hal.wpilib.Solenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
 	
@@ -13,13 +15,15 @@ public class Intake extends Mechanism {
 	private MotorController topBelt;
 	private SolenoidController leftPiston;
 	private SolenoidController rightPiston;
+	private PneumaticHub ph;
 	
 	public Intake() {
-		topBelt = RobotProvider.instance.getMotor("Intake.topWheels");
-		bottomWheels = RobotProvider.instance.getMotor("Intake.bottomWheels");
+		topBelt = RobotProvider.instance.getMotor("intake.topWheels");
+		bottomWheels = RobotProvider.instance.getMotor("intake.bottomWheels");
 
-		leftPiston = RobotProvider.instance.getSolenoid("Intake.leftPiston");
-		rightPiston = RobotProvider.instance.getSolenoid("Intake.rightPiston");
+		leftPiston = RobotProvider.instance.getSolenoid("intake.leftPiston");
+		rightPiston = RobotProvider.instance.getSolenoid("intake.rightPiston");
+		ph = new PneumaticHub();
 
 	}
 
@@ -42,6 +46,7 @@ public class Intake extends Mechanism {
 
 	public void pistonsOut() {
 		checkContextOwnership();
+		log("pistons out");
 
 		leftPiston.set(true);
 		rightPiston.set(true);
@@ -61,5 +66,9 @@ public class Intake extends Mechanism {
 		bottomWheels.set(-1.0);
 
 		pistonsIn();
+	}
+
+	public void run(){
+		SmartDashboard.putNumber("Storage PSI",ph.getPressure(0));
 	}
 }
