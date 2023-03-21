@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.robot.Robot;
+import com.team766.robot.constants.*;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
@@ -17,14 +18,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import com.team766.config.ConfigFileReader;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.controllers.PIDController;
+import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
-import com.team766.robot.constants.*;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
@@ -59,6 +59,7 @@ public class FollowPoints extends Procedure {
 	private Procedure[] proceduresAtPoints;
 	private boolean[] criticalPointList;
 	private boolean[] stopRobotList;
+	private Point startingPoint = new Point(0, 0);
 
 	private int targetNum = 0;
 	private RateLimiter followLimiter = new RateLimiter(FollowPointsInputConstants.RATE_LIMITER_TIME);
@@ -80,13 +81,54 @@ public class FollowPoints extends Procedure {
 	}*/
 
 	/**
-	 * Constructor to create a new FollowPoints instance.
+	 * Constructor to create a new robot-oriented FollowPoints instance.
 	 * @param file filename for the waypoints file to load and use.
 	 * @throws IOException Thrown if file is not found.
 	 */
 	public FollowPoints(String file) {
 		mapOfProcedures.put("DoNothing()", new DoNothing());
 		mapOfProcedures.put(null, new DoNothing());
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HIGH)", new AutoScoring(AutoScoring.Nodes.HIGH));
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.MEDIUM)", new AutoScoring(AutoScoring.Nodes.MEDIUM));
+		mapOfProcedures.put("AutoScoring(AutoScoring.Nodes.HYBRID)", new AutoScoring(AutoScoring.Nodes.HYBRID));
+		mapOfProcedures.put("setCross()", new setCross());
+
+		String str;
+		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
+		try {
+			str = Files.readString(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			log(Severity.ERROR, "Could not load " + file);
+			return;
+		}
+		
+		JSONArray points = new JSONObject(str).getJSONArray("points");
+		JSONArray start = new JSONObject(str).getJSONArray("start");
+
+		startingPoint.set(start.getDouble(0), start.getDouble(1));
+		
+		for (int i = 0; i < points.length(); i++) {
+			JSONObject procedure = points.getJSONObject(i).getJSONObject("procedure");
+			Procedure pointProcedure = null;
+			boolean stopAtProcedure = false;
+			if (procedure != null) {
+				pointProcedure = mapOfProcedures.get(procedure.getString("name"));
+				stopAtProcedure = procedure.getBoolean("stop");
+			}
+			addStep(new PointDir(points.getJSONObject(i).getJSONArray("coordinates").getDouble(0), points.getJSONObject(i).getJSONArray("coordinates").getDouble(1), points.getJSONObject(i).getJSONArray("coordinates").getDouble(2)), points.getJSONObject(i).getBoolean("critical"), pointProcedure, stopAtProcedure);
+		}
+		addWaypoints();
+	}
+
+	/**
+	 * Constructor to create a new field-oriented FollowPoints instance.
+	 * @param startingPoint The original position of the robot
+	 * @param file filename for the waypoints file to load and use.
+	 * @throws IOException Thrown if file is not found.
+	 */
+	public FollowPoints(Point startingPoint, String file) {
+		this.startingPoint = startingPoint;
 		String str;
 		Path path = Filesystem.getDeployDirectory().toPath().resolve(file);
 		try {
@@ -123,9 +165,22 @@ public class FollowPoints extends Procedure {
 	}
 
 	/**
-	 * Default FollowPoints Constructor. Steps must be added in-code.
+	 * Default FollowPoints Constructor. Steps must be added in-code. This is robot-oriented.
 	 */
 	public FollowPoints() {
+		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
+		addStep(new PointDir(2,0, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(2,2, 0), false, new DoNothing(), false);
+		addStep(new PointDir(0,2, 90), false, null /* don't execute procedure */, false);
+		addStep(new PointDir(0,0, 0), true, new DoNothing(), false);
+		addWaypoints();
+	}
+
+	/**
+	 * Default FollowPoints Constructor but with starting point. Steps must be added in-code. This is field-oriented.
+	 */
+	public FollowPoints(Point startingPoint) {
+		this.startingPoint = startingPoint;
 		addStep(new PointDir(0,0, 0), false, new DoNothing(), false);
 		addStep(new PointDir(2,0, 90), false, null /* don't execute procedure */, false);
 		addStep(new PointDir(2,2, 0), false, new DoNothing(), false);
@@ -162,10 +217,26 @@ public class FollowPoints extends Procedure {
 
 
 	/**
-	 * Constructor which takes an array of points.
+	 * Constructor which takes an array of points, and is robot-oriented.
 	 * @param points Array of PointDir objects for the robot to follow, consisting of x- and y- coordinates, as well as a target header for the robot.
 	 */
 	public FollowPoints(PointDir[] points) {
+		pointList = points;
+		proceduresAtPoints = new Procedure[pointList.length];
+		for (int i = 0; i < proceduresAtPoints.length; i++) {
+			proceduresAtPoints[i] = new DoNothing();
+		}
+		criticalPointList = new boolean[pointList.length];
+		stopRobotList = new boolean[pointList.length];
+		loggerCategory = Category.AUTONOMOUS;
+	}
+
+	/**
+	 * Constructor which takes an array of points, and is field-oriented.
+	 * @param points Array of PointDir objects for the robot to follow, consisting of x- and y- coordinates, as well as a target header for the robot.
+	 */
+	public FollowPoints(Point startingPoint, PointDir[] points) {
+		this.startingPoint = startingPoint;
 		pointList = points;
 		proceduresAtPoints = new Procedure[pointList.length];
 		for (int i = 0; i < proceduresAtPoints.length; i++) {
@@ -196,13 +267,20 @@ public class FollowPoints extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
-		//This resetCurrentPosition() call makes FollowPoints() robot-oriented instead of field-oriented
-		//If we need to make this method field-oriented, just remove this line
-		Robot.drive.resetCurrentPosition();
+		
+		if (startingPoint == null) {
+			for (int i = 0; i < pointList.length; i++) {
+				pointList[i].add(Robot.drive.getCurrentPosition());
+			}
+		} else {
+			Robot.drive.setCurrentPosition(startingPoint);
+		}
 		targetNum = 0;
 
 		for (int i = 0; i < pointList.length; i++) {
 			log(pointList[i].toString());
+			log("Stop: " + stopRobotList[i]);
+			log("Procedure: " + proceduresAtPoints[i]);
 		}
 		if (pointList.length > 0) {
 			Point targetPoint = new Point(0.0, 0.0);
@@ -215,10 +293,19 @@ public class FollowPoints extends Procedure {
 					//If the next point is a critical point, the robot will wait until it has passed that point for it to move to the next point
 					//Otherwise, it uses the checkIntersection() method to follow the circle
 					if (criticalPointList[targetNum]? (targetNum < pointList.length - 1 && passedPoint(pointList[targetNum])) : checkIntersection(pointList)) {
-						if (proceduresAtPoints.length < targetNum) {
+						if (targetNum != stopRobotList.length - 1 && proceduresAtPoints.length > targetNum) {
 							if (stopRobotList[targetNum]) {
+								driveSettings.set(0, 0);
+								while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
+									updateRotation();
+									context.yield();
+								}
 								Robot.drive.setCross();
+								context.releaseOwnership(Robot.drive);
+								context.releaseOwnership(Robot.gyro);
 								context.waitFor(context.startAsync(proceduresAtPoints[targetNum])); 
+								context.takeOwnership(Robot.drive);
+								context.takeOwnership(Robot.gyro);
 							} else {
 								context.startAsync(proceduresAtPoints[targetNum]);
 							}
@@ -230,8 +317,9 @@ public class FollowPoints extends Procedure {
 					//double diff = currentPos.getAngleDifference(targetPoint);
 					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 					
-					Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+					driveSettings.set(-driveSettings.getX(), driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
 					//log("Current Position: " + currentPos.toString());
 					//log("Target Point: " + targetPoint.toString());
@@ -242,8 +330,32 @@ public class FollowPoints extends Procedure {
 					updateRotation();
 				}
 			}
+			if (proceduresAtPoints.length > targetNum) {
+				if (stopRobotList[stopRobotList.length - 1]) {
+					driveSettings.set(0, 0);
+					while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[stopRobotList.length - 1].getHeading())) > 0.03) {
+						updateRotation();
+						context.yield();
+					}
+					Robot.drive.setCross();
+					context.releaseOwnership(Robot.drive);
+					context.releaseOwnership(Robot.gyro);
+					context.waitFor(context.startAsync(proceduresAtPoints[stopRobotList.length - 1])); 
+					context.takeOwnership(Robot.drive);
+					context.takeOwnership(Robot.gyro);
+				} else {
+					context.startAsync(proceduresAtPoints[stopRobotList.length - 1]);
+				}
+			}
 			Robot.drive.drive2D(0, 0);
-			Robot.drive.setCross();
+			driveSettings.set(0, 0);
+			targetNum = pointList.length - 1;
+			while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
+				updateRotation();
+				context.yield();
+			}
+			context.releaseOwnership(Robot.drive);
+			context.startAsync(new setCross());
 			log("Finished method!");
 		} else {
 			log("No points!");
@@ -254,7 +366,7 @@ public class FollowPoints extends Procedure {
 	 * Method which keeps updating how much the robot should turn between rateLimiter calls.
 	 */
 	public void updateRotation() {
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+		Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 		driveSettings.setHeading(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
 		Robot.drive.swerveDrive(driveSettings);
 	}
@@ -353,7 +465,10 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			return (currentRot - targetRot) / angleDistanceForMaxSpeed * maxSpeed;
+			if (Math.abs(targetRot - currentRot) <= 3) {
+				return ((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed;
+			}
+			return 0;
 		}
 		return maxSpeed * Math.signum(currentRot - targetRot);
 	}
