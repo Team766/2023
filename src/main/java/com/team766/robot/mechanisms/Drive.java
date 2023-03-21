@@ -297,8 +297,7 @@ public class Drive extends Mechanism {
 		// double power = pythagorean((JoystickX), correctedJoysticks(JoystickY))/Math.sqrt(2);
 		double power = Math.max(Math.abs(JoystickX), Math.abs(JoystickY));
 		double angle = fieldAngle(getAngle(JoystickX, JoystickY), gyroValue);
-		log("Given angle: " + getAngle(JoystickX, JoystickY) + " || Gyro: " + gyroValue
-				+ " || New angle: " + angle);
+
 
 		if (withinHalfACircle(angle, getCurrentAngle(m_SteerFrontRight))) {
 			m_DriveFrontRight.set(power);
@@ -412,13 +411,9 @@ public class Drive extends Mechanism {
 		if (withinHalfACircle(frAngle, getCurrentAngle(m_SteerFrontRight))) {
 			m_DriveFrontRight.set(frPower);
 			setFrontRightAngle(newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
-			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Positive "
-					+ newAngle(frAngle, getCurrentAngle(m_SteerFrontRight)));
 		} else {
 			m_DriveFrontRight.set(-frPower);
 			setFrontRightAngle(newAngle(180 + frAngle, getCurrentAngle(m_SteerFrontRight)));
-			log(frAngle + " " + getCurrentAngle(m_SteerFrontRight) + " Negative "
-					+ newAngle(-frAngle, getCurrentAngle(m_SteerFrontRight)));
 		}
 
 		if (withinHalfACircle(flAngle, getCurrentAngle(m_SteerFrontLeft))) {
@@ -492,19 +487,19 @@ public class Drive extends Mechanism {
 	 * Simple encoder logging method
 	 */
 	public void logs() {
-		log("Front Right Encoder: " + getFrontRight() + " Front Left Encoder: " + getFrontLeft()
+		/*log("Front Right Encoder: " + getFrontRight() + " Front Left Encoder: " + getFrontLeft()
 				+ " Back Right Encoder: " + getBackRight() + " Back Left Encoder: "
-				+ getBackLeft());
+				+ getBackLeft());*/
 	}
 
 	/**
 	 * This method is used to set the front right encoder to the true position
 	 */
 	public void setFrontRightEncoders() {
-		log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
+		//log("Steer FR Before: " + m_SteerFrontRight.getSensorPosition());
 		m_SteerFrontRight.setSensorPosition((int) Math
 				.round(2048.0 / 360.0 * (150.0 / 7.0) * e_FrontRight.getAbsolutePosition()));
-		log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
+		//log("Steer FR After: " + m_SteerFrontRight.getSensorPosition());
 
 	}
 
@@ -648,6 +643,10 @@ public class Drive extends Mechanism {
 		setBackRightAngle(newAngle(-135, getCurrentAngle(m_SteerBackRight)));
 	}
 
+	public void setCurrentPosition(Point P) {
+		swerveOdometry.setCurrentPosition(P);
+	}
+
 	public void resetCurrentPosition() {
 		swerveOdometry.setCurrentPosition(new Point(0, 0));
 	}
@@ -666,7 +665,7 @@ public class Drive extends Mechanism {
 	@Override
 	public void run() {
 		currentPosition = swerveOdometry.run();
-		//log(currentPosition.toString());
+		log(currentPosition.toString());
 		SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
 		SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
 		SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());
