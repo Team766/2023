@@ -4,23 +4,20 @@ import com.team766.robot.mechanisms.*;
 
 public class Robot {
 	// Declare mechanisms here
-	public static Drive drive;
-	public static Gyro gyro;
-	public static CANdleMech candle;
-	public static Intake intake;
+	public static Intake intake; 
 	public static Storage storage;
-	public static Arms arms;
+	public static Drive drive;
 	public static Grabber grabber;
+	public static Arms arms;
+	public static Gyro gyro;
 
 	public static void robotInit() {
 		// Initialize mechanisms here
-		drive = new Drive();
-		gyro = new Gyro();
-		candle = new CANdleMech();
 		intake = new Intake();
 		storage = new Storage();
-		arms = new Arms();
+		drive = new Drive();
 		grabber = new Grabber();
-
+		arms = new Arms();
+		gyro = new Gyro();
 	}
 }
