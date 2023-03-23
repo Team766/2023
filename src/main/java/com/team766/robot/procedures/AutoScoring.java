@@ -7,7 +7,11 @@ import com.team766.odometry.PointDir;
 import com.team766.robot.procedures.FollowPoints;
 import com.team766.robot.Robot;
 import com.team766.robot.RobotTargets;
-
+/**
+ * This procedure will eventually be able to score game pieces automatically.
+ * Currently, it moves the robot to the nearest scoring node.
+ * Once methods for other scoring mechanisms are done, they should be added here so this procedure wil be able to score completely autonomously.
+ */
 public class AutoScoring extends Procedure{
 	Point currentPos;
 	double minDistance;
