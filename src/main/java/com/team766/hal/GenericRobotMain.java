@@ -98,6 +98,8 @@ public final class GenericRobotMain {
 			m_oiContext = null;
 		}
 
+		Robot.gyro.resetGyro180();
+
 		if (m_autonomous != null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Continuing previous autonomus procedure " + m_autonomous.getContextName());
 		} else if (m_autonSelector.getSelectedAutonMode() == null) {
