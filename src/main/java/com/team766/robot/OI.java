@@ -70,22 +70,22 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			if (joystick0.getButtonPressed(inButton)){
 				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakeIn();
+					Robot.intake.startIntake();
 					Robot.storage.beltIn();
 					intakeState = IntakeState.SPINNINGIN;
 				} else {
-					Robot.intake.intakeIdle();
+					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
 			}
 			if (joystick0.getButtonPressed(outButton)){
 				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakeOut();
+					Robot.intake.reverseIntake();
 					Robot.storage.beltOut();
 					intakeState = IntakeState.SPINNINGOUT;
 				} else {
-					Robot.intake.intakeIdle();
+					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
