@@ -36,6 +36,13 @@ public class OI extends Procedure {
 	private int inButton = 5;
 	private int outButton = 10;
 	
+	enum IntakeState {
+		IDLE,
+		SPINNINGREV,
+		SPINNINGFWD
+	}
+	IntakeState intakeState = IntakeState.IDLE;
+	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
@@ -61,28 +68,28 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			/* if (joystick0.getButtonPressed(15)){
+			if (joystick0.getButtonPressed(inButton)){
 				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakeIn();
+					Robot.intake.startIntake();
 					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGIN;
+					intakeState = IntakeState.SPINNINGFWD;
 				} else {
-					Robot.intake.intakeIdle();
+					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
 			}
-			if (joystick0.getButtonPressed(16)){
+			if (joystick0.getButtonPressed(outButton)){
 				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakeOut();
+					Robot.intake.reverseIntake();
 					Robot.storage.beltOut();
-					intakeState = IntakeState.SPINNINGOUT;
+					intakeState = IntakeState.SPINNINGREV;
 				} else {
-					Robot.intake.intakeIdle();
+					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
-			} */
+			} 
 
 			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 
@@ -189,7 +196,7 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			context.takeOwnership(Robot.intake);
 			context.takeOwnership(Robot.storage);
-
+			/*
 			if (joystick0.getButton(inButton)) {
 				Robot.intake.startIntake();
 				Robot.storage.beltIn();
@@ -200,6 +207,7 @@ public class OI extends Procedure {
 				Robot.intake.stopIntake();
 				Robot.storage.beltIdle();
 			}
+			*/
 
 
 		}
