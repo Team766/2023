@@ -74,7 +74,36 @@ public class OI extends Procedure {
 				Robot.drive.resetCurrentPosition();
 			}
 
-
+			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
+				RightJoystick_Y = rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			} else {
+				RightJoystick_Y = 0;
+			}
+			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
+				rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)/2;
+			} else {
+				rightJoystickX = 0;	
+			}
+			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
+				RightJoystick_Theta = rightJoystick.getAxis(InputConstants.AXIS_TWIST);
+			} else {
+				RightJoystick_Theta = 0;
+			}
+			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
+				leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			} else {
+				leftJoystickY = 0;
+			}
+			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
+				leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			} else {
+				leftJoystickX = 0;
+			}
+			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
+				LeftJoystick_Theta = leftJoystick.getAxis(InputConstants.AXIS_TWIST);
+			} else {
+				LeftJoystick_Theta = 0;
+			}
 			
 			// Sets intake state based on held down button
 			// Idles intake if either button released

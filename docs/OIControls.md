@@ -6,6 +6,7 @@ The driver controls the two joysticks on the left of the driver station. The ima
 ![Image](images/JoystickControls.png)
 
 The right trigger locks the robot wheels by crossing them. To get out of the crossed state, move either joystick.
+The bottom left joystick button puts the robot into fine tuning mode, and all joystick controls will make the robot move a small amount.
 
 ## Box Op Controls
 The box op controls are on the farm simulator controller. There are two buttons that will be used during the Sacramento Regional:
