@@ -10,6 +10,6 @@ The bottom left joystick button puts the robot into fine tuning mode, and all jo
 
 ## Box Op Controls
 The box op controls are on the farm simulator controller. There are two buttons that will be used during the Sacramento Regional:
-* The top right orange button labeled `IN`: holding this will deploy the intake
-* The bottom right orange button labled `OUT`: holding this will reverse the intake motors and spit out the held piece. 
+* The top right orange button labeled `IN`: pressing this will deploy the intake
+* The bottom right orange button labled `OUT`: pressing this will reverse the intake motors and spit out the held piece. 
 * Releasing either button will retract the intake and turn off the motors.

@@ -22,9 +22,6 @@ public final class InputConstants {
 	public static final int GRABBER_RELEASE = 1;
 	public static final int FINE_DRIVING = 2;
 
-	public static final int RESET_GYRO = 4;
-	public static final int RESET_POS = 3;
-
 	// Control Panel Buttons
 	public static final int CONE_HIGH = 1;
 	public static final int CONE_MID = 2;
@@ -33,10 +30,11 @@ public final class InputConstants {
 	public static final int CUBE_HIGH = 6;
 	public static final int CUBE_MID = 7;
 	public static final int CUBE_HYBRID = 8;
+	public static final int STOP_INTAKE = 9;
 	public static final int OUTTAKE = 10;
 
-	public static final int ARM_PICKUP_POS = 11;
-	public static final int READY_POS = 12;
+	public static final int RESET_GYRO = 11;
+	public static final int RESET_POS = 12;
 
 	public static final int ANTI_GRAV = 16;
 

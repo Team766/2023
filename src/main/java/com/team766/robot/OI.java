@@ -66,11 +66,11 @@ public class OI extends Procedure {
 			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 			
 			
-			if (rightJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
+			if (controlPanel.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
 			}
 
-			if (rightJoystick.getButtonPressed(InputConstants.RESET_POS)) {
+			if (controlPanel.getButtonPressed(InputConstants.RESET_POS)) {
 				Robot.drive.resetCurrentPosition();
 			}
 
@@ -113,7 +113,7 @@ public class OI extends Procedure {
 			} else if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
 				Robot.intake.reverseIntake();
 				Robot.storage.beltOut();
-			} else if (controlPanel.getButtonReleased(InputConstants.INTAKE) || controlPanel.getButtonReleased(InputConstants.OUTTAKE)) {
+			} else if (controlPanel.getButtonPressed(InputConstants.STOP_INTAKE)) {
 				Robot.intake.stopIntake();
 				Robot.storage.beltIdle();
 			}
