@@ -12,6 +12,7 @@ import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team766.robot.mechanisms.Drive;
 
@@ -64,6 +65,14 @@ public class OI extends Procedure {
 			leftJoystickY = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
 			rightJoystickX = Drive.correctedJoysticks(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
 			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+			
+			if (DriverStation.getAlliance() == Alliance.Red) {
+				SmartDashboard.putString("Alliance", "RED");
+			} else if (DriverStation.getAlliance() == Alliance.Blue) {
+				SmartDashboard.putString("Alliance", "BLUE");
+			} else {
+				SmartDashboard.putString("Alliance", "NULLLLLLLLL");
+			}
 			
 			
 			if (controlPanel.getButtonPressed(InputConstants.RESET_GYRO)) {

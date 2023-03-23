@@ -97,7 +97,7 @@ public class WPIRobotProvider extends RobotProvider {
 		m_dataRefreshThread.start();
 
 		try {
-			ph.enableCompressorAnalog(90, 120);
+			ph.enableCompressorAnalog(90, 115);
 		} catch (Exception ex) {
 			LoggerExceptionUtils.logException(ex);
 		}

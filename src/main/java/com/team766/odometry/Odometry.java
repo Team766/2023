@@ -7,6 +7,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.logging.Category;
 import com.team766.robot.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Method which calculates the position of the robot based on wheel positions.
@@ -99,6 +101,7 @@ public class Odometry extends LoggingBase {
 		for (int i = 0; i < motorCount; i++) {
 			prevEncoderValues[i] = currEncoderValues[i];
 			currEncoderValues[i] = motorList[i].getSensorPosition();
+			currEncoderValues[i] *= (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1);
 		}
 	}
 
@@ -187,7 +190,7 @@ public class Odometry extends LoggingBase {
 			setCurrentEncoderValues();
 			updateCurrentPositions();
 			findRobotPosition();
-			//log(currentPosition.toString());
+			log(currentPosition.toString());
 		}
 		return currentPosition;
 	}

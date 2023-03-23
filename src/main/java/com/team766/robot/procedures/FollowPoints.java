@@ -296,7 +296,7 @@ public class FollowPoints extends Procedure {
 						if (targetNum != stopRobotList.length - 1 && proceduresAtPoints.length > targetNum) {
 							if (stopRobotList[targetNum]) {
 								driveSettings.set(0, 0);
-								while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
+								while (Math.abs(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading())) > 0.03) {
 									updateRotation();
 									context.yield();
 								}
@@ -318,7 +318,7 @@ public class FollowPoints extends Procedure {
 					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 					
 					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
-					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
 					driveSettings.set(-driveSettings.getX(), driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
 					//log("Current Position: " + currentPos.toString());
@@ -333,7 +333,7 @@ public class FollowPoints extends Procedure {
 			if (proceduresAtPoints.length > targetNum) {
 				if (stopRobotList[stopRobotList.length - 1]) {
 					driveSettings.set(0, 0);
-					while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[stopRobotList.length - 1].getHeading())) > 0.03) {
+					while (Math.abs(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[stopRobotList.length - 1].getHeading())) > 0.03) {
 						updateRotation();
 						context.yield();
 					}
@@ -350,7 +350,7 @@ public class FollowPoints extends Procedure {
 			Robot.drive.drive2D(0, 0);
 			driveSettings.set(0, 0);
 			targetNum = pointList.length - 1;
-			while (Math.abs(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading())) > 0.03) {
+			while (Math.abs(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading())) > 0.03) {
 				updateRotation();
 				context.yield();
 			}
@@ -367,7 +367,7 @@ public class FollowPoints extends Procedure {
 	 */
 	public void updateRotation() {
 		Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
-		driveSettings.setHeading(rotationSpeed(-Robot.gyro.getGyroYaw(), pointList[targetNum].getHeading()));
+		driveSettings.setHeading(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
 		Robot.drive.swerveDrive(driveSettings);
 	}
 
