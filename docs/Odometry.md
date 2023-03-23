@@ -12,6 +12,10 @@ On a swerve drive-bot, each wheel can both spin and rotate. We use this to estim
 
 Given a wheel's starting position, distance traveled, and angle change, an arc is used to estimate the new x- and y-positions of that wheel. Once positions for all four wheels are calculated, they are averaged to find the new position of the robot.
 
+Recently, odometry code was changed to accomodate for slopes. Instead of using pure equations as before, it now uses a series of transformations to convert the arc into a robot-oriented coordinate system, then a field-oriented coordinate system. This code is based on the rotation matricies shown below.
+
+![Image](images/RotationMatricies.png)
+
 ## Benefits of Odometry
 
 * **It does not require any external hardware.** Odometry is entirely based on the wheels, and does not require any cameras or lights, and so will rarely break. This leaves it as a robust backup in case another position-finding system fails.
@@ -25,7 +29,7 @@ Given a wheel's starting position, distance traveled, and angle change, an arc i
 
 ## How to use Odometry
 
-Odometry should be run in the Drive.java mechanism, which allows it to work even when Tele-Op is turned off. 
+Odometry should be run in the Drive.java mechanism, which allows it to work even when Tele-Op is turned off.
 
 ### Initialization
 

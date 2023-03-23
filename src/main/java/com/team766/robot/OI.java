@@ -9,6 +9,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
+import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,9 +33,13 @@ public class OI extends Procedure {
 	private double leftJoystickY = 0;
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
-	double turningValue = 0;
+	private IntakeState intakeState = IntakeState.IDLE;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
+
+	
+	double turningValue = 0;
+
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -61,18 +66,43 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 
+
+			// Sets intake state based on button pressed
+			if (leftJoystick.getButtonPressed(InputConstants.INTAKE)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.startIntake();
+					Robot.storage.beltIn();
+					intakeState = IntakeState.SPINNINGFWD;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			}
+			if (leftJoystick.getButtonPressed(InputConstants.OUTTAKE)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.reverseIntake();
+					Robot.storage.beltOut();
+					intakeState = IntakeState.SPINNINGREV;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			} 
+
 			leftJoystickX = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
 			leftJoystickY = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
 			rightJoystickX = Drive.correctedJoysticks(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
 			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 			
-			if (DriverStation.getAlliance() == Alliance.Red) {
-				SmartDashboard.putString("Alliance", "RED");
-			} else if (DriverStation.getAlliance() == Alliance.Blue) {
-				SmartDashboard.putString("Alliance", "BLUE");
-			} else {
-				SmartDashboard.putString("Alliance", "NULLLLLLLLL");
-			}
+			// if (DriverStation.getAlliance() == Alliance.Red) {
+			// 	SmartDashboard.putString("Alliance", "RED");
+			// } else if (DriverStation.getAlliance() == Alliance.Blue) {
+			// 	SmartDashboard.putString("Alliance", "BLUE");
+			// } else {
+			// 	SmartDashboard.putString("Alliance", "NULLLLLLLLL");
+			// }
 			
 			
 			if (controlPanel.getButtonPressed(InputConstants.RESET_GYRO)) {
@@ -114,19 +144,6 @@ public class OI extends Procedure {
 				LeftJoystick_Theta = 0;
 			}
 			
-			// Sets intake state based on held down button
-			// Idles intake if either button released
-			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
-				Robot.intake.startIntake();
-				Robot.storage.beltIn();
-			} else if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
-				Robot.intake.reverseIntake();
-				Robot.storage.beltOut();
-			} else if (controlPanel.getButtonPressed(InputConstants.STOP_INTAKE)) {
-				Robot.intake.stopIntake();
-				Robot.storage.beltIdle();
-			}
-
 			// Moves the robot if there are joystick inputs
 			if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {
 				context.takeOwnership(Robot.drive);
