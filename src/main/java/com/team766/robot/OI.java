@@ -38,8 +38,8 @@ public class OI extends Procedure {
 	
 	enum IntakeState {
 		IDLE,
-		SPINNINGOUT,
-		SPINNINGIN
+		SPINNINGREV,
+		SPINNINGFWD
 	}
 	IntakeState intakeState = IntakeState.IDLE;
 	
@@ -72,7 +72,7 @@ public class OI extends Procedure {
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.startIntake();
 					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGIN;
+					intakeState = IntakeState.SPINNINGFWD;
 				} else {
 					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
@@ -83,7 +83,7 @@ public class OI extends Procedure {
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
 					Robot.storage.beltOut();
-					intakeState = IntakeState.SPINNINGOUT;
+					intakeState = IntakeState.SPINNINGREV;
 				} else {
 					Robot.intake.stopIntake();
 					Robot.storage.beltIdle();
