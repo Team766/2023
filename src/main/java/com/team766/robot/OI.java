@@ -142,6 +142,8 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			} 
+
+			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 			
 			// Moves the robot if there are joystick inputs
 			if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {

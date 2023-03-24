@@ -5,6 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.robot.Robot;
 import com.team766.robot.constants.ChargeConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * {@link Procedure} to use the gyro to automatically balance on the charge station.
@@ -61,6 +62,7 @@ public class GyroBalance extends Procedure {
 
 		// curX is current robot x position
 		double curX = Robot.drive.getCurrentPosition().getX();
+		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 
 		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
@@ -85,6 +87,7 @@ public class GyroBalance extends Procedure {
 			log("curX:" + curX);
 			log("direction: " + direction);
 			setState();
+			log("diretion:" + direction.toString());
 
 			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
