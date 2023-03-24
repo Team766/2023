@@ -8,7 +8,7 @@ public class IntakeStop extends Procedure{
 	public void run(Context context){
 		context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.storage);
-		Robot.intake.startIntake();
+		Robot.intake.stopIntake();
 		Robot.storage.beltIdle();
 	}
 }

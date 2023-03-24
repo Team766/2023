@@ -66,31 +66,6 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 
-
-			// Sets intake state based on button pressed
-			if (leftJoystick.getButtonPressed(InputConstants.INTAKE)){
-				if (intakeState == IntakeState.IDLE){
-					Robot.intake.startIntake();
-					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGFWD;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
-			}
-			if (leftJoystick.getButtonPressed(InputConstants.OUTTAKE)){
-				if (intakeState == IntakeState.IDLE){
-					Robot.intake.reverseIntake();
-					Robot.storage.beltOut();
-					intakeState = IntakeState.SPINNINGREV;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
-			} 
-
 			leftJoystickX = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
 			leftJoystickY = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
 			rightJoystickX = Drive.correctedJoysticks(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
@@ -143,6 +118,30 @@ public class OI extends Procedure {
 			} else {
 				LeftJoystick_Theta = 0;
 			}
+
+			// Sets intake state based on button pressed
+			if (controlPanel.getButtonPressed(InputConstants.INTAKE)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.startIntake();
+					Robot.storage.beltIn();
+					intakeState = IntakeState.SPINNINGFWD;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			}
+			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.reverseIntake();
+					Robot.storage.beltOut();
+					intakeState = IntakeState.SPINNINGREV;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			} 
 			
 			// Moves the robot if there are joystick inputs
 			if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {
