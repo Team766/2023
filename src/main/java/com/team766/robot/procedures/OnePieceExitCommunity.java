@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.team766.odometry.*;
 
-public class OnePieceComm extends Procedure {
+public class OnePieceExitCommunity extends Procedure {
 
 	private static final double DIST = 4;
 
