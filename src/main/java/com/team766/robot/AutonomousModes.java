@@ -22,7 +22,7 @@ public class AutonomousModes {
 		//new AutonomousMode("FollowPoints", () -> new FollowPoints()),
 		// new AutonomousMode("GyroBalance", () -> new GyroBalance(DriverStation.getAlliance())),
 		// new AutonomousMode("OnePieceExitCommunity", () -> new OnePieceExitCommunity()),
-		// new AutonomousMode("OnePieceExitCommunityBalance", () -> new OnePieceExitCommunityBalance()),
+		new AutonomousMode("OnePieceExitCommunityBalance", () -> new OnePieceExitCommunityBalance()),
 		new AutonomousMode("OnePieceBalance", () -> new OnePieceBalance()),
 		// new AutonomousMode("FollowPointsFile", () -> new FollowPoints("FollowPoints.json")),
 		// //new AutonomousMode("FollowPointsH", () -> new FollowPoints(new PointDir[]{new PointDir(0, 0), new PointDir(2, 0), new PointDir(1, 0), new PointDir(1, 1), new PointDir(2, 1), new PointDir(0, 1)})),

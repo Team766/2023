@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class OnePieceBalance extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
+		context.takeOwnership(Robot.intake);
 		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		switch (DriverStation.getAlliance()) {
 			case Blue:
