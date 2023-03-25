@@ -15,11 +15,12 @@ public class OnePieceExitCommunity extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
-		double curX = Robot.drive.getCurrentPosition().getX();
+		double startX = Robot.drive.getCurrentPosition().getX();
+		Robot.gyro.resetGyro180();
 		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		new ReverseIntake().run(context);
-		Robot.drive.swerveDrive(0, -FollowPointsInputConstants.SPEED, 0);
-		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getX()) > Math.abs(DIST - curX));
+		Robot.drive.swerveDrive(0, FollowPointsInputConstants.SPEED, 0);
+		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getX() - startX) > DIST);
 		Robot.drive.stopDriveMotors();
 		Robot.drive.stopSteerMotors();
 	}

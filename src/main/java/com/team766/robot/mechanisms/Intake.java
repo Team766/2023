@@ -36,6 +36,11 @@ public class Intake extends Mechanism {
 
 	}
 
+	public void intakePistonless() {
+		topBelt.set(1.0);
+		bottomWheels.set(1.0);
+	}
+
 	public void stopIntake() {
 		checkContextOwnership();
 		

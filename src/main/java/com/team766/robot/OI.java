@@ -11,6 +11,8 @@ import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -131,6 +133,17 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			}
+			if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.intakePistonless();
+					Robot.storage.beltIn();
+					intakeState = IntakeState.SPINNINGREV;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			} 
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
@@ -142,6 +155,7 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			} 
+			
 
 			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 			

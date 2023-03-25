@@ -30,6 +30,7 @@ public final class InputConstants {
 	public static final int CUBE_HIGH = 6;
 	public static final int CUBE_MID = 7;
 	public static final int CUBE_HYBRID = 8;
+	public static final int INTAKE_PISTONLESS = 9;
 	public static final int OUTTAKE = 10;
 
 	public static final int RESET_GYRO = 11;
