@@ -11,6 +11,8 @@ public class OnePieceExitCommunityBalance extends Procedure {
 	public void run (Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
+		context.takeOwnership(Robot.gyro);
+		Robot.gyro.resetGyro180();
 		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		switch (DriverStation.getAlliance()) {
 			case Blue:
@@ -25,7 +27,7 @@ public class OnePieceExitCommunityBalance extends Procedure {
 				return;
 		}
 		log("exiting");
-		new OnePieceExitCommunity().run(context);
+		new OPECHelper().run(context);
 		log("Transitioning");
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
