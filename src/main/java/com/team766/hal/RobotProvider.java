@@ -2,6 +2,8 @@ package com.team766.hal;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.TimeProviderI;
@@ -14,6 +16,7 @@ import com.team766.hal.mock.MockMotorController;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public abstract class RobotProvider {
@@ -21,7 +24,7 @@ public abstract class RobotProvider {
 	public static RobotProvider instance;
 	
 	protected EncoderReader[] encoders = new EncoderReader[20];
-	protected SolenoidController[] solenoids = new SolenoidController[10];
+	protected SolenoidController[] solenoids = new SolenoidController[20];
 	protected GyroReader[] gyros = new GyroReader[13];
 	protected HashMap<String, CameraReader> cams = new HashMap<String, CameraReader>();
 	protected JoystickReader[] joysticks = new JoystickReader[8];
@@ -116,7 +119,9 @@ public abstract class RobotProvider {
 			}
 			return motor;
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Motor %s not found in config file, using mock motor instead", configName);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, 
+			  "Error getting configuration for motor %s from config file, using mock motor instead.\nDetailed error: %s", 
+			  configName, LoggerExceptionUtils.exceptionToString(ex));
 			return new LocalMotorController(configName, new MockMotorController(0), sensor);
 		}
 	}
@@ -207,7 +212,7 @@ public abstract class RobotProvider {
 					.toArray(SolenoidController[]::new));
 			return new DoubleSolenoid(forwardSolenoids, reverseSolenoids);
 		} catch (IllegalArgumentException ex) {
-			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead", configName);
+			Logger.get(Category.CONFIGURATION).logData(Severity.ERROR, "Solenoid %s not found in config file, using mock solenoid instead %s", configName, ex.toString());
 			return new DoubleSolenoid(null, null);
 		}
 	}

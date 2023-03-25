@@ -1,12 +1,21 @@
 package com.team766.robot;
 
+import java.io.IOException;
+
 import com.team766.framework.Procedure;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
+import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.team766.robot.mechanisms.Drive;
 
 /**
  * This class is the glue that binds the controls on the physical operator

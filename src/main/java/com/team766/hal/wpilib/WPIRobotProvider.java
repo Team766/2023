@@ -2,6 +2,7 @@ package com.team766.hal.wpilib;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.team766.config.ConfigFileReader;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -21,6 +22,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.library.ValueProvider;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -31,6 +33,7 @@ import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
@@ -92,6 +95,12 @@ public class WPIRobotProvider extends RobotProvider {
 	public WPIRobotProvider() {
 		m_dataRefreshThread = new Thread(m_DataRefreshRunnable, "DataRefreshThread");
 		m_dataRefreshThread.start();
+
+		try {
+			ph.enableCompressorAnalog(90, 115);
+		} catch (Exception ex) {
+			LoggerExceptionUtils.logException(ex);
+		}
 	}
 
 	private MotorController[][] motors =
@@ -100,6 +109,7 @@ public class WPIRobotProvider extends RobotProvider {
 	// The presence of this object allows the compressor to run before we've declared any solenoids.
 	@SuppressWarnings("unused")
 	private PneumaticsControlModule pcm = new PneumaticsControlModule();
+	private PneumaticHub ph = new PneumaticHub();
 
 	@Override
 	public MotorController getMotor(int index, String configPrefix, MotorController.Type type,
@@ -126,7 +136,8 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANVictorMotorController(index);
 				break;
 			case TalonFX:
-				motor = new CANTalonFxMotorController(index);
+				final ValueProvider<String> CANBus = ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+				motor = new CANTalonFxMotorController(index, CANBus.get());
 				break;
 			case VictorSP:
 				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);

@@ -1,0 +1,13 @@
+{
+	"start": [1, 1],
+	"points": [
+		{
+			"coordinates": [1.5, 1, 0],
+			"critical": true,
+			"procedure": {
+				"name" : "AutoScoring(AutoScoring.Nodes.HIGH)",
+				"stop" : true
+			}
+		}
+	]
+}
