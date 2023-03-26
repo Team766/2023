@@ -35,6 +35,7 @@ public class OI extends Procedure {
 	private double leftJoystickY = 0;
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
+	private boolean isCross = false;
 	private IntakeState intakeState = IntakeState.IDLE;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
@@ -155,12 +156,20 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			} 
+
+			// Sets the wheels to the cross position if the cross button is pressed
+			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+				if (!isCross) {
+					context.startAsync(new setCross());
+				}
+				isCross = !isCross;
+			}
 			
 
 			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 			
 			// Moves the robot if there are joystick inputs
-			if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {
+			if (!isCross && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX) > 0) {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
@@ -168,15 +177,14 @@ public class OI extends Procedure {
 				} else {
 					Robot.drive.swerveDrive((leftJoystickX), (-leftJoystickY), (rightJoystickX));
 				}
-			} else {
+			} else if (!isCross) {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			} 
 
-			// Sets the wheels to the cross position if the cross button is pressed
-			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
-				context.startAsync(new setCross());
-			}
+			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+			// 	context.startAsync(new setCross());
+			// }
 
 		}
 	}

@@ -20,7 +20,7 @@ public final class InputConstants {
 	// Joystick buttons
 	public static final int CROSS_WHEELS = 1;
 	public static final int GRABBER_RELEASE = 1;
-	public static final int FINE_DRIVING = 2;
+	public static final int FINE_DRIVING = 1;
 
 	// Control Panel Buttons
 	public static final int CONE_HIGH = 1;
