@@ -17,10 +17,6 @@ public class CANTalonFxMotorController extends BaseCTREMotorController implement
 	private WPI_TalonFX m_device;
 	private double m_feedForward = 0.0;
 
-	public CANTalonFxMotorController(int deviceNumber, String CANBus) {
-		m_device = new WPI_TalonFX(deviceNumber, CANBus);
-	}
-
 	public CANTalonFxMotorController(int deviceNumber) {
 		m_device = new WPI_TalonFX(deviceNumber);
 	}

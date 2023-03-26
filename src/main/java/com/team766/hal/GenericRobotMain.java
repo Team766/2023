@@ -98,9 +98,6 @@ public final class GenericRobotMain {
 			m_oiContext = null;
 		}
 
-		Robot.gyro.resetGyro180();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-
 		if (m_autonomous != null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Continuing previous autonomus procedure " + m_autonomous.getContextName());
 		} else if (m_autonSelector.getSelectedAutonMode() == null) {
@@ -125,13 +122,13 @@ public final class GenericRobotMain {
 			m_autonMode = null;
 		}
 		
-		if (m_oiContext == null && m_oi != null) {
+		if (m_oiContext == null) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 		}
 	}
 
 	public void teleopPeriodic() {
-		if (m_oiContext != null && m_oiContext.isDone()) {
+		if (m_oiContext.isDone()) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 			Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.WARNING, "Restarting OI context");
 		}
