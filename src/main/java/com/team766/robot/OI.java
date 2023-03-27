@@ -26,15 +26,30 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
-	enum armControlTypes{
-		MANUAL,
-		READY,
+	enum coneControl{
+		OFF,
 		HIGH_NODE,
 		MID_NODE,
-		LOW_NODE,
-		HUMANPLAYER_PICKUP
 	};
-	public armControlTypes state = armControlTypes.MANUAL;
+
+	enum generalControl{
+		OFF,
+		READY,
+		HUMANPLAYER_PICKUP,
+		MANUAL,
+		HYBRID_NODE
+	};
+	
+	enum  cubeControl{
+		OFF,
+		HIGH_NODE,
+		MID_NODE
+	}
+
+	public coneControl coneState = coneControl.OFF;
+	public generalControl generalState = generalControl.OFF;
+	public cubeControl cubeState = cubeControl.OFF;
+
 	
 
 	boolean manualControl = true;
@@ -56,34 +71,45 @@ public class OI extends Procedure {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			
 			RobotProvider.instance.refreshDriverStationData();
-			
+			//Uses joystick buttons to change states
 			if(joystick0.getButton(1)){
-				state = armControlTypes.HIGH_NODE;
-				
+				generalControl = generalControl.OFF;
+				cubeState = cubeControl.OFF;
+				coneState = coneControl.HIGH_NODE;
 			}
 
 			if(joystick0.getButton(2)){
-				state = armControlTypes.MID_NODE;
-				
+				generalState = generalControl.OFF;
+				cubeState = cubeControl.OFF;
+				coneState = coneControl.MID_NODE;
 			}
 
 			if(joystick0.getButton(3)){
-				state = armControlTypes.LOW_NODE;
-				
+				coneState = coneControl.OFF;
+				cubeState = cubeControl.OFF;
+				generalState = generalControl.HYBRID_NODE;
+			}
+			if(joystick0.getButton(4)){
+				generalState = generalControl.OFF;
+				coneState =  coneControl.OFF;
+				cubeState = cubeControl.HIGH_NODE;
 			}
 
 			if(joystick0.getButton(6)){
-				state = armControlTypes.HUMANPLAYER_PICKUP;
+				coneState = coneControl.OFF;
+				cubeState = cubeControl.OFF;
+				generalState = generalControl.HUMANPLAYER_PICKUP;
 			}
 			if(joystick0.getButton(7)){
-				state = armControlTypes.MANUAL;
+				coneState = coneControl.OFF;
+				cubeState = cubeControl.OFF;
+				generalState = generalControl.MANUAL;
+			}
+			if(joystick0.getButton(8)){
+				
 			}
 
-			switch(state){
-				case MANUAL:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
-					break;
+			switch(coneState){
 				case HIGH_NODE:
 					Robot.arms.pidForArmOne(0);
 					Robot.arms.pidForArmTwo(0);
@@ -92,15 +118,30 @@ public class OI extends Procedure {
 					Robot.arms.pidForArmOne(0);
 					Robot.arms.pidForArmTwo(0);
 					break;
-				case LOW_NODE:
+			}
+			switch(cubeState){
+				case HIGH_NODE:
 					Robot.arms.pidForArmOne(0);
 					Robot.arms.pidForArmTwo(0);
+					break;
+				case MID_NODE:
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
+			}
+			switch(generalState){
+				case MANUAL:
+					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
 					break;
 				case READY:
 					Robot.arms.pidForArmOne(0);
 					Robot.arms.pidForArmTwo(0);
 					break;
 				case HUMANPLAYER_PICKUP:
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
+					break;
+				case HYBRID_NODE:
 					Robot.arms.pidForArmOne(0);
 					Robot.arms.pidForArmTwo(0);
 					break;
