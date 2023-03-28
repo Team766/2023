@@ -59,7 +59,7 @@ public class Arms extends Mechanism {
 
 */
 
-    private static double doubleDeadZone = 0.004d;
+    private static double doubleDeadZone = 3;
     /* 
     private MotorController thirdJoint = RobotProvider.instance.getMotor("arms.thirdJoint");
     private CANSparkMax thirdJointCSM = (CANSparkMax)thirdJoint;
@@ -94,59 +94,22 @@ public class Arms extends Mechanism {
         firstJointPIDController.setOutputRange(-0.25, 0.25);
 
         secondJointPID.setFeedbackDevice(altEncoder2);
-        secondJointPID.setP(0.0);
+        secondJointPID.setP(0.009999999776482582);
         secondJointPID.setI(0);
-        secondJointPID.setD(0);
-        secondJointPID.setFF(0.002099999724328518);
+        secondJointPID.setD(0.00019999999494757503);
+        secondJointPID.setFF(0.010999997146427631);
         secondJointPID.setSmartMotionMaxVelocity(6000, 0);
         secondJointPID.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPID.setSmartMotionMaxAccel(3000, 0);
         secondJointPID.setOutputRange(-1, 1);
-/* 
-        wristPID.setFeedbackDevice(altEncoderWrist);
-        wristPID.setP(0);
-        wristPID.setI(0);
-        wristPID.setD(0);
-        wristPID.setFF(0);
-        wristPID.setSmartMotionMaxVelocity(6000, 0);
-        wristPID.setSmartMotionMinOutputVelocity(0, 0);
-        wristPID.setSmartMotionMaxAccel(3000, 0);
-        wristPID.setOutputRange(-0.25, 0.25);
 
-
-        */
         
     }
 
 
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
-    /* 
-    public void pid3(double value){
-        if(value > maxLocation){
-            value = maxLocation;
-        } else if( value < minLocation){
-            value = minLocation;
-        }
-        if(lastPosition3 != value) {
-            if(wristJointCSM.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
-                wristJointCSM.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
-                
-                wristPID.setFeedbackDevice(mainEncoder);
-                wrist.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-                lastPosition3 = value;
-                log("it worked");
-            }else{
-                wristPID.setFeedbackDevice(altEncoderWrist);
-                wristPID.setReference(value, CANSparkMax.ControlType.kSmartMotion);
-                log("it went back in");
-            }
 
-        } else {
-            wrist.set((-Math.sin((Math.PI / 88) * firstJoint.getSensorPosition())) * .021);
-        }
-    }
-*/
 
     public void resetEncodersReal(){
         firstJoint.setSensorPosition(0);
@@ -202,23 +165,22 @@ public class Arms extends Mechanism {
             value = minLocation;
         }
 
-        firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
-        // if(lastPosition != value) {
-        //     if(firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition() > value - doubleDeadZone &&
-        //         firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition()< value + doubleDeadZone){
+        if(lastPosition != value) {
+            if(firstJoint.getSensorPosition() > value - doubleDeadZone &&
+                firstJoint.getSensorPosition()< value + doubleDeadZone){
                 
                 
-        //         lastPosition = value;
-        //         log("it worked");
-        //         firstJointState = ArmState.HOLDING;
-        //     }else{
-        //         firstJointPIDController.setFeedbackDevice(altEncoder1);
-        //         firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
-        //         log("it went back in");
-        //         firstJointState = ArmState.MOVING;
-        //     }
+                lastPosition = value;
+                log("it worked");
+                firstJointState = ArmState.HOLDING;
+            }else{
+                firstJointPIDController.setFeedbackDevice(altEncoder1);
+                firstJointPIDController.setReference(value, CANSparkMax.ControlType.kSmartMotion);
+                log("it went back in");
+                firstJointState = ArmState.MOVING;
+            }
 
-        // }
+        }
     }
 
 	// PID for second arm
