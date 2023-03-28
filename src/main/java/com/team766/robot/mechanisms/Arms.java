@@ -56,6 +56,8 @@ public class Arms extends Mechanism {
 
     private double firstJointPosition = 0; 
     private double secondJointPosition = 0; 
+	private double firstJointCombo = 0;
+	private double secondJointCombo = 0;
 
 	// TODO: need to be set soon
     private static final double FIRST_JOINT_MAX_LOCATION = 10; 
@@ -85,7 +87,7 @@ public class Arms extends Mechanism {
 		secondJointPIDController.setP(0.0005);
         secondJointPIDController.setI(secondJointI.valueOr(0.0));
         secondJointPIDController.setD(0.00001);
-        secondJointPIDController.setFF(0.000109);
+        secondJointPIDController.setFF(0.00109);
 
         firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
@@ -252,7 +254,15 @@ public class Arms extends Mechanism {
 				ControlType.kSmartMotion,
 				0,
 				getAntiGravFirstJoint());
-            if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+
+			if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+				firstJointCombo ++;
+			} else {
+				firstJointCombo = 0;
+			}
+
+            if (firstJointCombo >= 20){
+				firstJointCombo = 0;
                 firstJointState = ArmState.ANTIGRAV;
             }
         }
@@ -265,9 +275,18 @@ public class Arms extends Mechanism {
 				ControlType.kSmartMotion,
 				0,
 				getAntiGravSecondJoint());
-            if (Math.abs(secondJoint.getSensorPosition() - secondJointPosition) <= doubleDeadZone){
-                secondJointState = ArmState.ANTIGRAV;
-            }
+            
+			log("Second Joint Combo: "+secondJointCombo);
+			log("Difference: "+Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
+			if (Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition) <= doubleDeadZone){
+				secondJointCombo ++;
+			} else {
+				secondJointCombo = 0;
+			}
+
+			if (secondJointCombo >= 10){
+				secondJointState = ArmState.ANTIGRAV;
+			}
         }
     }
 
