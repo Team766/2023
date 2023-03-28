@@ -31,6 +31,7 @@ import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
@@ -89,9 +90,12 @@ public class WPIRobotProvider extends RobotProvider {
 	private Thread m_dataRefreshThread;
 	private int m_lastDataCount = 0;
 
+	private PneumaticHub pH = new PneumaticHub();
+
 	public WPIRobotProvider() {
 		m_dataRefreshThread = new Thread(m_DataRefreshRunnable, "DataRefreshThread");
 		m_dataRefreshThread.start();
+		pH.disableCompressor();
 	}
 
 	private MotorController[][] motors =

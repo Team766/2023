@@ -36,19 +36,42 @@ public class OI extends Procedure {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());			
 			RobotProvider.instance.refreshDriverStationData();
 
-			if(joystick0.getButton(16)){
-				Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0));
-				Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
+			// if(joystick0.getButton(16)){
+			// 	Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0));
+			// 	Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
+			// } else {
+			// 	Robot.arms.manuallySetArmOnePower(0);
+			// 	Robot.arms.manuallySetArmTwoPower(0);
+			// }
+
+			if (joystick0.getButtonPressed(2)){
+				Robot.arms.manuallySetArmOnePower(0);
+				Robot.arms.manuallySetArmTwoPower(0);
 			}
 
-			if(joystick0.getButton(1)){
+			if(joystick0.getButtonPressed(1)){
 				Robot.arms.resetEncoders();
 			}
 
-			if(joystick0.getButton(2)){
-				Robot.arms.antiGravBothJoints();
+			if(joystick0.getButton(3)){
+				Robot.arms.antiGravFirstJoint();
+			}
+
+			if(joystick0.getButton(4)){
+				Robot.arms.antiGravSecondJoint();
 			}
 			
+			if(joystick0.getButtonPressed(5)){
+				Robot.arms.pidForArmOne(15);
+			}
+
+			if(joystick0.getButtonPressed(6)){
+				Robot.arms.pidForArmTwo(-90);
+			}
+
+			if(joystick0.getButton(7)){
+				Robot.arms.antiGravBothJoints();
+			}
 
 		}
 	}

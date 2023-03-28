@@ -16,7 +16,9 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
+import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
 import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 
@@ -55,16 +57,17 @@ public class Arms extends Mechanism {
     private double firstJointPosition = 0; 
     private double secondJointPosition = 0; 
 
+	// TODO: need to be set soon
     private static final double FIRST_JOINT_MAX_LOCATION = 90; 
     private static final double FIRST_JOINT_MIN_LOCATION = -90;
     private static final double SECOND_JOINT_MAX_LOCATION = 90;
     private static final double SECOND_JOINT_MIN_LOCATION = -90;
 
-    public Arms(){
-        /*
-        Please dont actually use these pid values rn bc they havent been tested!!!!
-        */
-        
+	private RateLimiter runRateLimiter = new RateLimiter(0.05);
+
+    public Arms() {
+		loggerCategory = Category.MECHANISMS;
+
 		ValueProvider<Double> firstJointP = ConfigFileReader.getInstance().getDouble("arms.firstJointP");
 		ValueProvider<Double> firstJointI = ConfigFileReader.getInstance().getDouble("arms.firstJointI");
 		ValueProvider<Double> firstJointD = ConfigFileReader.getInstance().getDouble("arms.firstJointD");
@@ -187,12 +190,12 @@ public class Arms extends Mechanism {
         antiGravSecondJoint();
     }
 
-    private void antiGravFirstJoint(){
+    public void antiGravFirstJoint(){
         firstJoint.set(getAntiGravFirstJoint());
         firstJointState = ArmState.ANTIGRAV;
     }
 
-    private void antiGravSecondJoint(){
+    public void antiGravSecondJoint(){
         secondJoint.set(getAntiGravSecondJoint());
         secondJointState = ArmState.ANTIGRAV;
     }
@@ -214,40 +217,43 @@ public class Arms extends Mechanism {
     private double getAntiGravFirstJoint(){
         double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
         double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
-        return Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
+        return -1*Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
     }
 
     private double getAntiGravSecondJoint(){
         double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
         double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
-        return Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
+        return -1*Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
     }
 
     @Override
-    public void run(){
-        // TODO  add rate limiter
-        log("Absolute Encoder 1: "+altEncoder1.getPosition());
-        log("Relative Encoder 1: "+firstJoint.getSensorPosition());
-        log("Absolute Encoder 2: "+altEncoder2.getPosition());
-        log("Relative Encoder 2: "+secondJoint.getSensorPosition());
+    public void run() {
+		if(!runRateLimiter.next()) return;
 
-        if (firstJointState == ArmState.ANTIGRAV) {
-            antiGravFirstJoint();
-        } else {
-            firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
-            if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
-                firstJointState = ArmState.ANTIGRAV;
-            }
-        }
+        // log("Relative Encoder 1: "+firstJoint.getSensorPosition());
+		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
+        // log("Relative Encoder 2: "+secondJoint.getSensorPosition());
+		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
+
+		log("First Joint AntiGrav: "+getAntiGravFirstJoint());
+		log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
+        // if (firstJointState == ArmState.ANTIGRAV) {
+        //     antiGravFirstJoint();
+        // } else {
+        //     firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
+        //     if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+        //         firstJointState = ArmState.ANTIGRAV;
+        //     }
+        // }
         
-        if (secondJointState == ArmState.ANTIGRAV) {
-            antiGravSecondJoint();
-        } else {
-            secondJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
-            if (Math.abs(secondJoint.getSensorPosition()-secondJointPosition) <= doubleDeadZone){
-                secondJointState = ArmState.ANTIGRAV;
-            }
-        }
+        // if (secondJointState == ArmState.ANTIGRAV) {
+        //     antiGravSecondJoint();
+        // } else {
+        //     secondJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
+        //     if (Math.abs(secondJoint.getSensorPosition()-secondJointPosition) <= doubleDeadZone){
+        //         secondJointState = ArmState.ANTIGRAV;
+        //     }
+        // }
     }
 
     // Helper classes to convert from degrees to EU to absEU
