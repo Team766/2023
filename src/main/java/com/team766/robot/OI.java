@@ -36,6 +36,8 @@ public class OI extends Procedure {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());			
 			RobotProvider.instance.refreshDriverStationData();
 
+			// Robot.arms.manuallySetArmTwoPower((joystick0.getAxis(0))+Robot.arms.getAntiGravSecondJoint());
+			// Robot.arms.manuallySetArmOnePower((-joystick0.getAxis(1) * 0.25)+Robot.arms.getAntiGravFirstJoint());
 			// if(joystick0.getButton(16)){
 			// 	Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(0));
 			// 	Robot.arms.manuallySetArmOnePower(joystick0.getAxis(1) * 0.25);
@@ -62,7 +64,7 @@ public class OI extends Procedure {
 			}
 			
 			if(joystick0.getButtonPressed(5)){
-				Robot.arms.pidForArmOne(15);
+				Robot.arms.pidForArmTwo(-140);
 			}
 
 			if(joystick0.getButtonPressed(6)){

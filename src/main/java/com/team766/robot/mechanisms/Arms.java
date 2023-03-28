@@ -34,9 +34,9 @@ public class Arms extends Mechanism {
     private SparkMaxPIDController secondJointPIDController = secondJointCANSparkMax.getPIDController();
     private SparkMaxAbsoluteEncoder altEncoder2 = secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
     
-
+	
     // Non-motor constants
-    private static double doubleDeadZone = 5;
+    private static double doubleDeadZone = 2;
 
     enum ArmState{
         PID, // Moving
@@ -58,15 +58,16 @@ public class Arms extends Mechanism {
     private double secondJointPosition = 0; 
 
 	// TODO: need to be set soon
-    private static final double FIRST_JOINT_MAX_LOCATION = 90; 
-    private static final double FIRST_JOINT_MIN_LOCATION = -90;
-    private static final double SECOND_JOINT_MAX_LOCATION = 90;
-    private static final double SECOND_JOINT_MIN_LOCATION = -90;
+    private static final double FIRST_JOINT_MAX_LOCATION = 10; 
+    private static final double FIRST_JOINT_MIN_LOCATION = -10;
+    private static final double SECOND_JOINT_MAX_LOCATION = -45;
+    private static final double SECOND_JOINT_MIN_LOCATION = -160;
 
 	private RateLimiter runRateLimiter = new RateLimiter(0.05);
 
     public Arms() {
 		loggerCategory = Category.MECHANISMS;
+		resetEncoders();
 
 		ValueProvider<Double> firstJointP = ConfigFileReader.getInstance().getDouble("arms.firstJointP");
 		ValueProvider<Double> firstJointI = ConfigFileReader.getInstance().getDouble("arms.firstJointI");
@@ -81,23 +82,23 @@ public class Arms extends Mechanism {
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
 		ValueProvider<Double> secondJointD = ConfigFileReader.getInstance().getDouble("arms.secondJointD");
 		ValueProvider<Double> secondJointFF = ConfigFileReader.getInstance().getDouble("arms.secondJointFF");
-		firstJointPIDController.setP(secondJointP.valueOr(0.0));
-        firstJointPIDController.setI(secondJointI.valueOr(0.0));
-        firstJointPIDController.setD(secondJointD.valueOr(0.0));
-        firstJointPIDController.setFF(secondJointFF.valueOr(0.0));
+		secondJointPIDController.setP(0.0005);
+        secondJointPIDController.setI(secondJointI.valueOr(0.0));
+        secondJointPIDController.setD(0.00001);
+        secondJointPIDController.setFF(0.000109);
 
         firstJointCANSparkMax.setInverted(false);
-        firstJointPIDController.setSmartMotionMaxVelocity(6000, 0);
+        firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
         firstJointPIDController.setOutputRange(-0.25, 0.25);
-        firstJointCANSparkMax.setSmartCurrentLimit(40, 40);
+        firstJointCANSparkMax.setSmartCurrentLimit(40);
 
-        secondJointPIDController.setSmartMotionMaxVelocity(6000, 0);
+        secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         secondJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPIDController.setSmartMotionMaxAccel(3000, 0);
-        secondJointPIDController.setOutputRange(-0.5, .5);
-        secondJointCANSparkMax.setSmartCurrentLimit(40, 40);
+        secondJointPIDController.setOutputRange(-1, 1);
+        secondJointCANSparkMax.setSmartCurrentLimit(40);
 
 		firstJointPIDController.setFeedbackDevice(firstJointCANSparkMax.getEncoder());
 		secondJointPIDController.setFeedbackDevice(secondJointCANSparkMax.getEncoder());
@@ -165,21 +166,28 @@ public class Arms extends Mechanism {
         value = clampValueToRange(value, FIRST_JOINT_MAX_LOCATION, FIRST_JOINT_MIN_LOCATION);
 
         firstJointPosition = value;
-        firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
+        firstJointPIDController.setReference(degreesToEU(firstJointPosition),
+			ControlType.kSmartMotion,
+			0,
+			getAntiGravFirstJoint());
         firstJointState = ArmState.PID;
     }
 
 
 	// PID for second arm
     public void pidForArmTwo(double value){
-        log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
+        // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
         value = clampValueToRange(value, SECOND_JOINT_MAX_LOCATION, SECOND_JOINT_MIN_LOCATION);
 
         secondJointPosition = value;
-        secondJointPIDController.setReference(degreesToEU(secondJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
+        secondJointPIDController.setReference(
+			degreesToEU(secondJointPosition),
+			ControlType.kSmartMotion,
+			0,
+			getAntiGravSecondJoint());
         secondJointState = ArmState.PID;
 
     }
@@ -214,13 +222,13 @@ public class Arms extends Mechanism {
         return (-1*Math.signum(firstRelEncoderAngle) * Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0)) + (-1*Math.signum(firstSecondJointAngle)*triangleSide3 * Math.sin((Math.PI / 180)*firstSecondJointAngle) * ANTI_GRAV_FIRSTSECOND_JOINT);
     }
 
-    private double getAntiGravFirstJoint(){
+    public double getAntiGravFirstJoint(){
         double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
         double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
         return -1*Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
     }
 
-    private double getAntiGravSecondJoint(){
+    public double getAntiGravSecondJoint(){
         double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
         double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
         return -1*Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
@@ -230,30 +238,37 @@ public class Arms extends Mechanism {
     public void run() {
 		if(!runRateLimiter.next()) return;
 
-        // log("Relative Encoder 1: "+firstJoint.getSensorPosition());
-		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
-        // log("Relative Encoder 2: "+secondJoint.getSensorPosition());
+		// log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
 		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
+		log("Second Joint State: "+secondJointState);
 
-		log("First Joint AntiGrav: "+getAntiGravFirstJoint());
-		log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
-        // if (firstJointState == ArmState.ANTIGRAV) {
-        //     antiGravFirstJoint();
-        // } else {
-        //     firstJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravFirstJoint());
-        //     if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
-        //         firstJointState = ArmState.ANTIGRAV;
-        //     }
-        // }
+		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
+		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
+        if (firstJointState == ArmState.ANTIGRAV) {
+            antiGravFirstJoint();
+        } else {
+            firstJointPIDController.setReference(
+				degreesToEU(firstJointPosition),
+				ControlType.kSmartMotion,
+				0,
+				getAntiGravFirstJoint());
+            if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+                firstJointState = ArmState.ANTIGRAV;
+            }
+        }
         
-        // if (secondJointState == ArmState.ANTIGRAV) {
-        //     antiGravSecondJoint();
-        // } else {
-        //     secondJointPIDController.setReference(degreesToEU(firstJointPosition),ControlType.kSmartMotion,0,getAntiGravSecondJoint());
-        //     if (Math.abs(secondJoint.getSensorPosition()-secondJointPosition) <= doubleDeadZone){
-        //         secondJointState = ArmState.ANTIGRAV;
-        //     }
-        // }
+        if (secondJointState == ArmState.ANTIGRAV) {
+            antiGravSecondJoint();
+        } else {
+            secondJointPIDController.setReference(
+				degreesToEU(secondJointPosition),
+				ControlType.kSmartMotion,
+				0,
+				getAntiGravSecondJoint());
+            if (Math.abs(secondJoint.getSensorPosition() - secondJointPosition) <= doubleDeadZone){
+                secondJointState = ArmState.ANTIGRAV;
+            }
+        }
     }
 
     // Helper classes to convert from degrees to EU to absEU
