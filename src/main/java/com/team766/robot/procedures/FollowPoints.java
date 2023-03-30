@@ -25,6 +25,8 @@ import com.team766.controllers.PIDController;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.json.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * {@link Procedure} to follow a set of waypoints.  Waypoint files can be passed in via
@@ -319,7 +321,7 @@ public class FollowPoints extends Procedure {
 					
 					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
-					driveSettings.set(-driveSettings.getX(), driveSettings.getY());
+					driveSettings.set((DriverStation.getAlliance() == Alliance.Blue ? -1 : 1) * driveSettings.getX(), (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
 					//log("Current Position: " + currentPos.toString());
 					//log("Target Point: " + targetPoint.toString());
