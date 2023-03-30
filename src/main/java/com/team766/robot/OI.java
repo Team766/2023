@@ -33,7 +33,7 @@ public class OI extends Procedure {
 		int imageDisplayed = 0;
 		int num = 0;
 
-		//String[] imageList = {"cone.png", "cube.png", "progamer.png", "quaver.png", "adrian.png", "raj.png"};
+		//String[] imageList = {"bear.png", "cone.png", "cube.png", "progamer.png", "quaver.png", "adrian.png", "raj.png"};
 		context.startAsync(new PlayAnimation("rickroll", 5000, 33, true));
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
