@@ -11,6 +11,8 @@ import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -33,6 +35,7 @@ public class OI extends Procedure {
 	private double leftJoystickY = 0;
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
+	private boolean isCross = false;
 	private IntakeState intakeState = IntakeState.IDLE;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
@@ -131,6 +134,17 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			}
+			if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
+				if (intakeState == IntakeState.IDLE){
+					Robot.intake.intakePistonless();
+					Robot.storage.beltIn();
+					intakeState = IntakeState.SPINNINGREV;
+				} else {
+					Robot.intake.stopIntake();
+					Robot.storage.beltIdle();
+					intakeState = IntakeState.IDLE;
+				}
+			} 
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
@@ -142,9 +156,20 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			} 
+
+			// Sets the wheels to the cross position if the cross button is pressed
+			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+				if (!isCross) {
+					context.startAsync(new setCross());
+				}
+				isCross = !isCross;
+			}
+			
+
+			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 			
 			// Moves the robot if there are joystick inputs
-			if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) +  Math.abs(rightJoystickX) > 0) {
+			if (!isCross && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX) > 0) {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
@@ -152,15 +177,14 @@ public class OI extends Procedure {
 				} else {
 					Robot.drive.swerveDrive((leftJoystickX), (-leftJoystickY), (rightJoystickX));
 				}
-			} else {
+			} else if (!isCross) {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
 			} 
 
-			// Sets the wheels to the cross position if the cross button is pressed
-			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
-				context.startAsync(new setCross());
-			}
+			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+			// 	context.startAsync(new setCross());
+			// }
 
 		}
 	}
