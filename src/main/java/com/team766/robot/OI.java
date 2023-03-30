@@ -24,6 +24,7 @@ import com.team766.robot.mechanisms.Drive;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
+
 	private JoystickReader leftJoystick;
 	private JoystickReader rightJoystick;
 	private JoystickReader controlPanel;
@@ -40,9 +41,9 @@ public class OI extends Procedure {
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
-	
 	double turningValue = 0;
 
+	boolean manualControl = true;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -186,6 +187,37 @@ public class OI extends Procedure {
 			// 	context.startAsync(new setCross());
 			// }
 
+
+			/** Nicholas' Arm Testing OI
+			if (joystick0.getButtonPressed(2)){
+				Robot.arms.manuallySetArmOnePower(0);
+				Robot.arms.manuallySetArmTwoPower(0);
+			}
+
+			if(joystick0.getButtonPressed(1)){
+				Robot.arms.resetEncoders();
+			}
+
+			if(joystick0.getButton(3)){
+				Robot.arms.antiGravFirstJoint();
+			}
+
+			if(joystick0.getButton(4)){
+				Robot.arms.antiGravSecondJoint();
+			}
+			
+			if(joystick0.getButtonPressed(5)){
+				Robot.arms.pidForArmTwo(-140);
+			}
+
+			if(joystick0.getButtonPressed(6)){
+				Robot.arms.pidForArmTwo(-45);
+			}
+
+			if(joystick0.getButton(7)){
+				Robot.arms.antiGravBothJoints();
+			}
+			**/
 		}
 	}
 }
