@@ -10,6 +10,7 @@ public class Robot {
 	public static Grabber grabber;
 	public static Arms arms;
 	public static Gyro gyro;
+	public static VoltageController voltageController;
 
 	public static void robotInit() {
 		// Initialize mechanisms here
@@ -19,5 +20,6 @@ public class Robot {
 		grabber = new Grabber();
 		arms = new Arms();
 		gyro = new Gyro();
+		voltageController = new VoltageController();
 	}
 }
