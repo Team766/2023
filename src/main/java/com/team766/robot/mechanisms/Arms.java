@@ -138,12 +138,12 @@ public class Arms extends Mechanism {
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();
-        double altEncoder1Offset = 0.25;
+        double altEncoder1Offset = 0.225;
         double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset);
 
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
         double secondJointAbsEncoder = altEncoder2.getPosition();
-        double altEncoder2Offset = 0.5;
+        double altEncoder2Offset = 0.496;
         double secondJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset+secondJointAbsEncoder-altEncoder2Offset);
 
         // set the sensor positions of our rel encoders
@@ -240,14 +240,18 @@ public class Arms extends Mechanism {
     public void run() {
 		if(!runRateLimiter.next()) return;
 
-		// log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
+        log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
+        log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
+        log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
+        log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
+		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
 		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
-		log("Second Joint State: "+secondJointState);
+		// log("Second Joint State: "+secondJointState);
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
         if (firstJointState == ArmState.ANTIGRAV) {
-            antiGravFirstJoint();
+            // antiGravFirstJoint();
         } else {
             firstJointPIDController.setReference(
 				degreesToEU(firstJointPosition),
@@ -255,20 +259,20 @@ public class Arms extends Mechanism {
 				0,
 				getAntiGravFirstJoint());
 
-			if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+			if (Math.abs(EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition) <= doubleDeadZone){
 				firstJointCombo ++;
 			} else {
 				firstJointCombo = 0;
 			}
 
-            if (firstJointCombo >= 20){
+            if (firstJointCombo >= 10){
 				firstJointCombo = 0;
                 firstJointState = ArmState.ANTIGRAV;
             }
         }
         
         if (secondJointState == ArmState.ANTIGRAV) {
-            antiGravSecondJoint();
+            // antiGravSecondJoint();
         } else {
             secondJointPIDController.setReference(
 				degreesToEU(secondJointPosition),
@@ -278,6 +282,7 @@ public class Arms extends Mechanism {
             
 			log("Second Joint Combo: "+secondJointCombo);
 			log("Difference: "+Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
+
 			if (Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition) <= doubleDeadZone){
 				secondJointCombo ++;
 			} else {
@@ -294,11 +299,11 @@ public class Arms extends Mechanism {
     // TODO: update EU/degree constant for new gearbox 3:5:5
 
     public double degreesToEU(double angle){
-        return angle * (44.0 / 90)*(25.0 / 16.0);
+        return angle * (75.0 / 94.0);
     }
 	
     public double EUTodegrees(double EU){
-        return EU * (90 / 44.0)*(16.0 / 25.0);
+        return EU * (94.0 / 75.0);
     }
 
     public double AbsToEU(double abs){
