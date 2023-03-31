@@ -74,31 +74,41 @@ public class OI extends Procedure {
 				Robot.arms.antiGravBothJoints();
 			}
 
-			if(joystick0.getButtonPressed(3)){
+			if(joystick0.getButton(3)){
+				//HIGH NODE SCORING
 				Robot.arms.pidForArmOne(-38.34);
 				Robot.arms.pidForArmTwo(-90.665);
 			}
 			if(joystick0.getButtonPressed(4)){
-				Robot.arms.pidForArmOne(35);
-				Robot.arms.pidForArmTwo(0);
+				//MID NODE SCORING
+				Robot.arms.pidForArmOne(null);
+				Robot.arms.pidForArmTwo(null);
 			}
 
 			if(joystick0.getButton(5)){
-				generalState = generalControl.READY;
+				//TAKING FROM HUMAN PLAYER
+				Robot.arms.pidForArmOne(null);
+				Robot.arms.pidForArmTwo(null);
 			}
 
 			if(joystick0.getButton(6)){
-				generalState = generalControl.CUBE_MID_NODE;
+				//STOWED
+				Robot.arms.pidForArmOne(null);
+				Robot.arms.pidForArmTwo(null);
 			}
 			if(joystick0.getButton(7)){
-				generalState = generalControl.HUMANPLAYER_PICKUP;
+				//READY
+				Robot.arms.pidForArmOne(null);
+				Robot.arms.pidForArmTwo(null);
 			}
 			if(joystick0.getButton(8)){
-				generalState = generalControl.HYBRID_NODE;
+				//PREP
+				Robot.arms.pidForArmOne(null);
+				Robot.arms.pidForArmTwo(null);
 			}
 
-
-
+//TODO: can we stil use a switch?
+/*
 			switch(generalState){
 				case OFF:
 					log("generalControl is off");
@@ -136,6 +146,7 @@ public class OI extends Procedure {
 					Robot.arms.pidForArmTwo(0);
 					break;
 			}
+			*/
 		}
 	}
 }

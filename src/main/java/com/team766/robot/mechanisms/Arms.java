@@ -112,15 +112,6 @@ public class Arms extends Mechanism {
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
 
-    // TODO: Is this needed?
-    public void addArms(MotorController motor1, MotorController motor2){
-        firstJoint = motor1;
-        secondJoint = motor2;
-
-        firstJointCANSparkMax = (CANSparkMax)firstJoint;
-        secondJointCANSparkMax = (CANSparkMax)secondJoint;
-    }
-
     // manual changing of arm 1
     public void manuallySetArmOnePower(double power){
         checkContextOwnership();
@@ -154,13 +145,46 @@ public class Arms extends Mechanism {
         secondJointPosition = EUTodegrees(secondJointRelEncoder);
     }
 
+
+    public void maxPidArm1(double value){
+        if(value > FIRST_JOINT_MAX_LOCATION){
+            value = FIRST_JOINT_MAX_LOCATION;
+        }else if(value < FIRST_JOINT_MIN_LOCATION){
+            value = FIRST_JOINT_MIN_LOCATION;
+        }
+
+        if(value + doubleDeadZone < altEncoder1.getSensorPosition() && value - doubleDeadZone > altEncoder1.getSensorPosition()){
+            getAntiGravFirstJoint();
+        }else{
+            firstJointPIDController.setFeedbackDevice(altEncoder1);
+            //todo, is the antigrav here really needed?
+            firstJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
+        }
+    }
+
+    public void maxPidArm2(double value){
+        if(value > SECOND_JOINT_MAX_LOCATION){
+            value = SECOND_JOINT_MAX_LOCATION;
+        }else if(value < SECOND_JOINT_MIN_LOCATION){
+            value = SECOND_JOINT_MIN_LOCATION;
+        }
+
+        if(value + doubleDeadZone < altEncoder2.getSensorPosition() && value - doubleDeadZone > altEncoder2.getSensorPosition()){
+            getAntiGravSecondJoint();
+        }else{
+            secondJointPIDController.setFeedbackDevice(altEncoder1);
+            //todo, is the antigrav here really needed?
+            secondJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
+        }
+    }
+
 	// PID for first arm
     /**
      * Set PID for the first joint.
      * 
      * @param value desired position in degrees.
      */
-    public void pidForArmOne(double value){ // This will be run once
+  /*  public void pidForArmOne(double value){ // This will be run once
         // log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
@@ -176,8 +200,9 @@ public class Arms extends Mechanism {
             firstJointState = ArmState.PID;
             firstJointCombo = 0;
     }
+*/
 
-
+/*
 	// PID for second arm
     public void pidForArmTwo(double value){
         // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
@@ -196,6 +221,7 @@ public class Arms extends Mechanism {
         secondJointState = ArmState.PID;
         secondJointCombo = 0;
     }
+    */
 
 	// These next 3 antiGrav aren't used.
     public void antiGravBothJoints(){  
@@ -239,7 +265,8 @@ public class Arms extends Mechanism {
         return -1*Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
     }
 
-    @Override
+    
+    /*@Override
     public void run() {
 		if(!runRateLimiter.next()) return;
 
@@ -301,7 +328,7 @@ public class Arms extends Mechanism {
 				secondJointState = ArmState.ANTIGRAV;
 			}
         }
-    }
+    }*/
 
     // Helper classes to convert from degrees to EU to absEU
     // TODO: update EU/degree constant for new gearbox 3:5:5
