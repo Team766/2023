@@ -67,18 +67,20 @@ public class OI extends Procedure {
 			RobotProvider.instance.refreshDriverStationData();
 			//Uses joystick buttons to change states
 			if(joystick0.getButton(1)){
-				generalState = generalControl.OFF;
+				Robot.arms.resetEncoders();
 			}
 
 			if(joystick0.getButton(2)){
-				generalState = generalControl.CONE_HIGH_NODE;
+				Robot.arms.antiGravBothJoints();
 			}
 
-			if(joystick0.getButton(3)){
-				generalState = generalControl.CUBE_HIGH_NODE;
+			if(joystick0.getButtonPressed(3)){
+				Robot.arms.pidForArmOne(-38.34);
+				Robot.arms.pidForArmTwo(-90.665);
 			}
-			if(joystick0.getButton(4)){
-				generalState = generalControl.CONE_MID_NODE;
+			if(joystick0.getButtonPressed(4)){
+				Robot.arms.pidForArmOne(35);
+				Robot.arms.pidForArmTwo(0);
 			}
 
 			if(joystick0.getButton(5)){
