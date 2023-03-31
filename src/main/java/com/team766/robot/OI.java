@@ -27,35 +27,12 @@ public class OI extends Procedure {
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
 
-
-	enum generalControl{
-		CONE_HIGH_NODE,
-		CUBE_HIGH_NODE,
-		CONE_MID_NODE,
-		CUBE_MID_NODE,
-		OFF,
-		READY,
-		HUMANPLAYER_PICKUP,
-		MANUAL,
-		HYBRID_NODE
-	};
-	
-
-
-	public generalControl generalState = generalControl.OFF;
-
-
-	
-	
-	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
 		joystick0 = RobotProvider.instance.getJoystick(0);
 		joystick1 = RobotProvider.instance.getJoystick(1);
 		joystick2 = RobotProvider.instance.getJoystick(2);
-
-
 	}
 	
 	public void run(Context context) {
@@ -69,84 +46,42 @@ public class OI extends Procedure {
 			if(joystick0.getButton(1)){
 				Robot.arms.resetEncoders();
 			}
-
 			if(joystick0.getButton(2)){
 				Robot.arms.antiGravBothJoints();
 			}
-
 			if(joystick0.getButton(3)){
 				//HIGH NODE SCORING
-				Robot.arms.pidForArmOne(-38.34);
-				Robot.arms.pidForArmTwo(-90.665);
+				Robot.arms.maxPidArm1(-38.34);
+				Robot.arms.maxPidArm2(-90.665);
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				Robot.arms.maxPidArm1(null);
+				Robot.arms.maxPidArm2(null);
 			}
-
 			if(joystick0.getButton(5)){
 				//TAKING FROM HUMAN PLAYER
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				Robot.arms.maxPidArm1(null);
+				Robot.arms.maxPidArm2(null);
 			}
-
 			if(joystick0.getButton(6)){
 				//STOWED
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				Robot.arms.maxPidArm1(null);
+				Robot.arms.maxPidArm2(null);
 			}
 			if(joystick0.getButton(7)){
 				//READY
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				Robot.arms.maxPidArm1(null);
+				Robot.arms.maxPidArm2(null);
 			}
 			if(joystick0.getButton(8)){
 				//PREP
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				Robot.arms.maxPidArm1(null);
+				Robot.arms.maxPidArm2(null);
 			}
 
 //TODO: can we stil use a switch?
-/*
-			switch(generalState){
-				case OFF:
-					log("generalControl is off");
-					break;
-				case CONE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CONE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case MANUAL:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
-					break;
-				case READY:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HUMANPLAYER_PICKUP:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HYBRID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-			}
-			*/
+
 		}
 	}
 }
