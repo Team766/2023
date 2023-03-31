@@ -26,13 +26,13 @@ public class OI extends Procedure {
 	private JoystickReader joystick0;
 	private JoystickReader joystick1;
 	private JoystickReader joystick2;
-	enum coneControl{
-		OFF,
-		HIGH_NODE,
-		MID_NODE,
-	};
+
 
 	enum generalControl{
+		CONE_HIGH_NODE,
+		CUBE_HIGH_NODE,
+		CONE_MID_NODE,
+		CUBE_MID_NODE,
 		OFF,
 		READY,
 		HUMANPLAYER_PICKUP,
@@ -40,19 +40,13 @@ public class OI extends Procedure {
 		HYBRID_NODE
 	};
 	
-	enum  cubeControl{
-		OFF,
-		HIGH_NODE,
-		MID_NODE
-	}
 
-	public coneControl coneState = coneControl.OFF;
+
 	public generalControl generalState = generalControl.OFF;
-	public cubeControl cubeState = cubeControl.OFF;
+
 
 	
-
-	boolean manualControl = true;
+	
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -74,61 +68,52 @@ public class OI extends Procedure {
 			//Uses joystick buttons to change states
 			if(joystick0.getButton(1)){
 				generalState = generalControl.OFF;
-				cubeState = cubeControl.OFF;
-				coneState = coneControl.HIGH_NODE;
 			}
 
 			if(joystick0.getButton(2)){
-				generalState = generalControl.OFF;
-				cubeState = cubeControl.OFF;
-				coneState = coneControl.MID_NODE;
+				generalState = generalControl.CONE_HIGH_NODE;
 			}
 
 			if(joystick0.getButton(3)){
-				coneState = coneControl.OFF;
-				cubeState = cubeControl.OFF;
-				generalState = generalControl.HYBRID_NODE;
+				generalState = generalControl.CUBE_HIGH_NODE;
 			}
 			if(joystick0.getButton(4)){
-				generalState = generalControl.OFF;
-				coneState =  coneControl.OFF;
-				cubeState = cubeControl.HIGH_NODE;
+				generalState = generalControl.CONE_MID_NODE;
+			}
+
+			if(joystick0.getButton(5)){
+				generalState = generalControl.READY;
 			}
 
 			if(joystick0.getButton(6)){
-				coneState = coneControl.OFF;
-				cubeState = cubeControl.OFF;
-				generalState = generalControl.HUMANPLAYER_PICKUP;
+				generalState = generalControl.CUBE_MID_NODE;
 			}
 			if(joystick0.getButton(7)){
-				coneState = coneControl.OFF;
-				cubeState = cubeControl.OFF;
-				generalState = generalControl.MANUAL;
+				generalState = generalControl.HUMANPLAYER_PICKUP;
 			}
 			if(joystick0.getButton(8)){
-				
+				generalState = generalControl.HYBRID_NODE;
 			}
 
-			switch(coneState){
-				case HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-			}
-			switch(cubeState){
-				case HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-			}
+
+
 			switch(generalState){
+				case CONE_HIGH_NODE:
+					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					break;
+				case CUBE_HIGH_NODE:
+					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					break;
+				case CONE_MID_NODE:
+					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					break;
+				case CUBE_MID_NODE:
+					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					break;
 				case MANUAL:
 					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
 					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
