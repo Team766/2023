@@ -36,7 +36,7 @@ public class Arms extends Mechanism {
     
 	
     // Non-motor constants
-    private static double doubleDeadZone = 2;
+    private static final double doubleDeadZone = 2;
 
     enum ArmState{
         PID, // Moving
@@ -60,9 +60,9 @@ public class Arms extends Mechanism {
 	private double secondJointCombo = 0;
 
 	// TODO: need to be set soon
-    private static final double FIRST_JOINT_MAX_LOCATION = 10; 
-    private static final double FIRST_JOINT_MIN_LOCATION = -10;
-    private static final double SECOND_JOINT_MAX_LOCATION = -45;
+    private static final double FIRST_JOINT_MAX_LOCATION = 35;
+    private static final double FIRST_JOINT_MIN_LOCATION = -40;
+    private static final double SECOND_JOINT_MAX_LOCATION = 45;
     private static final double SECOND_JOINT_MIN_LOCATION = -160;
 
 	private RateLimiter runRateLimiter = new RateLimiter(0.05);
@@ -75,16 +75,19 @@ public class Arms extends Mechanism {
 		ValueProvider<Double> firstJointI = ConfigFileReader.getInstance().getDouble("arms.firstJointI");
 		ValueProvider<Double> firstJointD = ConfigFileReader.getInstance().getDouble("arms.firstJointD");
 		ValueProvider<Double> firstJointFF = ConfigFileReader.getInstance().getDouble("arms.firstJointFF");
-		firstJointPIDController.setP(firstJointP.valueOr(0.0));
+
+		firstJointPIDController.setP(firstJointP.valueOr(0.0006));
         firstJointPIDController.setI(firstJointI.valueOr(0.0));
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
-        firstJointPIDController.setFF(firstJointFF.valueOr(0.0));
+        firstJointPIDController.setFF(firstJointFF.valueOr(0.002));
 
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
 		ValueProvider<Double> secondJointD = ConfigFileReader.getInstance().getDouble("arms.secondJointD");
 		ValueProvider<Double> secondJointFF = ConfigFileReader.getInstance().getDouble("arms.secondJointFF");
-		secondJointPIDController.setP(0.0005);
+		
+        // TODO: use secondJointO/I/D/FF.valueOr
+        secondJointPIDController.setP(0.0005);
         secondJointPIDController.setI(secondJointI.valueOr(0.0));
         secondJointPIDController.setD(0.00001);
         secondJointPIDController.setFF(0.00109);
@@ -93,7 +96,8 @@ public class Arms extends Mechanism {
         firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
-        firstJointPIDController.setOutputRange(-0.25, 0.25);
+
+        firstJointPIDController.setOutputRange(-0.75, 0.75);
         firstJointCANSparkMax.setSmartCurrentLimit(40);
 
         secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
@@ -104,7 +108,12 @@ public class Arms extends Mechanism {
 
 		firstJointPIDController.setFeedbackDevice(firstJointCANSparkMax.getEncoder());
 		secondJointPIDController.setFeedbackDevice(secondJointCANSparkMax.getEncoder());
-		altEncoder1.setZeroOffset(0.68);
+        
+        // absolute encoder zero offsets are set to positions which will never be used
+        // to avoid wrap-around errors
+        // first joint zero is horizontal parallel to ground
+        // second joint zero is when the relative angle is 0 degrees from the first arm segment
+		altEncoder1.setZeroOffset(0.68);    // TODO: these need tweaking from altEncoder1Offset
 		altEncoder2.setZeroOffset(0.62);
     }
 
@@ -136,15 +145,23 @@ public class Arms extends Mechanism {
     public void resetEncoders(){
         checkContextOwnership();
 
+        // TODO: this offset is to factor in the difference between the
+        //       "zero" for alt encoder and the "zero" when we use degrees
+        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
+        // double altEncoder1Offset = 0.25;
+        final double altEncoder1Offset = 0.225;
+        // double altEncoder2Offset = 0.5;
+        final double altEncoder2Offset = 0.49;
+
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();
-        double altEncoder1Offset = 0.25;
-        double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset);
+        double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder - altEncoder1Offset);
 
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
         double secondJointAbsEncoder = altEncoder2.getPosition();
-        double altEncoder2Offset = 0.5;
-        double secondJointRelEncoder = AbsToEU(firstJointAbsEncoder-altEncoder1Offset+secondJointAbsEncoder-altEncoder2Offset);
+        double secondJointRelEncoder = AbsToEU(
+            firstJointAbsEncoder - altEncoder1Offset
+            + secondJointAbsEncoder - altEncoder2Offset);
 
         // set the sensor positions of our rel encoders
         firstJoint.setSensorPosition(firstJointRelEncoder);
@@ -168,13 +185,14 @@ public class Arms extends Mechanism {
         value = clampValueToRange(value, FIRST_JOINT_MAX_LOCATION, FIRST_JOINT_MIN_LOCATION);
 
         firstJointPosition = value;
+        // if(Math.abs(EUTodegrees(firstJoint.getSensorPosition() )))
         firstJointPIDController.setReference(degreesToEU(firstJointPosition),
-			ControlType.kSmartMotion,
-			0,
-			getAntiGravFirstJoint());
+            ControlType.kSmartMotion,
+            0,
+            getAntiGravFirstJoint());
         firstJointState = ArmState.PID;
+        firstJointCombo = 0;
     }
-
 
 	// PID for second arm
     public void pidForArmTwo(double value){
@@ -182,16 +200,17 @@ public class Arms extends Mechanism {
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
+
         value = clampValueToRange(value, SECOND_JOINT_MAX_LOCATION, SECOND_JOINT_MIN_LOCATION);
 
         secondJointPosition = value;
         secondJointPIDController.setReference(
-			degreesToEU(secondJointPosition),
-			ControlType.kSmartMotion,
-			0,
-			getAntiGravSecondJoint());
+            degreesToEU(secondJointPosition),
+            ControlType.kSmartMotion,
+            0,
+            getAntiGravSecondJoint());
         secondJointState = ArmState.PID;
-
+        secondJointCombo = 0;
     }
 
 	// These next 3 antiGrav aren't used.
@@ -240,9 +259,18 @@ public class Arms extends Mechanism {
     public void run() {
 		if(!runRateLimiter.next()) return;
 
-		// log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
+        log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
+        log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
+        // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
+        // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
+        // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
+        // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
+		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
 		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
+		log("First Joint State: "+firstJointState);
 		log("Second Joint State: "+secondJointState);
+        log("First Joint Combo: "+firstJointCombo);
+        log("Second Joint Combo: "+secondJointCombo);
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
@@ -255,14 +283,16 @@ public class Arms extends Mechanism {
 				0,
 				getAntiGravFirstJoint());
 
-			if (Math.abs(firstJoint.getSensorPosition()-firstJointPosition) <= doubleDeadZone){
+			if (Math.abs(EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition) <= doubleDeadZone){
 				firstJointCombo ++;
 			} else {
 				firstJointCombo = 0;
 			}
 
-            if (firstJointCombo >= 20){
+            if (firstJointCombo >= 10){
 				firstJointCombo = 0;
+                // TODO: we do not want to do this here as arm may still be moving due to inertia
+                resetEncoders();
                 firstJointState = ArmState.ANTIGRAV;
             }
         }
@@ -276,8 +306,6 @@ public class Arms extends Mechanism {
 				0,
 				getAntiGravSecondJoint());
             
-			log("Second Joint Combo: "+secondJointCombo);
-			log("Difference: "+Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
 			if (Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition) <= doubleDeadZone){
 				secondJointCombo ++;
 			} else {
@@ -285,28 +313,29 @@ public class Arms extends Mechanism {
 			}
 
 			if (secondJointCombo >= 10){
+                secondJointCombo = 0;
+                // TODO: we do not want to do this here as arm may still be moving due to inertia
+                resetEncoders();
 				secondJointState = ArmState.ANTIGRAV;
 			}
         }
     }
 
     // Helper classes to convert from degrees to EU to absEU
-    // TODO: update EU/degree constant for new gearbox 3:5:5
-
     public double degreesToEU(double angle){
-        return angle * (44.0 / 90)*(25.0 / 16.0);
+        return angle * (44.0 / 90) * (25.0 / 16.0);
     }
 	
     public double EUTodegrees(double EU){
-        return EU * (90 / 44.0)*(16.0 / 25.0);
+        return EU * (90 / 44.0) * (16.0 / 25.0);
     }
 
     public double AbsToEU(double abs){
-        return degreesToEU(360*abs);
+        return degreesToEU(360 * abs);
     }
 
     public double EUToAbs(double EU){
-        return EUTodegrees(EU)/360.0;
+        return EUTodegrees(EU) / 360.0;
     }
 
     public double lawOfCosines(double side1, double side2, double angle){ // angle in degrees
@@ -331,8 +360,6 @@ public class Arms extends Mechanism {
 
 /* ~~ Code Review ~~
     Use Voltage Control Mode when setting power (refer to CANSparkMaxMotorController.java)
-
     Maybe use Nicholas's formula for degrees to EU
     "Use break mode" - Ronald the not programmer
-
  */
