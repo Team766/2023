@@ -98,21 +98,24 @@ public class OI extends Procedure {
 
 
 			switch(generalState){
+				case OFF:
+					log("generalControl is off");
+					break;
 				case CONE_HIGH_NODE:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
 					break;
 				case CUBE_HIGH_NODE:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
 					break;
 				case CONE_MID_NODE:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
 					break;
 				case CUBE_MID_NODE:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+					Robot.arms.pidForArmOne(0);
+					Robot.arms.pidForArmTwo(0);
 					break;
 				case MANUAL:
 					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
