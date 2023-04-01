@@ -80,6 +80,8 @@ public class OI extends Procedure {
 				Robot.arms.pidForArmTwo(0);
 			}
 
+			Robot.arms.run();
+
 //TODO: can we stil use a switch?
 
 		}

@@ -58,6 +58,14 @@ public class Arms extends Mechanism {
     private static double firstJointPosition;
     private static double secondJointPosition;
 
+    enum armStates{
+        PID,
+        ANTIGRAV,
+        OFF
+    }
+
+    armStates theStateOf1 = armStates.ANTIGRAV;
+    armStates theStateOf2 = armStates.ANTIGRAV;
 
 
     public Arms() {
@@ -154,9 +162,10 @@ public class Arms extends Mechanism {
         }
 
         if(value + doubleDeadZone < firstJoint.getSensorPosition() && value - doubleDeadZone > firstJoint.getSensorPosition()){
-            antiGravFirstJoint();
+            theStateOf1 = armStates.ANTIGRAV;
         }else{
-            firstJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
+            theStateOf1 = armStates.PID;
+            firstJointPIDController.setReference(degreesToEU(value), ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
         }
     }
 
@@ -169,9 +178,10 @@ public class Arms extends Mechanism {
         }
         
         if(value + doubleDeadZone < secondJoint.getSensorPosition() && value - doubleDeadZone > secondJoint.getSensorPosition()){
-            antiGravSecondJoint();
+            theStateOf2 = armStates.ANTIGRAV;
         }else{
-            secondJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
+            theStateOf2 = armStates.PID;
+            secondJointPIDController.setReference(degreesToEU(value), ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
         }
     }
 
@@ -245,6 +255,28 @@ public class Arms extends Mechanism {
 
     public double lawOfSines(double side1, double angle1, double side2){
         return Math.asin(side2*Math.sin(angle1)/side1);
+    }
+
+    public void run(){
+        switch(theStateOf1){
+            case OFF:
+                break;
+            case PID:
+                break;
+            case ANTIGRAV:
+                antiGravFirstJoint();
+                break;
+        }
+
+        switch(theStateOf2){
+            case OFF:
+                break;
+            case PID:
+                break;
+            case ANTIGRAV:
+                antiGravSecondJoint();
+                break;
+        }
     }
 
 
