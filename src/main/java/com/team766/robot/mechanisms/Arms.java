@@ -64,6 +64,8 @@ public class Arms extends Mechanism {
         OFF
     }
 
+    boolean jointOneCanContinue = false;
+
     armStates theStateOf1 = armStates.ANTIGRAV;
     armStates theStateOf2 = armStates.ANTIGRAV;
 
@@ -154,6 +156,14 @@ public class Arms extends Mechanism {
 
     //PID For arm one
 
+    public void checkJointTwo(double value){
+        if((value + doubleDeadZone > secondJoint.getSensorPosition() && value - doubleDeadZone < secondJoint.getSensorPosition())){
+            jointOneCanContinue = true;
+        }else{
+            jointOneCanContinue = false;
+        }
+    }
+
     public void pidForArmOne(double value){
         if(value > FIRST_JOINT_MAX_LOCATION){
             value = FIRST_JOINT_MAX_LOCATION;
@@ -163,9 +173,11 @@ public class Arms extends Mechanism {
 
         if(value + doubleDeadZone > firstJoint.getSensorPosition() && value - doubleDeadZone < firstJoint.getSensorPosition()){
             theStateOf1 = armStates.ANTIGRAV;
-        }else{
+        }else if(jointOneCanContinue){
             theStateOf1 = armStates.PID;
             firstJointPIDController.setReference(degreesToEU(value), ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
+        }else{
+            log("joint one cannot continue");
         }
     }
 

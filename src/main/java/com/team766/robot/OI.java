@@ -53,31 +53,37 @@ public class OI extends Procedure {
 				//HIGH NODE SCORING
 				Robot.arms.pidForArmOne(-38.34);
 				Robot.arms.pidForArmTwo(-90.665);
+				Robot.arms.checkJointTwo(-90.665);
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
 				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(0);
+				Robot.arms.checkJointTwo(0);
 			}
 			if(joystick0.getButton(5)){
 				//TAKING FROM HUMAN PLAYER
 				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(0);
+				Robot.arms.checkJointTwo(0);
 			}
 			if(joystick0.getButton(6)){
 				//STOWED
 				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(0);
+				Robot.arms.checkJointTwo(0);
 			}
 			if(joystick0.getButton(7)){
 				//READY
 				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(0);
+				Robot.arms.checkJointTwo(0);
 			}
 			if(joystick0.getButton(8)){
 				//PREP
 				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(0);
+				Robot.arms.checkJointTwo(0);
 			}
 
 			Robot.arms.run();
