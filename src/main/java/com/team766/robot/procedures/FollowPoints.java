@@ -320,7 +320,7 @@ public class FollowPoints extends Procedure {
 					//double diff = currentPos.getAngleDifference(targetPoint);
 					//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 					
-					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+					Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
 					driveSettings.set((DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getX(), (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
@@ -470,11 +470,14 @@ public class FollowPoints extends Procedure {
 			targetRot -= 360;
 		}
 		if (Math.abs(targetRot - currentRot) <= angleDistanceForMaxSpeed) {
-			if (Math.abs(targetRot - currentRot) <= 3) {
+			if (Math.abs(targetRot - currentRot) >= 3) {
+				log("Rotation Speed: " + ((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed);
 				return ((currentRot - targetRot) / angleDistanceForMaxSpeed) * maxSpeed;
 			}
+			log("Rotation Speed: 0");
 			return 0;
 		}
+		log("Rotation Speed: " + maxSpeed * Math.signum(currentRot - targetRot));
 		return maxSpeed * Math.signum(currentRot - targetRot);
 	}
 
