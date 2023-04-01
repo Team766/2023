@@ -79,7 +79,7 @@ public class Arms extends Mechanism {
         firstJointPIDController.setI(firstJointI.valueOr(0.0));
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
         firstJointPIDController.setFF(firstJointFF.valueOr(0.001));
-        firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
+        //firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
 
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
