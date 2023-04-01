@@ -43,7 +43,7 @@ public final class ArmsUtil {
 		return Math.asin(side2*Math.sin(angle1)/side1);
 	}
 
-	public static double clampValueToRange(double value, double max, double min) {
+	public static double clampValueToRange(double value, double min, double max) {
 		if(value > max){ 
 			value = max;
 		} else if( value < min){
