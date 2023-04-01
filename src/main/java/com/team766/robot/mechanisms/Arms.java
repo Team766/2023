@@ -1,25 +1,17 @@
 package com.team766.robot.mechanisms;
 
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkMax;
 import com.team766.config.ConfigFileReader;
-import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.MotorController.ControlMode;
-import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
-import com.team766.hal.EncoderReader;
 //This is for the motor that controls the pulley
 
 public class Arms extends Mechanism {
@@ -175,7 +167,8 @@ public class Arms extends Mechanism {
      * 
      * @param value desired position in degrees.
      */
-    public void pidForArmOne(double value){ // This will be run once
+    public void pidForArmOne(double value) {
+        // This will be run once
         // log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
@@ -211,18 +204,27 @@ public class Arms extends Mechanism {
         secondJointCombo = 0;
     }
 
+    // Use these for manual pid based angle increment/decrement
+    public void alterArmOneAngle(double degrees) {
+        pidForArmOne(firstJointPosition + degrees);
+    }
+
+    public void alterArmTwoAngle(double degrees) {
+        pidForArmTwo(firstJointPosition + degrees);
+    }
+
     // These next 3 antiGrav aren't used.
     public void antiGravBothJoints() {
         antiGravFirstJoint();
         antiGravSecondJoint();
     }
 
-    public void antiGravFirstJoint(){
+    public void antiGravFirstJoint() {
         antiGrav.updateFirstJoint();
         firstJointState = ArmState.ANTIGRAV;
     }
 
-    public void antiGravSecondJoint(){
+    public void antiGravSecondJoint() {
         antiGrav.updateSecondJoint();
         secondJointState = ArmState.ANTIGRAV;
     }
