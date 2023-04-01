@@ -79,7 +79,7 @@ public class Arms extends Mechanism {
 		firstJointPIDController.setP(firstJointP.valueOr(0.0006));
         firstJointPIDController.setI(firstJointI.valueOr(0.0));
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
-        firstJointPIDController.setFF(firstJointFF.valueOr(0.002));
+        firstJointPIDController.setFF(firstJointFF.valueOr(0.001));
         
         //More PID constants
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
@@ -88,8 +88,8 @@ public class Arms extends Mechanism {
 		ValueProvider<Double> secondJointFF = ConfigFileReader.getInstance().getDouble("arms.secondJointFF");
 		secondJointPIDController.setP(0.0005);
         secondJointPIDController.setI(secondJointI.valueOr(0.0));
-        secondJointPIDController.setD(0.00001);
-        secondJointPIDController.setFF(0.00109);
+        secondJointPIDController.setD(0.0000);
+        secondJointPIDController.setFF(0.0008);
 
         //These next things deal a lot with the PID SmartMotion
         firstJointCANSparkMax.setInverted(false);
@@ -161,7 +161,7 @@ public class Arms extends Mechanism {
             value = FIRST_JOINT_MIN_LOCATION;
         }
 
-        if(value + doubleDeadZone < firstJoint.getSensorPosition() && value - doubleDeadZone > firstJoint.getSensorPosition()){
+        if(value + doubleDeadZone > firstJoint.getSensorPosition() && value - doubleDeadZone < firstJoint.getSensorPosition()){
             theStateOf1 = armStates.ANTIGRAV;
         }else{
             theStateOf1 = armStates.PID;
@@ -177,7 +177,7 @@ public class Arms extends Mechanism {
             value = SECOND_JOINT_MIN_LOCATION;
         }
         
-        if(value + doubleDeadZone < secondJoint.getSensorPosition() && value - doubleDeadZone > secondJoint.getSensorPosition()){
+        if(value + doubleDeadZone > secondJoint.getSensorPosition() && value - doubleDeadZone < secondJoint.getSensorPosition()){
             theStateOf2 = armStates.ANTIGRAV;
         }else{
             theStateOf2 = armStates.PID;
