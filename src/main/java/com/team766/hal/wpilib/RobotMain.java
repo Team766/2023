@@ -3,6 +3,9 @@ package com.team766.hal.wpilib;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
@@ -45,7 +48,8 @@ public class RobotMain extends TimedRobot {
 		// periodically poll "caniv" in the background, if present
 		CanivPoller canivPoller = null;
 		if (new File(CanivPoller.CANIV_BIN).exists()) {
-			canivPoller = new CanivPoller(10*1000 /* millis */);
+			Executor threadPool = Executors.newFixedThreadPool(1); // IO thread for CanivPoller
+			canivPoller = new CanivPoller(threadPool, 10*1000 /* millis */);
 			new Thread(canivPoller, "caniv poller").start();
 		}
 

@@ -1,25 +1,24 @@
 package com.team766.hal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CanivPoller implements Runnable {
-	private static final String CANIV_PATH = "/usr/local/bin";
+	private static final String CANIV_PATH = "/usr/bin";
 	public static final String CANIV_BIN = CANIV_PATH + "/" + "caniv";
-	private static final String CANIV_ARGS[] = { CANIV_BIN, "--list" };
+	private static final String CANIV_ARGS[] = { CANIV_BIN, "-a -i" }; // because, AI
+	private static final int PROCESS_TIMEOUT_MILLIS = 2500;
 
+	private final Executor threadPool;
 	private final long periodMillis;
 	private final ProcessBuilder processBuilder;
 	private final AtomicBoolean done = new AtomicBoolean(false); 
 
-	public CanivPoller(long periodMillis) {
+	public CanivPoller(Executor threadPool, long periodMillis) {
+		this.threadPool = threadPool;
 		this.periodMillis = periodMillis;
 		this.processBuilder = new ProcessBuilder(CANIV_ARGS);
 	}
@@ -30,15 +29,12 @@ public class CanivPoller implements Runnable {
 			try {
 				Process process = processBuilder.start();
 				InputStream response = process.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-				List<String> lines = new ArrayList<String>();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					lines.add(line);
+				if (threadPool != null) {
+					threadPool.execute(new CanivReader(response));
 				}
-				SmartDashboard.putStringArray("caniv", lines.toArray(new String[0]));
-				reader.close();
-				Thread.sleep(periodMillis); // TODO: take execution time into account too?
+				process.waitFor(PROCESS_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+				process.destroy();
+				Thread.sleep(periodMillis); // TODO: measure execution time, adjust sleep.
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 			} catch (IOException ioe) {
