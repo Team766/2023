@@ -153,7 +153,7 @@ public class Arms extends Mechanism {
         // double altEncoder1Offset = 0.25;
         final double altEncoder1Offset = 0.225;
         // double altEncoder2Offset = 0.5;
-        final double altEncoder2Offset = 0.49;
+        final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();

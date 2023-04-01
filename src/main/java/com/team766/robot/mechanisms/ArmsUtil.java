@@ -12,11 +12,15 @@ public final class ArmsUtil {
 	}
 
 	public static double degreesToEU(double angle) {
-		return angle * (44.0 / 90) * (25.0 / 16.0);
+		// return angle * (44.0 / 90) * (25.0 / 16.0);
+		// Nicholas' accuracy fix
+		return angle * (75.0 / 94.0);
 	}
 	
 	public static double EUTodegrees(double EU) {
-		return EU * (90 / 44.0) * (16.0 / 25.0);
+		// return EU * (90 / 44.0) * (16.0 / 25.0);
+		// Nicholas' accuracy fix
+		return EU * (94.0 / 75.0);
 	}
 
 	public static double AbsToEU(double abs) {
