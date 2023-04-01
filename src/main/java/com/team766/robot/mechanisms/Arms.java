@@ -153,7 +153,7 @@ public class Arms extends Mechanism {
             value = FIRST_JOINT_MIN_LOCATION;
         }
 
-        if(value + doubleDeadZone < altEncoder1.getPosition() && value - doubleDeadZone > altEncoder1.getPosition()){
+        if(value + doubleDeadZone < firstJoint.getSensorPosition() && value - doubleDeadZone > firstJoint.getSensorPosition()){
             getAntiGravFirstJoint();
         }else{
             firstJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
@@ -168,7 +168,7 @@ public class Arms extends Mechanism {
             value = SECOND_JOINT_MIN_LOCATION;
         }
         
-        if(value + doubleDeadZone < altEncoder2.getPosition() && value - doubleDeadZone > altEncoder2.getPosition()){
+        if(value + doubleDeadZone < secondJoint.getSensorPosition() && value - doubleDeadZone > secondJoint.getSensorPosition()){
             getAntiGravSecondJoint();
         }else{
             secondJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
