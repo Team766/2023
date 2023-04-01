@@ -67,7 +67,9 @@ public class Arms extends Mechanism {
 		firstJointPIDController.setP(firstJointP.valueOr(0.0006));
         firstJointPIDController.setI(firstJointI.valueOr(0.0));
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
-        firstJointPIDController.setFF(firstJointFF.valueOr(0.002));
+        // FF was 0.002
+        firstJointPIDController.setFF(firstJointFF.valueOr(0.001));
+        //firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
 
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
@@ -77,16 +79,19 @@ public class Arms extends Mechanism {
         // TODO: use secondJointO/I/D/FF.valueOr
         secondJointPIDController.setP(0.0005);
         secondJointPIDController.setI(secondJointI.valueOr(0.0));
-        secondJointPIDController.setD(0.00001);
-        secondJointPIDController.setFF(0.00109);
+        // D was 0.00001
+        secondJointPIDController.setD(0.0000);
+        // FF was 0.00109
+        secondJointPIDController.setFF(0.0008);
 
         firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
-
-        firstJointPIDController.setOutputRange(-0.75, 0.75);
+        // firstJointPIDController.setOutputRange(-0.75, 0.75);
+        firstJointPIDController.setOutputRange(-0.65, 0.65);
         firstJointCANSparkMax.setSmartCurrentLimit(40);
+        // Do not use setSmartMotionAllowedClosedLoopError(5, 0) unless it is safe to test without destorying anything
 
         secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         secondJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
@@ -110,15 +115,6 @@ public class Arms extends Mechanism {
 
     //This allows the pulley motor power to be changed, usually manually
     //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
-
-    // TODO: Is this needed?
-    public void addArms(MotorController motor1, MotorController motor2){
-        firstJoint = motor1;
-        secondJoint = motor2;
-
-        firstJointCANSparkMax = (CANSparkMax)firstJoint;
-        secondJointCANSparkMax = (CANSparkMax)secondJoint;
-    }
 
     // manual changing of arm 1
     public void manuallySetArmOnePower(double power){
@@ -186,7 +182,7 @@ public class Arms extends Mechanism {
     }
 
 	// PID for second arm
-    public void pidForArmTwo(double value){
+    public void pidForArmTwo(double value) {
         // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
@@ -233,19 +229,20 @@ public class Arms extends Mechanism {
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
-
-        log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
-        log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
-        // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
-        // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
-        // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
-        // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
-		log("Degrees Joint 1: "+ ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-		log("Degrees Joint 2: "+ ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-		log("First Joint State: "+firstJointState);
-		log("Second Joint State: "+secondJointState);
-        log("First Joint Combo: "+firstJointCombo);
-        log("Second Joint Combo: "+secondJointCombo);
+        if (firstJointState == ArmState.PID || secondJointState == ArmState.PID) {
+            log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
+            log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
+            // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
+            // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
+            // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
+            // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
+            log("Degrees Joint 1: "+ ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+            log("Degrees Joint 2: "+ ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+            log("First Joint State: " + firstJointState);
+            log("Second Joint State: " + secondJointState);
+            log("First Joint Combo: " + firstJointCombo);
+            log("Second Joint Combo: " + secondJointCombo);
+        }
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
@@ -266,10 +263,10 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-            if (firstJointCombo >= 10){
+            if (firstJointCombo >= 6){
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetEncoders();
+                // resetEncoders();
                 firstJointState = ArmState.ANTIGRAV;
             }
         }
@@ -291,10 +288,10 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-			if (secondJointCombo >= 10){
+			if (secondJointCombo >= 6){
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetEncoders();
+                //resetEncoders();
 				secondJointState = ArmState.ANTIGRAV;
 			}
         }
