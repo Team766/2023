@@ -74,13 +74,17 @@ public class OI extends Procedure {
 				Robot.arms.antiGravBothJoints();
 			}
 
-			if(joystick0.getButton(3)){
+			if(joystick0.getButtonPressed(3)){
 				//HIGH NODE SCORING
+				log("Button 3 pressed");
 				setArmState(generalControl.CONE_HIGH_NODE);
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
+				log("Button 4 pressed");
+				generalState = generalControl.CONE_MID_NODE;
 				setArmState(generalControl.CONE_MID_NODE);
+				log("" +generalState);
 			}
 
 			if(joystick0.getButton(5)){
@@ -113,16 +117,16 @@ public class OI extends Procedure {
                 log("generalControl is off");
                 break;
             case CONE_HIGH_NODE:
-                Robot.arms.pidForArmOne(0);
-                Robot.arms.pidForArmTwo(0);
+                Robot.arms.pidForArmOne(-25);
+                Robot.arms.pidForArmTwo(-110);
                 break;
             case CUBE_HIGH_NODE:
                 Robot.arms.pidForArmOne(0);
                 Robot.arms.pidForArmTwo(0);
                 break;
             case CONE_MID_NODE:
-                Robot.arms.pidForArmOne(0);
-                Robot.arms.pidForArmTwo(0);
+                Robot.arms.pidForArmOne(20);
+                Robot.arms.pidForArmTwo(-45);
                 break;
             case CUBE_MID_NODE:
                 Robot.arms.pidForArmOne(0);

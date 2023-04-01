@@ -78,7 +78,8 @@ public class Arms extends Mechanism {
 		firstJointPIDController.setP(firstJointP.valueOr(0.0006));
         firstJointPIDController.setI(firstJointI.valueOr(0.0));
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
-        firstJointPIDController.setFF(firstJointFF.valueOr(0.002));
+        firstJointPIDController.setFF(firstJointFF.valueOr(0.001));
+        firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
 
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
@@ -86,21 +87,23 @@ public class Arms extends Mechanism {
 		ValueProvider<Double> secondJointFF = ConfigFileReader.getInstance().getDouble("arms.secondJointFF");
 		secondJointPIDController.setP(0.0005);
         secondJointPIDController.setI(secondJointI.valueOr(0.0));
-        secondJointPIDController.setD(0.00001);
-        secondJointPIDController.setFF(0.00109);
+        secondJointPIDController.setD(0.0000);
+        secondJointPIDController.setFF(0.0008);
 
         firstJointCANSparkMax.setInverted(false);
         firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
-        firstJointPIDController.setOutputRange(-0.75, 0.75);
+        firstJointPIDController.setOutputRange(-0.6, 0.65);
         firstJointCANSparkMax.setSmartCurrentLimit(40);
+        //firstJointPIDController.setSmartMotionAllowedClosedLoopError(5, 0);
 
         secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         secondJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPIDController.setSmartMotionMaxAccel(3000, 0);
         secondJointPIDController.setOutputRange(-1, 1);
         secondJointCANSparkMax.setSmartCurrentLimit(40);
+        //secondJointPIDController.setSmartMotionAllowedClosedLoopError(5, 0);
 
 		firstJointPIDController.setFeedbackDevice(firstJointCANSparkMax.getEncoder());
 		secondJointPIDController.setFeedbackDevice(secondJointCANSparkMax.getEncoder());
@@ -143,6 +146,9 @@ public class Arms extends Mechanism {
 
         firstJointPosition = EUTodegrees(firstJointRelEncoder);
         secondJointPosition = EUTodegrees(secondJointRelEncoder);
+
+        log("First Joint New Degrees: "+firstJointPosition);
+        log("Second Joint New Degrees: "+secondJointPosition);
     }
 
 
@@ -228,11 +234,13 @@ public class Arms extends Mechanism {
     }
 
     public void antiGravFirstJoint(){
+        // log("" + getAntiGravFirstJoint());
         firstJoint.set(getAntiGravFirstJoint());
         firstJointState = ArmState.ANTIGRAV;
     }
 
     public void antiGravSecondJoint(){
+        // log("" + getAntiGravSecondJoint());
         secondJoint.set(getAntiGravSecondJoint());
         secondJointState = ArmState.ANTIGRAV;
     }
@@ -253,12 +261,18 @@ public class Arms extends Mechanism {
 
     public double getAntiGravFirstJoint(){
         double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
+        if (Math.abs(firstRelEncoderAngle) <= 5){
+            return 0;
+        }
         double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
         return -1*Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
     }
 
     public double getAntiGravSecondJoint(){
         double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
+        if (Math.abs(secondRelEncoderAngle)<=5){
+            return 0;
+        }
         double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
         return -1*Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
     }
@@ -267,19 +281,23 @@ public class Arms extends Mechanism {
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
-
-        log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
-        log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
-        // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
-        // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
-        // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
-        // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
-		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
-		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
-		log("First Joint State: "+firstJointState);
-		log("Second Joint State: "+secondJointState);
-        log("First Joint Combo: "+firstJointCombo);
-        log("Second Joint Combo: "+secondJointCombo);
+        if (firstJointState == ArmState.PID || secondJointState == ArmState.PID){
+            // log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
+            // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
+            // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
+            // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
+            // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
+            // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
+            log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
+            log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
+            log("First Joint State: "+firstJointState);
+            log("Second Joint State: "+secondJointState);
+            log("First Joint Combo: "+firstJointCombo);
+            log("Second Joint Combo: "+secondJointCombo);
+        }
+        // } else {
+        //     log("IN ANTIGRAV IN ANTIGRAV");
+        // }
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
@@ -298,9 +316,9 @@ public class Arms extends Mechanism {
 				firstJointCombo = 0;
 			}
 
-            if (firstJointCombo >= 10){
+            if (firstJointCombo >= 6){
 				firstJointCombo = 0;
-                resetEncoders();
+                // resetEncoders();
                 firstJointState = ArmState.ANTIGRAV;
             }
         }
@@ -320,9 +338,9 @@ public class Arms extends Mechanism {
 				secondJointCombo = 0;
 			}
 
-			if (secondJointCombo >= 10){
+			if (secondJointCombo >= 6){
                 secondJointCombo = 0;
-                resetEncoders();
+                // resetEncoders();
 				secondJointState = ArmState.ANTIGRAV;
 			}
         }
