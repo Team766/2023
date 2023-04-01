@@ -66,8 +66,8 @@ public class Arms extends Mechanism {
 
     boolean jointOneCanContinue = false;
 
-    armStates theStateOf1 = armStates.ANTIGRAV;
-    armStates theStateOf2 = armStates.ANTIGRAV;
+    armStates theStateOf1 = armStates.OFF;
+    armStates theStateOf2 = armStates.OFF;
 
 
     public Arms() {
@@ -189,12 +189,14 @@ public class Arms extends Mechanism {
             value = SECOND_JOINT_MIN_LOCATION;
         }
         
-        if(value + doubleDeadZone > secondJoint.getSensorPosition() && value - doubleDeadZone < secondJoint.getSensorPosition()){
+        if(value + doubleDeadZone > EUTodegrees(secondJoint.getSensorPosition()) && value - doubleDeadZone < EUTodegrees(secondJoint.getSensorPosition())){
             theStateOf2 = armStates.ANTIGRAV;
+            log("it got here");
         }else{
             theStateOf2 = armStates.PID;
             secondJointPIDController.setReference(degreesToEU(value), ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
         }
+       
     }
 
 
@@ -272,7 +274,6 @@ public class Arms extends Mechanism {
     public void run(){
         switch(theStateOf1){
             case OFF:
-	    	firstJoint.set(0);
                 break;
             case PID:
                 break;
@@ -283,7 +284,7 @@ public class Arms extends Mechanism {
 
         switch(theStateOf2){
             case OFF:
-	    	secondJoint.set(0);
+	    	
                 break;
             case PID:
                 break;
@@ -291,6 +292,10 @@ public class Arms extends Mechanism {
                 antiGravSecondJoint();
                 break;
         }
+        log("First" + EUTodegrees(firstJoint.getSensorPosition()) );
+        log(" Second" + EUTodegrees(secondJoint.getSensorPosition()));
+        log(theStateOf2 + "");
+        log("Difference: " + EUTodegrees(firstJoint.getSensorPosition()));
     }
 
 

@@ -57,9 +57,8 @@ public class OI extends Procedure {
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
-				Robot.arms.pidForArmOne(0);
-				Robot.arms.pidForArmTwo(0);
-				Robot.arms.checkJointTwo(0);
+				Robot.arms.pidForArmTwo(-90);
+				Robot.arms.checkJointTwo(-90);
 			}
 			if(joystick0.getButton(5)){
 				//TAKING FROM HUMAN PLAYER
