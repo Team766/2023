@@ -34,19 +34,19 @@ public class OI extends Procedure {
 	private boolean isCross = false;
 	private IntakeState intakeState = IntakeState.IDLE;
 
-	enum generalControl{
-		CONE_HIGH_NODE,
-		CUBE_HIGH_NODE,
-		CONE_MID_NODE,
-		CUBE_MID_NODE,
-		OFF,
-		READY,
-		HUMANPLAYER_PICKUP,
-		MANUAL,
-		HYBRID_NODE
-	};
+	// enum generalControl{
+	// 	CONE_HIGH_NODE,
+	// 	CUBE_HIGH_NODE,
+	// 	CONE_MID_NODE,
+	// 	CUBE_MID_NODE,
+	// 	OFF,
+	// 	READY,
+	// 	HUMANPLAYER_PICKUP,
+	// 	MANUAL,
+	// 	HYBRID_NODE
+	// };
 	
-	public generalControl generalState = generalControl.OFF;
+	// public generalControl generalState = generalControl.OFF;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
 	double turningValue = 0;
@@ -64,7 +64,6 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.arms);
-		context.takeOwnership(Robot.grabber);
 		context.takeOwnership(Robot.storage);
 		context.takeOwnership(Robot.gyro);
 
@@ -195,108 +194,34 @@ public class OI extends Procedure {
 			// }
 
 
-			/** Nicholas' Arm Testing OI
-			if (joystick0.getButtonPressed(2)){
-				Robot.arms.manuallySetArmOnePower(0);
-				Robot.arms.manuallySetArmTwoPower(0);
+			//DO NOT USE THESE VALUES
+			//THEY HAVE NOT BEEN TESTED!!!
+
+			if(controlPanel.getButton(InputConstants.CONE_HIGH)) {
+				Robot.arms.pidForArmOne(-20);
+				Robot.arms.pidForArmTwo(-60);
+			}
+			if(controlPanel.getButton(InputConstants.CONE_MID)) {
+				Robot.arms.pidForArmOne(-15);
+				Robot.arms.pidForArmTwo(-90);
+			}
+			if(controlPanel.getButton(InputConstants.ARM_READY)) {
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(-90);
+			}
+			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
+				Robot.arms.pidForArmOne(-30);
+				Robot.arms.pidForArmTwo(-30);
+			}
+			if(controlPanel.getButton(InputConstants.UNSTOWED)) {
+				Robot.arms.pidForArmOne(-20);
+				Robot.arms.pidForArmTwo(-160);
+			}
+			if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(-170);
 			}
 
-			if(joystick0.getButtonPressed(1)){
-				Robot.arms.resetEncoders();
-			}
-
-			if(joystick0.getButton(3)){
-				Robot.arms.antiGravFirstJoint();
-			}
-
-			if(joystick0.getButton(4)){
-				Robot.arms.antiGravSecondJoint();
-			}
-			
-			if(joystick0.getButtonPressed(5)){
-				Robot.arms.pidForArmTwo(-140);
-			}
-
-			if(joystick0.getButtonPressed(6)){
-				Robot.arms.pidForArmTwo(-45);
-			}
-
-			if(joystick0.getButton(7)){
-				Robot.arms.antiGravBothJoints();
-			}
-			**/
-
-			/** Max's OI
-			//Uses joystick buttons to change states
-			if(joystick0.getButton(1)){
-				Robot.arms.resetEncoders();
-			}
-
-			if(joystick0.getButton(2)){
-				Robot.arms.antiGravBothJoints();
-			}
-
-			if(joystick0.getButtonPressed(3)){
-				Robot.arms.pidForArmOne(-38.34);
-				Robot.arms.pidForArmTwo(-90.665);
-			}
-			if(joystick0.getButtonPressed(4)){
-				Robot.arms.pidForArmOne(35);
-				Robot.arms.pidForArmTwo(0);
-			}
-
-			if(joystick0.getButton(5)){
-				generalState = generalControl.READY;
-			}
-
-			if(joystick0.getButton(6)){
-				generalState = generalControl.CUBE_MID_NODE;
-			}
-			if(joystick0.getButton(7)){
-				generalState = generalControl.HUMANPLAYER_PICKUP;
-			}
-			if(joystick0.getButton(8)){
-				generalState = generalControl.HYBRID_NODE;
-			}
-
-			switch(generalState){
-				case OFF:
-					log("generalControl is off");
-					break;
-				case CONE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CONE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case MANUAL:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
-					break;
-				case READY:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HUMANPLAYER_PICKUP:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HYBRID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-			}
-			**/
 		}
 	}
 }

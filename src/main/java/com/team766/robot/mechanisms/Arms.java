@@ -15,7 +15,10 @@ import com.team766.logging.Category;
 //This is for the motor that controls the pulley
 
 public class Arms extends Mechanism {
-    
+    /*
+     * This defines the motors and casts them to CanSparkMaxs (CSMs) so we can  use REV Robotics PID SmartMotion. 
+     * Next, it also defines the absolute encoder.
+     */
     private MotorController firstJoint = RobotProvider.instance.getMotor("arms.firstJoint");
     private CANSparkMax firstJointCANSparkMax = (CANSparkMax)firstJoint;
     private SparkMaxPIDController firstJointPIDController  = firstJointCANSparkMax.getPIDController();
@@ -27,38 +30,43 @@ public class Arms extends Mechanism {
     private SparkMaxAbsoluteEncoder altEncoder2 = secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
 	
     // Non-motor constants
+    // This is the deadzone, so that the arm(s) don't oscillate. For example, a value of 5 means a 5 relitive encoder unit deadzone in each direction.
     private static final double doubleDeadZone = 2;
-
-    enum ArmState{
-        PID, // Moving
-        ANTIGRAV // Holding
-    };
-
-    private ArmState firstJointState = ArmState.ANTIGRAV;
-    private ArmState secondJointState = ArmState.ANTIGRAV;
 
     // We want firstJoint/secondJoint being straight-up to be 0 rel encoder units 
     // and counter-clockwise to be positive.
     // All the following variables are in degrees
-
     private double firstJointPosition = 0; 
     private double secondJointPosition = 0; 
 	private double firstJointCombo = 0;
 	private double secondJointCombo = 0;
 
+    // This sets the maximum locations so we can use them in code to make sure the arm joints dont go past there.
     private static final double FIRST_JOINT_MAX_LOCATION = 35;
     private static final double FIRST_JOINT_MIN_LOCATION = -40;
     private static final double SECOND_JOINT_MAX_LOCATION = 45;
     private static final double SECOND_JOINT_MIN_LOCATION = -160;
 
-	private RateLimiter runRateLimiter = new RateLimiter(0.05);
+    private RateLimiter runRateLimiter = new RateLimiter(0.05);
+
+    enum ArmState {
+        PID,
+        ANTIGRAV,
+        OFF
+    }
+
+    boolean jointOneCanContinue = false;
+
+    ArmState theStateOf1 = ArmState.OFF;
+    ArmState theStateOf2 = ArmState.OFF;
+
 
     private ArmsAntiGrav antiGrav;
 
     public Arms() {
 		loggerCategory = Category.MECHANISMS;
-		resetEncoders();
 
+        // PID Constants
 		ValueProvider<Double> firstJointP = ConfigFileReader.getInstance().getDouble("arms.firstJointP");
 		ValueProvider<Double> firstJointI = ConfigFileReader.getInstance().getDouble("arms.firstJointI");
 		ValueProvider<Double> firstJointD = ConfigFileReader.getInstance().getDouble("arms.firstJointD");
@@ -69,8 +77,9 @@ public class Arms extends Mechanism {
         firstJointPIDController.setD(firstJointD.valueOr(0.0));
         // FF was 0.002
         firstJointPIDController.setFF(firstJointFF.valueOr(0.001));
-        //firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
+        // firstJointPIDController.setSmartMotionAllowedClosedLoopError(3, 0);
 
+        // More PID constants
 		ValueProvider<Double> secondJointP = ConfigFileReader.getInstance().getDouble("arms.secondJointP");
 		ValueProvider<Double> secondJointI = ConfigFileReader.getInstance().getDouble("arms.secondJointI");
 		ValueProvider<Double> secondJointD = ConfigFileReader.getInstance().getDouble("arms.secondJointD");
@@ -84,7 +93,9 @@ public class Arms extends Mechanism {
         // FF was 0.00109
         secondJointPIDController.setFF(0.0008);
 
+        // These next things deal a lot with the PID SmartMotion
         firstJointCANSparkMax.setInverted(false);
+        // TODO : consider decrease velocity instead of decreasing power
         firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
@@ -93,12 +104,14 @@ public class Arms extends Mechanism {
         firstJointCANSparkMax.setSmartCurrentLimit(40);
         // Do not use setSmartMotionAllowedClosedLoopError(5, 0) unless it is safe to test without destorying anything
 
+        // These too
         secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
         secondJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPIDController.setSmartMotionMaxAccel(3000, 0);
         secondJointPIDController.setOutputRange(-1, 1);
         secondJointCANSparkMax.setSmartCurrentLimit(40);
 
+        // This resets the degrees and stuff so that we dont have to have the arm at certain positions to reset...
 		firstJointPIDController.setFeedbackDevice(firstJointCANSparkMax.getEncoder());
 		secondJointPIDController.setFeedbackDevice(secondJointCANSparkMax.getEncoder());
         
@@ -110,25 +123,28 @@ public class Arms extends Mechanism {
 		altEncoder2.setZeroOffset(0.62);
 
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
+
+        // We only want to resetEncoders after configs are loaded, offsets are set, etc
+        resetEncoders();
     }
 
-
-    //This allows the pulley motor power to be changed, usually manually
-    //The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
+    // This allows the pulley motor power to be changed, usually manually
+    // The magnitude ranges from 0.0-1.0, and sign (positive/negative) determines the direction
 
     // manual changing of arm 1
-    public void manuallySetArmOnePower(double power){
+    public void manuallySetArmOnePower(double power) {
         checkContextOwnership();
         firstJoint.set(power);
     }
 
     // manual changing of arm 2.
-    public void manuallySetArmTwoPower(double power){
+    public void manuallySetArmTwoPower(double power) {
         checkContextOwnership();
         secondJoint.set(power);
     }
 
-    public void resetEncoders(){
+    // Resets encoders
+    public void resetEncoders() {
         checkContextOwnership();
 
         // TODO: this offset is to factor in the difference between the
@@ -177,7 +193,7 @@ public class Arms extends Mechanism {
             ControlType.kSmartMotion,
             0,
             antiGrav.getFirstJointPower());
-        firstJointState = ArmState.PID;
+        theStateOf1 = ArmState.PID;
         firstJointCombo = 0;
     }
 
@@ -196,7 +212,7 @@ public class Arms extends Mechanism {
             ControlType.kSmartMotion,
             0,
             antiGrav.getSecondJointPower());
-        secondJointState = ArmState.PID;
+        theStateOf2 = ArmState.PID;
         secondJointCombo = 0;
     }
 
@@ -209,27 +225,37 @@ public class Arms extends Mechanism {
         pidForArmTwo(firstJointPosition + degrees);
     }
 
-    // These next 3 antiGrav aren't used.
-    public void antiGravBothJoints() {
+    // PID For arm one
+
+    // public void checkJointTwo(double value){
+    //     if((value + doubleDeadZone > secondJoint.getSensorPosition() && value - doubleDeadZone < secondJoint.getSensorPosition())){
+    //         jointOneCanContinue = true;
+    //     }else{
+    //         jointOneCanContinue = false;
+    //     }
+    // }
+
+    //This is our portion with antigrav
+	// These next 3 antiGrav aren't used.
+    public void antiGravBothJoints(){
         antiGravFirstJoint();
         antiGravSecondJoint();
     }
 
     public void antiGravFirstJoint() {
         antiGrav.updateFirstJoint();
-        firstJointState = ArmState.ANTIGRAV;
+        theStateOf1 = ArmState.ANTIGRAV;
     }
 
     public void antiGravSecondJoint() {
         antiGrav.updateSecondJoint();
-        secondJointState = ArmState.ANTIGRAV;
+        theStateOf2 = ArmState.ANTIGRAV;
     }
-
 	
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
-        if (firstJointState == ArmState.PID || secondJointState == ArmState.PID) {
+        if (theStateOf1 == ArmState.PID || theStateOf2 == ArmState.PID) {
             log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
             log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
             // log("First Joint Relative Encoder: " + firstJoint.getSensorPosition());
@@ -238,17 +264,21 @@ public class Arms extends Mechanism {
             // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
             log("Degrees Joint 1: "+ ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
             log("Degrees Joint 2: "+ ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-            log("First Joint State: " + firstJointState);
-            log("Second Joint State: " + secondJointState);
+            log("First Joint State: " + theStateOf1);
+            log("Second Joint State: " + theStateOf2);
             log("First Joint Combo: " + firstJointCombo);
             log("Second Joint Combo: " + secondJointCombo);
         }
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
-        if (firstJointState == ArmState.ANTIGRAV) {
+        switch(theStateOf1) {
+        case OFF:
+            break;
+        case ANTIGRAV:
             antiGravFirstJoint();
-        } else {
+            break;
+        case PID:
             firstJointPIDController.setReference(
 				ArmsUtil.degreesToEU(firstJointPosition),
 				ControlType.kSmartMotion,
@@ -267,13 +297,19 @@ public class Arms extends Mechanism {
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
                 // resetEncoders();
-                firstJointState = ArmState.ANTIGRAV;
+                theStateOf1 = ArmState.ANTIGRAV;
             }
+
+            break;
         }
         
-        if (secondJointState == ArmState.ANTIGRAV) {
+        switch(theStateOf2) {
+        case OFF:
+            break;
+        case ANTIGRAV:
             antiGravSecondJoint();
-        } else {
+            break;
+        case PID:
             secondJointPIDController.setReference(
 				ArmsUtil.degreesToEU(secondJointPosition),
 				ControlType.kSmartMotion,
@@ -292,9 +328,16 @@ public class Arms extends Mechanism {
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
                 //resetEncoders();
-				secondJointState = ArmState.ANTIGRAV;
+				theStateOf2 = ArmState.ANTIGRAV;
 			}
+
+            break;
         }
+
+        // log("First" + EUTodegrees(firstJoint.getSensorPosition()) );
+        // log(" Second" + EUTodegrees(secondJoint.getSensorPosition()));
+        // log(theStateOf2 + "");
+        // log("Difference: " + EUTodegrees(firstJoint.getSensorPosition()));
     }
 }
 
