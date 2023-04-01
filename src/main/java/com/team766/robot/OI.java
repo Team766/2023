@@ -51,33 +51,33 @@ public class OI extends Procedure {
 			}
 			if(joystick0.getButton(3)){
 				//HIGH NODE SCORING
-				Robot.arms.maxPidArm1(-38.34);
-				Robot.arms.maxPidArm2(-90.665);
+				Robot.arms.pidForArmOne(-38.34);
+				Robot.arms.pidForArmTwo(-90.665);
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
-				Robot.arms.maxPidArm1(null);
-				Robot.arms.maxPidArm2(null);
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(0);
 			}
 			if(joystick0.getButton(5)){
 				//TAKING FROM HUMAN PLAYER
-				Robot.arms.maxPidArm1(null);
-				Robot.arms.maxPidArm2(null);
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(0);
 			}
 			if(joystick0.getButton(6)){
 				//STOWED
-				Robot.arms.maxPidArm1(null);
-				Robot.arms.maxPidArm2(null);
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(0);
 			}
 			if(joystick0.getButton(7)){
 				//READY
-				Robot.arms.maxPidArm1(null);
-				Robot.arms.maxPidArm2(null);
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(0);
 			}
 			if(joystick0.getButton(8)){
 				//PREP
-				Robot.arms.maxPidArm1(null);
-				Robot.arms.maxPidArm2(null);
+				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmTwo(0);
 			}
 
 //TODO: can we stil use a switch?
