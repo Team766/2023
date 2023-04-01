@@ -146,37 +146,37 @@ public class Arms extends Mechanism {
     }
 
 
-    public void maxPidArm1(double value){
-        if(value > FIRST_JOINT_MAX_LOCATION){
-            value = FIRST_JOINT_MAX_LOCATION;
-        }else if(value < FIRST_JOINT_MIN_LOCATION){
-            value = FIRST_JOINT_MIN_LOCATION;
-        }
+    // public void maxPidArm1(double value){
+    //     if(value > FIRST_JOINT_MAX_LOCATION){
+    //         value = FIRST_JOINT_MAX_LOCATION;
+    //     }else if(value < FIRST_JOINT_MIN_LOCATION){
+    //         value = FIRST_JOINT_MIN_LOCATION;
+    //     }
 
-        if(value + doubleDeadZone < altEncoder1.getSensorPosition() && value - doubleDeadZone > altEncoder1.getSensorPosition()){
-            getAntiGravFirstJoint();
-        }else{
-            firstJointPIDController.setFeedbackDevice(altEncoder1);
-            //todo, is the antigrav here really needed?
-            firstJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
-        }
-    }
+    //     if(value + doubleDeadZone < altEncoder1.getSensorPosition() && value - doubleDeadZone > altEncoder1.getSensorPosition()){
+    //         getAntiGravFirstJoint();
+    //     }else{
+    //         firstJointPIDController.setFeedbackDevice(altEncoder1);
+    //         //todo, is the antigrav here really needed?
+    //         firstJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravFirstJoint());
+    //     }
+    // }
 
-    public void maxPidArm2(double value){
-        if(value > SECOND_JOINT_MAX_LOCATION){
-            value = SECOND_JOINT_MAX_LOCATION;
-        }else if(value < SECOND_JOINT_MIN_LOCATION){
-            value = SECOND_JOINT_MIN_LOCATION;
-        }
+    // public void maxPidArm2(double value){
+    //     if(value > SECOND_JOINT_MAX_LOCATION){
+    //         value = SECOND_JOINT_MAX_LOCATION;
+    //     }else if(value < SECOND_JOINT_MIN_LOCATION){
+    //         value = SECOND_JOINT_MIN_LOCATION;
+    //     }
 
-        if(value + doubleDeadZone < altEncoder2.getSensorPosition() && value - doubleDeadZone > altEncoder2.getSensorPosition()){
-            getAntiGravSecondJoint();
-        }else{
-            secondJointPIDController.setFeedbackDevice(altEncoder1);
-            //todo, is the antigrav here really needed?
-            secondJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
-        }
-    }
+    //     if(value + doubleDeadZone < altEncoder2.getSensorPosition() && value - doubleDeadZone > altEncoder2.getSensorPosition()){
+    //         getAntiGravSecondJoint();
+    //     }else{
+    //         secondJointPIDController.setFeedbackDevice(altEncoder1);
+    //         //todo, is the antigrav here really needed?
+    //         secondJointPIDController.setReference(value, ControlType.kSmartMotion, 0, getAntiGravSecondJoint());
+    //     }
+    // }
 
 	// PID for first arm
     /**
@@ -184,7 +184,8 @@ public class Arms extends Mechanism {
      * 
      * @param value desired position in degrees.
      */
-  /*  public void pidForArmOne(double value){ // This will be run once
+
+    public void pidForArmOne(double value){ // This will be run once
         // log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
@@ -200,9 +201,7 @@ public class Arms extends Mechanism {
             firstJointState = ArmState.PID;
             firstJointCombo = 0;
     }
-*/
 
-/*
 	// PID for second arm
     public void pidForArmTwo(double value){
         // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
@@ -221,7 +220,6 @@ public class Arms extends Mechanism {
         secondJointState = ArmState.PID;
         secondJointCombo = 0;
     }
-    */
 
 	// These next 3 antiGrav aren't used.
     public void antiGravBothJoints(){  
@@ -266,7 +264,7 @@ public class Arms extends Mechanism {
     }
 
     
-    /*@Override
+    @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
 
@@ -328,7 +326,7 @@ public class Arms extends Mechanism {
 				secondJointState = ArmState.ANTIGRAV;
 			}
         }
-    }*/
+    }
 
     // Helper classes to convert from degrees to EU to absEU
     // TODO: update EU/degree constant for new gearbox 3:5:5

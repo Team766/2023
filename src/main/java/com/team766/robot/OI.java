@@ -76,77 +76,74 @@ public class OI extends Procedure {
 
 			if(joystick0.getButton(3)){
 				//HIGH NODE SCORING
-				Robot.arms.pidForArmOne(-38.34);
-				Robot.arms.pidForArmTwo(-90.665);
+				setArmState(generalControl.CONE_HIGH_NODE);
 			}
 			if(joystick0.getButtonPressed(4)){
 				//MID NODE SCORING
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				setArmState(generalControl.CONE_MID_NODE);
 			}
 
 			if(joystick0.getButton(5)){
 				//TAKING FROM HUMAN PLAYER
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				// Robot.arms.pidForArmOne(null);
+				// Robot.arms.pidForArmTwo(null);
 			}
 
 			if(joystick0.getButton(6)){
 				//STOWED
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				// Robot.arms.pidForArmOne(null);
+				// Robot.arms.pidForArmTwo(null);
 			}
 			if(joystick0.getButton(7)){
 				//READY
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				// Robot.arms.pidForArmOne(null);
+				// Robot.arms.pidForArmTwo(null);
 			}
 			if(joystick0.getButton(8)){
 				//PREP
-				Robot.arms.pidForArmOne(null);
-				Robot.arms.pidForArmTwo(null);
+				// Robot.arms.pidForArmOne(null);
+				// Robot.arms.pidForArmTwo(null);
 			}
-
-//TODO: can we stil use a switch?
-/*
-			switch(generalState){
-				case OFF:
-					log("generalControl is off");
-					break;
-				case CONE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_HIGH_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CONE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case CUBE_MID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case MANUAL:
-					Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
-					Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
-					break;
-				case READY:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HUMANPLAYER_PICKUP:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-				case HYBRID_NODE:
-					Robot.arms.pidForArmOne(0);
-					Robot.arms.pidForArmTwo(0);
-					break;
-			}
-			*/
 		}
 	}
+
+	public void setArmState(generalControl mode){
+        switch(mode){
+            case OFF:
+                log("generalControl is off");
+                break;
+            case CONE_HIGH_NODE:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case CUBE_HIGH_NODE:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case CONE_MID_NODE:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case CUBE_MID_NODE:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case MANUAL:
+                Robot.arms.manuallySetArmOnePower(joystick0.getAxis(0));
+                Robot.arms.manuallySetArmTwoPower(joystick0.getAxis(1));
+                break;
+            case READY:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case HUMANPLAYER_PICKUP:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+            case HYBRID_NODE:
+                Robot.arms.pidForArmOne(0);
+                Robot.arms.pidForArmTwo(0);
+                break;
+        }
+    }
 }
