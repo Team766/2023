@@ -133,7 +133,7 @@ public class Odometry extends LoggingBase {
 			currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 
-			double yaw = -Math.toRadians(Robot.gyro.getGyroYaw());
+			double yaw = Math.toRadians(Robot.gyro.getGyroYaw());
 			double roll = Math.toRadians(Robot.gyro.getGyroRoll());
 			double pitch = Math.toRadians(Robot.gyro.getGyroPitch());
 
@@ -170,7 +170,7 @@ public class Odometry extends LoggingBase {
 			//wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
 			//log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY - wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current Method: " + wheelMotion.getX() + ", " + wheelMotion.getY());
 			//log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " + currPositions[i].add(wheelMotion));
-			currPositions[i].set(currPositions[i].add(wheelMotion));
+			currPositions[i].set(currPositions[i].subtract(wheelMotion));
 		}
 	}
 
@@ -181,7 +181,7 @@ public class Odometry extends LoggingBase {
 		double sumX = 0;
 		double sumY = 0;
 		for (int i = 0; i < motorCount; i++) {
-			sumX += currPositions[i].getX();
+			sumX -= currPositions[i].getX();
 			sumY += currPositions[i].getY();
 			//log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}

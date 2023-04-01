@@ -268,6 +268,7 @@ public class FollowPoints extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
+		Robot.gyro.resetGyro();
 		log("Starting FollowPoints");
 		
 		if (startingPoint == null) {
@@ -321,7 +322,7 @@ public class FollowPoints extends Procedure {
 					
 					Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 					driveSettings.set(currentPos.scaleVector(targetPoint, speed), rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
-					driveSettings.set((DriverStation.getAlliance() == Alliance.Blue ? -1 : 1) * driveSettings.getX(), (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getY());
+					driveSettings.set((DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getX(), (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1) * driveSettings.getY());
 					Robot.drive.swerveDrive(driveSettings);
 					//log("Current Position: " + currentPos.toString());
 					//log("Target Point: " + targetPoint.toString());
@@ -354,6 +355,7 @@ public class FollowPoints extends Procedure {
 			targetNum = pointList.length - 1;
 			while (Math.abs(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading())) > 0.03) {
 				updateRotation();
+				//log("Rotation Speed: " + driveSettings.getHeading());
 				context.yield();
 			}
 			context.releaseOwnership(Robot.drive);
@@ -370,6 +372,7 @@ public class FollowPoints extends Procedure {
 	public void updateRotation() {
 		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		driveSettings.setHeading(rotationSpeed(Robot.drive.getCurrentPosition().getHeading(), pointList[targetNum].getHeading()));
+		log("Rotation Speed: " + driveSettings.getHeading() + " " + Robot.drive.getCurrentPosition().getHeading() + " " + pointList[targetNum].getHeading());
 		Robot.drive.swerveDrive(driveSettings);
 	}
 

@@ -2,8 +2,8 @@
 	"start": [0, 0],
 	"points": [
 		{
-			"coordinates": [1, 0, 180],
-			"critical": false,
+			"coordinates": [4, 0, 180],
+			"critical": true,
 			"procedure": {
 				"name" : "WaitFiveSeconds()",
 				"stop" : true

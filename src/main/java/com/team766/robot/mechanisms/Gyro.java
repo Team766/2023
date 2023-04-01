@@ -25,10 +25,14 @@ public class Gyro extends Mechanism {
 	public void resetGyro(){
 		g_gyro.setYaw(0);
 	}
+
+	public void resetGyro180() {
+		g_gyro.setYaw(180);
+	}
+	
 	public double getGyroPitch() {
 		double angle = g_gyro.getPitch();
 		return angle;
-		
 	}
 
 	public double getGyroYaw() {
@@ -44,14 +48,21 @@ public class Gyro extends Mechanism {
 	@Override
 	public void run() {
 		 if (l_loggingRate.next()) {
-			gyroArray[0] = getGyroYaw();
-			gyroArray[1] = getGyroPitch();
-			gyroArray[2] = getGyroRoll();
-			g_gyro.getYawPitchRoll(gyroArray);
-			SmartDashboard.putNumber("Yaw", gyroArray[0]);
-			SmartDashboard.putNumber("Pitch", gyroArray[1]);
-			SmartDashboard.putNumber("Roll", gyroArray[2]);
-		 	log("Yaw: " + gyroArray[0] + "// Real yaw: " + getGyroYaw() + " || Pitch: " + gyroArray[1] + " || Roll: " + gyroArray[2]);
+			 gyroArray[0] = getGyroYaw();
+			 gyroArray[1] = getGyroPitch();
+			 gyroArray[2] = getGyroRoll();
+			 SmartDashboard.putNumber("Yaw", gyroArray[0]);
+			 SmartDashboard.putNumber("Pitch", gyroArray[1]);
+			 SmartDashboard.putNumber("Roll", gyroArray[2]);
+			 g_gyro.getYawPitchRoll(gyroArray);
 		 }
 	}
+
+	/**
+	 * @return combined pitch and roll values of gyro
+	 */
+	public double getAbsoluteTilt() {
+		return Math.toDegrees(Math.acos(Math.cos(Math.toRadians(getGyroRoll()))*Math.cos(Math.toRadians(getGyroPitch()))));
+	}
+	
 }
