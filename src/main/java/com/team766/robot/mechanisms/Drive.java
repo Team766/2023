@@ -125,6 +125,10 @@ public class Drive extends Mechanism {
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
 		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, OdometryInputConstants.WHEEL_CIRCUMFERENCE, OdometryInputConstants.GEAR_RATIO, OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT, OdometryInputConstants.RATE_LIMITER_TIME);
+		setFrontRightEncoders();
+		setFrontLeftEncoders();
+		setBackRightEncoders();
+		setBackLeftEncoders();
 	}
 
 	// A set of simple functions for the sake of adding vectors

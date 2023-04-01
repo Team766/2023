@@ -7,6 +7,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.logging.Category;
 import com.team766.robot.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Method which calculates the position of the robot based on wheel positions.
@@ -83,10 +85,12 @@ public class Odometry extends LoggingBase {
 	 */
 	public void setCurrentPosition(Point P) {
 		currentPosition.set(P);
+		log("Set Current Position to: " + P.toString());
 		for (int i = 0; i < motorCount; i++) {
 			prevPositions[i].set(currentPosition.add(wheelPositions[i]));
 			currPositions[i].set(currentPosition.add(wheelPositions[i]));
 		}
+		log("Current Position: " + currentPosition.toString());
 	}
 	
 
@@ -97,7 +101,14 @@ public class Odometry extends LoggingBase {
 		for (int i = 0; i < motorCount; i++) {
 			prevEncoderValues[i] = currEncoderValues[i];
 			currEncoderValues[i] = motorList[i].getSensorPosition();
+			currEncoderValues[i] *= (DriverStation.getAlliance() == Alliance.Blue ? 1 : -1);
 		}
+	}
+
+	private static Vector2D rotate(Vector2D v, double angle) {
+		return new Vector2D(
+			v.getX() * Math.cos(angle) - Math.sin(angle) * v.getY(),
+			v.getY() * Math.cos(angle) + v.getX() * Math.sin(angle));
 	}
 
 	/**
@@ -109,10 +120,15 @@ public class Odometry extends LoggingBase {
 		double deltaX;
 		double deltaY;
 		gyroPosition = -Robot.gyro.getGyroYaw();
-		//Point slopeFactor = new Point(Math.sqrt(Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))), Math.sqrt(Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))));
+		
+		/*
+		Point slopeFactor = new Point(Math.sqrt(Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))),
+									  Math.sqrt(Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))));
+		*/
 
 		for (int i = 0; i < motorCount; i++) {
 			//prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
+			//This following line only works if the average of wheel positions is (0,0)
 			prevPositions[i].set(currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
 			currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
@@ -121,13 +137,15 @@ public class Odometry extends LoggingBase {
 			double roll = Math.toRadians(Robot.gyro.getGyroRoll());
 			double pitch = Math.toRadians(Robot.gyro.getGyroPitch());
 
-			double w = Math.toRadians(-CANCoderList[i].getAbsolutePosition());
+			double w = Math.toRadians(CANCoderList[i].getAbsolutePosition());
 			Vector2D u = new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
 			Vector2D v = new Vector2D(Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll) - Math.sin(yaw) * Math.cos(roll), 
 								Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + Math.cos(yaw) * Math.cos(roll));
 			Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
 			Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
 			Vector2D wheelMotion;
+
+			//log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
 
 			//double oldWheelX;
 			//double oldWheelY;
@@ -149,8 +167,10 @@ public class Odometry extends LoggingBase {
 				//oldWheelY = ((currEncoderValues[i] - prevEncoderValues[i]) * Math.sin(Math.toRadians(prevPositions[i].getHeading())) * slopeFactor.getY() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
 			}
 			wheelMotion = wheelMotion.scalarMultiply(WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
+			//wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
 			//log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY - wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current Method: " + wheelMotion.getX() + ", " + wheelMotion.getY());
-			currPositions[i].add(wheelMotion);
+			//log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " + currPositions[i].add(wheelMotion));
+			currPositions[i].set(currPositions[i].add(wheelMotion));
 		}
 	}
 
@@ -163,6 +183,7 @@ public class Odometry extends LoggingBase {
 		for (int i = 0; i < motorCount; i++) {
 			sumX += currPositions[i].getX();
 			sumY += currPositions[i].getY();
+			//log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}
 		currentPosition.set(sumX / motorCount, sumY / motorCount, gyroPosition);
 	}
@@ -173,6 +194,7 @@ public class Odometry extends LoggingBase {
 			setCurrentEncoderValues();
 			updateCurrentPositions();
 			findRobotPosition();
+			log(currentPosition.toString());
 		}
 		return currentPosition;
 	}
