@@ -260,6 +260,7 @@ public class Arms extends Mechanism {
     public void run(){
         switch(theStateOf1){
             case OFF:
+	    	firstJoint.set(0);
                 break;
             case PID:
                 break;
@@ -270,6 +271,7 @@ public class Arms extends Mechanism {
 
         switch(theStateOf2){
             case OFF:
+	    	secondJoint.set(0);
                 break;
             case PID:
                 break;
