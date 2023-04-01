@@ -33,7 +33,6 @@ public class Arms extends Mechanism {
     private CANSparkMax secondJointCANSparkMax = (CANSparkMax)secondJoint;
     private SparkMaxPIDController secondJointPIDController = secondJointCANSparkMax.getPIDController();
     private SparkMaxAbsoluteEncoder altEncoder2 = secondJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    
 	
     // Non-motor constants
     private static final double doubleDeadZone = 2;
@@ -46,10 +45,6 @@ public class Arms extends Mechanism {
     private ArmState firstJointState = ArmState.ANTIGRAV;
     private ArmState secondJointState = ArmState.ANTIGRAV;
 
-    private ValueProvider<Double> ANTI_GRAV_FIRST_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravFirstJoint");
-    private ValueProvider<Double> ANTI_GRAV_SECOND_JOINT = ConfigFileReader.getInstance().getDouble("arms.antiGravSecondJoint");
-    private static final double ANTI_GRAV_FIRSTSECOND_JOINT = 0.001;
-
     // We want firstJoint/secondJoint being straight-up to be 0 rel encoder units 
     // and counter-clockwise to be positive.
     // All the following variables are in degrees
@@ -59,13 +54,14 @@ public class Arms extends Mechanism {
 	private double firstJointCombo = 0;
 	private double secondJointCombo = 0;
 
-	// TODO: need to be set soon
     private static final double FIRST_JOINT_MAX_LOCATION = 35;
     private static final double FIRST_JOINT_MIN_LOCATION = -40;
     private static final double SECOND_JOINT_MAX_LOCATION = 45;
     private static final double SECOND_JOINT_MIN_LOCATION = -160;
 
 	private RateLimiter runRateLimiter = new RateLimiter(0.05);
+
+    private ArmsAntiGrav antiGrav;
 
     public Arms() {
 		loggerCategory = Category.MECHANISMS;
@@ -115,6 +111,8 @@ public class Arms extends Mechanism {
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
 		altEncoder1.setZeroOffset(0.68);    // TODO: these need tweaking from altEncoder1Offset
 		altEncoder2.setZeroOffset(0.62);
+
+        antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
     }
 
 
@@ -155,11 +153,11 @@ public class Arms extends Mechanism {
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();
-        double firstJointRelEncoder = AbsToEU(firstJointAbsEncoder - altEncoder1Offset);
+        double firstJointRelEncoder = ArmsUtil.AbsToEU(firstJointAbsEncoder - altEncoder1Offset);
 
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
         double secondJointAbsEncoder = altEncoder2.getPosition();
-        double secondJointRelEncoder = AbsToEU(
+        double secondJointRelEncoder = ArmsUtil.AbsToEU(
             firstJointAbsEncoder - altEncoder1Offset
             + secondJointAbsEncoder - altEncoder2Offset);
 
@@ -167,8 +165,8 @@ public class Arms extends Mechanism {
         firstJoint.setSensorPosition(firstJointRelEncoder);
         secondJoint.setSensorPosition(secondJointRelEncoder);
 
-        firstJointPosition = EUTodegrees(firstJointRelEncoder);
-        secondJointPosition = EUTodegrees(secondJointRelEncoder);
+        firstJointPosition = ArmsUtil.EUTodegrees(firstJointRelEncoder);
+        secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
 	// PID for first arm
@@ -182,14 +180,14 @@ public class Arms extends Mechanism {
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
-        value = clampValueToRange(value, FIRST_JOINT_MAX_LOCATION, FIRST_JOINT_MIN_LOCATION);
+        value = ArmsUtil.clampValueToRange(value, FIRST_JOINT_MAX_LOCATION, FIRST_JOINT_MIN_LOCATION);
 
         firstJointPosition = value;
         // if(Math.abs(EUTodegrees(firstJoint.getSensorPosition() )))
-        firstJointPIDController.setReference(degreesToEU(firstJointPosition),
+        firstJointPIDController.setReference(ArmsUtil.degreesToEU(firstJointPosition),
             ControlType.kSmartMotion,
             0,
-            getAntiGravFirstJoint());
+            antiGrav.getFirstJointPower());
         firstJointState = ArmState.PID;
         firstJointCombo = 0;
     }
@@ -201,60 +199,35 @@ public class Arms extends Mechanism {
 
         // If value is out of range, then adjust value.
 
-        value = clampValueToRange(value, SECOND_JOINT_MAX_LOCATION, SECOND_JOINT_MIN_LOCATION);
+        value = ArmsUtil.clampValueToRange(value, SECOND_JOINT_MAX_LOCATION, SECOND_JOINT_MIN_LOCATION);
 
         secondJointPosition = value;
         secondJointPIDController.setReference(
-            degreesToEU(secondJointPosition),
+            ArmsUtil.degreesToEU(secondJointPosition),
             ControlType.kSmartMotion,
             0,
-            getAntiGravSecondJoint());
+            antiGrav.getSecondJointPower());
         secondJointState = ArmState.PID;
         secondJointCombo = 0;
     }
 
-	// These next 3 antiGrav aren't used.
-    public void antiGravBothJoints(){  
+    // These next 3 antiGrav aren't used.
+    public void antiGravBothJoints() {
         antiGravFirstJoint();
         antiGravSecondJoint();
     }
 
     public void antiGravFirstJoint(){
-        firstJoint.set(getAntiGravFirstJoint());
+        antiGrav.updateFirstJoint();
         firstJointState = ArmState.ANTIGRAV;
     }
 
     public void antiGravSecondJoint(){
-        secondJoint.set(getAntiGravSecondJoint());
+        antiGrav.updateSecondJoint();
         secondJointState = ArmState.ANTIGRAV;
     }
 
-    // These next 2 antiGravs are used.
-    private double betterGetAntiGravFirstJoint(){
-        double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
-        double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
-        double massRatio = 2; //ratio between firstJoint and secondJoint
-        double triangleSide1 = 38; // firstJoint length
-        double triangleSide2 = 38; // half secondJoint length
-        double middleAngle = 180-(secondRelEncoderAngle-firstRelEncoderAngle);
-        double triangleSide3 = lawOfCosines(triangleSide1,triangleSide2,middleAngle);
-        double firstSecondJointAngle = firstRelEncoderAngle+lawOfSines(triangleSide3,middleAngle,triangleSide2);
-        double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
-        return (-1*Math.signum(firstRelEncoderAngle) * Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0)) + (-1*Math.signum(firstSecondJointAngle)*triangleSide3 * Math.sin((Math.PI / 180)*firstSecondJointAngle) * ANTI_GRAV_FIRSTSECOND_JOINT);
-    }
-
-    public double getAntiGravFirstJoint(){
-        double firstRelEncoderAngle = EUTodegrees(firstJoint.getSensorPosition());
-        double firstJointAngle = 90-Math.abs(firstRelEncoderAngle);
-        return -1*Math.signum(firstRelEncoderAngle) * (Math.cos((Math.PI / 180) * firstJointAngle) * ANTI_GRAV_FIRST_JOINT.valueOr(0.0));
-    }
-
-    public double getAntiGravSecondJoint(){
-        double secondRelEncoderAngle = EUTodegrees(secondJoint.getSensorPosition());
-        double secondJointAngle = 90-Math.abs(secondRelEncoderAngle);
-        return -1*Math.signum(secondRelEncoderAngle) * (Math.cos((Math.PI / 180) * secondJointAngle) * ANTI_GRAV_SECOND_JOINT.valueOr(0.0));
-    }
-
+	
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
@@ -265,8 +238,8 @@ public class Arms extends Mechanism {
         // log("Second Joint Relative Encoder: " + secondJoint.getSensorPosition());
         // log("First Joint Difference: " + (EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition));
         // log("Second Joint Difference: " + (EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition));
-		log("Degrees Joint 1: "+EUTodegrees(firstJoint.getSensorPosition()));
-		log("Degrees Joint 2: "+EUTodegrees(secondJoint.getSensorPosition()));
+		log("Degrees Joint 1: "+ ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+		log("Degrees Joint 2: "+ ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
 		log("First Joint State: "+firstJointState);
 		log("Second Joint State: "+secondJointState);
         log("First Joint Combo: "+firstJointCombo);
@@ -278,16 +251,18 @@ public class Arms extends Mechanism {
             antiGravFirstJoint();
         } else {
             firstJointPIDController.setReference(
-				degreesToEU(firstJointPosition),
+				ArmsUtil.degreesToEU(firstJointPosition),
 				ControlType.kSmartMotion,
 				0,
-				getAntiGravFirstJoint());
+				antiGrav.getFirstJointPower());
 
-			if (Math.abs(EUTodegrees(firstJoint.getSensorPosition())-firstJointPosition) <= doubleDeadZone){
+			if (Math.abs(ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()) - firstJointPosition) <= doubleDeadZone){
 				firstJointCombo ++;
 			} else {
 				firstJointCombo = 0;
 			}
+
+            // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
             if (firstJointCombo >= 10){
 				firstJointCombo = 0;
@@ -301,16 +276,18 @@ public class Arms extends Mechanism {
             antiGravSecondJoint();
         } else {
             secondJointPIDController.setReference(
-				degreesToEU(secondJointPosition),
+				ArmsUtil.degreesToEU(secondJointPosition),
 				ControlType.kSmartMotion,
 				0,
-				getAntiGravSecondJoint());
+				antiGrav.getSecondJointPower());
             
-			if (Math.abs(EUTodegrees(secondJoint.getSensorPosition())-secondJointPosition) <= doubleDeadZone){
+			if (Math.abs(ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) - secondJointPosition) <= doubleDeadZone){
 				secondJointCombo ++;
 			} else {
 				secondJointCombo = 0;
 			}
+
+            // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
 			if (secondJointCombo >= 10){
                 secondJointCombo = 0;
@@ -320,42 +297,6 @@ public class Arms extends Mechanism {
 			}
         }
     }
-
-    // Helper classes to convert from degrees to EU to absEU
-    public double degreesToEU(double angle){
-        return angle * (44.0 / 90) * (25.0 / 16.0);
-    }
-	
-    public double EUTodegrees(double EU){
-        return EU * (90 / 44.0) * (16.0 / 25.0);
-    }
-
-    public double AbsToEU(double abs){
-        return degreesToEU(360 * abs);
-    }
-
-    public double EUToAbs(double EU){
-        return EUTodegrees(EU) / 360.0;
-    }
-
-    public double lawOfCosines(double side1, double side2, double angle){ // angle in degrees
-        double side3Squared = (Math.pow(side1,2.0)+Math.pow(side2,2.0)-2*side1*side2*Math.cos(Math.toRadians(angle)));
-        return Math.sqrt(side3Squared);
-    }
-
-    public double lawOfSines(double side1, double angle1, double side2){
-        return Math.asin(side2*Math.sin(angle1)/side1);
-    }
-
-    private double clampValueToRange(double value, double max, double min) {
-        if(value > max){ 
-            value = max;
-        } else if( value < min){
-            value = min;
-        }
-        return value;
-    }
-
 }
 
 /* ~~ Code Review ~~
