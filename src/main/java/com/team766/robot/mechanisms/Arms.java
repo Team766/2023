@@ -148,7 +148,7 @@ public class Arms extends Mechanism {
             value = FIRST_JOINT_MIN_LOCATION;
         }
 
-        if(value + doubleDeadZone < altEncoder1.getSensorPosition() && value - doubleDeadZone > altEncoder1.getSensorPosition()){
+        if(value + doubleDeadZone < altEncoder1.getPosition() && value - doubleDeadZone > altEncoder1.getPosition()){
             getAntiGravFirstJoint();
         }else{
             firstJointPIDController.setFeedbackDevice(altEncoder1);
@@ -165,7 +165,7 @@ public class Arms extends Mechanism {
             value = SECOND_JOINT_MIN_LOCATION;
         }
 
-        if(value + doubleDeadZone < altEncoder2.getSensorPosition() && value - doubleDeadZone > altEncoder2.getSensorPosition()){
+        if(value + doubleDeadZone < altEncoder2.getPosition() && value - doubleDeadZone > altEncoder2.getPosition()){
             getAntiGravSecondJoint();
         }else{
             secondJointPIDController.setFeedbackDevice(altEncoder1);
