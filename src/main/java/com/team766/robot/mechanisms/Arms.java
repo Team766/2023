@@ -354,7 +354,7 @@ public class Arms extends Mechanism {
 			if (secondJointCombo >= 6){
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                //resetEncoders();
+                resetEncoders();
 				theStateOf2 = ArmState.ANTIGRAV;
 			}
 
