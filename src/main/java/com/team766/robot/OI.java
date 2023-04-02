@@ -198,29 +198,27 @@ public class OI extends Procedure {
 			//THEY HAVE NOT BEEN TESTED!!!
 
 			if(controlPanel.getButton(InputConstants.CONE_HIGH)) {
-				Robot.arms.pidForArmOne(-20);
-				Robot.arms.pidForArmTwo(-60);
+				Robot.arms.pidForArmOne(-17.379);
+				Robot.arms.pidForArmTwo(-66.61);
 			}
 			if(controlPanel.getButton(InputConstants.CONE_MID)) {
-				Robot.arms.pidForArmOne(-15);
-				Robot.arms.pidForArmTwo(-90);
+				Robot.arms.pidForArmOne(7.7765);
+				Robot.arms.pidForArmTwo(-88.703);
 			}
 			if(controlPanel.getButton(InputConstants.ARM_READY)) {
-				Robot.arms.pidForArmOne(0);
+				Robot.arms.pidForArmOne(17.269);
 				Robot.arms.pidForArmTwo(-90);
 			}
 			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
-				Robot.arms.pidForArmOne(-30);
-				Robot.arms.pidForArmTwo(-30);
+				Robot.arms.pidForArmOne(22.73);
+				Robot.arms.pidForArmTwo(-69.664);
 			}
 			if(controlPanel.getButton(InputConstants.UNSTOWED)) {
-				Robot.arms.pidForArmOne(-20);
-				Robot.arms.pidForArmTwo(-160);
+				Robot.arms.pidForArmOne(17.269);
+				Robot.arms.pidForArmTwo(-144.387);
 			}
-			if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
-				Robot.arms.pidForArmOne(0);
-				Robot.arms.pidForArmTwo(-170);
-			}
+
+			Robot.arms.logs();
 
 		}
 	}

@@ -42,7 +42,7 @@ public class Arms extends Mechanism {
 	private double secondJointCombo = 0;
 
     // This sets the maximum locations so we can use them in code to make sure the arm joints dont go past there.
-    private static final double FIRST_JOINT_MAX_LOCATION = 35;
+    private static final double FIRST_JOINT_MAX_LOCATION = 27.3;
     private static final double FIRST_JOINT_MIN_LOCATION = -40;
     private static final double SECOND_JOINT_MAX_LOCATION = 45;
     private static final double SECOND_JOINT_MIN_LOCATION = -160;
@@ -250,6 +250,11 @@ public class Arms extends Mechanism {
     public void antiGravSecondJoint() {
         antiGrav.updateSecondJoint();
         theStateOf2 = ArmState.ANTIGRAV;
+    }
+
+    public void logs(){
+        log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
     }
 	
     @Override
