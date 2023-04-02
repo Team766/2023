@@ -215,7 +215,7 @@ public class OI extends Procedure {
 			}
 			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
 				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-67.664);
+				Robot.arms.pidForArmTwo(-68.964);
 			}
 			if(controlPanel.getButton(InputConstants.UNSTOWED)) {
 				Robot.arms.pidForArmOne(17.269);

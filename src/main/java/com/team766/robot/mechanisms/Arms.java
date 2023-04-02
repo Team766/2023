@@ -3,6 +3,7 @@ package com.team766.robot.mechanisms;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
@@ -208,7 +209,7 @@ public class Arms extends Mechanism {
             antiGrav.getFirstJointPower());
         theStateOf1 = ArmState.PID;
         firstJointCombo = 0;
-        resetEncoders();   
+          
     }
 
 	// PID for second arm
@@ -228,7 +229,7 @@ public class Arms extends Mechanism {
             antiGrav.getSecondJointPower());
         theStateOf2 = ArmState.PID;
         secondJointCombo = 0;
-        resetEncoders();
+    
     }
 
     // Use these for manual pid based angle increment/decrement
@@ -282,6 +283,8 @@ public class Arms extends Mechanism {
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
+        IdleMode idleMode = ((CANSparkMax) secondJoint).getIdleMode();
+        SmartDashboard.putString("Idle Mode", (idleMode != null) ? idleMode.toString(): "null");
         if (theStateOf1 == ArmState.PID || theStateOf2 == ArmState.PID) {
             log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
             log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
