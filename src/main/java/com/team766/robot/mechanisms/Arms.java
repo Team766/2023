@@ -33,6 +33,10 @@ public class Arms extends Mechanism {
     // This is the deadzone, so that the arm(s) don't oscillate. For example, a value of 5 means a 5 relitive encoder unit deadzone in each direction.
     private static final double doubleDeadZone = 2;
 
+    // default max velocity
+    private static final double firstJointMaxVelocity = 4000;
+    private static final double secondJointMaxVelocity = 4000;
+
     // We want firstJoint/secondJoint being straight-up to be 0 rel encoder units 
     // and counter-clockwise to be positive.
     // All the following variables are in degrees
@@ -49,7 +53,7 @@ public class Arms extends Mechanism {
 
     private RateLimiter runRateLimiter = new RateLimiter(0.05);
 
-    enum ArmState {
+    public enum ArmState {
         PID,
         ANTIGRAV,
         OFF
@@ -96,7 +100,7 @@ public class Arms extends Mechanism {
         // These next things deal a lot with the PID SmartMotion
         firstJointCANSparkMax.setInverted(false);
         // TODO : consider decrease velocity instead of decreasing power
-        firstJointPIDController.setSmartMotionMaxVelocity(4000, 0);
+        firstJointPIDController.setSmartMotionMaxVelocity(firstJointMaxVelocity, 0);
         firstJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         firstJointPIDController.setSmartMotionMaxAccel(3000, 0);
         // firstJointPIDController.setOutputRange(-0.75, 0.75);
@@ -105,7 +109,7 @@ public class Arms extends Mechanism {
         // Do not use setSmartMotionAllowedClosedLoopError(5, 0) unless it is safe to test without destorying anything
 
         // These too
-        secondJointPIDController.setSmartMotionMaxVelocity(4000, 0);
+        secondJointPIDController.setSmartMotionMaxVelocity(secondJointMaxVelocity, 0);
         secondJointPIDController.setSmartMotionMinOutputVelocity(0, 0);
         secondJointPIDController.setSmartMotionMaxAccel(3000, 0);
         secondJointPIDController.setOutputRange(-1, 1);
@@ -173,22 +177,22 @@ public class Arms extends Mechanism {
         secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
-	// PID for first arm
     /**
      * Set PID for the first joint.
      * 
-     * @param value desired position in degrees.
+     * @param targetDegrees desired position in degrees.
+     * @param maxVelocity maximum velocity
      */
-    public void pidForArmOne(double value) {
+    public void pidForArmOne(double targetDegrees, double maxVelocity) {
         // This will be run once
         // log("First Joint Absolute Encoder: " + altEncoder1.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
-        value = com.team766.math.Math.clamp(value, FIRST_JOINT_MIN_LOCATION, FIRST_JOINT_MAX_LOCATION);
+        targetDegrees = com.team766.math.Math.clamp(targetDegrees, FIRST_JOINT_MIN_LOCATION, FIRST_JOINT_MAX_LOCATION);
 
-        firstJointPosition = value;
-        // if(Math.abs(EUTodegrees(firstJoint.getSensorPosition() )))
+        firstJointPosition = targetDegrees;
+        firstJointPIDController.setSmartMotionMaxVelocity(maxVelocity, 0);
         firstJointPIDController.setReference(ArmsUtil.degreesToEU(firstJointPosition),
             ControlType.kSmartMotion,
             0,
@@ -197,16 +201,21 @@ public class Arms extends Mechanism {
         firstJointCombo = 0;
     }
 
+    public void pidForArmOne(double targetDegrees) {
+        pidForArmOne(targetDegrees, firstJointMaxVelocity);
+    }
+
 	// PID for second arm
-    public void pidForArmTwo(double value) {
+    public void pidForArmTwo(double targetDegrees, double maxVelocity) {
         // log("Second Joint Absolute Encoder: " + altEncoder2.getPosition());
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
 
-        value = com.team766.math.Math.clamp(value, SECOND_JOINT_MIN_LOCATION, SECOND_JOINT_MAX_LOCATION);
+        targetDegrees = com.team766.math.Math.clamp(targetDegrees, SECOND_JOINT_MIN_LOCATION, SECOND_JOINT_MAX_LOCATION);
 
-        secondJointPosition = value;
+        secondJointPosition = targetDegrees;
+        secondJointPIDController.setSmartMotionMaxVelocity(maxVelocity, 0);
         secondJointPIDController.setReference(
             ArmsUtil.degreesToEU(secondJointPosition),
             ControlType.kSmartMotion,
@@ -214,6 +223,10 @@ public class Arms extends Mechanism {
             antiGrav.getSecondJointPower());
         theStateOf2 = ArmState.PID;
         secondJointCombo = 0;
+    }
+    
+    public void pidForArmTwo(double targetDegrees) {
+        pidForArmTwo(targetDegrees, secondJointMaxVelocity);
     }
 
     // Use these for manual pid based angle increment/decrement
@@ -247,6 +260,14 @@ public class Arms extends Mechanism {
     public void antiGravSecondJoint() {
         antiGrav.updateSecondJoint();
         theStateOf2 = ArmState.ANTIGRAV;
+    }
+
+    public boolean isFirstJointPidding() {
+        return theStateOf1 == ArmState.PID;
+    }
+
+    public boolean isSecondJointPidding() {
+        return theStateOf2 == ArmState.PID;
     }
 
     public void logs(){
