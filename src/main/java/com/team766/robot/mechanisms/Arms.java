@@ -126,8 +126,10 @@ public class Arms extends Mechanism {
         // to avoid wrap-around errors
         // first joint zero is horizontal parallel to ground
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
-		altEncoder1.setZeroOffset(0.68);    // TODO: these need tweaking from altEncoder1Offset
-		altEncoder2.setZeroOffset(0.62);
+		altEncoder1.setZeroOffset(0.655);    // TODO: these need tweaking from altEncoder1Offset
+		altEncoder2.setZeroOffset(0.627);
+        SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
+        SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
 
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
 
@@ -150,6 +152,15 @@ public class Arms extends Mechanism {
         secondJoint.set(power);
     }
 
+    public void coast(){
+        firstJoint.setNeutralMode(NeutralMode.Coast);
+        secondJoint.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public void brake(){
+        firstJoint.setNeutralMode(NeutralMode.Brake);
+        secondJoint.setNeutralMode(NeutralMode.Brake);
+    }
     public double nudgeArm2up(){
         return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) +1);
     }
@@ -164,10 +175,10 @@ public class Arms extends Mechanism {
         // TODO: this offset is to factor in the difference between the
         //       "zero" for alt encoder and the "zero" when we use degrees
         //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
-        // double altEncoder1Offset = 0.25;
-        final double altEncoder1Offset = 0.225;
-        // double altEncoder2Offset = 0.5;
-        final double altEncoder2Offset = 0.493;
+        final double altEncoder1Offset = 0.25;
+        // final double altEncoder1Offset = 0.22calc5;
+        final double altEncoder2Offset = 0.5;
+        //final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();

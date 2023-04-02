@@ -30,7 +30,8 @@ public final class InputConstants {
 	public static final int INTAKE = 5;
 	public static final int UNSTOWED = 6;
 	public static final int ARM_READY = 7;
-	public static final int IN_CHASSIS = 8;
+	public static final int BRAKE = 8;
+	public static final int COAST = 15;
 	public static final int NUDGE_DOWN = 9;
 	public static final int OUTTAKE = 10;
 
