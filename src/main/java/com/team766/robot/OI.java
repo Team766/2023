@@ -145,7 +145,7 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			}
-			if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
+			/* if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakePistonless();
 					Robot.storage.beltIn();
@@ -155,7 +155,7 @@ public class OI extends Procedure {
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
-			} 
+			} */
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
@@ -210,7 +210,7 @@ public class OI extends Procedure {
 				Robot.arms.pidForArmTwo(-88.703);
 			}
 			if(controlPanel.getButton(InputConstants.ARM_READY)) {
-				Robot.arms.pidForArmOne(17.269);
+				Robot.arms.pidForArmOne(0);
 				Robot.arms.pidForArmTwo(-90);
 			}
 			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
@@ -225,7 +225,13 @@ public class OI extends Procedure {
 				Robot.arms.pidForArmOne(22.73);
 				Robot.arms.pidForArmTwo(-73.664);
 			}
+			if(controlPanel.getButton(InputConstants.NUDGE_UP)){
+				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
+			}
 
+			if(controlPanel.getButton(InputConstants.NUDGE_DOWN)){
+				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2down());
+			}
 			Robot.arms.logs();
 
 			if(controlPanel.getButton(InputConstants.GRAB_IN)){

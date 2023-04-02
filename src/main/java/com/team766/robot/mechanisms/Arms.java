@@ -4,6 +4,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
@@ -13,6 +14,8 @@ import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 //This is for the motor that controls the pulley
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arms extends Mechanism {
     /*
@@ -65,6 +68,9 @@ public class Arms extends Mechanism {
 
     public Arms() {
 		loggerCategory = Category.MECHANISMS;
+
+        firstJoint.setNeutralMode(NeutralMode.Brake);
+        secondJoint.setNeutralMode(NeutralMode.Brake);
 
         // PID Constants
 		ValueProvider<Double> firstJointP = ConfigFileReader.getInstance().getDouble("arms.firstJointP");
@@ -143,6 +149,13 @@ public class Arms extends Mechanism {
         secondJoint.set(power);
     }
 
+    public double nudgeArm2up(){
+        return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) +1);
+    }
+
+    public double nudgeArm2down(){
+        return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) -1);
+    }
     // Resets encoders
     public void resetEncoders() {
         checkContextOwnership();
@@ -195,6 +208,7 @@ public class Arms extends Mechanism {
             antiGrav.getFirstJointPower());
         theStateOf1 = ArmState.PID;
         firstJointCombo = 0;
+        resetEncoders();   
     }
 
 	// PID for second arm
@@ -214,6 +228,7 @@ public class Arms extends Mechanism {
             antiGrav.getSecondJointPower());
         theStateOf2 = ArmState.PID;
         secondJointCombo = 0;
+        resetEncoders();
     }
 
     // Use these for manual pid based angle increment/decrement
@@ -255,6 +270,13 @@ public class Arms extends Mechanism {
     public void logs(){
         log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
         log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        log("AE1: " + Math.toDegrees(altEncoder1.getPosition()));
+        log("AE2: " + Math.toDegrees(altEncoder2.getPosition()));
+        SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
+        SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
+
     }
 	
     @Override
@@ -301,7 +323,7 @@ public class Arms extends Mechanism {
             if (firstJointCombo >= 6){
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                // resetEncoders();
+                resetEncoders();
                 theStateOf1 = ArmState.ANTIGRAV;
             }
 

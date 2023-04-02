@@ -26,11 +26,12 @@ public final class InputConstants {
 	public static final int CONE_HIGH = 1;
 	public static final int CONE_MID = 2;
 	public static final int HUMANPLAYER_PICKUP = 3;
+	public static final int NUDGE_UP = 4;
 	public static final int INTAKE = 5;
 	public static final int UNSTOWED = 6;
 	public static final int ARM_READY = 7;
 	public static final int IN_CHASSIS = 8;
-	public static final int INTAKE_PISTONLESS = 9;
+	public static final int NUDGE_DOWN = 9;
 	public static final int OUTTAKE = 10;
 
 	public static final int RESET_GYRO = 11;
