@@ -34,6 +34,9 @@ public class OI extends Procedure {
 	private boolean isCross = false;
 	private IntakeState intakeState = IntakeState.IDLE;
 
+	private static final double HighConeArm1 = 0;
+	private static final double CHA2 = 0;
+	private static final double CMA1 = 0;
 	// enum generalControl{
 	// 	CONE_HIGH_NODE,
 	// 	CUBE_HIGH_NODE,
@@ -66,7 +69,8 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.arms);
 		context.takeOwnership(Robot.storage);
 		context.takeOwnership(Robot.gyro);
-
+		context.takeOwnership(Robot.grabber);
+		
 		CameraServer.startAutomaticCapture();
 
 		while (true) {
@@ -219,6 +223,14 @@ public class OI extends Procedure {
 			}
 
 			Robot.arms.logs();
+
+			if(controlPanel.getButtonPressed(InputConstants.GRAB_IN)){
+				Robot.grabber.grabberPickUp();
+			} else if(controlPanel.getButtonPressed(InputConstants.GRAB_OUT)){
+				Robot.grabber.grabberLetGo();
+			} else {
+				Robot.grabber.grabberStop();
+			}
 
 		}
 	}

@@ -35,18 +35,19 @@ public class ArmsAnimation {
 	}
 
 	private AnimationState currentAnimationState = AnimationState.DISABLED;
+	private AnimationState targetAnimationState = AnimationState.DISABLED;
 
 	public final HashMap<AnimationState, Waypoint> waypoints = new HashMap<AnimationState, Waypoint>();
 	
 	public ArmsAnimation() {
 		// TODO: these are just estimates, calibrate on before using otherwise something may break :D
-		waypoints.put(AnimationState.DISABLED,				null);
-		waypoints.put(AnimationState.STOWED, 				new Waypoint(0, -150, ProceedCondition.BOTH_JOINTS_REACHED, 500 ));
-		waypoints.put(AnimationState.UNSTOWED, 				new Waypoint(10, -140,ProceedCondition.JOINT_ONE_REACHED_ONLY, 3000));
-		waypoints.put(AnimationState.PREP, 					new Waypoint(10, -90, ProceedCondition.BOTH_JOINTS_REACHED, 4000));
-		waypoints.put(AnimationState.PLAYER_STATION_CONE, 	new Waypoint(-20, -80, ProceedCondition.BOTH_JOINTS_REACHED, 3000));
-		waypoints.put(AnimationState.MID_GOAL, 				new Waypoint(-20, -110, ProceedCondition.BOTH_JOINTS_REACHED, 3000));
-		waypoints.put(AnimationState.HIGH_GOAL, 			new Waypoint(-20, -50, ProceedCondition. BOTH_JOINTS_REACHED, 3000));
+		//waypoints.put(AnimationState.DISABLED,				null);
+		//waypoints.put(AnimationState.STOWED, 				new Waypoint(0, -150, ProceedCondition.BOTH_JOINTS_REACHED, 500 ));
+		waypoints.put(AnimationState.UNSTOWED, 				new Waypoint(17.269, -144.387,ProceedCondition.JOINT_ONE_REACHED_ONLY, 3000));
+		waypoints.put(AnimationState.PREP, 					new Waypoint(17.269, -90, ProceedCondition.BOTH_JOINTS_REACHED, 4000));
+		waypoints.put(AnimationState.PLAYER_STATION_CONE, 	new Waypoint(22.73, -69.664, ProceedCondition.BOTH_JOINTS_REACHED, 3000));
+		waypoints.put(AnimationState.MID_GOAL, 				new Waypoint(7.7765, -88.703, ProceedCondition.BOTH_JOINTS_REACHED, 3000));
+		waypoints.put(AnimationState.HIGH_GOAL, 			new Waypoint(-17.379, -66.61, ProceedCondition. BOTH_JOINTS_REACHED, 3000));
 	}
 
 	public void update() {
@@ -56,6 +57,9 @@ public class ArmsAnimation {
 
 	public void changeState(AnimationState targetState) {
 		// valid states: DISABLED, STOWED, PLAYER_STATION_CONE, MID_GOAL, HIGH_GOAL
+		// switch(targetState) {
+		// 	case
+		// }
 
 		// TODO : ensure that state transitions are allowed
 		// TODO : special case for stowing, to keep applying power

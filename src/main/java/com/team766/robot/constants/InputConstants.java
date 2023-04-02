@@ -36,6 +36,9 @@ public final class InputConstants {
 	public static final int RESET_GYRO = 11;
 	public static final int RESET_POS = 12;
 
+	public static final int GRAB_IN = 13;
+	public static final int GRAB_OUT = 14;
+
 	public static final int ANTI_GRAV = 16;
 
 
