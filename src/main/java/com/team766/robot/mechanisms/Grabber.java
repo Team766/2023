@@ -9,6 +9,7 @@ public class Grabber extends Mechanism {
 
 	public Grabber(){
 		grabby = RobotProvider.instance.getMotor("arms.grabber");
+		grabby.setCurrentLimit(10.0);
 	}
 
 	public void grabberPickUp(){
@@ -19,7 +20,7 @@ public class Grabber extends Mechanism {
 
 	public void grabberLetGo(){
 		checkContextOwnership();
-		grabby.set(-1.0);
+		grabby.set(-0.5);
 	}
 
 	public void grabberStop(){

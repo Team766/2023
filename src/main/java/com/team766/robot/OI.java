@@ -215,18 +215,22 @@ public class OI extends Procedure {
 			}
 			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
 				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-69.664);
+				Robot.arms.pidForArmTwo(-67.664);
 			}
 			if(controlPanel.getButton(InputConstants.UNSTOWED)) {
 				Robot.arms.pidForArmOne(17.269);
 				Robot.arms.pidForArmTwo(-144.387);
 			}
+			if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
+				Robot.arms.pidForArmOne(22.73);
+				Robot.arms.pidForArmTwo(-73.664);
+			}
 
 			Robot.arms.logs();
 
-			if(controlPanel.getButtonPressed(InputConstants.GRAB_IN)){
+			if(controlPanel.getButton(InputConstants.GRAB_IN)){
 				Robot.grabber.grabberPickUp();
-			} else if(controlPanel.getButtonPressed(InputConstants.GRAB_OUT)){
+			} else if(controlPanel.getButton(InputConstants.GRAB_OUT)){
 				Robot.grabber.grabberLetGo();
 			} else {
 				Robot.grabber.grabberStop();
