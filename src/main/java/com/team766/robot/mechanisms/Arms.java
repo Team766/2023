@@ -225,8 +225,6 @@ public class Arms extends Mechanism {
         pidForArmTwo(firstJointPosition + degrees);
     }
 
-    // PID For arm one
-
     // public void checkJointTwo(double value){
     //     if((value + doubleDeadZone > secondJoint.getSensorPosition() && value - doubleDeadZone < secondJoint.getSensorPosition())){
     //         jointOneCanContinue = true;
@@ -235,9 +233,8 @@ public class Arms extends Mechanism {
     //     }
     // }
 
-    //This is our portion with antigrav
-	// These next 3 antiGrav aren't used.
-    public void antiGravBothJoints(){
+    // This is our portion with antigrav
+    public void antiGravBothJoints() {
         antiGravFirstJoint();
         antiGravSecondJoint();
     }

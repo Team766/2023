@@ -48,11 +48,6 @@ public final class ArmsUtil {
 	}
 
 	public static double clampValueToRange(double value, double min, double max) {
-		if(value > max){ 
-			value = max;
-		} else if( value < min){
-			value = min;
-		}
-		return value;
+		return Math.min(Math.max(value, min), max);
 	}
 }
