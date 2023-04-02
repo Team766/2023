@@ -18,7 +18,6 @@ public class CanivPoller implements Runnable {
 	private static final String CANIV_PATH = "/usr/bin";
 	public static final String CANIV_BIN = CANIV_PATH + "/" + "caniv";
 	private static final String CANIV_ARGS[] = { CANIV_BIN, "-a", "-i" }; // because, AI
-	private static final int PROCESS_TIMEOUT_MILLIS = 2500;
 
 	private final Logger logger = Logger.get(Category.DRIVE);
 
@@ -46,7 +45,7 @@ public class CanivPoller implements Runnable {
 				while ((line = reader.readLine()) != null) {
 					if (line.isEmpty()) continue;
 					logger.logRaw(Severity.INFO, line);
-					String[] keyValue = line.split(":");
+					String[] keyValue = line.split(":", 2);
 					if (keyValue.length != 2) continue;
 					keyValue[0] = keyValue[0].trim();
 					keyValue[1] = keyValue[1].trim();
@@ -60,11 +59,18 @@ public class CanivPoller implements Runnable {
 
 				process.destroy();
 
-				Thread.sleep(periodMillis); // TODO: measure execution time, adjust sleep.
 			} catch (Exception e) {
 				logger.logRaw(Severity.ERROR, "Exception caught trying to execute or parse output from caniv: " 
 				  + e.getMessage());
 				e.printStackTrace();
+			}
+
+			try {
+				Thread.sleep(periodMillis); // TODO: measure execution time, adjust sleep.
+			} catch (Exception e) {
+				logger.logRaw(Severity.ERROR, "Exception caught trying to sleep: " 
+				+ e.getMessage());
+			  	e.printStackTrace();	
 			}
 		}
 	}
