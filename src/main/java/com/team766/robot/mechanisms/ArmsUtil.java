@@ -46,8 +46,4 @@ public final class ArmsUtil {
 	public static double lawOfSines(double side1, double angle1, double side2) {
 		return Math.asin(side2*Math.sin(angle1)/side1);
 	}
-
-	public static double clampValueToRange(double value, double min, double max) {
-		return Math.min(Math.max(value, min), max);
-	}
 }

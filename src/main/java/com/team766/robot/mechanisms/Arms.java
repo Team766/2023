@@ -185,7 +185,7 @@ public class Arms extends Mechanism {
         // log("" + firstJointCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle).getPosition());
 
         // If value is out of range, then adjust value.
-        value = ArmsUtil.clampValueToRange(value, FIRST_JOINT_MIN_LOCATION, FIRST_JOINT_MAX_LOCATION);
+        value = com.team766.math.Math.clamp(value, FIRST_JOINT_MIN_LOCATION, FIRST_JOINT_MAX_LOCATION);
 
         firstJointPosition = value;
         // if(Math.abs(EUTodegrees(firstJoint.getSensorPosition() )))
@@ -204,7 +204,7 @@ public class Arms extends Mechanism {
 
         // If value is out of range, then adjust value.
 
-        value = ArmsUtil.clampValueToRange(value, SECOND_JOINT_MIN_LOCATION, SECOND_JOINT_MAX_LOCATION);
+        value = com.team766.math.Math.clamp(value, SECOND_JOINT_MIN_LOCATION, SECOND_JOINT_MAX_LOCATION);
 
         secondJointPosition = value;
         secondJointPIDController.setReference(
