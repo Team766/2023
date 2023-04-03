@@ -156,6 +156,15 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			} 
+			//grabber OI
+			if(controlPanel.getButtonPressed(InputConstants.GRAB_IN)){
+				Robot.grabber.grabberPickUp();
+			} else if(controlPanel.getButtonPressed(InputConstants.GRAB_OUT)){
+				Robot.grabber.grabberLetGo();
+			} else {
+				Robot.grabber.grabberStop();
+			}
+
 
 			// Sets the wheels to the cross position if the cross button is pressed
 			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
