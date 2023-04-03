@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
+import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
@@ -40,11 +41,23 @@ public class RobotMain extends TimedRobot {
 				return instance;
 			}
 		};
+		
+		// periodically poll "caniv" in the background, if present
+		CanivPoller canivPoller = null;
+		if (new File(CanivPoller.CANIV_BIN).exists()) {
+			canivPoller = new CanivPoller(10*1000 /* millis */);
+			new Thread(canivPoller, "caniv poller").start();
+		}
+
 		try {
 			RobotBase.startRobot(supplier);
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);
+		}
+
+		if (canivPoller != null) {
+			canivPoller.setDone(true);
 		}
 	}
 
