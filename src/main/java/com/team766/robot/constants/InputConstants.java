@@ -11,6 +11,7 @@ public final class InputConstants {
 	public static final int LEFT_JOYSTICK = 0;
 	public static final int RIGHT_JOYSTICK = 1;
 	public static final int CONTROL_PANEL = 2;
+	public static final int E_STOP = 4;
 
 	//Navigation
 	public static final int AXIS_LEFT_RIGHT = 0;
