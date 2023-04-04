@@ -83,6 +83,7 @@ public class OI extends Procedure {
 			
 			Robot.voltageController.displayPower();
 			Robot.voltageController.powerWarning();
+			Robot.voltageController.currentWarning();
 			
 			if (controlPanel.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
