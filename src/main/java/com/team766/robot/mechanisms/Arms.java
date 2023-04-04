@@ -47,7 +47,7 @@ public class Arms extends Mechanism {
 
     // This sets the maximum locations so we can use them in code to make sure the arm joints dont go past there.
     private static final double FIRST_JOINT_MAX_LOCATION = 27.3;
-    private static final double FIRST_JOINT_MIN_LOCATION = -40;
+    private static final double FIRST_JOINT_MIN_LOCATION = -45;
     private static final double SECOND_JOINT_MAX_LOCATION = 45;
     private static final double SECOND_JOINT_MIN_LOCATION = -160;
 
@@ -134,7 +134,8 @@ public class Arms extends Mechanism {
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
 
         // We only want to resetEncoders after configs are loaded, offsets are set, etc
-        resetEncoders();
+        resetFirstEncoders();
+        resetSecondEncoders();
     }
 
     // This allows the pulley motor power to be changed, usually manually
@@ -169,7 +170,7 @@ public class Arms extends Mechanism {
         return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) -1);
     }
     // Resets encoders
-    public void resetEncoders() {
+    public void resetFirstEncoders() {
         checkContextOwnership();
 
         // TODO: this offset is to factor in the difference between the
@@ -184,17 +185,33 @@ public class Arms extends Mechanism {
         double firstJointAbsEncoder = altEncoder1.getPosition();
         double firstJointRelEncoder = ArmsUtil.AbsToEU(firstJointAbsEncoder - altEncoder1Offset);
 
+        // set the sensor positions and setpoint of our rel encoders
+        firstJoint.setSensorPosition(firstJointRelEncoder);
+        firstJointPosition = ArmsUtil.EUTodegrees(firstJointRelEncoder);
+    }
+
+    public void resetSecondEncoders() {
+        checkContextOwnership();
+
+        // TODO: this offset is to factor in the difference between the
+        //       "zero" for alt encoder and the "zero" when we use degrees
+        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
+        final double altEncoder1Offset = 0.25;
+        // final double altEncoder1Offset = 0.22calc5;
+        final double altEncoder2Offset = 0.5;
+        //final double altEncoder2Offset = 0.493;
+
+        // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
+
+        double firstJointAbsEncoder = altEncoder1.getPosition();
         double secondJointAbsEncoder = altEncoder2.getPosition();
         double secondJointRelEncoder = ArmsUtil.AbsToEU(
             firstJointAbsEncoder - altEncoder1Offset
             + secondJointAbsEncoder - altEncoder2Offset);
 
-        // set the sensor positions of our rel encoders
-        firstJoint.setSensorPosition(firstJointRelEncoder);
+        // set the sensor positions and setpoint of our rel encoders
         secondJoint.setSensorPosition(secondJointRelEncoder);
-
-        firstJointPosition = ArmsUtil.EUTodegrees(firstJointRelEncoder);
         secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
@@ -337,7 +354,7 @@ public class Arms extends Mechanism {
             if (firstJointCombo >= 6){
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetEncoders();
+                resetFirstEncoders();
                 theStateOf1 = ArmState.ANTIGRAV;
             }
 
@@ -368,7 +385,7 @@ public class Arms extends Mechanism {
 			if (secondJointCombo >= 6){
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetEncoders();
+                resetSecondEncoders();
 				theStateOf2 = ArmState.ANTIGRAV;
 			}
 

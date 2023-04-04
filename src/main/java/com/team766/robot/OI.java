@@ -201,25 +201,25 @@ public class OI extends Procedure {
 			//DO NOT USE THESE VALUES
 			//THEY HAVE NOT BEEN TESTED!!!
 
-			if(controlPanel.getButton(InputConstants.CONE_HIGH)) {
+			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				Robot.arms.pidForArmOne(-17.379);
 				Robot.arms.pidForArmTwo(-66.61);
 			}
-			if(controlPanel.getButton(InputConstants.CONE_MID)) {
-				Robot.arms.pidForArmOne(7.7765);
-				Robot.arms.pidForArmTwo(-88.703);
+			if(controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
+				Robot.arms.pidForArmOne(3.7765);
+				Robot.arms.pidForArmTwo(-97.703);
 			}
-			if(controlPanel.getButton(InputConstants.ARM_READY)) {
-				Robot.arms.pidForArmOne(0);
+			if(controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
+				Robot.arms.pidForArmOne(17.269);
 				Robot.arms.pidForArmTwo(-90);
 			}
-			if(controlPanel.getButton(InputConstants.HUMANPLAYER_PICKUP)) {
+			if(controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
 				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-68.964);
+				Robot.arms.pidForArmTwo(-70.964);
 			}
-			if(controlPanel.getButton(InputConstants.UNSTOWED)) {
+			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
 				Robot.arms.pidForArmOne(17.269);
-				Robot.arms.pidForArmTwo(-144.387);
+				Robot.arms.pidForArmTwo(-152.387);
 			}
 			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
 				Robot.arms.pidForArmOne(22.73);
