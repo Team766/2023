@@ -215,7 +215,7 @@ public class OI extends Procedure {
 			}
 			if(controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
 				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-70.964);
+				Robot.arms.pidForArmTwo(-76.964);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
 				Robot.arms.pidForArmOne(17.269);
@@ -246,6 +246,10 @@ public class OI extends Procedure {
 				Robot.arms.brake();
 			} else if (controlPanel.getButtonPressed(InputConstants.COAST)) {
 				Robot.arms.coast();
+			}
+
+			if(leftJoystick.getButtonPressed(InputConstants.E_STOP)){
+				Robot.arms.E_STOP();
 			}
 
 		}

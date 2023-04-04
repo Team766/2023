@@ -215,6 +215,11 @@ public class Arms extends Mechanism {
         secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
+    public void E_STOP(){
+        theStateOf1 = ArmState.OFF;
+        theStateOf2 = ArmState.OFF;
+    }
+
 	// PID for first arm
     /**
      * Set PID for the first joint.
