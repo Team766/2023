@@ -197,10 +197,6 @@ public class OI extends Procedure {
 			// 	context.startAsync(new setCross());
 			// }
 
-
-			//DO NOT USE THESE VALUES
-			//THEY HAVE NOT BEEN TESTED!!!
-
 			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				Robot.arms.pidForArmOne(-17.379);
 				Robot.arms.pidForArmTwo(-66.61);

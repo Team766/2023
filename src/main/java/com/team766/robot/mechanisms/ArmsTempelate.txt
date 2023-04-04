@@ -1,8 +1,0 @@
-To manually change pid values...
-        firstJointEx.setP(0.1);
-        firstJointEx.setD(0.003);
-        firstJointEx.setOutputRange(-0.75, 0.75);
-
-To get pid values from the config file for use on roborio controller
-        pid = PIDController.loadFromConfig("ArmJoint1");
-        pid4arm2 = PIDController.loadFromConfig("ArmJoint2");
