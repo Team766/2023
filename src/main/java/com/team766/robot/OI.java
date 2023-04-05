@@ -244,8 +244,8 @@ public class OI extends Procedure {
 				Robot.arms.coast();
 			}
 
-			if(leftJoystick.getButtonPressed(InputConstants.E_STOP)){
-				Robot.arms.E_STOP();
+			if(leftJoystick.getButtonPressed(InputConstants.ARM_STOP)){
+				Robot.arms.armStop();
 			}
 
 		}
