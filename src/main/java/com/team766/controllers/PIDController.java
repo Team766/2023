@@ -48,7 +48,6 @@ public class PIDController {
 	private double prev_error = 0;
 	private double error_rate = 0;
 	private double total_error = 0;
-	private double target_velocity = 0;
 
 	private double output_value = 0;
 	
@@ -270,63 +269,9 @@ public class PIDController {
 		pr("	Total Error: " + total_error + "		Current Error: " + cur_error +
 		   "	Output: " + output_value + " 	Setpoint: " + setpoint);
 	}
-	public void calculate(double cur_input, double target_speed) {
-		target_velocity = target_speed;
-		
-		if (Double.isNaN(setpoint)) {
-			// Setpoint has not been set yet.
-			output_value = 0;
-			return;
-		}
 
-		cur_error = (setpoint - cur_input);
-		/*
-		if (isDone()) {
-			output_value = 0;
-			pr("pid done");
-			return;
-		}
-		*/
-		
-		double delta_time = timeProvider.get() - lastTime;
-
-		if (delta_time > 0) { // This condition basically only false in the simulator
-			error_rate = (cur_error - prev_error) / delta_time;
-		}
-
-		total_error += cur_error * delta_time;
-
-		double ki = Ki.valueOr(0.0);
-		if ((total_error * ki) > 1) {
-			total_error = 1 / ki;
-		} else if ((total_error * ki) < -1) {
-			total_error = -1 / ki;
-		}
-
-		double out =
-				Kp.valueOr(0.0) * cur_error +
-				Ki.valueOr(0.0) * total_error +
-				Kd.valueOr(0.0) * error_rate +
-				Kff.valueOr(0.0) * setpoint;
-		prev_error = cur_error;
-
-		pr("Pre-clip output: " + out);
-		
-		output_value = clip(out);
-		
-		needsUpdate = false;
-
-		lastTime = timeProvider.get();
-		
-		pr("	Total Error: " + total_error + "		Current Error: " + cur_error +
-		   "	Output: " + output_value + " 	Setpoint: " + setpoint);
-	}
-
-	public void elongateSpeed(){
-		
-	}
 	public double getOutput() {
-		return output_value * target_velocity;
+		return output_value;
 	}
 
 	public boolean isDone() {
