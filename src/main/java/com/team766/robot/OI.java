@@ -1,9 +1,6 @@
 package com.team766.robot;
 
-import java.io.IOException;
-
 import com.team766.framework.Procedure;
-
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -11,19 +8,18 @@ import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
-import com.team766.simulator.interfaces.ElectricalDevice.Input;
+import com.team766.robot.mechanisms.Drive;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.team766.robot.mechanisms.Drive;
 
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
+
 	private JoystickReader leftJoystick;
 	private JoystickReader rightJoystick;
 	private JoystickReader controlPanel;
@@ -38,11 +34,26 @@ public class OI extends Procedure {
 	private boolean isCross = false;
 	private IntakeState intakeState = IntakeState.IDLE;
 
-	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
-
+	private static final double HighConeArm1 = 0;
+	private static final double CHA2 = 0;
+	private static final double CMA1 = 0;
+	// enum generalControl{
+	// 	CONE_HIGH_NODE,
+	// 	CUBE_HIGH_NODE,
+	// 	CONE_MID_NODE,
+	// 	CUBE_MID_NODE,
+	// 	OFF,
+	// 	READY,
+	// 	HUMANPLAYER_PICKUP,
+	// 	MANUAL,
+	// 	HYBRID_NODE
+	// };
 	
-	double turningValue = 0;
+	// public generalControl generalState = generalControl.OFF;
 
+	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
+	double turningValue = 0;
+	boolean manualControl = true;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -56,10 +67,10 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.arms);
-		context.takeOwnership(Robot.grabber);
 		context.takeOwnership(Robot.storage);
 		context.takeOwnership(Robot.gyro);
-
+		context.takeOwnership(Robot.grabber);
+		
 		CameraServer.startAutomaticCapture();
 
 		while (true) {
@@ -134,7 +145,7 @@ public class OI extends Procedure {
 					intakeState = IntakeState.IDLE;
 				}
 			}
-			if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
+			/* if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.intakePistonless();
 					Robot.storage.beltIn();
@@ -144,7 +155,7 @@ public class OI extends Procedure {
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
-			} 
+			} */
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
@@ -185,6 +196,57 @@ public class OI extends Procedure {
 			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 			// 	context.startAsync(new setCross());
 			// }
+
+			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
+				Robot.arms.pidForArmOne(-17.379);
+				Robot.arms.pidForArmTwo(-66.61);
+			}
+			if(controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
+				Robot.arms.pidForArmOne(3.7765);
+				Robot.arms.pidForArmTwo(-97.703);
+			}
+			if(controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
+				Robot.arms.pidForArmOne(17.269);
+				Robot.arms.pidForArmTwo(-90);
+			}
+			if(controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
+				Robot.arms.pidForArmOne(22.73);
+				Robot.arms.pidForArmTwo(-76.964);
+			}
+			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
+				Robot.arms.pidForArmOne(17.269);
+				Robot.arms.pidForArmTwo(-152.387);
+			}
+			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
+				Robot.arms.pidForArmOne(22.73);
+				Robot.arms.pidForArmTwo(-73.664);
+			} */
+			if(controlPanel.getButton(InputConstants.NUDGE_UP)){
+				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
+			}
+
+			if(controlPanel.getButton(InputConstants.NUDGE_DOWN)){
+				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2down());
+			}
+			Robot.arms.logs();
+
+			if(controlPanel.getButton(InputConstants.GRAB_IN)){
+				Robot.grabber.grabberPickUp();
+			} else if(controlPanel.getButton(InputConstants.GRAB_OUT)){
+				Robot.grabber.grabberLetGo();
+			} else {
+				Robot.grabber.grabberStop();
+			} 
+
+			if (controlPanel.getButtonPressed(InputConstants.BRAKE)) {
+				Robot.arms.brake();
+			} else if (controlPanel.getButtonPressed(InputConstants.COAST)) {
+				Robot.arms.coast();
+			}
+
+			if(leftJoystick.getButtonPressed(InputConstants.E_STOP)){
+				Robot.arms.E_STOP();
+			}
 
 		}
 	}

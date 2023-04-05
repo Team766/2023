@@ -110,10 +110,13 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 		switch (neutralMode) {
 			case Brake:
 				revErrorToException(ExceptionTarget.LOG, setIdleMode(IdleMode.kBrake));
+				break;
 			case Coast:
 				revErrorToException(ExceptionTarget.LOG, setIdleMode(IdleMode.kCoast));
+				break;
 			default:
 				LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
+				break;
 		}
 	}
 
