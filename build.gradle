@@ -62,7 +62,7 @@ deploy {
                     //    # There is insufficient memory for the Java Runtime Environment to continue.
                     //    # Native memory allocation (mmap) failed to map 1048576 bytes for committing
                     //    reserved memory.
-                    jvmArgs.add("-XX:MinRAMPercentage=10")
+                    jvmArgs.add("-XX:MinRAMPercentage=15")
                     // This makes the JVM print the heap memory size on startup.
                     jvmArgs.add("-XshowSettings:vm")
                 }
