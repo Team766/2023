@@ -94,11 +94,11 @@ public class OI extends Procedure {
 			// }
 			
 			
-			if (controlPanel.getButtonPressed(InputConstants.RESET_GYRO)) {
+			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
 			}
 
-			if (controlPanel.getButtonPressed(InputConstants.RESET_POS)) {
+			if (leftJoystick.getButtonPressed(InputConstants.RESET_POS)) {
 				Robot.drive.resetCurrentPosition();
 			}
 
