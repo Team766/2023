@@ -127,7 +127,7 @@ public class Arms extends Mechanism {
         // first joint zero is horizontal parallel to ground
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
 		altEncoder1.setZeroOffset(0.655);    // TODO: these need tweaking from altEncoder1Offset
-		altEncoder2.setZeroOffset(0.627);
+		altEncoder2.setZeroOffset(0.446); //Old values: 0.807
         SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
         SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
 
@@ -317,6 +317,7 @@ public class Arms extends Mechanism {
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
+        
         IdleMode idleMode = ((CANSparkMax) secondJoint).getIdleMode();
         SmartDashboard.putString("Idle Mode", (idleMode != null) ? idleMode.toString(): "null");
         if (theStateOf1 == ArmState.PID || theStateOf2 == ArmState.PID) {
@@ -402,6 +403,10 @@ public class Arms extends Mechanism {
         // log(" Second" + EUTodegrees(secondJoint.getSensorPosition()));
         // log(theStateOf2 + "");
         // log("Difference: " + EUTodegrees(firstJoint.getSensorPosition()));
+
+        // update shuffleboard periodically
+        SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
+        SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
     }
 }
 
