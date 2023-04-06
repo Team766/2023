@@ -232,7 +232,7 @@ public class OI extends Procedure {
 
 			if(controlPanel.getButton(InputConstants.GRAB_IN)){
 				Robot.grabber.grabberPickUp();
-			} else if(controlPanel.getButton(InputConstants.GRAB_OUT)){
+			} else if(rightJoystick.getButton(InputConstants.GRABBER_RELEASE)){
 				Robot.grabber.grabberLetGo();
 			} else {
 				Robot.grabber.grabberStop();

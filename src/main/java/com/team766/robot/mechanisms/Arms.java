@@ -216,6 +216,7 @@ public class Arms extends Mechanism {
     }
 
     public void armStop(){
+        brake();
         theStateOf1 = ArmState.OFF;
         theStateOf2 = ArmState.OFF;
     }
