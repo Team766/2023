@@ -60,9 +60,10 @@ public class Arms extends Mechanism {
     }
 
     boolean jointOneCanContinue = false;
+    public boolean stowed = false;
 
-    ArmState theStateOf1 = ArmState.OFF;
-    ArmState theStateOf2 = ArmState.OFF;
+    ArmState theStateOf1 = ArmState.ANTIGRAV;
+    ArmState theStateOf2 = ArmState.ANTIGRAV;
 
 
     private ArmsAntiGrav antiGrav;
@@ -127,9 +128,11 @@ public class Arms extends Mechanism {
         // first joint zero is horizontal parallel to ground
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
 		altEncoder1.setZeroOffset(0.655);    // TODO: these need tweaking from altEncoder1Offset
-		altEncoder2.setZeroOffset(0.446); //Old values: 0.807
+		altEncoder2.setZeroOffset(0.446); //Old values: 0.807, 0.446
         SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
         SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
+        SmartDashboard.putString("First Joint State: ", theStateOf1.toString());
+        SmartDashboard.putString("Second Joint State: ",theStateOf2.toString());
 
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
 
@@ -187,6 +190,7 @@ public class Arms extends Mechanism {
 
         // set the sensor positions and setpoint of our rel encoders
         firstJoint.setSensorPosition(firstJointRelEncoder);
+        log("Reset Encoder 1 (in degrees): "+ArmsUtil.EUTodegrees(firstJointRelEncoder));
         firstJointPosition = ArmsUtil.EUTodegrees(firstJointRelEncoder);
     }
 
@@ -212,6 +216,7 @@ public class Arms extends Mechanism {
 
         // set the sensor positions and setpoint of our rel encoders
         secondJoint.setSensorPosition(secondJointRelEncoder);
+        log("Reset Encoder 2 (in degrees): "+ArmsUtil.EUTodegrees(secondJointRelEncoder));
         secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
@@ -309,8 +314,8 @@ public class Arms extends Mechanism {
         log("AE2: " + Math.toDegrees(altEncoder2.getPosition()));
         SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
         SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-        SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
-        SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
+        // SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
+        // SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
 
     }
 	
@@ -341,7 +346,11 @@ public class Arms extends Mechanism {
         case OFF:
             break;
         case ANTIGRAV:
-            antiGravFirstJoint();
+            if (stowed){
+                firstJoint.set(0);
+            } else {
+                antiGravFirstJoint();
+            }
             break;
         case PID:
             firstJointPIDController.setReference(
@@ -358,7 +367,7 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-            if (firstJointCombo >= 6){
+            if (firstJointCombo >= 10){
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
                 resetFirstEncoders();
@@ -372,7 +381,11 @@ public class Arms extends Mechanism {
         case OFF:
             break;
         case ANTIGRAV:
-            antiGravSecondJoint();
+            if (stowed){
+                secondJoint.set(0); //This will activate brake mode
+            } else {
+                antiGravSecondJoint();
+            }
             break;
         case PID:
             secondJointPIDController.setReference(
@@ -389,7 +402,7 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-			if (secondJointCombo >= 6){
+			if (secondJointCombo >= 10){
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
                 resetSecondEncoders();
@@ -405,8 +418,8 @@ public class Arms extends Mechanism {
         // log("Difference: " + EUTodegrees(firstJoint.getSensorPosition()));
 
         // update shuffleboard periodically
-        SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
-        SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
+        // SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
+        // SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
     }
 }
 
