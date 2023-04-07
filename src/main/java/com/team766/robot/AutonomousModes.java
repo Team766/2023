@@ -21,7 +21,7 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 		// new AutonomousMode("FollowPoints", () -> new FollowPoints()),
 		// new AutonomousMode("ReverseIntake", () -> new ReverseIntake()),
-		new AutonomousMode("OnePieceExitCommunity", () -> new OnePieceExitCommunity()),
+		// new AutonomousMode("OnePieceExitCommunity", () -> new OnePieceExitCommunity()),
 		// new AutonomousMode("OnePieceExitCommunityBalance", () -> new OnePieceExitCommunityBalance()),
 		// new AutonomousMode("OnePieceBalance", () -> new OnePieceBalance()),
 		// new AutonomousMode("FollowPointsFile", () -> new FollowPoints("FollowPoints.json")),

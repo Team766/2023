@@ -71,7 +71,10 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.grabber);
 		
-		CameraServer.startAutomaticCapture();
+		// CameraServer.startAutomaticCapture();
+
+		Robot.arms.resetFirstEncoders();
+		Robot.arms.resetSecondEncoders();
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -198,22 +201,27 @@ public class OI extends Procedure {
 			// }
 
 			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
+				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(-17.379);
 				Robot.arms.pidForArmTwo(-66.61);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
-				Robot.arms.pidForArmOne(3.7765);
-				Robot.arms.pidForArmTwo(-97.703);
+				Robot.arms.stowed = false;
+				Robot.arms.pidForArmOne(2.7765);
+				Robot.arms.pidForArmTwo(-93.813);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
+				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(17.269);
 				Robot.arms.pidForArmTwo(-90);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
+				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-76.964);
+				Robot.arms.pidForArmTwo(-72.529);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
+				Robot.arms.stowed = true;
 				Robot.arms.pidForArmOne(17.269);
 				Robot.arms.pidForArmTwo(-152.387);
 			}
@@ -248,6 +256,10 @@ public class OI extends Procedure {
 				Robot.arms.armStop();
 			}
 
+			if (controlPanel.getButtonPressed(13)){
+				Robot.arms.resetFirstEncoders();
+				Robot.arms.resetSecondEncoders();
+			}
 		}
 	}
 }
