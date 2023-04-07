@@ -21,10 +21,10 @@ public class OPECHelperFollowPoints extends Procedure {
 		context.releaseOwnership(Robot.drive);
 		switch (DriverStation.getAlliance()) {
 			case Blue:
-				new FollowPoints(new PointDir[]{new PointDir(4, 0)}).run(context);
+				new FollowPoints(new PointDir[]{new PointDir(4, 0, 180)}).run(context);
 				break;
 			case Red:
-				new FollowPoints(new PointDir[]{new PointDir(-4, 0)}).run(context);
+				new FollowPoints(new PointDir[]{new PointDir(-4, 0, 180)}).run(context);
 				break;
 			case Invalid: //drop down
 			default: 
