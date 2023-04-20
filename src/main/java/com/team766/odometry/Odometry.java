@@ -37,6 +37,10 @@ public class Odometry extends LoggingBase {
 
 	//In the same order as motorList, relative to the center of the robot
 	private Point[] wheelPositions;
+
+	//Depends on the config values of the wheel motors; will be different for different robors
+	//The coyote bot is false, while the 2023 bot is true
+	private boolean motorsReversed;
 	
 	/**
 	 * Constructor for Odometry, taking in several defines for the robot.
@@ -47,8 +51,9 @@ public class Odometry extends LoggingBase {
 	 * @param gearRatio The gear ratio of the wheels.
 	 * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
 	 * @param rateLimiterTime How often odometry should run.
+	 * @param reversed Changes the signs of certain values to accomodate for different config value configurations (Coyote bot is false, 2023 bot is true)
 	 */
-	public Odometry(MotorController[] motors, CANCoder[] CANCoders, Point[] wheelLocations, double wheelCircumference, double gearRatio, int encoderToRevolutionConstant, double rateLimiterTime) {
+	public Odometry(MotorController[] motors, CANCoder[] CANCoders, Point[] wheelLocations, double wheelCircumference, double gearRatio, int encoderToRevolutionConstant, double rateLimiterTime, boolean reversed) {
 		loggerCategory = Category.ODOMETRY;
 
 		odometryLimiter = new RateLimiter(rateLimiterTime);
@@ -73,6 +78,8 @@ public class Odometry extends LoggingBase {
 			prevEncoderValues[i] = 0;
 			currEncoderValues[i] = 0;
 		}
+
+		motorsReversed = reversed;
 	}
 
 	public String getName() {
@@ -105,12 +112,6 @@ public class Odometry extends LoggingBase {
 		}
 	}
 
-	private static Vector2D rotate(Vector2D v, double angle) {
-		return new Vector2D(
-			v.getX() * Math.cos(angle) - Math.sin(angle) * v.getY(),
-			v.getY() * Math.cos(angle) + v.getX() * Math.sin(angle));
-	}
-
 	/**
 	 * Updates the position of each wheel of the robot by assuming each wheel moved in an arc.
 	 */
@@ -133,7 +134,7 @@ public class Odometry extends LoggingBase {
 			currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 
-			double yaw = Math.toRadians(Robot.gyro.getGyroYaw());
+			double yaw = (motorsReversed? -1 : 1) * Math.toRadians(Robot.gyro.getGyroYaw());
 			double roll = Math.toRadians(Robot.gyro.getGyroRoll());
 			double pitch = Math.toRadians(Robot.gyro.getGyroPitch());
 
@@ -181,7 +182,7 @@ public class Odometry extends LoggingBase {
 		double sumX = 0;
 		double sumY = 0;
 		for (int i = 0; i < motorCount; i++) {
-			sumX -= currPositions[i].getX();
+			sumX -= (motorsReversed? -1 : 1) * currPositions[i].getX();
 			sumY += currPositions[i].getY();
 			//log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}
