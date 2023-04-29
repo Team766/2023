@@ -372,7 +372,7 @@ public class Drive extends Mechanism {
 	 */
 	public void swerveDrive(double JoystickX, double JoystickY, double JoystickTheta) {
 		checkContextOwnership();
-		double power = Math.max(Math.abs(JoystickX), Math.abs(JoystickY));
+		double power = 0.5 * Math.max(Math.abs(JoystickX), Math.abs(JoystickY));
 		double angle = fieldAngle(getAngle(JoystickX, JoystickY), gyroValue);
 		double frPower;
 		double flPower;
