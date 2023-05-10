@@ -51,7 +51,7 @@ public class CSMMCPID {
 
 	//constructor for the class with no absolute encoder
 	public CSMMCPID(String configName){
-			loggerCategory = Category.MECHANISMS;
+			//loggerCategory = Category.MECHANISMS;
 			mc1 = RobotProvider.instance.getMotor(configName);
 			csm1 = (CANSparkMax)mc1;
 			pid1 = csm1.getPIDController();
@@ -59,7 +59,7 @@ public class CSMMCPID {
 	}
 	//constructor for the class with an absolute encoder
 	public CSMMCPID(String configName, double absEncoderOffset){
-			loggerCategory = Category.MECHANISMS;
+			//loggerCategory = Category.MECHANISMS;
 			mc1 = RobotProvider.instance.getMotor(configName);
 			csm1 = (CANSparkMax)mc1;
 			pid1 = csm1.getPIDController();
@@ -172,7 +172,7 @@ public class CSMMCPID {
 					break;
 			}
 		} else{
-			log("enabled is false"); // this better work
+			//log("enabled is false"); // this better work
 		}
 		
 	}
