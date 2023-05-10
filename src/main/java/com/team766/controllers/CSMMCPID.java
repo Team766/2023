@@ -170,7 +170,7 @@ public class CSMMCPID {
 					break;
 			}
 		} else{
-			log("run loop is disabled", Severity.WARNING); // ?
+			logRaw(Severity.INFO, "enabled is false"); // ?
 		}
 		
 	}
