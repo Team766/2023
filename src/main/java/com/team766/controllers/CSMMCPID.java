@@ -130,7 +130,7 @@ public class CSMMCPID {
 	}
 
 	//go to a position using the thing that wasn't tested yet (ron respond to my discord messages please so i can test)
-	public void magicallyGoToPositionUsingCLE(double position){
+	public void setCLEAllusion(double position){
 		if(position > maxpos1){
 			position = maxpos1;
 		} else if(position < minpos1){
@@ -140,7 +140,7 @@ public class CSMMCPID {
 		pid1.setReference(position, ControlType.kSmartMotion);
 	}
 	//1st step to go to a position using the normal PID, setting what you want the position to be
-	public void magicallyGoToPositionUsingNormalDZ(double position){
+	public void setAllusion(double position){
 		if(position > maxpos1){
 			position = maxpos1;
 		} else if(position < minpos1){
@@ -150,7 +150,12 @@ public class CSMMCPID {
 		currentPos = position;
 	}
 
+	public void STOP(){
+		theState = PIDSTATE.OFF;
+	}
+
 	//run loop that actually runs the PID using normal dz
+	//You need to call this function repedatly in OI
 	public void run(boolean enabled){
 		if(enabled){
 			switch(theState){
