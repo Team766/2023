@@ -23,7 +23,7 @@ import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 
 
-public class CSMMCPID extends CANSparkMaxMotorController {
+public class CSMMCPID{
 	// The attributes of the class include references to the motor controller, SparkMax controller, PID controller, and absolute encoder
 	private MotorController mc1;
 	private CANSparkMax csm1;
