@@ -23,7 +23,7 @@ import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 
 
-public class CSMMCPID {
+public class CSMMCPID extends CANSparkMaxMotorController {
 	// The attributes of the class include references to the motor controller, SparkMax controller, PID controller, and absolute encoder
 	private MotorController mc1;
 	private CANSparkMax csm1;
@@ -94,6 +94,13 @@ public class CSMMCPID {
 	public void setFf(double ff){
 		pid1.setFF(ff);
 	}
+	/*
+	//updating the inverted state of the motor
+	public void setInverted(boolean q){
+		mc1.setInverted(q);
+		csm1.setInverted(q);
+	}
+	*/
 	//adding a built in closed loop error (not tested yet) (ron respond to my discord messages please so i can test)
 	public void setSmartMotionAllowedClosedLoopError(double error){
 		pid1.setSmartMotionAllowedClosedLoopError(error, 0);
