@@ -37,17 +37,23 @@ public class CSMMCPID{
 	public static double maxaccel1 = 0;
 	public static double maxspeed1 = 0;
 	public static double minspeed1 = 0;
-	public static double antiGrav1 = 0;
 	public static double currentPos = 0;
 	public static double combo;
+
+	//antigrav variable
+	public static double antiGravK;
 	//enum for which state the PID is in
 	private enum PIDSTATE{
 		PID,
 		OFF,
 		ANTIGRAV
 	}
-	//the state of the PID
+	//the state of the PID2
 	private PIDSTATE theState = PIDSTATE.OFF;
+	
+
+	
+	
 
 	//constructor for the class with no absolute encoder
 	public CSMMCPID(String configName){
@@ -101,6 +107,15 @@ public class CSMMCPID{
 		csm1.setInverted(q);
 	}
 	*/
+	//setting the antigravity constants2
+	public void setAntigravConstant(double k){
+		antiGravK = k;
+	}
+
+	public void antigrav(){
+		mc1.set(antiGravK * Math.sin(mc1.getSensorPosition()));
+	}
+
 	//adding a built in closed loop error (not tested yet) (ron respond to my discord messages please so i can test)
 	public void setSmartMotionAllowedClosedLoopError(double error){
 		pid1.setSmartMotionAllowedClosedLoopError(error, 0);
@@ -169,7 +184,7 @@ public class CSMMCPID{
 				case OFF:
 					break;
 				case ANTIGRAV:
-					//TODO: antigravity
+					antigrav();
 				case PID:
 					if (mc1.getSensorPosition() <= (dz1 + mc1.getSensorPosition()) && mc1.getSensorPosition() >= (mc1.getSensorPosition() - dz1)){
 						combo ++;
