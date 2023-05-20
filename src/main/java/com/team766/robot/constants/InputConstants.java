@@ -33,7 +33,7 @@ public final class InputConstants {
 	public static final int CONE_MID = 6;
 	public static final int HUMANPLAYER_PICKUP = 7;
 	public static final int NUDGE_DOWN = 9;
-	//public static final int GRAB_OUT = 10;   Function replaced by joystick trigger
+	//public static final int GRAB_OUT = 10;   //Function replaced by joystick trigger?
 	public static final int INTAKE = 11;
 	public static final int OUTTAKE = 12;
 	public static final int ARM_STOP = 14;
