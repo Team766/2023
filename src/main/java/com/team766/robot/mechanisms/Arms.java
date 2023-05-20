@@ -181,7 +181,7 @@ public class Arms extends Mechanism {
         //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
         final double altEncoder1Offset = 0.25;
         // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.5;
+        final double altEncoder2Offset = 0.525;
         //final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
@@ -202,7 +202,7 @@ public class Arms extends Mechanism {
         //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
         final double altEncoder1Offset = 0.25;
         // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.5;
+        final double altEncoder2Offset = 0.525;
         //final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
@@ -308,12 +308,12 @@ public class Arms extends Mechanism {
     }
 
     public void logs(){
-        log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-        log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-        log("AE1: " + Math.toDegrees(altEncoder1.getPosition()));
-        log("AE2: " + Math.toDegrees(altEncoder2.getPosition()));
-        SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-        SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        // log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        // log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        // log("AE1: " + altEncoder1.getPosition());
+        // log("AE2: " + altEncoder2.getPosition());
+        // SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        // SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
         // SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
         // SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
 
