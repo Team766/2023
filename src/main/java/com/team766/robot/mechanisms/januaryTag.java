@@ -18,6 +18,7 @@ import de.erichseifert.gral.util.GeometryUtils;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.io.IOException;
@@ -52,7 +53,8 @@ public class januaryTag extends Mechanism{
         if(hasTargets){
             List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
             PhotonPipelineResult photonPipelineResult = new PhotonPipelineResult(2, targets); // TODO: Replace latencyMillis with real latency time
-
+            
+        
             PhotonTrackedTarget bestTrackedTarget = result.getBestTarget(); // getting the best target that is currently being picked up by the camera so that it can know where it is
             return bestTrackedTarget;
         }else{
@@ -79,6 +81,13 @@ public class januaryTag extends Mechanism{
     public int getTargetID(){
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
         return theTarget.getFiducialId();
+        
+    }
+
+    // work in progress
+    public void CTC(){
+        PhotonTrackedTarget theTarget = getBestTrackedTarget();
+        Transform3d CTC = theTarget.getBestCameraToTarget();
     }
     
     public void setDeadzoneX(double dz){
@@ -88,6 +97,9 @@ public class januaryTag extends Mechanism{
     public void setDeadzoneY(double dz){
         deadzoneY = dz;
     }
+
+    
+       
 
     public void setDeadzones(double x, double y){
         deadzoneX = x;
