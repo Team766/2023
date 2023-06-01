@@ -15,16 +15,20 @@ import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 //import com.team766.logging.Category;
 import de.erichseifert.gral.util.GeometryUtils;
+import de.erichseifert.gral.util.MathUtils;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.util.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.tools.ForwardingFileObject;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -40,10 +44,17 @@ public class januaryTag extends Mechanism{
     private double y_target;
     private MotorController leftMotor;
     private MotorController rightMotor;
+    private double x_targetConstant;
+    private double turnConstant;
+    private double forwardConstant;
 	public januaryTag(){
 		camera1 = new PhotonCamera("januaryTag.camera1");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
+
+        x_targetConstant = 0.5;
+        turnConstant = 0.2;
+        forwardConstant = 0.2;
 	}
 
     public PhotonTrackedTarget getBestTrackedTarget(){
@@ -61,6 +72,23 @@ public class januaryTag extends Mechanism{
             log("No targets? see what i did there");
             throw new januaryTagException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
         }
+    }
+
+    public void setXtargetConstant(double constant){
+        x_targetConstant = constant;
+    }
+
+    public void setTurnConstant(double constant){
+        turnConstant = constant;
+    }
+
+    public void setForwardConstant(double constant){
+        forwardConstant = constant;
+    }
+
+    public void setArcadeDriveVisionConstants(double turn, double forward){
+        turnConstant = turn;
+        forwardConstant = forward;
     }
 
     public Transform3d getBestCameraToTarget(PhotonTrackedTarget target){
@@ -127,35 +155,22 @@ public class januaryTag extends Mechanism{
             }else{
                 Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
 
-                double x_target = x_scoring + Math.cos(yaw) * (k * y_scoring);
-                double y_target = y_scoring + Math.sin(yaw) * (y_scoring);
+                double x_target = x_scoring + Math.cos(targetTransform.getX()) * (x_targetConstant * y_scoring);
+                double y_target = y_scoring + Math.sin(targetTransform.getX()) * (y_scoring);
 
                 
                 double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
                 double turn = -Math.tan(y_target/x_target);
 
                 
-                double leftMotorPower = (0.2) * turn + (0.2) * clampToRange(forward, -1, 1);
-		        double rightMotorPower = (-0.2) * turn + (0.2) * clampToRange(forward, -1, 1);
+                double leftMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
+		        double rightMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
                 
                 leftMotor.set(leftMotorPower);
                 rightMotor.set(rightMotorPower);
             }
         }
     }
-
-    public double clampToRange(double value, double min, double max){
-        if(value > max){
-            return max;
-        }else if(value< min){
-            return min;
-        }
-        return value;
-    }
-
-
-
-    
 
     public void debugLogs(){
 
