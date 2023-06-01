@@ -63,6 +63,10 @@ public class januaryTag extends Mechanism{
         }
     }
 
+    public Transform3d getBestCameraToTarget(PhotonTrackedTarget target){
+        return target.getBestCameraToTarget();
+    }
+
     public double getYaw(){
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
         return theTarget.getYaw();
@@ -121,21 +125,32 @@ public class januaryTag extends Mechanism{
                 log("Outtaking");
                 break;
             }else{
-                double robotX_pos = getYaw();
-                double robotY_pos = getPitch();
+                Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
 
-                double delta_x = x_scoring - robotX_pos;
-                double forward = x_scoring;
-                double turn = y_scoring - (0.2) * Math.abs(delta_x);
+                double x_target = x_scoring + Math.cos(yaw) * (k * y_scoring);
+                double y_target = y_scoring + Math.sin(yaw) * (y_scoring);
 
                 
-                double leftMotorPower = (0.2) * turn + (0.2) * forward;
-		        double rightMotorPower = (-0.2) * turn + (0.2) * forward;
+                double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
+                double turn = -Math.tan(y_target/x_target);
+
+                
+                double leftMotorPower = (0.2) * turn + (0.2) * clampToRange(forward, -1, 1);
+		        double rightMotorPower = (-0.2) * turn + (0.2) * clampToRange(forward, -1, 1);
                 
                 leftMotor.set(leftMotorPower);
                 rightMotor.set(rightMotorPower);
             }
         }
+    }
+
+    public double clampToRange(double value, double min, double max){
+        if(value > max){
+            return max;
+        }else if(value< min){
+            return min;
+        }
+        return value;
     }
 
 
