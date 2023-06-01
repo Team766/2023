@@ -47,14 +47,19 @@ public class januaryTag extends Mechanism{
     private double x_targetConstant;
     private double turnConstant;
     private double forwardConstant;
+    private double offsetX;
+    private double offsetY;
 	public januaryTag(){
 		camera1 = new PhotonCamera("januaryTag.camera1");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
 
+        //Sample values, we don't know these work at all yet
         x_targetConstant = 0.5;
         turnConstant = 0.2;
         forwardConstant = 0.2;
+        offsetX = 10;
+        offsetY = 10;
 	}
 
     public PhotonTrackedTarget getBestTrackedTarget(){
@@ -138,22 +143,17 @@ public class januaryTag extends Mechanism{
         deadzoneY = y;
     }
 
-    public void findTargets(double x_scoring, double y_scoring){
-        double robotX_pos = getYaw();
-        double robotY_pos = getPitch();
-
-        double delta_x = x_scoring - robotX_pos;
-        x_target = x_scoring;
-        y_target = y_scoring - (0.2) * Math.abs(delta_x);
-    }
-
-    public void go(double x_scoring, double y_scoring){
+    public void go(){
+        Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         while(2>1){
-            if(getYaw() + deadzoneX > x_target && getYaw() - deadzoneX < x_target && getPitch() + deadzoneY > y_target && getPitch() - deadzoneY < y_target){
+            if(targetTransform.getX() + deadzoneX - offsetX > 0 && targetTransform.getX() - deadzoneX - offsetX < 0 && targetTransform.getY() + deadzoneY - offsetY > 0 && targetTransform.getY() - deadzoneY -offsetY < 0){
                 log("Outtaking");
                 break;
             }else{
-                Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+                
+
+                double x_scoring = targetTransform.getX() - offsetX;
+                double y_scoring = targetTransform.getY() - offsetY; 
 
                 double x_target = x_scoring + Math.cos(targetTransform.getX()) * (x_targetConstant * y_scoring);
                 double y_target = y_scoring + Math.sin(targetTransform.getX()) * (y_scoring);
