@@ -121,19 +121,35 @@ public class januaryTag extends Mechanism{
 
     /*
      * This method returns the data from the best target that the camera is currently tracking, not the Transform3d data
-     * @return double[] - the data from the best target that the camera is currently tracking
+     * @return ArrayList<Double> - the data from the best target that the camera is currently tracking
      * [0] is the yaw
      * [1] is the pitch
      * [2] is the area that the apriltag fills the camera view with
      * [3] is the fiducial id of the april tag
      */
-    public double[] getPhotonTrackedTargetData(){
-        double[] arr = new double[4];
+    public ArrayList<Double>  getPhotonTrackedTargetData(){
+        ArrayList<Double> arr = new ArrayList<Double>();
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        arr[0] = theTarget.getYaw();
-        arr[1] = theTarget.getPitch();
-        arr[2] = theTarget.getArea();
-        arr[3] = theTarget.getFiducialId();
+        arr.add(theTarget.getYaw());
+        arr.add(theTarget.getPitch());
+        arr.add(theTarget.getArea());
+        arr.add((double) theTarget.getFiducialId());
+        return arr;
+    }
+
+    /*
+     * This is a method to return data given from a Transform3d
+     * @return an ArrayList<Double> with values about the Transform3d, assuming the camera is (0,0)
+     * [0] is the x value of the target relative to the camera
+     * [1] is the y value of the target relative to the camera
+     * [2] is the z value of the target relative to the camera
+     */
+    public ArrayList<Double> getTransform3dData(){
+        ArrayList<Double> arr = new ArrayList<Double>();
+        Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+        arr.add(targetTransform.getX());
+        arr.add(targetTransform.getY());
+        arr.add(targetTransform.getZ());
         return arr;
     }
     
