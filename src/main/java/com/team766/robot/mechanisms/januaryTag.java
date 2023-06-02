@@ -20,8 +20,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.util.*;
 import java.io.IOException;
@@ -49,6 +51,7 @@ public class januaryTag extends Mechanism{
     private double forwardConstant;
     private double offsetX;
     private double offsetY;
+    private Transform3d offset;
 	public januaryTag(){
 		camera1 = new PhotonCamera("januaryTag.camera1");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
@@ -60,6 +63,7 @@ public class januaryTag extends Mechanism{
         forwardConstant = 0.2;
         offsetX = 10;
         offsetY = 10;
+        offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
 	}
 
 
@@ -153,18 +157,19 @@ public class januaryTag extends Mechanism{
         while(2>1){
             
             Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
-            
-            if(targetTransform.getX() + deadzoneX - offsetX > 0 && targetTransform.getX() - deadzoneX - offsetX < 0 && targetTransform.getY() + deadzoneY - offsetY > 0 && targetTransform.getY() - deadzoneY -offsetY < 0){
+            Transform3d scoring = targetTransform.plus(offset);
+
+            if(scoring.getX() + deadzoneX > 0 && scoring.getX() - deadzoneX < 0 && scoring.getY() + deadzoneY > 0 && scoring.getY() - deadzoneY < 0){
                 log("Outtaking");
                 break;
             }else{
                 
 
-                double x_scoring = targetTransform.getX() - offsetX;
-                double y_scoring = targetTransform.getY() - offsetY; 
+                double x_scoring = scoring.getX();
+                double y_scoring = scoring.getY(); 
 
-                double x_target = x_scoring + Math.cos(targetTransform.getX()) * (x_targetConstant * y_scoring);
-                double y_target = y_scoring + Math.sin(targetTransform.getX()) * (y_scoring);
+                double x_target = x_scoring + Math.cos(scoring.getX()) * (x_targetConstant * y_scoring);
+                double y_target = y_scoring + Math.sin(scoring.getX()) * (y_scoring);
 
                 
                 double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
