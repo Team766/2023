@@ -62,15 +62,19 @@ public class januaryTag extends Mechanism{
         offsetY = 10;
 	}
 
+
+    /*
+     * This method returns the best target that the camera is currently tracking
+     * This is useful for the transform3d data
+     * @return PhotonTrackedTarget - the best target that the camera is currently tracking
+     */
     public PhotonTrackedTarget getBestTrackedTarget(){
         var result = camera1.getLatestResult(); //getting the result from the camera
         boolean hasTargets = result.hasTargets(); // checking to see if there are any targets in the camera's view. IF THERE ISN'T AND YOU USE result.getTargets() YOU WILL GET AN ERROR
 
         if(hasTargets){
             List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
-            PhotonPipelineResult photonPipelineResult = new PhotonPipelineResult(2, targets); // TODO: Replace latencyMillis with real latency time
             
-        
             PhotonTrackedTarget bestTrackedTarget = result.getBestTarget(); // getting the best target that is currently being picked up by the camera so that it can know where it is
             return bestTrackedTarget;
         }else{
@@ -82,6 +86,11 @@ public class januaryTag extends Mechanism{
     public void setXtargetConstant(double constant){
         x_targetConstant = constant;
     }
+
+    /*
+     * For all next three methods, the constants are the constants that are used in the arcade drive method
+     * You can set them individually or together
+     */
 
     public void setTurnConstant(double constant){
         turnConstant = constant;
@@ -96,35 +105,32 @@ public class januaryTag extends Mechanism{
         forwardConstant = forward;
     }
 
+    /*
+     * This method returns the Transform3d data from the best target that the camera is currently tracking
+     * @param target - the target that you want the camera to get the data from (use getBestTrackedTarget() to get the best target that the camera is currently tracking)
+     * @return Transform3d - the Transform3d from the best target that the camera is currently tracking
+     */
+
     public Transform3d getBestCameraToTarget(PhotonTrackedTarget target){
         return target.getBestCameraToTarget();
     }
 
-    public double getYaw(){
+    /*
+     * This method returns the data from the best target that the camera is currently tracking, not the Transform3d data
+     * @return double[] - the data from the best target that the camera is currently tracking
+     * [0] is the yaw
+     * [1] is the pitch
+     * [2] is the area that the apriltag fills the camera view with
+     * [3] is the fiducial id of the april tag
+     */
+    public double[] getPhotonTrackedTargetData(){
+        double[] arr = new double[4];
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        return theTarget.getYaw();
-    }
-
-    public double getPitch(){
-        PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        return theTarget.getPitch();
-    }
-
-    public double getArea(){
-        PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        return theTarget.getArea();
-    }
-
-    public int getTargetID(){
-        PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        return theTarget.getFiducialId();
-        
-    }
-
-    // work in progress
-    public void CTC(){
-        PhotonTrackedTarget theTarget = getBestTrackedTarget();
-        Transform3d CTC = theTarget.getBestCameraToTarget();
+        arr[0] = theTarget.getYaw();
+        arr[1] = theTarget.getPitch();
+        arr[2] = theTarget.getArea();
+        arr[3] = theTarget.getFiducialId();
+        return arr;
     }
     
     public void setDeadzoneX(double dz){
@@ -135,17 +141,19 @@ public class januaryTag extends Mechanism{
         deadzoneY = dz;
     }
 
-    
-       
-
     public void setDeadzones(double x, double y){
         deadzoneX = x;
         deadzoneY = y;
     }
-
+    /*
+     * This method is the method that you should call to make the robot go to the target. Currently, it will go to any apriltag that it sees, but we can change that later.
+     */
     public void go(){
-        Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+        
         while(2>1){
+            
+            Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+            
             if(targetTransform.getX() + deadzoneX - offsetX > 0 && targetTransform.getX() - deadzoneX - offsetX < 0 && targetTransform.getY() + deadzoneY - offsetY > 0 && targetTransform.getY() - deadzoneY -offsetY < 0){
                 log("Outtaking");
                 break;
