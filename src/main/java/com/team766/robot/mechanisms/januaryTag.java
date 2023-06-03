@@ -186,7 +186,7 @@ public class januaryTag extends Mechanism{
 
                 double yaw_scoring = scoring.getRotation().getZ();
                 double x_target = x_scoring + Math.cos(yaw_scoring) * (x_targetConstant * y_scoring);
-                double y_target = y_scoring + Math.sin(scoring.getX()) * (y_scoring);
+                double y_target = y_scoring + Math.sin(yaw_scoring) * (x_targetConstant * y_scoring);
 
                 
                 double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
