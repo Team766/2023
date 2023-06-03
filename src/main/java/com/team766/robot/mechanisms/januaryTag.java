@@ -197,7 +197,7 @@ public class januaryTag extends Mechanism{
 
                 
                 double leftMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
-		        double rightMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
+		        double rightMotorPower = turnConstant * -turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
                 
                 leftMotor.set(leftMotorPower);
                 rightMotor.set(rightMotorPower);
