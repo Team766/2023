@@ -141,6 +141,7 @@ public class Drive extends Mechanism {
 		SmartDashboard.putNumber("AbsFrontLeftEncoder: ", e_FrontLeft.getAbsolutePosition());
 		SmartDashboard.putNumber("AbsBackRightEncoder: ", e_BackRight.getAbsolutePosition());
 		SmartDashboard.putNumber("AbsBackLeftEncoder: ", e_BackLeft.getAbsolutePosition());
+		SmartDashboard.putNumber("Drive Gyro: ", gyroValue);
 		log("FrontRightEncoder" + m_SteerFrontRight.getSensorPosition());
 		log("FrontLeftEncoder" + m_SteerFrontLeft.getSensorPosition());
 		log("BackRightEncoder" + m_SteerBackRight.getSensorPosition());

@@ -40,7 +40,7 @@ public class OI extends Procedure {
 		double prev_time = RobotProvider.instance.getClock().getTime();
 		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.drive);
-		//Robot.gyro.resetGyro();
+		Robot.gyro.resetGyro();
 		Robot.drive.setFrontRightEncoders();
 		Robot.drive.setFrontLeftEncoders();
 		Robot.drive.setBackRightEncoders();
@@ -56,9 +56,9 @@ public class OI extends Procedure {
 			// of mechanisms when appropriate.
 			if(joystick1.getButton(2)){
 				Robot.drive.setGyro(0);
-			}else{
+			} else {
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-			}		
+			}
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
@@ -93,8 +93,10 @@ public class OI extends Procedure {
 				LeftJoystick_Theta = 0;
 			}
 			
-			if(joystick0.getButtonPressed(1))
+			if(joystick0.getButtonPressed(1)) {
+				log("Resetting Gyro");
 				Robot.gyro.resetGyro();
+			}
 
 			if(joystick0.getButtonPressed(11))
 				Robot.drive.resetCurrentPosition();
@@ -114,6 +116,8 @@ public class OI extends Procedure {
 			// } else {
 			// 	turningValue = 0;
 			// }
+
+			SmartDashboard.putNumber("Gyro Value", Robot.gyro.getGyroYaw());
 			
 			if (isCross)  {
 				context.startAsync(new setCross());
@@ -123,7 +127,6 @@ public class OI extends Procedure {
 					(LeftJoystick_X),
 			 		(LeftJoystick_Y),
 			 		(RightJoystick_X));
-				log("FRONT RIGHT: " + Robot.drive.getFrontRight());
 			} else {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
