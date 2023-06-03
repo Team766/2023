@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -46,6 +47,7 @@ public class OI extends Procedure {
 		Robot.drive.setBackLeftEncoders();
 
 		while (true) {
+			Robot.drive.smrtStuff();
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();

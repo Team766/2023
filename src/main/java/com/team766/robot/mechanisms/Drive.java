@@ -22,6 +22,7 @@ import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.robot.constants.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Mechanism {
 
@@ -77,13 +78,13 @@ public class Drive extends Mechanism {
 		config.sensorDirection = true;
 
 		// initialize the encoders
-		e_FrontRight = new CANCoder(1, "Swerve");
+		e_FrontRight = new CANCoder(1);
 		// e_FrontRight.configAllSettings(config, 250);
-		e_FrontLeft = new CANCoder(2, "Swerve");
+		e_FrontLeft = new CANCoder(2);
 		// e_FrontLeft.configAllSettings(config, 250);
-		e_BackRight = new CANCoder(4, "Swerve");
+		e_BackRight = new CANCoder(4);
 		// e_BackRight.configAllSettings(config, 250);
-		e_BackLeft = new CANCoder(3, "Swerve");
+		e_BackLeft = new CANCoder(3);
 		// e_BackLeft.configAllSettings(config, 250);
 
 
@@ -131,6 +132,20 @@ public class Drive extends Mechanism {
 		setBackLeftEncoders();
 	}
 
+	public void smrtStuff(){
+		SmartDashboard.putNumber("FrontRightEncoder: ", m_SteerFrontRight.getSensorPosition());
+		SmartDashboard.putNumber("FrontLeftEncoder: ", m_SteerFrontLeft.getSensorPosition());
+		SmartDashboard.putNumber("BackRightEncoder: ", m_SteerBackRight.getSensorPosition());
+		SmartDashboard.putNumber("BackLeftEncoder: ", m_SteerBackLeft.getSensorPosition());
+		SmartDashboard.putNumber("AbsFrontRightEncoder: ", e_FrontRight.getAbsolutePosition());
+		SmartDashboard.putNumber("AbsFrontLeftEncoder: ", e_FrontLeft.getAbsolutePosition());
+		SmartDashboard.putNumber("AbsBackRightEncoder: ", e_BackRight.getAbsolutePosition());
+		SmartDashboard.putNumber("AbsBackLeftEncoder: ", e_BackLeft.getAbsolutePosition());
+		log("FrontRightEncoder" + m_SteerFrontRight.getSensorPosition());
+		log("FrontLeftEncoder" + m_SteerFrontLeft.getSensorPosition());
+		log("BackRightEncoder" + m_SteerBackRight.getSensorPosition());
+		log("BackLeftEncoder" + m_SteerBackLeft.getSensorPosition());
+	}
 	// A set of simple functions for the sake of adding vectors
 	/**
 	 * Returns the pythagorean theorem of two numbers
@@ -140,7 +155,7 @@ public class Drive extends Mechanism {
 	 * @return
 	 */
 	public double pythagorean(double x, double y) {
-		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		return Math.pow(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), 1.001);
 	}
 
 	/**
