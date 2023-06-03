@@ -8,7 +8,7 @@ import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
-import com.team766.robot.mechanisms.Drive;
+import com.team766.robot.mechanisms.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,6 +20,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class OI extends Procedure {
 
+	private JoystickReader joystickOne;
+	public OI(){
+		joystickOne =RobotProvider.instance.getJoystick(0);
+	}
+
+	public void run(Context context){
+		context.takeOwnership(Robot.JanuaryTag);
+
+		if(joystickOne.getButton(1)){
+			Robot.JanuaryTag.debugLogs();
+		}
+	}
+/* 
 	private JoystickReader leftJoystick;
 	private JoystickReader rightJoystick;
 	private JoystickReader controlPanel;
@@ -155,7 +168,7 @@ public class OI extends Procedure {
 					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
-			} */
+			} 
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)){
 				if (intakeState == IntakeState.IDLE){
 					Robot.intake.reverseIntake();
@@ -220,7 +233,7 @@ public class OI extends Procedure {
 			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
 				Robot.arms.pidForArmOne(22.73);
 				Robot.arms.pidForArmTwo(-73.664);
-			} */
+			} 
 			if(controlPanel.getButton(InputConstants.NUDGE_UP)){
 				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
 			}
@@ -249,5 +262,6 @@ public class OI extends Procedure {
 			}
 
 		}
-	}
+	}*/
+	
 }

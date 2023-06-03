@@ -13,6 +13,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
 //import com.team766.logging.Category;
 import de.erichseifert.gral.util.GeometryUtils;
 import de.erichseifert.gral.util.MathUtils;
@@ -53,6 +54,7 @@ public class januaryTag extends Mechanism{
     private double offsetY;
     private Transform3d offset;
 	public januaryTag(){
+        loggerCategory = Category.MECHANISMS;
 		camera1 = new PhotonCamera("januaryTag.camera1");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
@@ -64,6 +66,7 @@ public class januaryTag extends Mechanism{
         offsetX = 10;
         offsetY = 10;
         offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
+        checkContextOwnership();
 	}
 
 
@@ -203,7 +206,9 @@ public class januaryTag extends Mechanism{
     }
 
     public void debugLogs(){
-
+        Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+        log("Yaw: " + targetTransform.getX());
+        log("Pitch: " + targetTransform.getY());
     }
 
 }
