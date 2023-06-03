@@ -14,26 +14,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
-	private JoystickReader joystick0;
-	private JoystickReader joystick1;
-	private JoystickReader joystick2;
-	private double RightJoystick_X = 0;
-	private double RightJoystick_Y = 0;
-	private double RightJoystick_Z = 0;
-	private double RightJoystick_Theta = 0;
-	private double LeftJoystick_X = 0;
-	private double LeftJoystick_Y = 0;
-	private double LeftJoystick_Z = 0;
-	private double LeftJoystick_Theta = 0;
+	private JoystickReader controller;
+	private double Controller_X = 0;
+	private double Controller_Y = 0;
+	private double Controller_Z = 0;
+	private double Controller_Theta = 0;
+
 	private boolean isCross = false;
 	double turningValue = 0;
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
-		joystick0 = RobotProvider.instance.getJoystick(0);
-		joystick1 = RobotProvider.instance.getJoystick(1);
-		joystick2 = RobotProvider.instance.getJoystick(2);
+		controller = RobotProvider.instance.getJoystick(0);
 	}
 	
 	public void run(Context context) {
@@ -54,11 +47,11 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			if(joystick1.getButton(2)){
+			/*if(joystick1.getButton(2)){
 				Robot.drive.setGyro(0);
 			} else {
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-			}
+			}*/
 			if(Math.abs(joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05){
 				RightJoystick_Y = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {

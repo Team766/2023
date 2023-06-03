@@ -15,6 +15,7 @@ public final class InputConstants {
 	//Navigation
 	public static final int AXIS_LEFT_RIGHT = 0;
 	public static final int AXIS_FORWARD_BACKWARD = 1;
+	public static final int AXIS_Z = 2;
 	public static final int AXIS_TWIST =3;
 	// Joystick buttons
 	public static final int CROSS_DEFENSE = 7; 
