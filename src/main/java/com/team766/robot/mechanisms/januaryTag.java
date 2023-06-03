@@ -184,7 +184,8 @@ public class januaryTag extends Mechanism{
                 double x_scoring = scoring.getX();
                 double y_scoring = scoring.getY(); 
 
-                double x_target = x_scoring + Math.cos(scoring.getX()) * (x_targetConstant * y_scoring);
+                double yaw_scoring = scoring.getRotation().getZ();
+                double x_target = x_scoring + Math.cos(yaw_scoring) * (x_targetConstant * y_scoring);
                 double y_target = y_scoring + Math.sin(scoring.getX()) * (y_scoring);
 
                 
