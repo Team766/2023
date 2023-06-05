@@ -11,6 +11,7 @@ public class Robot {
 	// public static Gyro gyro;
 	// public static Grabber grabber;
 	public static januaryTag JanuaryTag;
+
 	public static void robotInit() {
 		//Initialize mechanisms here
 		// intake = new Intake();
@@ -20,5 +21,6 @@ public class Robot {
 		// gyro = new Gyro();
 		// grabber = new Grabber();
 		JanuaryTag = new januaryTag();
+		jFrame JFrame = new jFrame();
 	}
 }
