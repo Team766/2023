@@ -14,7 +14,7 @@ public class jFrame extends JFrame implements ActionListener {
 	JButton click;
 	public jFrame(){
 		super("MotorController");
-		loggerCategory = Category.MECHANISMS;
+		//loggerCategory = Category.MECHANISMS;
 		JanuaryTag = new januaryTag();
 		frame = new JFrame();
 		click =  new JButton("Play Again");
@@ -30,7 +30,7 @@ public class jFrame extends JFrame implements ActionListener {
 		ArrayList<Double> arr = new ArrayList<Double>();
 		arr = JanuaryTag.getTransform3dData();
 		for(int i = 0; i < arr.size(); i++){
-			log("" + arr.get(i));
+			//log("" + arr.get(i));
 		}
 	}
 	
