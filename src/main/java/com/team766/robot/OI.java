@@ -27,9 +27,11 @@ public class OI extends Procedure {
 
 	public void run(Context context){
 		context.takeOwnership(Robot.JanuaryTag);
-		Robot.JanuaryTag.setDeadzones(0.2, 0.2);
+		Robot.JanuaryTag.setDeadzones(2, 2);
 		if(joystickOne.getButton(1)){
 			Robot.JanuaryTag.go();
+		} else{
+			Robot.JanuaryTag.manual(joystickOne.getAxis(1), joystickOne.getAxis(1));
 		}
 	}
 /* 

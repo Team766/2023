@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.team766.config.ConfigFileReader;
+import com.team766.framework.Context;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -61,13 +62,18 @@ public class januaryTag extends Mechanism{
 
         //Sample values, we don't know these work at all yet
         x_targetConstant = 0.5;
-        turnConstant = 0.2;
+        turnConstant = 0.3;
         forwardConstant = 0.2;
-        offsetX = 0.1;
-        offsetY = 0.1;
+        offsetX = 0.75;
+        offsetY = -0.03;
         offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
         checkContextOwnership();
 	}
+
+    public void manual(double left, double right){
+        leftMotor.set(left);
+        rightMotor.set(right);
+    }
 
 
     /*
@@ -180,6 +186,8 @@ public class januaryTag extends Mechanism{
 
             if(scoring.getX() + deadzoneX > 0 && scoring.getX() - deadzoneX < 0 && scoring.getY() + deadzoneY > 0 && scoring.getY() - deadzoneY < 0){
                 log("Outtaking");
+                log("FINAL X: " + scoring.getX());
+                log("FINAL Y: " + scoring.getY());
                 break;
             }else{
                 
@@ -201,6 +209,9 @@ public class januaryTag extends Mechanism{
                 
                 leftMotor.set((-1) * leftMotorPower);
                 rightMotor.set((-1) * rightMotorPower);
+
+                log("X: " + scoring.getX());
+                log("Y: " + scoring.getY());
             }
         }
     }
