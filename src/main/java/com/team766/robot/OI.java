@@ -27,9 +27,9 @@ public class OI extends Procedure {
 
 	public void run(Context context){
 		context.takeOwnership(Robot.JanuaryTag);
-
+		Robot.JanuaryTag.setDeadzones(0.2, 0.2);
 		if(joystickOne.getButton(1)){
-			Robot.JanuaryTag.debugLogs();
+			Robot.JanuaryTag.go();
 		}
 	}
 /* 

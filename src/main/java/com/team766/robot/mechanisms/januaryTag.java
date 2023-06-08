@@ -55,7 +55,7 @@ public class januaryTag extends Mechanism{
     private Transform3d offset;
 	public januaryTag(){
         loggerCategory = Category.MECHANISMS;
-		camera1 = new PhotonCamera("januaryTag.camera1");
+		camera1 = new PhotonCamera("januaryTag");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
 
@@ -63,8 +63,8 @@ public class januaryTag extends Mechanism{
         x_targetConstant = 0.5;
         turnConstant = 0.2;
         forwardConstant = 0.2;
-        offsetX = 10;
-        offsetY = 10;
+        offsetX = 0.1;
+        offsetY = 0.1;
         offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
         checkContextOwnership();
 	}
@@ -199,14 +199,18 @@ public class januaryTag extends Mechanism{
                 double leftMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
 		        double rightMotorPower = turnConstant * -turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
                 
-                leftMotor.set(leftMotorPower);
-                rightMotor.set(rightMotorPower);
+                leftMotor.set((-1) * leftMotorPower);
+                rightMotor.set((-1) * rightMotorPower);
             }
         }
     }
 
     public void debugLogs(){
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+        PhotonTrackedTarget theTarget = getBestTrackedTarget();
+
+        log("Yaw PTT " + theTarget.getYaw());
+        log("Pitch PTT " + theTarget.getPitch());
         log("Yaw: " + targetTransform.getX());
         log("Pitch: " + targetTransform.getY());
     }

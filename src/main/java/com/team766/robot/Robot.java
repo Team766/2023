@@ -21,6 +21,6 @@ public class Robot {
 		// gyro = new Gyro();
 		// grabber = new Grabber();
 		JanuaryTag = new januaryTag();
-		jFrame JFrame = new jFrame();
+		//jFrame JFrame = new jFrame();
 	}
 }
