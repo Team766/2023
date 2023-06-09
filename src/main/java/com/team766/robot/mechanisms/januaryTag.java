@@ -69,7 +69,7 @@ public class januaryTag extends Mechanism{
         offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
         checkContextOwnership();
 	}
-
+    //Manually move the robot
     public void manual(double left, double right){
         leftMotor.set(left);
         rightMotor.set(right);
@@ -145,6 +145,14 @@ public class januaryTag extends Mechanism{
         arr.add((double) theTarget.getFiducialId());
         return arr;
     }
+    /*
+     * This method returns the ID of the target that the camera is currently tracking
+     * It could be used to tell which target it is aimed at so we know where the robot is
+     * @return the ID of the target that the camera is currently tracking
+     */
+    public int getJanuaryTagId(PhotonTrackedTarget theTarget){
+        return theTarget.getFiducialId();
+    }
 
     /*
      * This is a method to return data given from a Transform3d
@@ -161,6 +169,12 @@ public class januaryTag extends Mechanism{
         arr.add(targetTransform.getZ());
         return arr;
     }
+
+    /*
+     * These next three methods are for setting deadzones for the go() method.
+     * For the first two methods @param dz - the deadzone that you want to set
+     * For the last method @param x - the x deadzone that you want to set, @param y - the y deadzone that you want to set
+     */
     
     public void setDeadzoneX(double dz){
         deadzoneX = dz;
@@ -220,6 +234,9 @@ public class januaryTag extends Mechanism{
         }
     }
 
+    /*
+     * These are debug logs
+     */
     public void debugLogs(){
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
