@@ -43,10 +43,14 @@ public class Drive extends Mechanism {
 		drive.set(vector.getNorm());
 	}
 
-	public void control(double x, double y, double turn) {
+	public void controlRobotOriented(double x, double y, double turn) {
 		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fl_y, -SwerveDriveConstants.fl_x).normalize()));
 		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fr_y, -SwerveDriveConstants.fr_x).normalize()));
 		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.br_y, -SwerveDriveConstants.br_x).normalize()));
 		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.bl_y, -SwerveDriveConstants.bl_x).normalize()));
+	}
+
+	public void controlFieldOriented(double yaw, double x, double y, double turn) {
+		controlRobotOriented(Math.cos(yaw) * x + Math.sin(yaw) * y, Math.cos(yaw) * y - Math.sin(yaw) * x, turn);
 	}
 }
