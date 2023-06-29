@@ -201,42 +201,52 @@ public class OI extends Procedure {
 			// }
 
 			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
+				log("Arm cone high");
 				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(-17.379);
 				Robot.arms.pidForArmTwo(-66.61);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
+				log("Arm cone mid");
 				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(2.7765);
 				Robot.arms.pidForArmTwo(-93.813);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
+				log("Arm ready");
 				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(17.269);
+				Robot.arms.pidForArmOne(10.269);
 				Robot.arms.pidForArmTwo(-90);
 			}
 			if(controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(22.73);
-				Robot.arms.pidForArmTwo(-72.529);
+				if (Robot.arms.getSecondJointPosition() < -100) {
+					log("Move arms to Ready position before moving to Pickup");
+				} else {
+					log("Arm pickup");
+					Robot.arms.stowed = false;
+					Robot.arms.pidForArmOne(22.73);
+					Robot.arms.pidForArmTwo(-72.529);
+				}
 			}
 			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
+				log("Arm unstowed");
 				Robot.arms.stowed = true;
-				Robot.arms.pidForArmOne(17.269);
-				Robot.arms.pidForArmTwo(-152.387);
+				Robot.arms.pidForArmOne(10.269);
+				Robot.arms.pidForArmTwo(-157.387);
 			}
 			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
 				Robot.arms.pidForArmOne(22.73);
 				Robot.arms.pidForArmTwo(-73.664);
 			} */
 			if(controlPanel.getButton(InputConstants.NUDGE_UP)){
+				log("Arm nudge up");
 				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
 			}
 
 			if(controlPanel.getButton(InputConstants.NUDGE_DOWN)){
+				log("Arm nudge down");
 				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2down());
 			}
-			Robot.arms.logs();
 
 			if(controlPanel.getButton(InputConstants.GRAB_IN)){
 				Robot.grabber.grabberPickUp();

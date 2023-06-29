@@ -45,6 +45,12 @@ public class Arms extends Mechanism {
 	private double firstJointCombo = 0;
 	private double secondJointCombo = 0;
 
+    // TODO: this offset is to factor in the difference between the
+    //       "zero" for alt encoder and the "zero" when we use degrees
+    //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
+    private static final double altEncoder1Offset = 0.25;
+    private static final double altEncoder2Offset = 0.53;
+
     // This sets the maximum locations so we can use them in code to make sure the arm joints dont go past there.
     private static final double FIRST_JOINT_MAX_LOCATION = 27.3;
     private static final double FIRST_JOINT_MIN_LOCATION = -45;
@@ -127,12 +133,9 @@ public class Arms extends Mechanism {
         // to avoid wrap-around errors
         // first joint zero is horizontal parallel to ground
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
-		altEncoder1.setZeroOffset(0.655);    // TODO: these need tweaking from altEncoder1Offset
-		altEncoder2.setZeroOffset(0.446); //Old values: 0.807, 0.446
-        SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
-        SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
-        SmartDashboard.putString("First Joint State: ", theStateOf1.toString());
-        SmartDashboard.putString("Second Joint State: ",theStateOf2.toString());
+		altEncoder1.setZeroOffset(0.64);    // TODO: these need tweaking from altEncoder1Offset
+		altEncoder2.setZeroOffset(0.0); //Old values: 0.807, 0.446
+        altEncoder2.setPositionConversionFactor(0.975); // 0.89
 
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
 
@@ -172,17 +175,14 @@ public class Arms extends Mechanism {
     public double nudgeArm2down(){
         return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) -1);
     }
+
+    public double getSecondJointPosition() {
+        return ArmsUtil.EUTodegrees(secondJoint.getSensorPosition());
+    }
+
     // Resets encoders
     public void resetFirstEncoders() {
         checkContextOwnership();
-
-        // TODO: this offset is to factor in the difference between the
-        //       "zero" for alt encoder and the "zero" when we use degrees
-        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
-        final double altEncoder1Offset = 0.25;
-        // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.525;
-        //final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         double firstJointAbsEncoder = altEncoder1.getPosition();
@@ -196,14 +196,6 @@ public class Arms extends Mechanism {
 
     public void resetSecondEncoders() {
         checkContextOwnership();
-
-        // TODO: this offset is to factor in the difference between the
-        //       "zero" for alt encoder and the "zero" when we use degrees
-        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
-        final double altEncoder1Offset = 0.25;
-        // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.525;
-        //final double altEncoder2Offset = 0.493;
 
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
@@ -312,10 +304,10 @@ public class Arms extends Mechanism {
         // log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
         // log("AE1: " + altEncoder1.getPosition());
         // log("AE2: " + altEncoder2.getPosition());
-        // SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-        // SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-        // SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
-        // SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
+        SmartDashboard.putNumber("Joint 1 Motor Encoder", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Joint 2 Motor Encoder", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Joint 1 Abs Encoder", 360 * (altEncoder1.getPosition() - altEncoder1Offset));
+        SmartDashboard.putNumber("Joint 2 Abs Encoder", 360 * (altEncoder2.getPosition() - altEncoder2Offset));
 
     }
 	
@@ -339,6 +331,8 @@ public class Arms extends Mechanism {
             log("First Joint Combo: " + firstJointCombo);
             log("Second Joint Combo: " + secondJointCombo);
         }
+
+        logs();
 
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
