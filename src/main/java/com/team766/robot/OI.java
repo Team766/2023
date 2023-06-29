@@ -80,10 +80,10 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 
-			leftJoystickX = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
-			leftJoystickY = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
-			rightJoystickX = Drive.correctedJoysticks(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
-			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+			leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			//Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 			
 			// if (DriverStation.getAlliance() == Alliance.Red) {
 			// 	SmartDashboard.putString("Alliance", "RED");
@@ -98,9 +98,9 @@ public class OI extends Procedure {
 				Robot.gyro.resetGyro();
 			}
 
-			if (controlPanel.getButtonPressed(InputConstants.RESET_POS)) {
-				Robot.drive.resetCurrentPosition();
-			}
+			// if (controlPanel.getButtonPressed(InputConstants.RESET_POS)) {
+			// 	Robot.drive.resetCurrentPosition();
+			// }
 
 			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
 				RightJoystick_Y = rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
@@ -169,12 +169,12 @@ public class OI extends Procedure {
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed
-			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+			/*if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 				if (!isCross) {
 					context.startAsync(new setCross());
 				}
 				isCross = !isCross;
-			}
+			}*/
 			
 
 			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
@@ -184,14 +184,14 @@ public class OI extends Procedure {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
-					Robot.drive.swerveDrive((leftJoystickX * FINE_DRIVING_COEFFICIENT), (-leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
+					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (-leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
-					Robot.drive.swerveDrive((leftJoystickX), (-leftJoystickY), (rightJoystickX));
+					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (leftJoystickX), (-leftJoystickY), (rightJoystickX));
 				}
-			} else if (!isCross) {
+			} /*else if (!isCross) {
 				Robot.drive.stopDriveMotors();
 				Robot.drive.stopSteerMotors();				
-			} 
+			} */
 
 			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 			// 	context.startAsync(new setCross());

@@ -666,9 +666,9 @@ public class oldDrive extends Mechanism {
 	public void run() {
 		currentPosition = swerveOdometry.run();
 		log(currentPosition.toString());
-		SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
-		SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
-		SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());
+		//SmartDashboard.putNumber("Front Right Motor Encoder", m_SteerFrontRight.getSensorPosition());
+		//SmartDashboard.putNumber("Front Left Motor Encoder", m_SteerFrontLeft.getSensorPosition());
+		//SmartDashboard.putNumber("Back Right Motor Encoder", m_SteerBackRight.getSensorPosition());
 		SmartDashboard.putNumber("Back Left Motor Encoder", m_SteerBackLeft.getSensorPosition());
 	}
 }

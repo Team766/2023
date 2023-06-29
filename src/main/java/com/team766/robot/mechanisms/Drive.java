@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.robot.constants.SwerveDriveConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Drive extends Mechanism {
@@ -31,6 +32,8 @@ public class Drive extends Mechanism {
 	private double offsetBR;
 	private double offsetBL;
 
+	private final double encoderConversionFactor = (150.0 / 7.0) /*steering gear ratio*/ * (2048 / 360) /*encoder units to degrees*/;
+
 	public Drive() {
 		
 		loggerCategory = Category.DRIVE;
@@ -48,7 +51,7 @@ public class Drive extends Mechanism {
 		m_SteerBR = RobotProvider.instance.getMotor("drive.SteerBackRight");
 		m_SteerBL = RobotProvider.instance.getMotor("drive.SteerBackLeft");
 
-		// conversion from cancoder units to degrees: 360.0 / 4096.0;
+		
 
 		// initialize the encoders
 		e_FrontRight = new CANCoder(22, "Swervavore");
@@ -61,7 +64,13 @@ public class Drive extends Mechanism {
 
 	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
 		steer.set(ControlMode.Position, Math.atan(vector.getX()/vector.getY()) + offset);
-		drive.set(vector.getNorm());
+		//drive.set(vector.getNorm());
+		SmartDashboard.putNumber("Offset FR", offsetFR);
+		SmartDashboard.putNumber("Offset FL", offsetFL);
+		SmartDashboard.putNumber("Offset BR", offsetBR);
+		SmartDashboard.putNumber("Offset BL", offsetBL);
+
+		SmartDashboard.putNumber("Angle", Math.atan(vector.getX()/vector.getY()) + offset);
 	}
 
 	public void controlRobotOriented(double x, double y, double turn) {
@@ -77,6 +86,8 @@ public class Drive extends Mechanism {
 
 	public void setEncoderOffset() {
 		offsetFR = m_SteerFR.getSensorPosition() - e_FrontRight.getAbsolutePosition();
+		SmartDashboard.putNumber("motor sensor FR", m_SteerFR.getSensorPosition());
+		SmartDashboard.putNumber("motor encoder FR", e_FrontRight.getAbsolutePosition());
 		offsetFL = m_SteerFL.getSensorPosition() - e_FrontLeft.getAbsolutePosition();
 		offsetBR = m_SteerBR.getSensorPosition() - e_BackRight.getAbsolutePosition();
 		offsetBL = m_SteerBL.getSensorPosition() - e_BackLeft.getAbsolutePosition();
