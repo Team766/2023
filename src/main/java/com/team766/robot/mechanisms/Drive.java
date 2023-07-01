@@ -32,7 +32,7 @@ public class Drive extends Mechanism {
 	private double offsetBR;
 	private double offsetBL;
 
-	private final double encoderConversionFactor = (150.0 / 7.0) /*steering gear ratio*/ * (2048 / 360) /*encoder units to degrees*/;
+	private final double encoderConversionFactor = (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
 
 	public Drive() {
 		
@@ -85,11 +85,11 @@ public class Drive extends Mechanism {
 	}
 
 	public void setEncoderOffset() {
-		offsetFR = m_SteerFR.getSensorPosition() - e_FrontRight.getAbsolutePosition();
+		offsetFR = (m_SteerFR.getSensorPosition()/encoderConversionFactor) % 360 - e_FrontRight.getAbsolutePosition();
+		offsetFL = (m_SteerFL.getSensorPosition()/encoderConversionFactor) % 360 - e_FrontLeft.getAbsolutePosition();
+		offsetBR = (m_SteerBR.getSensorPosition()/encoderConversionFactor) % 360 - e_BackRight.getAbsolutePosition();
+		offsetBL = (m_SteerBL.getSensorPosition()/encoderConversionFactor) % 360 - e_BackLeft.getAbsolutePosition();
 		SmartDashboard.putNumber("motor sensor FR", m_SteerFR.getSensorPosition());
 		SmartDashboard.putNumber("motor encoder FR", e_FrontRight.getAbsolutePosition());
-		offsetFL = m_SteerFL.getSensorPosition() - e_FrontLeft.getAbsolutePosition();
-		offsetBR = m_SteerBR.getSensorPosition() - e_BackRight.getAbsolutePosition();
-		offsetBL = m_SteerBL.getSensorPosition() - e_BackLeft.getAbsolutePosition();
 	}
 }
