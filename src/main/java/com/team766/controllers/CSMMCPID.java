@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import java.io.IOError;
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
@@ -30,15 +31,15 @@ public class CSMMCPID{
 	private SparkMaxPIDController pid1;
 	private SparkMaxAbsoluteEncoder abs1;
 	//PID Related Variables (should be private but whatever)
-	public static double dz1 = 0; 
-	public static double maxpos1 = 0;
-	public static double minpos1 = 0;
-	public static double maxvel1 = 0;
-	public static double maxaccel1 = 0;
-	public static double maxspeed1 = 0;
-	public static double minspeed1 = 0;
-	public static double currentPos = 0;
-	public static double combo;
+	private static double dz1 = 0; 
+	private static double maxpos1 = 0;
+	private static double minpos1 = 0;
+	private static double maxvel1 = 0;
+	private static double maxaccel1 = 0;
+	private static double maxspeed1 = 0;
+	private static double minspeed1 = 0;
+	private static double currentPos = 0;
+	private static double combo;
 
 	//antigrav variable
 	public static double antiGravK;
@@ -51,27 +52,36 @@ public class CSMMCPID{
 	//the state of the PID2
 	private PIDSTATE theState = PIDSTATE.OFF;
 	
-
-	
-	
-
 	//constructor for the class with no absolute encoder
-	public CSMMCPID(String configName){
+	public CSMMCPID(String configName) throws Exception{
 			//loggerCategory = Category.MECHANISMS;
-			mc1 = RobotProvider.instance.getMotor(configName);
-			csm1 = (CANSparkMax)mc1;
-			pid1 = csm1.getPIDController();
+
+			try{
+				mc1 = RobotProvider.instance.getMotor(configName);
+				csm1 = (CANSparkMax)mc1;
+				pid1 = csm1.getPIDController();
+			}catch (IllegalArgumentException Ill){
+				throw new Exception("Error instantiating the PID controller: " + Ill);
+			}
+			
 		
 	}
 	//constructor for the class with an absolute encoder
-	public CSMMCPID(String configName, double absEncoderOffset){
+	public CSMMCPID(String configName, double absEncoderOffset) throws Exception{
 			//loggerCategory = Category.MECHANISMS;
-			mc1 = RobotProvider.instance.getMotor(configName);
-			csm1 = (CANSparkMax)mc1;
-			pid1 = csm1.getPIDController();
-			abs1 = csm1.getAbsoluteEncoder(Type.kDutyCycle);
-			abs1.setZeroOffset(absEncoderOffset);
-			pid1.setFeedbackDevice(abs1);
+
+			try{
+				mc1 = RobotProvider.instance.getMotor(configName);
+				csm1 = (CANSparkMax)mc1;
+				pid1 = csm1.getPIDController();
+				abs1 = csm1.getAbsoluteEncoder(Type.kDutyCycle);
+				abs1.setZeroOffset(absEncoderOffset);
+				pid1.setFeedbackDevice(abs1);
+			}catch (IllegalArgumentException Ill){
+				throw new Exception("Error instantiating the CLE PID controller: " + Ill);
+			}
+			
+			
 	}
 	//manually changing the state
 	public void updateState(PIDSTATE state){
@@ -100,23 +110,17 @@ public class CSMMCPID{
 	public void setFf(double ff){
 		pid1.setFF(ff);
 	}
-	/*
-	//updating the inverted state of the motor
-	public void setInverted(boolean q){
-		mc1.setInverted(q);
-		csm1.setInverted(q);
-	}
-	*/
+	
 	//setting the antigravity constants2
 	public void setAntigravConstant(double k){
 		antiGravK = k;
 	}
 
-	public void antigrav(){
+	private void antigrav(){
 		mc1.set(antiGravK * Math.sin(mc1.getSensorPosition()));
 	}
 
-	//adding a built in closed loop error (not tested yet) (ron respond to my discord messages please so i can test)
+	//adding a built in closed loop error (not tested yet)
 	public void setSmartMotionAllowedClosedLoopError(double error){
 		pid1.setSmartMotionAllowedClosedLoopError(error, 0);
 	}
@@ -135,7 +139,7 @@ public class CSMMCPID{
 		mc1.setNeutralMode(mode);
 	}
 	//setting the maximum and minimul locations that the motor can go to
-	public void setMaxMinLocation(double max, double min){
+	public void setMinMaxLocation(double min, double max){
 		maxpos1 = max;
 		minpos1 = min;
 	}
@@ -151,8 +155,8 @@ public class CSMMCPID{
 		pid1.setSmartMotionMaxAccel(max, 0);
 	}
 
-	//go to a position using the thing that wasn't tested yet (ron respond to my discord messages please so i can test)
-	public void setCLEAllusion(double position){
+	//go to a position using the thing that wasn't tested yet and almost broke the robot...
+	public void setCLEPosition(double position){
 		if(position > maxpos1){
 			position = maxpos1;
 		} else if(position < minpos1){
@@ -162,7 +166,7 @@ public class CSMMCPID{
 		pid1.setReference(position, ControlType.kSmartMotion);
 	}
 	//1st step to go to a position using the normal PID, setting what you want the position to be
-	public void setAllusion(double position){
+	public void setPosition(double position){
 		if(position > maxpos1){
 			position = maxpos1;
 		} else if(position < minpos1){
@@ -173,6 +177,8 @@ public class CSMMCPID{
 	}
 
 	public void STOP(){
+		//Failsafe
+		currentPos = mc1.getSensorPosition();
 		theState = PIDSTATE.OFF;
 	}
 
@@ -199,7 +205,7 @@ public class CSMMCPID{
 					break;
 			}
 		} else{
-			//log("enabled is false"); // this better work
+			//log("enabled is false");
 		}
 		
 	}
