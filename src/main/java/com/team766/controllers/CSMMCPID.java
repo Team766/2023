@@ -60,8 +60,8 @@ public class CSMMCPID{
 				mc1 = RobotProvider.instance.getMotor(configName);
 				csm1 = (CANSparkMax)mc1;
 				pid1 = csm1.getPIDController();
-			}catch (IllegalArgumentException Ill){
-				throw new Exception("Error instantiating the PID controller: " + Ill);
+			}catch (IllegalArgumentException ill){
+				throw new Exception("Error instantiating the PID controller: " + ill);
 			}
 			
 		
@@ -77,8 +77,8 @@ public class CSMMCPID{
 				abs1 = csm1.getAbsoluteEncoder(Type.kDutyCycle);
 				abs1.setZeroOffset(absEncoderOffset);
 				pid1.setFeedbackDevice(abs1);
-			}catch (IllegalArgumentException Ill){
-				throw new Exception("Error instantiating the CLE PID controller: " + Ill);
+			}catch (IllegalArgumentException ill){
+				throw new Exception("Error instantiating the CLE PID controller: " + ill);
 			}
 			
 			
