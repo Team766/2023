@@ -30,7 +30,7 @@ public class CSMMCPID{
 	private CANSparkMax csm1;
 	private SparkMaxPIDController pid1;
 	private SparkMaxAbsoluteEncoder abs1;
-	//PID Related Variables (should be private but whatever)
+	//PID Related Variables
 	private static double dz1 = 0; 
 	private static double maxpos1 = 0;
 	private static double minpos1 = 0;
