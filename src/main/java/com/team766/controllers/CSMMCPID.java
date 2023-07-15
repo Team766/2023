@@ -176,7 +176,7 @@ public class CSMMCPID{
 		currentPos = position;
 	}
 
-	public void STOP(){
+	public void stop(){
 		//Failsafe
 		currentPos = mc1.getSensorPosition();
 		theState = PIDSTATE.OFF;
