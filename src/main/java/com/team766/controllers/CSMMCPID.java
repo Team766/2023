@@ -42,9 +42,9 @@ public class CSMMCPID{
 	private static double combo;
 
 	//antigrav variable
-	public static double antiGravK;
+	private static double antiGravK;
 	//enum for which state the PID is in
-	private enum PIDSTATE{
+	public enum PIDSTATE{
 		PID,
 		OFF,
 		ANTIGRAV
