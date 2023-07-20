@@ -6,9 +6,9 @@ public class Robot {
 	//Declare mechanisms here
 	// public static Intake intake; 
 	// public static Storage storage;
-	// public static Drive drive;
+	public static Drive drive;
 	// public static Arms arms;
-	// public static Gyro gyro;
+	public static Gyro gyro;
 	// public static Grabber grabber;
 	public static januaryTag JanuaryTag;
 
@@ -16,9 +16,9 @@ public class Robot {
 		//Initialize mechanisms here
 		// intake = new Intake();
 		// storage = new Storage();
-		// drive = new Drive();
+		drive = new Drive();
 		// arms = new Arms();
-		// gyro = new Gyro();
+		gyro = new Gyro();
 		// grabber = new Grabber();
 		JanuaryTag = new januaryTag();
 		//jFrame JFrame = new jFrame();
