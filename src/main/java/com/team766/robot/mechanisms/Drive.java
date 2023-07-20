@@ -63,14 +63,15 @@ public class Drive extends Mechanism {
 	}
 
 	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
-		steer.set(ControlMode.Position, Math.atan(vector.getX()/vector.getY()) + offset);
-		//drive.set(vector.getNorm());
+		// needs to multiply by encoderconversionfactor to translate into a language the motor understands
+		steer.set(ControlMode.Position, encoderConversionFactor*Math.toDegrees(Math.atan(vector.getX()/vector.getY()) + offset));
+		drive.set(vector.getNorm());
 		SmartDashboard.putNumber("Offset FR", offsetFR);
 		SmartDashboard.putNumber("Offset FL", offsetFL);
 		SmartDashboard.putNumber("Offset BR", offsetBR);
 		SmartDashboard.putNumber("Offset BL", offsetBL);
 
-		SmartDashboard.putNumber("Angle", Math.atan(vector.getX()/vector.getY()) + offset);
+		SmartDashboard.putNumber("Angle", Math.toDegrees(Math.atan(vector.getX()/vector.getY()) + offset));
 	}
 
 	public void controlRobotOriented(double x, double y, double turn) {
@@ -91,5 +92,6 @@ public class Drive extends Mechanism {
 		offsetBL = (m_SteerBL.getSensorPosition()/encoderConversionFactor) % 360 - e_BackLeft.getAbsolutePosition();
 		SmartDashboard.putNumber("motor sensor FR", m_SteerFR.getSensorPosition());
 		SmartDashboard.putNumber("motor encoder FR", e_FrontRight.getAbsolutePosition());
+		SmartDashboard.putNumber("OffsetFR", offsetFR);
 	}
 }
