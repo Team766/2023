@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.team766.config.ConfigFileReader;
+import com.team766.controllers.PIDController;
 import com.team766.framework.Context;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -54,7 +55,16 @@ public class januaryTag extends Mechanism{
     private double offsetX;
     private double offsetY;
     private Transform3d offset;
+    private Drive drive;
+
+
+    private PIDController motionX;
+    private PIDController motionY;
 	public januaryTag(){
+
+        motionX = new PIDController(0.0,0.0,0.0,-0.2,0.2,0.5);
+        motionY = new PIDController(0,0,0,-0.2,0.2,1);
+        drive = new Drive();
         loggerCategory = Category.MECHANISMS;
 		camera1 = new PhotonCamera("januaryTag");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
@@ -68,11 +78,34 @@ public class januaryTag extends Mechanism{
         offsetY = 0;
         offset = new Transform3d(new Translation3d(-offsetX, -offsetY, 0), new Rotation3d());
         checkContextOwnership();
+
+        motionX.setP(0.01);
+        motionY.setP(0.01);
+
 	}
     //Manually move the robot
     public void manual(double left, double right){
         leftMotor.set(left);
         rightMotor.set(right);
+    }
+
+    public void swerveCalculate(){
+        Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+        
+        double xCurPos = targetTransform.getX();
+        double yCurPos = targetTransform.getY();
+
+        motionX.setSetpoint(0);
+        motionY.setSetpoint(0);
+
+        motionX.calculate(xCurPos);
+        motionY.calculate(yCurPos);
+
+        double xSpeed = motionX.getOutput();
+        double ySpeed = motionY.getOutput();
+
+        drive.drive2D(xSpeed, ySpeed);
+
     }
 
 
