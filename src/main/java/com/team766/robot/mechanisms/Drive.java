@@ -11,9 +11,11 @@ import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.simulator.ProgramInterface.RobotMode;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -23,6 +25,7 @@ import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.robot.constants.*;
+import com.team766.controllers.*;
 
 public class Drive extends Mechanism {
 
@@ -52,9 +55,20 @@ public class Drive extends Mechanism {
 	private Point[] wheelPositions;
 	private Odometry swerveOdometry;
 
+
+	private PIDController pidX;
+	private PIDController pidY;
+
+	private boolean yDone;
+	
 	public Drive() {
 
 		loggerCategory = Category.DRIVE;
+
+		yDone = false;
+
+		pidX = new PIDController(0, 0, 0, 0, -0.2, 0.2, 0.5);
+		pidY = new PIDController(0, 0, 0, 0, -0.2, 0.2, 0.5);
 		// Initializations of motors
 		// Initialize the drive motors
 		m_DriveFrontRight = RobotProvider.instance.getMotor("drive.DriveFrontRight");
@@ -363,6 +377,55 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft.stopMotor();
 	}
 
+	public void PhotonDrive(Transform3d bestTrackedTarget, PhotonTrackedTarget notBestTarget){
+		double curX = bestTrackedTarget.getX();
+		double curY = bestTrackedTarget.getY();
+
+		double curAng = notBestTarget.getSkew();
+
+		pidX.setSetpoint(0);
+		pidY.setSetpoint(0);
+
+		pidX.calculate(curX);
+		pidY.calculate(curY);
+
+		double outX = pidX.getOutput();
+		double outY = pidX.getOutput();
+
+		if(outY == 0){
+			yDone = true;
+		}else{
+			yDone = false;
+		}
+
+
+
+		if(yDone){
+			setAllAngles(90); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
+			m_DriveBackLeft.set(outX);
+			m_DriveBackRight.set(outX);
+			m_DriveFrontLeft.set(outX);
+			m_DriveFrontRight.set(outX);
+		}else{
+			setAllAngles(180); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
+			m_DriveBackLeft.set(outY);
+			m_DriveBackRight.set(outY);
+			m_DriveFrontLeft.set(outY);
+			m_DriveFrontRight.set(outY);
+		}
+
+		if(Math.abs(curAng) <= 2){
+			//do nothing
+		}else if(outX == 0 && outY == 0){
+			if(curAng > 0){
+				setAllAngles(curAng - 0.15);
+			}else{
+				setAllAngles(curAng + 0.15);
+			}
+		}
+
+	}
+
 	/**
 	 * This method is the main method for driving the robot, using the joystick values.
 	 * 
@@ -578,6 +641,17 @@ public class Drive extends Mechanism {
 		m_SteerBackLeft.set(ControlMode.Position, 2048.0 / 360.0 * (150.0 / 7.0) * angle);
 	}
 
+/**
+ * This is a method to set all of the motors to a certian angle
+ * 
+ * @param angle The angle to set all of the wheels to
+ */
+	public void setAllAngles(double angle){
+		setBackLeftAngle(angle);
+		setBackRightAngle(angle);
+		setFrontLeftAngle(angle);
+		setFrontRightAngle(angle);
+	}
 	/**
 	 * Method to configure PID values. The values were pre-tuned and are not expected to change.
 	 */
