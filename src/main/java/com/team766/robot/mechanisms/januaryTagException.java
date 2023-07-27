@@ -5,3 +5,9 @@ public class januaryTagException extends RuntimeException {
 			super(errorMessage);
 		} 
 }
+
+public class januaryTagException extends RuntimeException {
+		public januaryTagException (String errorMessage) {
+			super(errorMessage);
+		} 
+}

@@ -390,7 +390,7 @@ public class Drive extends Mechanism {
 		pidY.calculate(curY);
 
 		double outX = pidX.getOutput();
-		double outY = pidX.getOutput();
+		double outY = pidY.getOutput();
 
 		if(outY == 0){
 			yDone = true;
