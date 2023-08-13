@@ -89,6 +89,11 @@ public class januaryTag extends Mechanism{
         rightMotor.set(right);
     }
 
+    public Transform3d getBestTag(){
+        return getBestCameraToTarget(getBestTrackedTarget());
+    }
+
+    
     public void swerveCalculate(){
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         
