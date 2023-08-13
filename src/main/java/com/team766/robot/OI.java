@@ -1,6 +1,7 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -11,6 +12,7 @@ import com.team766.robot.procedures.*;
 import com.team766.robot.mechanisms.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -27,12 +29,31 @@ public class OI extends Procedure {
 
 	public void run(Context context){
 		context.takeOwnership(Robot.JanuaryTag);
-		Robot.JanuaryTag.setDeadzones(2, 2);
+		context.takeOwnership(Robot.drive);
+		context.takeOwnership(Robot.intake);
+
+		Transform3d btt = Robot.JanuaryTag.getBestTag();
+		PhotonTrackedTarget t = Robot.JanuaryTag.getBestTrackedTarget();
+
 		if(joystickOne.getButton(1)){
-			Robot.JanuaryTag.go();
-		} else{
-			Robot.JanuaryTag.manual(joystickOne.getAxis(1), joystickOne.getAxis(1));
+			int output = Robot.drive.PhotonDrive(btt, t);
+
+			if(output == 1){
+				Robot.intake.reverseIntake();
+				Robot.storage.beltOut();
+			}else{
+				Robot.intake.stopIntake();
+				Robot.storage.beltIdle();
+			}
+
+
 		}
+
+		// if(joystickOne.getButtonReleased(1)){
+		// 	Robot.drive.drive2D(0,0);
+		// }
+		
+		
 	}
 /* 
 	private JoystickReader leftJoystick;
