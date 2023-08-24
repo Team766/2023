@@ -10,6 +10,7 @@ public class Robot {
 	public static Arms arms;
 	public static Gyro gyro;
 	public static Grabber grabber;
+	public static januaryTag JanuaryTag;
 
 	public static void robotInit() {
 		// Initialize mechanisms here
@@ -19,5 +20,6 @@ public class Robot {
 		arms = new Arms();
 		gyro = new Gyro();
 		grabber = new Grabber();
+		JanuaryTag = new januaryTag();
 	}
 }
