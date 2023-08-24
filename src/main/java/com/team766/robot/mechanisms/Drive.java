@@ -411,26 +411,26 @@ public class Drive extends Mechanism {
 			yDone = false;
 		}
 
-		setAllAngles(angleB);
+		// setAllAngles(angleB);
 
-		m_DriveBackLeft.set(outPythag);
-		m_DriveBackRight.set(outPythag);
-		m_DriveFrontLeft.set(outPythag);
-		m_DriveFrontRight.set(outPythag);
+		// m_DriveBackLeft.set(outPythag);
+		// m_DriveBackRight.set(outPythag);
+		// m_DriveFrontLeft.set(outPythag);
+		// m_DriveFrontRight.set(outPythag);
 		
-		// if(yDone){
-		// 	setAllAngles(180); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
-		// 	m_DriveBackLeft.set(outX);
-		// 	m_DriveBackRight.set(outX);
-		// 	m_DriveFrontLeft.set(outX);
-		// 	m_DriveFrontRight.set(outX);
-		// }else{
-		// 	setAllAngles(90); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
-		// 	m_DriveBackLeft.set(outY);
-		// 	m_DriveBackRight.set(outY);
-		// 	m_DriveFrontLeft.set(outY);
-		// 	m_DriveFrontRight.set(outY);
-		// }
+		if(yDone){
+			setAllAngles(180); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
+			m_DriveBackLeft.set(outX);
+			m_DriveBackRight.set(outX);
+			m_DriveFrontLeft.set(outX);
+			m_DriveFrontRight.set(outX);
+		}else{
+			setAllAngles(90); //TODO: CHECK IF IT IS CORRECT ANGLE AND NOT SWITCHED
+			m_DriveBackLeft.set(outY);
+			m_DriveBackRight.set(outY);
+			m_DriveFrontLeft.set(outY);
+			m_DriveFrontRight.set(outY);
+		}
 		// log("currAng: " + curAng);
 		// if(Math.abs(curAng) <= 2){
 		// 	//do nothing
