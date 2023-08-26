@@ -1,13 +1,7 @@
 package com.team766.robot.mechanisms;
 import java.util.ArrayList;
-public class twoCameraPosition {
+public class twoCameraPosition implements apriltagLocalization {
 	
-	private static double X1;
-	private static double Y1;
-	private static int ID1;
-	private static double X2;
-	private static double Y2;
-	private static int ID2;
 
 	ArrayList<Double> arr = new ArrayList<Double>();
 	public twoCameraPosition(location tag1, location tag2){
