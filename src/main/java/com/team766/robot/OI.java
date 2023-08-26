@@ -16,6 +16,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.ArrayList;
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
@@ -35,7 +37,7 @@ public class OI extends Procedure {
 		Transform3d btt = Robot.JanuaryTag.getBestTag();
 		PhotonTrackedTarget t = Robot.JanuaryTag.getBestTrackedTarget();
 
-		if(joystickOne.getButton(1)){
+		if(joystickOne.getButton(5)){
 			int output = Robot.drive.PhotonDrive(btt, t);
 
 			if(output == 1){
@@ -49,6 +51,10 @@ public class OI extends Procedure {
 
 		}
 
+		if(joystickOne.getButton(1)){
+			ArrayList<Double> arr = Robot.tf.logCoords();
+			log("Y: +" + arr.get(0) + " X: " + arr.get(1));
+		}
 		// if(joystickOne.getButtonReleased(1)){
 		// 	Robot.drive.drive2D(0,0);
 		// }

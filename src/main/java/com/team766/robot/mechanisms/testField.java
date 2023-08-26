@@ -23,7 +23,7 @@ public class testField{
 
 	}
 
-	public static void updateRobotLocation(twoCameraPosition t){
+	public void updateRobotLocation(twoCameraPosition t){
 		ArrayList<Double> arr = t.getData();
 
 		double x2 = arr.get(0);
@@ -39,6 +39,17 @@ public class testField{
 
 		double realX = (robotRelToTag2.getX() + robotRelToTag2.getX()) / 2;
 		double realY = (robotRelToTag2.getY() + robotRelToTag3.getY()) / 2;
+
+		robotX = realX;
+		robotY = realY;
+
+	}
+
+	public ArrayList<Double> logCoords() {
+		ArrayList<Double> arr = new ArrayList<Double>();
+		arr.add(robotX);
+		arr.add(robotY);
+		return arr;
 	}
 
 }

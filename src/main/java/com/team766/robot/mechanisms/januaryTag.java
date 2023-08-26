@@ -70,7 +70,7 @@ public class januaryTag extends Mechanism{
         drive = new Drive();
         loggerCategory = Category.MECHANISMS;
 		camera1 = new PhotonCamera("januaryTag");
-        camera2 = new PhotonCamera("januaryTag.tag2");
+        camera2 = new PhotonCamera("januaryTag.cam2");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
 
@@ -97,7 +97,10 @@ public class januaryTag extends Mechanism{
         return getBestCameraToTarget(getBestTrackedTarget());
     }
 
-    
+    //Test
+    public void testLocalization(){
+
+    }
     public void swerveCalculate(){
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         
@@ -206,17 +209,21 @@ public class januaryTag extends Mechanism{
 
     public void doSensorFusion(){
         PhotonTrackedTarget camera1Target = getBestTrackedTarget();
-        PhotonTrackedTarget camera2Target = getBestTrackedTargetForCameraTwo();
 
         int camera1TargetID = camera1Target.getFiducialId();
-        int camera2TargetID = camera2Target.getFiducialId();
-
         Transform3d camera1rel = getBestCameraToTarget(camera1Target);
-        Transform3d camera2rel = getBestCameraToTarget(camera2Target);
-
         location camera1relLocation = new location(camera1rel.getX(), camera1rel.getY());
-        location camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
 
+        PhotonTrackedTarget camera2Target;
+        try{
+            camera2 Target = getBestTrackedTargetForCameraTwo();
+        } catch (januaryTagException e){
+            throw new januaryTagException("Couldn't find cameras and trying to do sensor fusion; e: " + e);
+        }
+        int camera2TargetID = camera2Target.getFiducialId();
+        Transform3d camera2rel = getBestCameraToTarget(camera2Target);
+        location camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
+        
         twoCameraPosition w;
         if(camera1TargetID < camera2TargetID){
             w = new twoCameraPosition(camera1relLocation, camera2relLocation);
