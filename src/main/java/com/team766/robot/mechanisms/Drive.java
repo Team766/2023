@@ -64,7 +64,7 @@ public class Drive extends Mechanism {
 
 	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
 		// needs to multiply by encoderconversionfactor to translate into a language the motor understands
-		steer.set(ControlMode.Position, encoderConversionFactor*Math.toDegrees(Math.atan(vector.getX()/vector.getY()) + offset));
+		steer.set(ControlMode.Position, encoderConversionFactor*Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) + offset);
 		drive.set(vector.getNorm());
 		SmartDashboard.putNumber("Offset FR", offsetFR);
 		SmartDashboard.putNumber("Offset FL", offsetFL);
