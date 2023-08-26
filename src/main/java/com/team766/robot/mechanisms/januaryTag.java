@@ -232,11 +232,14 @@ public class januaryTag extends Mechanism{
         Transform3d camera1rel; 
         location camera1relLocation;
 
+        ArrayList<Integer> compatableCameras = new ArrayList<Integer>();
+
         try{
             camera1Target = getBestTrackedTarget();
             camera1TargetID = camera1Target.getFiducialId();
             camera1rel = getBestCameraToTarget(camera1Target);
             camera1relLocation = new location(camera1rel.getX(), camera1rel.getY());
+            compatableCameras.add(1);
         } catch (januaryTagException e){
             targets--;
             throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
@@ -254,6 +257,7 @@ public class januaryTag extends Mechanism{
             camera2TargetID = camera2Target.getFiducialId();
             camera2rel = getBestCameraToTarget(camera2Target);
             camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
+            compatableCameras.add(2);
         } catch (januaryTagException e){
             targets--;
             throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
@@ -268,6 +272,7 @@ public class januaryTag extends Mechanism{
             camera3TargetID = camera3Target.getFiducialId();
             camera3rel = getBestCameraToTarget(camera3Target);
             camera3relLocation = new location(camera3rel.getX(), camera3rel.getY());
+            compatableCameras.add(3);
         } catch (januaryTagException e){
             targets--;
             throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
@@ -275,19 +280,37 @@ public class januaryTag extends Mechanism{
 
         switch(targets){
             case 3:
-                field.updateRobotLocation(new threeCameraPosition(camera1relLocation, camera2relLocation, camera3relLocation));
+                field.updateRobotLocation(new threeCameraPosition(camera1relLocation, camera2relLocation, camera3relLocation, camera1TargetID, camera2TargetID, camera3TargetID));
                 break;
             case 2:
-                twoCameraPosition x;
+                if(compatableCameras.get(0) != 1 && compatableCameras.get(1) != 1){
+                    field.updateRobotLocation(new twoCameraPosition(camera2relLocation, camera3relLocation, camera2TargetID, camera3TargetID));
+                    break;
+                }else if(compatableCameras.get(0) != 2 && compatableCameras.get(1) != 2){
+                    field.updateRobotLocation(new twoCameraPosition(camera1relLocation, camera3relLocation, camera1TargetID, camera3TargetID));
+                    break;
+                }
+
+                field.updateRobotLocation(new twoCameraPosition(camera1relLocation, camera2relLocation, camera1TargetID, camera2TargetID));
                 break;
+                
             case 1:
-                twoCameraPosition y;
+                if(compatableCameras.get(0) == 1){
+                    field.updateRobotLocation(new oneCameraPosition(camera1relLocation, camera1TargetID));
+                    break;
+                }else if(compatableCameras.get(0) == 2){
+                    field.updateRobotLocation(new oneCameraPosition(camera2relLocation, camera2TargetID));
+                    break;
+                }
+
+                field.updateRobotLocation(new oneCameraPosition(camera3relLocation, camera3TargetID));
+                break;
             default:
                 throw new januaryTagException("No cameras picked up any targets");
         }
 
 
-        field.updateRobotLocation(w);
+        
     }
     /*
      * This method returns the ID of the target that the camera is currently tracking
