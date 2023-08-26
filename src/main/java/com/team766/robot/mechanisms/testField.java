@@ -23,8 +23,17 @@ public class testField{
 
 	}
 
+	/*
+	 * TODO ON ALL OF THIS IS ADD THE CORRECT STUFF WITH THE NEW ARRAYLISTS
+	 * 
+	 * 
+	 */
 	public void updateRobotLocation(twoCameraPosition t){
 		ArrayList<Double> arr = t.getData();
+		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
+
+		
+
 
 		double x2 = arr.get(0);
 		double y2 = arr.get(1);
@@ -47,11 +56,13 @@ public class testField{
 
 	public void updateRobotLocation(threeCameraPosition t){
 		ArrayList<Double> arr = t.getData();
+		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
 
 	}
 
 	public void updateRobotLocation(oneCameraPosition t){
 		ArrayList<Double> arr = t.getData();
+		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
 	}
 
 	public ArrayList<Double> logCoords() {
