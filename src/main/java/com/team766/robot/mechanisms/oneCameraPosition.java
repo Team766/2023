@@ -5,14 +5,22 @@ import java.util.ArrayList;
 public class oneCameraPosition implements apriltagLocalization{
 
 	ArrayList<Double> arr = new ArrayList<Double>();
-
-	public oneCameraPosition(location tag1){
+	ArrayList<Integer> tags = new ArrayList<Integer>();
+	
+	public oneCameraPosition(location tag1, int tagID){
 		arr.add(tag1.getX());
 		arr.add(tag1.getY());
+
+		tags.add(tagID);
 	}
 	
 	public ArrayList<Double> getData() {
 		return arr;
+	}
+
+	@Override
+	public ArrayList<Integer> getTagIDsInOrder() {
+		return tags;
 	}
 	
 }

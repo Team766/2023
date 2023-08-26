@@ -45,6 +45,11 @@ public class testField{
 
 	}
 
+	public void updateRobotLocation(threeCameraPosition t){
+		ArrayList<Double> arr = t.getData();
+		
+	}
+
 	public ArrayList<Double> logCoords() {
 		ArrayList<Double> arr = new ArrayList<Double>();
 		arr.add(robotX);

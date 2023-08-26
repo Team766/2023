@@ -44,6 +44,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class januaryTag extends Mechanism{
 	private PhotonCamera camera1;
     private PhotonCamera camera2;
+    private PhotonCamera camera3;
     private double deadzoneX;
     private double deadzoneY;
     private double x_target;
@@ -71,6 +72,7 @@ public class januaryTag extends Mechanism{
         loggerCategory = Category.MECHANISMS;
 		camera1 = new PhotonCamera("januaryTag");
         camera2 = new PhotonCamera("januaryTag.cam2");
+        camera3 = new PhotonCamera("januaryTag.cam3");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
 
@@ -156,6 +158,21 @@ public class januaryTag extends Mechanism{
         }
     }
 
+    public PhotonTrackedTarget getBestTrackedTargetForCameraThree(){
+        var result = camera3.getLatestResult(); //getting the result from the camera
+        boolean hasTargets = result.hasTargets(); // checking to see if there are any targets in the camera's view. IF THERE ISN'T AND YOU USE result.getTargets() YOU WILL GET AN ERROR
+
+        if(hasTargets){
+            List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
+            
+            PhotonTrackedTarget bestTrackedTarget = result.getBestTarget(); // getting the best target that is currently being picked up by the camera so that it can know where it is
+            return bestTrackedTarget;
+        }else{
+            log("No targets? see what i did there");
+            throw new januaryTagException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
+        }
+    }
+
 
     public void setXtargetConstant(double constant){
         x_targetConstant = constant;
@@ -208,30 +225,67 @@ public class januaryTag extends Mechanism{
     }
 
     public void doSensorFusion(){
-        PhotonTrackedTarget camera1Target = getBestTrackedTarget();
+        int targets = 3;
 
-        int camera1TargetID = camera1Target.getFiducialId();
-        Transform3d camera1rel = getBestCameraToTarget(camera1Target);
-        location camera1relLocation = new location(camera1rel.getX(), camera1rel.getY());
+        PhotonTrackedTarget camera1Target;
+        int camera1TargetID;
+        Transform3d camera1rel; 
+        location camera1relLocation;
+
+        try{
+            camera1Target = getBestTrackedTarget();
+            camera1TargetID = camera1Target.getFiducialId();
+            camera1rel = getBestCameraToTarget(camera1Target);
+            camera1relLocation = new location(camera1rel.getX(), camera1rel.getY());
+        } catch (januaryTagException e){
+            targets--;
+            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
+        }
+        
+
+        
 
         PhotonTrackedTarget camera2Target;
+        int camera2TargetID;
+        Transform3d camera2rel; 
+        location camera2relLocation;
         try{
-            camera2 Target = getBestTrackedTargetForCameraTwo();
+            camera2Target = getBestTrackedTargetForCameraTwo();
+            camera2TargetID = camera2Target.getFiducialId();
+            camera2rel = getBestCameraToTarget(camera2Target);
+            camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
         } catch (januaryTagException e){
-            throw new januaryTagException("Couldn't find cameras and trying to do sensor fusion; e: " + e);
+            targets--;
+            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
         }
-        int camera2TargetID = camera2Target.getFiducialId();
-        Transform3d camera2rel = getBestCameraToTarget(camera2Target);
-        location camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
         
-        twoCameraPosition w;
-        if(camera1TargetID < camera2TargetID){
-            w = new twoCameraPosition(camera1relLocation, camera2relLocation);
-        } else if(camera2TargetID < camera1TargetID){
-            w = new twoCameraPosition(camera2relLocation, camera1relLocation);
-        }else{
-            throw new januaryTagException("uh oh !!!!!");
+        PhotonTrackedTarget camera3Target;
+        int camera3TargetID;
+        Transform3d camera3rel; 
+        location camera3relLocation;
+        try{
+            camera3Target = getBestTrackedTargetForCameraThree();
+            camera3TargetID = camera3Target.getFiducialId();
+            camera3rel = getBestCameraToTarget(camera3Target);
+            camera3relLocation = new location(camera3rel.getX(), camera3rel.getY());
+        } catch (januaryTagException e){
+            targets--;
+            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
         }
+
+        switch(targets){
+            case 3:
+                field.updateRobotLocation(new threeCameraPosition(camera1relLocation, camera2relLocation, camera3relLocation));
+                break;
+            case 2:
+                twoCameraPosition x;
+                break;
+            case 1:
+                twoCameraPosition y;
+            default:
+                throw new januaryTagException("No cameras picked up any targets");
+        }
+
 
         field.updateRobotLocation(w);
     }

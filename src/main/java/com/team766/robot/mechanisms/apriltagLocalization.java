@@ -5,5 +5,5 @@ import java.util.ArrayList;
 public interface apriltagLocalization {
 	
 	public ArrayList<Double> getData();
-	
+	public ArrayList<Integer> getTagIDsInOrder();
 }
