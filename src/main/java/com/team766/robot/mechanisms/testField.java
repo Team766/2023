@@ -1,75 +1,93 @@
 package com.team766.robot.mechanisms;
+
 import java.util.ArrayList;
 
-public class testField{
-	/* All lengths in meters 
-	 * 
-	 * (0,0) is bottom left corner
-	*/
-	final double length = 5.842;
-	final double width = 5.7277; 
-	final double scoringAreaSize = 0.5461;
+/**
+ * This class represents a test field with various attributes and methods to update robot location.
+ */
+public class TestField {
 
-	private double robotX;
-	private double robotY;
+    /**
+     * All lengths are in meters.
+     * (0,0) is the bottom left corner.
+     */
+    final double length = 5.842;
+    final double width = 5.7277; 
+    final double scoringAreaSize = 0.5461;
 
-	final static location scoring1location = new location(2.86385, -0.3556);
-	final static location scoring2location = new location(2.86385, 6.1976);
+    private double robotX;
+    private double robotY;
 
-	final static ScoringAreaApriltag scoring2 = new ScoringAreaApriltag(scoring1location, 2);
-	final static ScoringAreaApriltag scoring3 = new ScoringAreaApriltag(scoring2location, 3);
+    final static Location scoring1Location = new Location(2.86385, -0.3556);
+    final static Location scoring2Location = new Location(2.86385, 6.1976);
 
-	public testField(){
+    final static ScoringAreaApriltag scoring2 = new ScoringAreaApriltag(scoring1Location, 2);
+    final static ScoringAreaApriltag scoring3 = new ScoringAreaApriltag(scoring2Location, 3);
 
-	}
+    /**
+     * Default constructor for TestField.
+     */
+    public TestField() {
+    }
 
-	/*
-	 * TODO ON ALL OF THIS IS ADD THE CORRECT STUFF WITH THE NEW ARRAYLISTS
-	 * 
-	 * 
-	 */
-	public void updateRobotLocation(twoCameraPosition t){
-		ArrayList<Double> arr = t.getData();
-		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
+    /**
+     * Updates the robot's location using a twoCameraPosition object.
+     *
+     * @param t A twoCameraPosition object containing the necessary data.
+     */
+    public void updateRobotLocation(twoCameraPosition t) {
+        ArrayList<Double> arr = t.getData();
+        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
 
-		
+        double x2 = arr.get(0);
+        double y2 = arr.get(1);
+    
+        double x3 = arr.get(2);
+        double y3 = arr.get(3);
+        
+        Location robotRelToTag2 = new Location(scoring2.getX() - x2, scoring2.getY() - y2);
+        Location robotRelToTag3 = new Location(scoring3.getX() - x3, scoring2.getY() - y3);
 
+        double realX = (robotRelToTag2.getX() + robotRelToTag2.getX()) / 2;
+        double realY = (robotRelToTag2.getY() + robotRelToTag3.getY()) / 2;
 
-		double x2 = arr.get(0);
-		double y2 = arr.get(1);
-	
-		double x3 = arr.get(2);
-		double y3 = arr.get(3);
-		
+        robotX = realX;
+        robotY = realY;
+    }
 
+    /**
+     * Updates the robot's location using a threeCameraPosition object.
+     *
+     * @param t A threeCameraPosition object containing the necessary data.
+     */
+    public void updateRobotLocation(threeCameraPosition t) {
+        ArrayList<Double> arr = t.getData();
+        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
 
-		location robotRelToTag2 = new location(scoring2.getX() - x2, scoring2.getY() - y2);
-		location robotRelToTag3 = new location(scoring3.getX() - x3, scoring2.getY() - y3);
+        // TODO: Implement the update logic using the provided data.
+    }
 
-		double realX = (robotRelToTag2.getX() + robotRelToTag2.getX()) / 2;
-		double realY = (robotRelToTag2.getY() + robotRelToTag3.getY()) / 2;
+    /**
+     * Updates the robot's location using a oneCameraPosition object.
+     *
+     * @param t A oneCameraPosition object containing the necessary data.
+     */
+    public void updateRobotLocation(oneCameraPosition t) {
+        ArrayList<Double> arr = t.getData();
+        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
 
-		robotX = realX;
-		robotY = realY;
+        // TODO: Implement the update logic using the provided data.
+    }
 
-	}
-
-	public void updateRobotLocation(threeCameraPosition t){
-		ArrayList<Double> arr = t.getData();
-		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
-
-	}
-
-	public void updateRobotLocation(oneCameraPosition t){
-		ArrayList<Double> arr = t.getData();
-		ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
-	}
-
-	public ArrayList<Double> logCoords() {
-		ArrayList<Double> arr = new ArrayList<Double>();
-		arr.add(robotX);
-		arr.add(robotY);
-		return arr;
-	}
-
+    /**
+     * Logs the current robot coordinates.
+     *
+     * @return An ArrayList containing the robot's X and Y coordinates.
+     */
+    public ArrayList<Double> logCoords() {
+        ArrayList<Double> arr = new ArrayList<Double>();
+        arr.add(robotX);
+        arr.add(robotY);
+        return arr;
+    }
 }
