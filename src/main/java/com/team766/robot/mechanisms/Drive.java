@@ -379,7 +379,9 @@ public class Drive extends Mechanism {
 		m_SteerBackRight.stopMotor();
 		m_SteerBackLeft.stopMotor();
 	}
-
+/*
+* Test method for getting robot to go to the apriltag using a rook drive
+*/
 	public int PhotonDrive(Transform3d bestTrackedTarget, PhotonTrackedTarget notBestTarget){
 		double curX = bestTrackedTarget.getX();
 		double curY = bestTrackedTarget.getY();
