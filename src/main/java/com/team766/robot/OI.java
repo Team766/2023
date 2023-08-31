@@ -187,7 +187,7 @@ public class OI extends Procedure {
 					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (-leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
 					//Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (leftJoystickX), (-leftJoystickY), (rightJoystickX));
-					Robot.drive.controlRobotOriented((leftJoystickX), (-leftJoystickY), (rightJoystickX));
+					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (leftJoystickX), (-leftJoystickY), (rightJoystickX));
 				}
 			} /*else if (!isCross) {
 				Robot.drive.stopDriveMotors();
