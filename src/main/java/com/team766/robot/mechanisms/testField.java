@@ -38,18 +38,39 @@ public class TestField {
     public void updateRobotLocation(twoCameraPosition t) {
         ArrayList<Double> arr = t.getData();
         ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
+        ArrayList<Location> locationList = new ArrayList<Location>();
 
-        double x2 = arr.get(0);
-        double y2 = arr.get(1);
-    
-        double x3 = arr.get(2);
-        double y3 = arr.get(3);
+        int incremental = 0;
         
-        Location robotRelToTag2 = new Location(scoring2.getX() - x2, scoring2.getY() - y2);
-        Location robotRelToTag3 = new Location(scoring3.getX() - x3, scoring2.getY() - y3);
+        for(int tagID : tagIDs){
+            if(tagID == scoring2.getTagID()){
+                double x = arr.get(incremental);
+                incremental++;
+                double y = arr.get(incremantal);
+                incremental++;
 
-        double realX = (robotRelToTag2.getX() + robotRelToTag2.getX()) / 2;
-        double realY = (robotRelToTag2.getY() + robotRelToTag3.getY()) / 2;
+                locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
+            }else if(tagID == scoring3.getTagID()){
+                double x = arr.get(incremental);
+                incremental++;
+                double y = arr.get(incremental);
+                incremental++;
+
+                locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
+            }else{
+                throw new LocalizationException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
+            }
+        }
+
+
+
+        Location loc1 = locationList.get(0);
+        Location loc2 = locationList.get(1);
+
+        locationList.clear();
+
+        double realX = (loc1.getX() + loc2.getX()) / 2;
+        double realY = (loc1.getY() + loc2.getY()) / 2;
 
         robotX = realX;
         robotY = realY;
