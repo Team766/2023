@@ -6,7 +6,7 @@ public class ScoringAreaApriltag {
 
 	private double x;
 	private double y;
-	public ScoringAreaApriltag(location l, int ID){
+	public ScoringAreaApriltag(Location l, int ID){
 		x = l.getX();
 		y = l.getY();
 	}

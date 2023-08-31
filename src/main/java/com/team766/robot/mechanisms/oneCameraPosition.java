@@ -7,7 +7,7 @@ public class oneCameraPosition implements apriltagLocalization{
 	ArrayList<Double> arr = new ArrayList<Double>();
 	ArrayList<Integer> tags = new ArrayList<Integer>();
 	
-	public oneCameraPosition(location tag1, int tagID){
+	public oneCameraPosition(Location tag1, int tagID){
 		arr.add(tag1.getX());
 		arr.add(tag1.getY());
 

@@ -5,7 +5,7 @@ public class twoCameraPosition implements apriltagLocalization {
 	ArrayList<Double> arr = new ArrayList<Double>();
 	ArrayList<Integer> tags = new ArrayList<Integer>();
 
-	public twoCameraPosition(location tag1, location tag2, int tag1ID, int tag2ID){
+	public twoCameraPosition(Location tag1, Location tag2, int tag1ID, int tag2ID){
 		arr.add(tag1.getX());
 		arr.add(tag1.getY());
 		

@@ -12,7 +12,7 @@ public class Robot {
 	public static Grabber grabber;
 	public static januaryTag JanuaryTag;
 
-	public static testField tf;
+	public static TestField tf;
 	public static void robotInit() {
 		// Initialize mechanisms here
 		intake = new Intake();
@@ -22,7 +22,7 @@ public class Robot {
 		gyro = new Gyro();
 		grabber = new Grabber();
 		JanuaryTag = new januaryTag();
-		tf = new testField();
+		tf = new TestField();
 		
 	}
 }
