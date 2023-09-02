@@ -84,8 +84,43 @@ public class TestField {
     public void updateRobotLocation(threeCameraPosition t) {
         ArrayList<Double> arr = t.getData();
         ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
+        ArrayList<Location> locationList = new ArrayList<Location>();
 
-        // TODO: Implement the update logic using the provided data.
+        int incremental = 0;
+        
+        for(int tagID : tagIDs){
+            if(tagID == scoring2.getTagID()){
+                double x = arr.get(incremental);
+                incremental++;
+                double y = arr.get(incremental);
+                incremental++;
+
+                locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
+            }else if(tagID == scoring3.getTagID()){
+                double x = arr.get(incremental);
+                incremental++;
+                double y = arr.get(incremental);
+                incremental++;
+
+                locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
+            }else{
+                throw new LocalizationException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
+            }
+        }
+
+
+
+        Location loc1 = locationList.get(0);
+        Location loc2 = locationList.get(1);
+        Location loc3 = locationList.get(2);
+
+        locationList.clear();
+
+        double realX = (loc1.getX() + loc2.getX() + loc3.getX()) / 3;
+        double realY = (loc1.getY() + loc2.getY() + loc3.getY()) / 3;
+
+        robotX = realX;
+        robotY = realY;
     }
 
     /**
@@ -96,8 +131,20 @@ public class TestField {
     public void updateRobotLocation(oneCameraPosition t) {
         ArrayList<Double> arr = t.getData();
         ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
+        ArrayList<Location> locationList = new ArrayList<Location>();
 
-        // TODO: Implement the update logic using the provided data.
+        if(tagIDs.get(0) == scoring2.getTagID()){
+            double x = arr.get(0);
+            double y = arr.get(1);
+            locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
+        }else if(tagIDs.get(0) == scoring3.getTagID()){
+            double x = arr.get(0);
+            double y = arr.get(1);
+            locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
+        }
+
+        robotX = locationList.get(0).getX();
+        robotY = locationList.get(0).getY();
     }
 
     /**
