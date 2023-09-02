@@ -46,7 +46,7 @@ public class TestField {
             if(tagID == scoring2.getTagID()){
                 double x = arr.get(incremental);
                 incremental++;
-                double y = arr.get(incremantal);
+                double y = arr.get(incremental);
                 incremental++;
 
                 locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));

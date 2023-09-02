@@ -59,7 +59,7 @@ public class januaryTag extends Mechanism{
     private Transform3d offset;
     private Drive drive;
 
-    private testField field = new testField();
+    private TestField field = new TestField();
 
 
     private PIDController motionX;
@@ -230,7 +230,7 @@ public class januaryTag extends Mechanism{
         PhotonTrackedTarget camera1Target;
         int camera1TargetID;
         Transform3d camera1rel; 
-        location camera1relLocation;
+        Location camera1relLocation;
 
         ArrayList<Integer> compatableCameras = new ArrayList<Integer>();
 
@@ -238,7 +238,7 @@ public class januaryTag extends Mechanism{
             camera1Target = getBestTrackedTarget();
             camera1TargetID = camera1Target.getFiducialId();
             camera1rel = getBestCameraToTarget(camera1Target);
-            camera1relLocation = new location(camera1rel.getX(), camera1rel.getY());
+            camera1relLocation = new Location(camera1rel.getX(), camera1rel.getY());
             compatableCameras.add(1);
         } catch (januaryTagException e){
             targets--;
@@ -251,12 +251,12 @@ public class januaryTag extends Mechanism{
         PhotonTrackedTarget camera2Target;
         int camera2TargetID;
         Transform3d camera2rel; 
-        location camera2relLocation;
+        Location camera2relLocation;
         try{
             camera2Target = getBestTrackedTargetForCameraTwo();
             camera2TargetID = camera2Target.getFiducialId();
             camera2rel = getBestCameraToTarget(camera2Target);
-            camera2relLocation = new location(camera2rel.getX(), camera2rel.getY());
+            camera2relLocation = new Location(camera2rel.getX(), camera2rel.getY());
             compatableCameras.add(2);
         } catch (januaryTagException e){
             targets--;
@@ -266,12 +266,12 @@ public class januaryTag extends Mechanism{
         PhotonTrackedTarget camera3Target;
         int camera3TargetID;
         Transform3d camera3rel; 
-        location camera3relLocation;
+        Location camera3relLocation;
         try{
             camera3Target = getBestTrackedTargetForCameraThree();
             camera3TargetID = camera3Target.getFiducialId();
             camera3rel = getBestCameraToTarget(camera3Target);
-            camera3relLocation = new location(camera3rel.getX(), camera3rel.getY());
+            camera3relLocation = new Location(camera3rel.getX(), camera3rel.getY());
             compatableCameras.add(3);
         } catch (januaryTagException e){
             targets--;
