@@ -24,7 +24,7 @@ public class Kicker {
 */
   	
 
-	m_motor = new CANSparkMax(0, kMotorType);
+	
 
 	private RelativeEncoder alternateEncoder = m_motor.getAlternateEncoder(kAltEncType, kCPR);
 
@@ -36,7 +36,7 @@ public class Kicker {
 	private double curSetpoint;
 
 	public Kicker(){
-
+		m_motor = new CANSparkMax(0, kMotorType);
 	}
 
 	/*
