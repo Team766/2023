@@ -9,7 +9,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
-/**
+/**e
  * When attempting to move something with a control loop, a PID controller can 
  * smoothly decrease the error.  This class is used for the elevator, driving during
  * autonmous, and angle correction with the gyro during the tele-operated period of the
