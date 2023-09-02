@@ -16,15 +16,24 @@ public class Kicker {
 
 	}
 
-
+	/*
+	 * This is the method to use the kicker to kick
+	 */
 	public void kick(){
 		curSetpoint = firstPoint;
 	}
 
+	/*
+	 * This is the method to reset the kicker to its origonal position so it can be kicked again
+	 */
 	public void reset(){
 		curSetpoint = secondPoint;
 	}
 
+	/*
+	 * This is the run method to run the PIDs.
+	 * It needs to be called in OI as frequently as possible.
+	 */
 	public void run(){
 		pid.setSetpoint(curSetpoint);
 		//pid.calculate( ABSOLUTE ENCODER POSITION);
