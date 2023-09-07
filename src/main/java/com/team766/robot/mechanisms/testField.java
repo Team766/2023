@@ -1,5 +1,6 @@
 package com.team766.robot.mechanisms;
 
+import com.team766.robot.mechanisms.Exceptions.JanuaryTagIndexOutOfBoundsException;
 import java.util.ArrayList;
 
 /**
@@ -58,7 +59,7 @@ public class TestField {
 
                 locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
             }else{
-                throw new LocalizationException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
+                throw new JanuaryTagIndexOutOfBoundsException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
             }
         }
 
@@ -104,7 +105,7 @@ public class TestField {
 
                 locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
             }else{
-                throw new LocalizationException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
+                throw new JanuaryTagIndexOutOfBoundsException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
             }
         }
 
