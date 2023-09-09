@@ -184,10 +184,10 @@ public class OI extends Procedure {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
-					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
+					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (-rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
 					//Robot.drive.controlRobotOriented((leftJoystickX), (-leftJoystickY), (rightJoystickX));
-					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (rightJoystickX));
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (-rightJoystickX));
 				}
 			} else if (!isCross) {
 				Robot.drive.stopDrive();			

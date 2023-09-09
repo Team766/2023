@@ -60,7 +60,7 @@ public class Drive extends Mechanism {
 		e_BackLeft = new CANCoder(24, "Swervavore");
 
 		setEncoderOffset();
-		configPID();
+		//configPID();
 	}
 
 	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
@@ -110,28 +110,5 @@ public class Drive extends Mechanism {
 		m_DriveFL.stopMotor();
 		m_DriveBR.stopMotor();
 		m_DriveBL.stopMotor();
-	}
-
-	public void configPID() {
-		// PID for turning the various steering motors. Here is a good link to a tuning website:
-		// https://www.robotsforroboticists.com/pid-control/
-		m_SteerFR.setP(0.2);
-		m_SteerFR.setI(0);
-		m_SteerFR.setD(0.1);
-		m_SteerFR.setFF(0);
-
-		m_SteerFL.setP(0.2);
-		m_SteerFL.setI(0);
-		m_SteerFL.setD(0.1);
-		m_SteerFL.setFF(0);
-
-		m_SteerBR.setP(0.2);
-		m_SteerBR.setI(0);
-		m_SteerBR.setD(0.1);
-		m_SteerBR.setFF(0);
-
-		m_SteerBL.setP(0.2);
-		m_SteerBL.setI(0);
-		m_SteerBL.setD(0.1);
 	}
 }
