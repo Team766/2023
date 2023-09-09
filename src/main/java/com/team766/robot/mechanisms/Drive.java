@@ -64,7 +64,7 @@ public class Drive extends Mechanism {
 
 	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
 		//find degree bounded by -180º and 180º and add 360 * number of full rotations, then add offset
-		double angleDegrees = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) + 360*(((steer.getSensorPosition()/encoderConversionFactor - offset)/360).round()) + offset;
+		double angleDegrees = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) + 360*(Math.round((steer.getSensorPosition()/encoderConversionFactor - offset - Math.toDegrees(Math.atan2(vector.getY(), vector.getX())))/360)) + offset;
 
 		// needs to multiply by encoderconversionfactor to translate into a language the motor understands
 		steer.set(ControlMode.Position, encoderConversionFactor*angleDegrees);
@@ -79,10 +79,10 @@ public class Drive extends Mechanism {
 
 	public void controlRobotOriented(double x, double y, double turn) {
 		//temporary testing fix (getting rid of negative on x)
-		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fl_y, SwerveDriveConstants.fl_x).normalize()), offsetFL);
-		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fr_y, SwerveDriveConstants.fr_x).normalize()), offsetFR);
-		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.br_y, SwerveDriveConstants.br_x).normalize()), offsetBR);
-		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.bl_y, SwerveDriveConstants.bl_x).normalize()), offsetBL);
+		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fl_x, SwerveDriveConstants.fl_y).normalize()), offsetFL);
+		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fr_x, SwerveDriveConstants.fr_y).normalize()), offsetFR);
+		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.br_x, SwerveDriveConstants.br_y).normalize()), offsetBR);
+		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.bl_x, SwerveDriveConstants.bl_y).normalize()), offsetBL);
 	}
 
 	public void controlFieldOriented(double yaw, double x, double y, double turn) {
