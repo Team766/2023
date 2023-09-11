@@ -6,8 +6,8 @@ public class Location {
 	 * This could be the location of the scoring area on the field or something like that
 	 * This class was designed to have no setter methods, as this class should be used for something on the field that doesn't move
 	 */
-	private double x;
-	private double y;
+	private final double x;
+	private final double y;
 
 	public Location(double X, double Y){
 		x = X;
