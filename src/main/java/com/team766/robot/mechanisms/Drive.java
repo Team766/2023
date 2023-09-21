@@ -9,6 +9,9 @@ import com.team766.logging.Category;
 import com.team766.robot.constants.SwerveDriveConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import com.team766.odometry.Odometry;
+import com.team766.odometry.Point;
+import com.team766.odometry.PointDir;
 
 public class Drive extends Mechanism {
 
@@ -46,6 +49,14 @@ public class Drive extends Mechanism {
 	 */
 	private final double encoderConversionFactor = (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
 
+	// temporary variables to help with odometry
+	// ideally odometry should be reworked when we have time
+
+	// instantiation of odometry object
+	private Odometry swerveOdometry;
+	// variable representing current position
+	private static PointDir currentPosition;
+
 	public Drive() {
 		
 		loggerCategory = Category.DRIVE;
@@ -82,8 +93,7 @@ public class Drive extends Mechanism {
 	 * @param vector the vector specifying the module's motion
 	 * @param offset the offset for this module
 	 */
-	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
-		checkContextOwnership();
+	public void setModuleSteer(MotorController steer, Vector2D vector, double offset) {
 
 		// Calculates the angle of the vector from -180° to 180°
 		final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
@@ -95,10 +105,17 @@ public class Drive extends Mechanism {
 		// Needs to multiply by encoderconversionfactor to translate into a language the motor understands
 		steer.set(ControlMode.Position, encoderConversionFactor*angleDegrees);
 
-		// Set the drive power to the vector's magnitude
+		SmartDashboard.putNumber("Angle", angleDegrees);
+	}
+
+	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
+		checkContextOwnership();
+
+		setModuleSteer(steer, vector, offset);
+
+		// Sets the power to the magnitude of the vector
 		drive.set(vector.getNorm());
 
-		SmartDashboard.putNumber("Angle", angleDegrees);
 	}
 
 	/** 
@@ -147,5 +164,33 @@ public class Drive extends Mechanism {
 		m_DriveFL.stopMotor();
 		m_DriveBR.stopMotor();
 		m_DriveBL.stopMotor();
+	}
+
+	public void setCross() {
+		setModuleSteer(m_SteerFL, new Vector2D(SwerveDriveConstants.fl_y, -SwerveDriveConstants.fl_x), offsetFL);
+		setModuleSteer(m_SteerFR, new Vector2D(SwerveDriveConstants.fr_y, -SwerveDriveConstants.fr_x), offsetFR);
+		setModuleSteer(m_SteerBL, new Vector2D(SwerveDriveConstants.bl_y, -SwerveDriveConstants.bl_x), offsetBL);
+		setModuleSteer(m_SteerBR, new Vector2D(SwerveDriveConstants.br_y, -SwerveDriveConstants.br_x), offsetBR);
+	}
+
+
+	// temporary, should be cleaned up in odometry
+	public PointDir getCurrentPosition() {
+		return currentPosition;
+	}
+
+	public void setCurrentPosition(Point P) {
+		swerveOdometry.setCurrentPosition(P);
+	}
+
+	public void resetCurrentPosition() {
+		swerveOdometry.setCurrentPosition(new Point(0, 0));
+	}
+
+	// Odometry
+	@Override
+	public void run() {
+		currentPosition = swerveOdometry.run();
+		log(currentPosition.toString());
 	}
 }

@@ -13,7 +13,6 @@ public class OnePieceExitCommunity extends Procedure {
 		context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 		Robot.gyro.resetGyro180();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				Robot.drive.setCurrentPosition(new PointDir(2, 0.75));

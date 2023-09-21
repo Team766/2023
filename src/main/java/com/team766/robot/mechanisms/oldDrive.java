@@ -24,7 +24,7 @@ import com.team766.odometry.PointDir;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.robot.constants.*;
 
-public class oldDrive extends Mechanism {
+public class OldDrive extends Mechanism {
 
 	private MotorController m_DriveFrontRight;
 	private MotorController m_DriveFrontLeft;
@@ -52,7 +52,7 @@ public class oldDrive extends Mechanism {
 	private Point[] wheelPositions;
 	private Odometry swerveOdometry;
 
-	public oldDrive() {
+	public OldDrive() {
 
 		loggerCategory = Category.DRIVE;
 		// Initializations of motors

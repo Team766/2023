@@ -17,11 +17,9 @@ public class OPECHelper extends Procedure {
 		context.takeOwnership(Robot.intake);
 		double startX = Robot.drive.getCurrentPosition().getX();
 		Robot.gyro.resetGyro180();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		new ReverseIntake().run(context);
-		Robot.drive.swerveDrive(0, FollowPointsInputConstants.SPEED, 0);
+		Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), 0, FollowPointsInputConstants.SPEED, 0);
 		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getX() - startX) > DIST);
-		Robot.drive.stopDriveMotors();
-		Robot.drive.stopSteerMotors();
+		Robot.drive.stopDrive();
 	}
 }

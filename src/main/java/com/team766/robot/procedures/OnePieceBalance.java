@@ -7,13 +7,12 @@ import com.team766.robot.Robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class OnePieceExitCommunityBalance extends Procedure {
-	public void run (Context context) {
+public class OnePieceBalance extends Procedure {
+	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 		Robot.gyro.resetGyro180();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				Robot.drive.setCurrentPosition(new PointDir(2, 2.7));
@@ -25,11 +24,9 @@ public class OnePieceExitCommunityBalance extends Procedure {
 			default: 
 				log("invalid alliance");
 				return;
+
 		}
-		log("exiting");
-		new OPECHelper().run(context);
-		log("Transitioning");
+		new ReverseIntake().run(context);
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
-	
 }

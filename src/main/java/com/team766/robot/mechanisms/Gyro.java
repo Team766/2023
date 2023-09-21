@@ -29,6 +29,10 @@ public class Gyro extends Mechanism {
 	public void resetGyro180() {
 		g_gyro.setYaw(180);
 	}
+
+	public void setGyro(double angle) {
+		g_gyro.setYaw(angle);
+	}
 	
 	public double getGyroPitch() {
 		double angle = g_gyro.getPitch();

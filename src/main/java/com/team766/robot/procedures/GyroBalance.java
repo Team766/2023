@@ -62,7 +62,6 @@ public class GyroBalance extends Procedure {
 
 		// curX is current robot x position
 		double curX = Robot.drive.getCurrentPosition().getX();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 
 		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
@@ -96,7 +95,7 @@ public class GyroBalance extends Procedure {
 			}
 
 			// Drives the robot with the calculated speed and direction
-			Robot.drive.swerveDrive(0, -driveSpeed, 0);
+			Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), 0, -driveSpeed, 0);
 			context.yield();
 		}
 		// Loops until robot is level or until a call to the abort() method
