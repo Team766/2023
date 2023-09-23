@@ -6,8 +6,7 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.constants.InputConstants;
-import com.team766.robot.constants.InputConstants.IntakeState;
+
 import com.team766.robot.procedures.*;
 import com.team766.robot.mechanisms.*;
 
@@ -26,33 +25,16 @@ public class OI extends Procedure {
 
 	private JoystickReader joystickOne;
 	public OI(){
-		joystickOne =RobotProvider.instance.getJoystick(0);
+		joystickOne = RobotProvider.instance.getJoystick(0);
 	}
 
 	public void run(Context context){
 		context.takeOwnership(Robot.JanuaryTag);
-		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		
 
-		Transform3d btt = Robot.JanuaryTag.getBestTag();
-		PhotonTrackedTarget t = Robot.JanuaryTag.getBestTrackedTarget();
-
-		if(joystickOne.getButton(5)){
-			int output = Robot.drive.PhotonDrive(btt, t);
-
-			if(output == 1){
-				Robot.intake.reverseIntake();
-				Robot.storage.beltOut();
-			}else{
-				Robot.intake.stopIntake();
-				Robot.storage.beltIdle();
-			}
-
-
-		}
-
+	
 		if(joystickOne.getButton(1)){
-			ArrayList<Double> arr = Robot.tf.logCoords();
+			ArrayList<Double> arr = Robot.JanuaryTag.logges();
 			log("Y: +" + arr.get(0) + " X: " + arr.get(1));
 		}
 		// if(joystickOne.getButtonReleased(1)){

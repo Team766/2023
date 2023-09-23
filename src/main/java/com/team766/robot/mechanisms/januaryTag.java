@@ -57,8 +57,7 @@ public class januaryTag extends Mechanism{
     private double offsetX;
     private double offsetY;
     private Transform3d offset;
-    private Drive drive;
-
+    
     private TestField field = new TestField();
 
 
@@ -68,7 +67,7 @@ public class januaryTag extends Mechanism{
 
         motionX = new PIDController(0.0,0.0,0.0,-0.2,0.2,0.5);
         motionY = new PIDController(0,0,0,-0.2,0.2,1);
-        drive = new Drive();
+        
         loggerCategory = Category.MECHANISMS;
 		camera1 = new PhotonCamera("PhotonCamera1");
         camera2 = new PhotonCamera("PhotonCamera2");
@@ -118,7 +117,7 @@ public class januaryTag extends Mechanism{
         double xSpeed = motionX.getOutput();
         double ySpeed = motionY.getOutput();
 
-        drive.drive2D(xSpeed, ySpeed);
+        
 
     }
 
@@ -412,6 +411,10 @@ public class januaryTag extends Mechanism{
         log("Pitch PTT " + theTarget.getPitch());
         log("Yaw: " + targetTransform.getX());
         log("Pitch: " + targetTransform.getY());
+    }
+
+    public ArrayList<Double> logges(){
+        return field.logCoords();
     }
 
 }
