@@ -70,9 +70,9 @@ public class januaryTag extends Mechanism{
         motionY = new PIDController(0,0,0,-0.2,0.2,1);
         drive = new Drive();
         loggerCategory = Category.MECHANISMS;
-		camera1 = new PhotonCamera("januaryTag");
-        camera2 = new PhotonCamera("januaryTag.cam2");
-        camera3 = new PhotonCamera("januaryTag.cam3");
+		camera1 = new PhotonCamera("PhotonCamera1");
+        camera2 = new PhotonCamera("PhotonCamera2");
+        camera3 = new PhotonCamera("PhotonCamera3");
         leftMotor = RobotProvider.instance.getMotor("leftMotor");
         rightMotor = RobotProvider.instance.getMotor("rightMotor");
 
