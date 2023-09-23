@@ -169,12 +169,12 @@ public class OI extends Procedure {
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed
-			/*if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 				if (!isCross) {
 					context.startAsync(new setCross());
 				}
 				isCross = !isCross;
-			}*/
+			}
 			
 
 			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
@@ -193,9 +193,9 @@ public class OI extends Procedure {
 				Robot.drive.stopDrive();			
 			} 
 
-			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
-			// 	context.startAsync(new setCross());
-			// }
+			/* if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+				context.startAsync(new setCross());
+			} */
 
 			if(controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				Robot.arms.pidForArmOne(-17.379);

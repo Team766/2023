@@ -21,11 +21,11 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 		// new AutonomousMode("FollowPoints", () -> new FollowPoints()),
 		// new AutonomousMode("ReverseIntake", () -> new ReverseIntake()),
-		// new AutonomousMode("OnePieceExitCommunity", () -> new OnePieceExitCommunity()),
+		new AutonomousMode("OnePieceExitCommunity", () -> new OnePieceExitCommunity()),
 		// new AutonomousMode("OnePieceExitCommunityBalance", () -> new OnePieceExitCommunityBalance()),
 		// new AutonomousMode("OnePieceBalance", () -> new OnePieceBalance()),
 		// new AutonomousMode("FollowPointsFile", () -> new FollowPoints("FollowPoints.json")),
 		// //new AutonomousMode("FollowPointsH", () -> new FollowPoints(new PointDir[]{new PointDir(0, 0), new PointDir(2, 0), new PointDir(1, 0), new PointDir(1, 1), new PointDir(2, 1), new PointDir(0, 1)})),
-		new AutonomousMode("DoNothing", () -> new DoNothing()),
+		// new AutonomousMode("DoNothing", () -> new DoNothing()),
 	};
 }

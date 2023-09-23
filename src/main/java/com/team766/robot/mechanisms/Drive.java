@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.robot.constants.SwerveDriveConstants;
+import com.team766.robot.constants.OdometryInputConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import com.team766.odometry.Odometry;
@@ -57,6 +58,11 @@ public class Drive extends Mechanism {
 	// variable representing current position
 	private static PointDir currentPosition;
 
+	// other variables to set up odometry
+	private MotorController[] motorList;
+	private CANCoder[] CANCoderList;
+	private Point[] wheelPositions;
+
 	public Drive() {
 		
 		loggerCategory = Category.DRIVE;
@@ -81,6 +87,20 @@ public class Drive extends Mechanism {
 		e_FrontLeft = new CANCoder(23, "Swervavore");
 		e_BackRight = new CANCoder(21, "Swervavore");
 		e_BackLeft = new CANCoder(24, "Swervavore");
+
+		// Sets up odometry
+		currentPosition = new PointDir(0, 0, 0);
+		motorList = new MotorController[] {m_DriveFR, m_DriveFL, m_DriveBL,
+				m_DriveBR};
+		CANCoderList = new CANCoder[] {e_FrontRight, e_FrontLeft, e_BackLeft, e_BackRight};
+		wheelPositions =
+				new Point[] {new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+						new Point(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)};
+		log("MotorList Length: " + motorList.length);
+		log("CANCoderList Length: " + CANCoderList.length);
+		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, OdometryInputConstants.WHEEL_CIRCUMFERENCE, OdometryInputConstants.GEAR_RATIO, OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT, OdometryInputConstants.RATE_LIMITER_TIME);
 
 		// Sets the offset value for each steering motor so that each is aligned
 		setEncoderOffset();
@@ -135,13 +155,13 @@ public class Drive extends Mechanism {
 
 	/**
 	 * Uses controlRobotOriented() to control the robot relative to the field
-	 * @param yaw the robot gyro's current yaw value
+	 * @param yawRad the robot gyro's current yaw value in radians
 	 * @param x the x value for the position joystick
 	 * @param y the y value for the position joystick
 	 * @param turn the turn value from the rotation joystick
 	 */
-	public void controlFieldOriented(double yaw, double x, double y, double turn) {
-		controlRobotOriented(Math.cos(yaw) * x - Math.sin(yaw) * y, Math.cos(yaw) * y + Math.sin(yaw) * x, turn);
+	public void controlFieldOriented(double yawRad, double x, double y, double turn) {
+		controlRobotOriented(Math.cos(yawRad) * x - Math.sin(yawRad) * y, Math.cos(yawRad) * y + Math.sin(yawRad) * x, turn);
 	}
 
 	/*
@@ -192,5 +212,6 @@ public class Drive extends Mechanism {
 	public void run() {
 		currentPosition = swerveOdometry.run();
 		log(currentPosition.toString());
+		SmartDashboard.putString("position", currentPosition.toString());
 	}
 }

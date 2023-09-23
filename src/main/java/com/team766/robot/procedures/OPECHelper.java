@@ -15,11 +15,11 @@ public class OPECHelper extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
-		double startX = Robot.drive.getCurrentPosition().getX();
-		Robot.gyro.resetGyro180();
+		double startY = Robot.drive.getCurrentPosition().getY();
+		Robot.gyro.setGyro(90);
 		new ReverseIntake().run(context);
-		Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), 0, FollowPointsInputConstants.SPEED, 0);
-		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getX() - startX) > DIST);
+		Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, -FollowPointsInputConstants.SPEED, 0);
+		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getY() - startY) > DIST);
 		Robot.drive.stopDrive();
 	}
 }
