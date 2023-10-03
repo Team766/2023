@@ -9,6 +9,7 @@ public class ScoringAreaApriltag {
 	private double x;
 	private double y;
 	private double heading = -1;
+	private boolean inverse;
 
 	public ScoringAreaApriltag(Location l, int ID){
 		x = l.getX();
@@ -19,6 +20,14 @@ public class ScoringAreaApriltag {
 	public ScoringAreaApriltag(Location l, int ID, double heading){
 		this(l, ID);
 		this.heading = heading;
+
+		//just to start out inverse will only be for 90 and 270 degrees
+		if(heading == 90 || heading == 270){
+			inverse = true;
+		}
+		else{
+			inverse = false;
+		}
 	}
 
 	public double getX(){
@@ -39,5 +48,10 @@ public class ScoringAreaApriltag {
 		}
 		return heading;
 	}
+
+	public boolean isInverse(){
+		return inverse;
+	}
+
 	
 }

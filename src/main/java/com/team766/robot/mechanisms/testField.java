@@ -53,8 +53,27 @@ public class testField {
             throw new valueNotInitializedException("The size of the locations, tagIDs, and headings ArrayLists must be the same.");
         }
 
-        for
+        for (int iterations = 0; iterations < locations.size(); iterations++){
+            int currentTagID = tagIDs.get(iterations);
+            double currentHeading = headings.get(iterations);
 
+            ScoringAreaApriltag tagToUse = findTagCorrespondingToTagID(currentTagID);
+
+            
+
+
+        }
+
+    }
+
+    private ScoringAreaApriltag findTagCorrespondingToTagID(int tagID){
+        if(tagID == scoring2.getTagID()){
+            return scoring2;
+        } else if(tagID == scoring3.getTagID()){
+            return scoring3;
+        } else {
+            throw new JanuaryTagIndexOutOfBoundsException("The tag ID " + tagID + " does not correspond to any known tag IDs.");
+        }
     }
 
 
