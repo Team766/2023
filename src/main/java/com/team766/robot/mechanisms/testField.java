@@ -1,16 +1,18 @@
 package com.team766.robot.mechanisms;
 
 import com.team766.robot.mechanisms.Exceptions.JanuaryTagIndexOutOfBoundsException;
+import com.team766.robot.mechanisms.Exceptions.valueNotInitializedException;
 import java.util.ArrayList;
 
 /**
  * This class represents a test field with various attributes and methods to update robot location.
  */
-public class TestField {
+public class testField {
 
     /**
      * All lengths are in meters.
      * (0,0) is the bottom left corner.
+     * For this field, straight ahead is going to be looking directly at the trash cans (outside S wing).
      */
     final double length = 5.842;
     final double width = 5.7277; 
@@ -22,131 +24,40 @@ public class TestField {
     final static Location scoring1Location = new Location(2.86385, -0.3556);
     final static Location scoring2Location = new Location(2.86385, 6.1976);
 
-    final static ScoringAreaApriltag scoring2 = new ScoringAreaApriltag(scoring1Location, 2);
-    final static ScoringAreaApriltag scoring3 = new ScoringAreaApriltag(scoring2Location, 3);
+    final static ScoringAreaApriltag scoring2 = new ScoringAreaApriltag(scoring1Location, 2, 180);
+    final static ScoringAreaApriltag scoring3 = new ScoringAreaApriltag(scoring2Location, 3, 360);
 
     /**
      * Default constructor for TestField.
      */
-    public TestField() {
+    public testField() {
     }
 
     /**
-     * Updates the robot's location using a twoCameraPosition object.
+     * Updates the robot's location based on the given data.
      *
-     * @param t A twoCameraPosition object containing the necessary data.
+     * @param data The data to update the robot's location with.
+     * 
+     * This data should be in the form of a combinedCameraData object.
      */
-    public void updateRobotLocation(twoCameraPosition t) {
-        ArrayList<Double> arr = t.getData();
-        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
-        ArrayList<Location> locationList = new ArrayList<Location>();
+     
+    public void updateRobotLocation(combinedCameraData data){
+        ArrayList<Location> locations = data.getLocationData();
+        ArrayList<Integer> tagIDs = data.getTagIDs();
+        ArrayList<Double> headings = data.getHeadingData();
 
-        int incremental = 0;
-        
-        for(int tagID : tagIDs){
-            if(tagID == scoring2.getTagID()){
-                double x = arr.get(incremental);
-                incremental++;
-                double y = arr.get(incremental);
-                incremental++;
+        ArrayList<Double> possibleXpositions = new ArrayList<Double>();
+        ArrayList<Double> possibleYpositions = new ArrayList<Double>();
 
-                locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
-            }else if(tagID == scoring3.getTagID()){
-                double x = arr.get(incremental);
-                incremental++;
-                double y = arr.get(incremental);
-                incremental++;
-
-                locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
-            }else{
-                throw new JanuaryTagIndexOutOfBoundsException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
-            }
+        if(locations.size() != tagIDs.size() || locations.size() != headings.size()){
+            throw new valueNotInitializedException("The size of the locations, tagIDs, and headings ArrayLists must be the same.");
         }
 
+        for
 
-
-        Location loc1 = locationList.get(0);
-        Location loc2 = locationList.get(1);
-
-        locationList.clear();
-
-        double realX = (loc1.getX() + loc2.getX()) / 2;
-        double realY = (loc1.getY() + loc2.getY()) / 2;
-
-        robotX = realX;
-        robotY = realY;
     }
 
-    /**
-     * Updates the robot's location using a threeCameraPosition object.
-     *
-     * @param t A threeCameraPosition object containing the necessary data.
-     */
-    public void updateRobotLocation(threeCameraPosition t) {
-        ArrayList<Double> arr = t.getData();
-        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
-        ArrayList<Location> locationList = new ArrayList<Location>();
 
-        int incremental = 0;
-        
-        for(int tagID : tagIDs){
-            if(tagID == scoring2.getTagID()){
-                double x = arr.get(incremental);
-                incremental++;
-                double y = arr.get(incremental);
-                incremental++;
-
-                locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
-            }else if(tagID == scoring3.getTagID()){
-                double x = arr.get(incremental);
-                incremental++;
-                double y = arr.get(incremental);
-                incremental++;
-
-                locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
-            }else{
-                throw new JanuaryTagIndexOutOfBoundsException("Shoot... The array of tagIDs didn't have this one, tag ID: " + tagID + ", in it");
-            }
-        }
-
-
-
-        Location loc1 = locationList.get(0);
-        Location loc2 = locationList.get(1);
-        Location loc3 = locationList.get(2);
-
-        locationList.clear();
-
-        double realX = (loc1.getX() + loc2.getX() + loc3.getX()) / 3;
-        double realY = (loc1.getY() + loc2.getY() + loc3.getY()) / 3;
-
-        robotX = realX;
-        robotY = realY;
-    }
-
-    /**
-     * Updates the robot's location using a oneCameraPosition object.
-     *
-     * @param t A oneCameraPosition object containing the necessary data.
-     */
-    public void updateRobotLocation(oneCameraPosition t) {
-        ArrayList<Double> arr = t.getData();
-        ArrayList<Integer> tagIDs = t.getTagIDsInOrder();
-        ArrayList<Location> locationList = new ArrayList<Location>();
-
-        if(tagIDs.get(0) == scoring2.getTagID()){
-            double x = arr.get(0);
-            double y = arr.get(1);
-            locationList.add(new Location(scoring2.getX() - x, scoring2.getY() - y));
-        }else if(tagIDs.get(0) == scoring3.getTagID()){
-            double x = arr.get(0);
-            double y = arr.get(1);
-            locationList.add(new Location(scoring3.getX() - x, scoring3.getY() - y));
-        }
-
-        robotX = locationList.get(0).getX();
-        robotY = locationList.get(0).getY();
-    }
 
     /**
      * Logs the current robot coordinates.

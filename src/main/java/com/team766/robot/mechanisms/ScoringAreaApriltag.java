@@ -1,5 +1,7 @@
 package com.team766.robot.mechanisms;
 
+import com.team766.robot.mechanisms.Exceptions.valueNotInitializedException;
+
 public class ScoringAreaApriltag {
 	
 	private int ID;
@@ -37,4 +39,5 @@ public class ScoringAreaApriltag {
 		}
 		return heading;
 	}
+	
 }

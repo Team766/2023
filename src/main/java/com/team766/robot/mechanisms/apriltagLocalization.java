@@ -6,4 +6,5 @@ public interface apriltagLocalization {
 	
 	public ArrayList<Double> getData();
 	public ArrayList<Integer> getTagIDsInOrder();
+	
 }

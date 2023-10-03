@@ -16,6 +16,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
+import com.team766.robot.mechanisms.Exceptions.apriltagHasTargetsCheckedException;
+import com.team766.robot.mechanisms.Exceptions.januaryTagException;
 //import com.team766.logging.Category;
 import de.erichseifert.gral.util.GeometryUtils;
 import de.erichseifert.gral.util.MathUtils;
@@ -58,7 +60,7 @@ public class januaryTag extends Mechanism{
     private double offsetY;
     private Transform3d offset;
     
-    private TestField field = new TestField();
+    private testField field = new testField();
 
 
     private PIDController motionX;
@@ -94,7 +96,7 @@ public class januaryTag extends Mechanism{
         rightMotor.set(right);
     }
 
-    public Transform3d getBestTag(){
+    public Transform3d getBestTag() throws apriltagHasTargetsCheckedException{
         return getBestCameraToTarget(getBestTrackedTarget());
     }
 
@@ -102,7 +104,7 @@ public class januaryTag extends Mechanism{
     public void testLocalization(){
 
     }
-    public void swerveCalculate(){
+    public void swerveCalculate() throws apriltagHasTargetsCheckedException{
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         
         double xCurPos = targetTransform.getX();
@@ -126,8 +128,9 @@ public class januaryTag extends Mechanism{
      * This method returns the best target that the camera is currently tracking
      * This is useful for the transform3d data
      * @return PhotonTrackedTarget - the best target that the camera is currently tracking
+     * @throws apriltagHasTargetsCheckedException  - Checked exception if there is no targets
      */
-    public PhotonTrackedTarget getBestTrackedTarget(){
+    public PhotonTrackedTarget getBestTrackedTarget() throws apriltagHasTargetsCheckedException{
         var result = camera1.getLatestResult(); //getting the result from the camera
         boolean hasTargets = result.hasTargets(); // checking to see if there are any targets in the camera's view. IF THERE ISN'T AND YOU USE result.getTargets() YOU WILL GET AN ERROR
 
@@ -138,11 +141,11 @@ public class januaryTag extends Mechanism{
             return bestTrackedTarget;
         }else{
             log("No targets? see what i did there");
-            throw new januaryTagException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
+            throw new apriltagHasTargetsCheckedException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
         }
     }
 
-    public PhotonTrackedTarget getBestTrackedTargetForCameraTwo(){
+    public PhotonTrackedTarget getBestTrackedTargetForCameraTwo() throws apriltagHasTargetsCheckedException{
         var result = camera2.getLatestResult(); //getting the result from the camera
         boolean hasTargets = result.hasTargets(); // checking to see if there are any targets in the camera's view. IF THERE ISN'T AND YOU USE result.getTargets() YOU WILL GET AN ERROR
 
@@ -153,11 +156,11 @@ public class januaryTag extends Mechanism{
             return bestTrackedTarget;
         }else{
             log("No targets? see what i did there");
-            throw new januaryTagException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
+            throw new apriltagHasTargetsCheckedException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
         }
     }
 
-    public PhotonTrackedTarget getBestTrackedTargetForCameraThree(){
+    public PhotonTrackedTarget getBestTrackedTargetForCameraThree() throws apriltagHasTargetsCheckedException{
         var result = camera3.getLatestResult(); //getting the result from the camera
         boolean hasTargets = result.hasTargets(); // checking to see if there are any targets in the camera's view. IF THERE ISN'T AND YOU USE result.getTargets() YOU WILL GET AN ERROR
 
@@ -168,7 +171,7 @@ public class januaryTag extends Mechanism{
             return bestTrackedTarget;
         }else{
             log("No targets? see what i did there");
-            throw new januaryTagException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
+            throw new apriltagHasTargetsCheckedException("There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
         }
     }
 
@@ -213,7 +216,7 @@ public class januaryTag extends Mechanism{
      * [2] is the area that the apriltag fills the camera view with
      * [3] is the fiducial id of the april tag
      */
-    public ArrayList<Double>  getPhotonTrackedTargetData(){
+    public ArrayList<Double>  getPhotonTrackedTargetData() throws apriltagHasTargetsCheckedException{
         ArrayList<Double> arr = new ArrayList<Double>();
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
         arr.add(theTarget.getYaw());
@@ -224,92 +227,72 @@ public class januaryTag extends Mechanism{
     }
 
     public void doSensorFusion(){
-        int targets = 3;
 
-        PhotonTrackedTarget camera1Target;
-        int camera1TargetID;
-        Transform3d camera1rel; 
-        Location camera1relLocation;
+        ArrayList<PhotonTrackedTarget> compatableCameraTargets;
+        ArrayList<Location> sightTargetLocations = new ArrayList<Location>();
+        ArrayList<Integer> sightTargetIDs = new ArrayList<Integer>();
+        ArrayList<Double> sightTargetHeadings = new ArrayList<Double>();
 
-        ArrayList<Integer> compatableCameras = new ArrayList<Integer>();
-
+        
+        
         try{
-            camera1Target = getBestTrackedTarget();
-            camera1TargetID = camera1Target.getFiducialId();
-            camera1rel = getBestCameraToTarget(camera1Target);
-            camera1relLocation = new Location(camera1rel.getX(), camera1rel.getY());
-            compatableCameras.add(1);
-        } catch (januaryTagException e){
-            targets--;
-            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
+            compatableCameraTargets = getPhotonTrackedTargetsThatWillWork();
+        } catch (apriltagHasTargetsCheckedException e){
+            return;
+        }
+
+        int numberOfCameras = compatableCameraTargets.size();
+
+        for (PhotonTrackedTarget photonTrackedTarget : compatableCameraTargets){
+            int targetID = photonTrackedTarget.getFiducialId();
+            sightTargetIDs.add(targetID);
+            Transform3d targetTransform = getBestCameraToTarget(photonTrackedTarget);
+            //Transform3d scoring = targetTransform.plus(offset);
+            double x = targetTransform.getX();
+            double y = targetTransform.getY();
+            sightTargetLocations.add(new Location(x, y));
+            double heading = targetTransform.getRotation().getZ();
+            sightTargetHeadings.add(heading);
+        }
+
+        
+        if(numberOfCameras == 1){
+            field.updateRobotLocation(new combinedCameraData(sightTargetLocations, sightTargetIDs, sightTargetHeadings))
         }
         
 
-        
-
-        PhotonTrackedTarget camera2Target;
-        int camera2TargetID;
-        Transform3d camera2rel; 
-        Location camera2relLocation;
-        try{
-            camera2Target = getBestTrackedTargetForCameraTwo();
-            camera2TargetID = camera2Target.getFiducialId();
-            camera2rel = getBestCameraToTarget(camera2Target);
-            camera2relLocation = new Location(camera2rel.getX(), camera2rel.getY());
-            compatableCameras.add(2);
-        } catch (januaryTagException e){
-            targets--;
-            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
-        }
-        
-        PhotonTrackedTarget camera3Target;
-        int camera3TargetID;
-        Transform3d camera3rel; 
-        Location camera3relLocation;
-        try{
-            camera3Target = getBestTrackedTargetForCameraThree();
-            camera3TargetID = camera3Target.getFiducialId();
-            camera3rel = getBestCameraToTarget(camera3Target);
-            camera3relLocation = new Location(camera3rel.getX(), camera3rel.getY());
-            compatableCameras.add(3);
-        } catch (januaryTagException e){
-            targets--;
-            throw new januaryTagException("Whoopsie woo! We couldn't find any tags!; e: " + e);
-        }
-
-        switch(targets){
-            case 3:
-                field.updateRobotLocation(new threeCameraPosition(camera1relLocation, camera2relLocation, camera3relLocation, camera1TargetID, camera2TargetID, camera3TargetID));
-                break;
-            case 2:
-                if(compatableCameras.get(0) != 1 && compatableCameras.get(1) != 1){
-                    field.updateRobotLocation(new twoCameraPosition(camera2relLocation, camera3relLocation, camera2TargetID, camera3TargetID));
-                    break;
-                }else if(compatableCameras.get(0) != 2 && compatableCameras.get(1) != 2){
-                    field.updateRobotLocation(new twoCameraPosition(camera1relLocation, camera3relLocation, camera1TargetID, camera3TargetID));
-                    break;
-                }
-
-                field.updateRobotLocation(new twoCameraPosition(camera1relLocation, camera2relLocation, camera1TargetID, camera2TargetID));
-                break;
-                
-            case 1:
-                if(compatableCameras.get(0) == 1){
-                    field.updateRobotLocation(new oneCameraPosition(camera1relLocation, camera1TargetID));
-                    break;
-                }else if(compatableCameras.get(0) == 2){
-                    field.updateRobotLocation(new oneCameraPosition(camera2relLocation, camera2TargetID));
-                    break;
-                }
-
-                field.updateRobotLocation(new oneCameraPosition(camera3relLocation, camera3TargetID));
-                break;
-            default:
-                throw new januaryTagException("No cameras picked up any targets");
-        }
-
 
         
+    }
+
+    private ArrayList<PhotonTrackedTarget> getPhotonTrackedTargetsThatWillWork() throws apriltagHasTargetsCheckedException{
+        ArrayList<PhotonTrackedTarget> compatableCameraTargets = new ArrayList<PhotonTrackedTarget>();
+        try {
+            PhotonTrackedTarget camera1PhotonTrackedTarget = getBestTrackedTarget();
+            compatableCameraTargets.add(camera1PhotonTrackedTarget);
+        } catch (apriltagHasTargetsCheckedException e) {
+            // no targets
+        }
+
+        try {
+            PhotonTrackedTarget camera2PhotonTrackedTarget = getBestTrackedTargetForCameraTwo();
+            compatableCameraTargets.add(camera2PhotonTrackedTarget);
+        } catch (apriltagHasTargetsCheckedException e) {
+            // no targets
+        }
+
+        try {
+            PhotonTrackedTarget camera3PhotonTrackedTarget = getBestTrackedTargetForCameraThree();
+            compatableCameraTargets.add(camera3PhotonTrackedTarget);
+        } catch (apriltagHasTargetsCheckedException e) {
+            // no targets
+        }
+
+        if(compatableCameraTargets.size() == 0){
+            throw new apriltagHasTargetsCheckedException("No cameras picked up any targets");
+        }
+
+        return compatableCameraTargets;
     }
     /*
      * This method returns the ID of the target that the camera is currently tracking
