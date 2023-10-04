@@ -303,7 +303,7 @@ public class januaryTag extends Mechanism{
      * [1] is the y value of the target relative to the camera
      * [2] is the z value of the target relative to the camera
      */
-    public ArrayList<Double> getTransform3dData(){
+    public ArrayList<Double> getTransform3dData() throws apriltagHasTargetsCheckedException{
         ArrayList<Double> arr = new ArrayList<Double>();
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         arr.add(targetTransform.getX());
@@ -337,49 +337,49 @@ public class januaryTag extends Mechanism{
      * If the x and y values of the target relative to the robot are within the deadzone, set in OI, then the robot will stop moving.
      * If the x and y values of the target relative to the robot are not within the deadzone, then the robot will move towards the target using arcade drive formulas.
      */
-    public void go(){
+    // public void go(){
         
-        while(2>1){
+    //     while(2>1){
             
-            Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
-            Transform3d scoring = targetTransform.plus(offset);
+    //         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
+    //         Transform3d scoring = targetTransform.plus(offset);
 
-            if(scoring.getX() + deadzoneX > 0 && scoring.getX() - deadzoneX < 0 && scoring.getY() + deadzoneY > 0 && scoring.getY() - deadzoneY < 0){
-                log("Outtaking");
-                log("FINAL X: " + scoring.getX());
-                log("FINAL Y: " + scoring.getY());
-                break;
-            }else{
+    //         if(scoring.getX() + deadzoneX > 0 && scoring.getX() - deadzoneX < 0 && scoring.getY() + deadzoneY > 0 && scoring.getY() - deadzoneY < 0){
+    //             log("Outtaking");
+    //             log("FINAL X: " + scoring.getX());
+    //             log("FINAL Y: " + scoring.getY());
+    //             break;
+    //         }else{
                 
 
-                double x_scoring = scoring.getX();
-                double y_scoring = scoring.getY(); 
+    //             double x_scoring = scoring.getX();
+    //             double y_scoring = scoring.getY(); 
 
-                double yaw_scoring = scoring.getRotation().getZ();
-                double x_target = x_scoring + Math.cos(yaw_scoring) * (x_targetConstant * y_scoring);
-                double y_target = y_scoring + Math.sin(yaw_scoring) * (x_targetConstant * y_scoring);
-
-                
-                double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
-                double turn = -Math.tan(y_target/x_target);
+    //             double yaw_scoring = scoring.getRotation().getZ();
+    //             double x_target = x_scoring + Math.cos(yaw_scoring) * (x_targetConstant * y_scoring);
+    //             double y_target = y_scoring + Math.sin(yaw_scoring) * (x_targetConstant * y_scoring);
 
                 
-                double leftMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
-		        double rightMotorPower = turnConstant * -turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
-                
-                leftMotor.set((-1) * leftMotorPower);
-                rightMotor.set((-1) * rightMotorPower);
+    //             double forward = Math.sqrt((y_target * y_target) + (x_target * x_target));
+    //             double turn = -Math.tan(y_target/x_target);
 
-                log("X: " + scoring.getX());
-                log("Y: " + scoring.getY());
-            }
-        }
-    }
+                
+    //             double leftMotorPower = turnConstant * turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
+	// 	        double rightMotorPower = turnConstant * -turn + forwardConstant * MathUtil.clamp(forward, -1, 1);
+                
+    //             leftMotor.set((-1) * leftMotorPower);
+    //             rightMotor.set((-1) * rightMotorPower);
+
+    //             log("X: " + scoring.getX());
+    //             log("Y: " + scoring.getY());
+    //         }
+    //     }
+    // }
 
     /*
      * These are debug logs
      */
-    public void debugLogs(){
+    public void debugLogs() throws apriltagHasTargetsCheckedException{
         Transform3d targetTransform = getBestCameraToTarget(getBestTrackedTarget());
         PhotonTrackedTarget theTarget = getBestTrackedTarget();
 
