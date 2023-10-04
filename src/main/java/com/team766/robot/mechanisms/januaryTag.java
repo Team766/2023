@@ -254,15 +254,8 @@ public class januaryTag extends Mechanism{
             double heading = targetTransform.getRotation().getZ();
             sightTargetHeadings.add(heading);
         }
-
         
-        if(numberOfCameras == 1){
-            field.updateRobotLocation(new combinedCameraData(sightTargetLocations, sightTargetIDs, sightTargetHeadings))
-        }
-        
-
-
-        
+        field.updateRobotLocation(new combinedCameraData(sightTargetLocations, sightTargetIDs, sightTargetHeadings));
     }
 
     private ArrayList<PhotonTrackedTarget> getPhotonTrackedTargetsThatWillWork() throws apriltagHasTargetsCheckedException{
