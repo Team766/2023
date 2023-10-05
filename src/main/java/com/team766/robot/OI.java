@@ -190,7 +190,7 @@ public class OI extends Procedure {
 					Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (-rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
           // On deafault, controls the robot field oriented
-          // Need negatives here, controls backwards otherwise (most likely specific to )
+          // Need negatives here, controls backwards otherwise (most likely specific to CLR)
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (-rightJoystickX));
 				}
 			} else if (!isCross) {

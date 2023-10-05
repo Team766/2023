@@ -147,10 +147,10 @@ public class Drive extends Mechanism {
 	public void controlRobotOriented(double x, double y, double turn) {
 		// Finds the vectors for turning and for translation of each module, and adds them
 		// Applies this for each module
-		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fl_x, SwerveDriveConstants.fl_y).normalize()), offsetFL);
-		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.fr_x, SwerveDriveConstants.fr_y).normalize()), offsetFR);
-		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.br_x, SwerveDriveConstants.br_y).normalize()), offsetBR);
-		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.bl_x, SwerveDriveConstants.bl_y).normalize()), offsetBL);
+		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FL_X, SwerveDriveConstants.FL_Y).normalize()), offsetFL);
+		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FR_X, SwerveDriveConstants.FR_Y).normalize()), offsetFR);
+		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BR_X, SwerveDriveConstants.BR_Y).normalize()), offsetBR);
+		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BL_X, SwerveDriveConstants.BL_Y).normalize()), offsetBL);
 	}
 
 	/**
@@ -187,12 +187,11 @@ public class Drive extends Mechanism {
 	}
 
 	public void setCross() {
-		setModuleSteer(m_SteerFL, new Vector2D(SwerveDriveConstants.fl_y, -SwerveDriveConstants.fl_x), offsetFL);
-		setModuleSteer(m_SteerFR, new Vector2D(SwerveDriveConstants.fr_y, -SwerveDriveConstants.fr_x), offsetFR);
-		setModuleSteer(m_SteerBL, new Vector2D(SwerveDriveConstants.bl_y, -SwerveDriveConstants.bl_x), offsetBL);
-		setModuleSteer(m_SteerBR, new Vector2D(SwerveDriveConstants.br_y, -SwerveDriveConstants.br_x), offsetBR);
+		setModuleSteer(m_SteerFL, new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X), offsetFL);
+		setModuleSteer(m_SteerFR, new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X), offsetFR);
+		setModuleSteer(m_SteerBL, new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X), offsetBL);
+		setModuleSteer(m_SteerBR, new Vector2D(SwerveDriveConstants.BR_Y, -SwerveDriveConstants.BR_X), offsetBR);
 	}
-
 
 	// temporary, should be cleaned up in odometry
 	public PointDir getCurrentPosition() {
