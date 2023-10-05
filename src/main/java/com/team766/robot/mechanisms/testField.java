@@ -59,9 +59,13 @@ public class testField {
 
             ScoringAreaApriltag tagToUse = findTagCorrespondingToTagID(currentTagID);
 
+            double realTargetOffset = keepSignsSubtraction(currentHeading, tagToUse.getHeading(), currentHeading);
+
+            //do math on real target offset
+
             
-
-
+            
+            
         }
 
     }
@@ -74,6 +78,16 @@ public class testField {
         } else {
             throw new JanuaryTagIndexOutOfBoundsException("The tag ID " + tagID + " does not correspond to any known tag IDs.");
         }
+    }
+
+    private double keepSignsSubtraction(double toKeep, double first, double second){
+        if(toKeep >= 0){
+            if(first - second > 0) return first -second;
+            return -1* (first - second);
+        }
+
+        if(first - second > 0) return -1 * (first - second);
+        return first - second;
     }
 
 
