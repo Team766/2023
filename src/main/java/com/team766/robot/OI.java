@@ -225,7 +225,7 @@ public class OI extends Procedure {
 					log("Arm pickup");
 					Robot.arms.stowed = false;
 					Robot.arms.pidForArmOne(22.73);
-					Robot.arms.pidForArmTwo(-72.529);
+					Robot.arms.pidForArmTwo(-62.529); // previously -72.529
 				}
 			}
 			if(controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
