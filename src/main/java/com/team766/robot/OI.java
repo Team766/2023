@@ -204,13 +204,13 @@ public class OI extends Procedure {
 				log("Arm cone high");
 				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(-17.379);
-				Robot.arms.pidForArmTwo(-66.61);
+				Robot.arms.pidForArmTwo(-56.61); //previously -66
 			}
 			if (controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
 				log("Arm cone mid");
 				Robot.arms.stowed = false;
 				Robot.arms.pidForArmOne(2.7765);
-				Robot.arms.pidForArmTwo(-93.813);
+				Robot.arms.pidForArmTwo(-83.813); //previously -93
 			}
 			if (controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
 				log("Arm ready");
