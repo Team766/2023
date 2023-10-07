@@ -12,5 +12,7 @@ public final class SwerveDriveConstants {
 	public static final double BL_Y = -1;
 	public static final double BR_X = 1;
 	public static final double BR_Y = -1;
+
+	public static final String SWERVE_CANBUS = "Swervavore";
 	
 }

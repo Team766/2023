@@ -16,6 +16,7 @@ public class OPECHelper extends Procedure {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
 		double startY = Robot.drive.getCurrentPosition().getY();
+		// robot gyro is offset 90º from how we want, so we reset it to 90º to account for this
 		Robot.gyro.setGyro(90);
 		new ReverseIntake().run(context);
 		Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, -FollowPointsInputConstants.SPEED, 0);

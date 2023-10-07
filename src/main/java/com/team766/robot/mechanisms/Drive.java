@@ -48,12 +48,11 @@ public class Drive extends Mechanism {
 	 * Multiply to convert from degrees to motor units
 	 * Divide to convert from motor units to degrees
 	 */
-	private final double encoderConversionFactor = (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
+	private final double ENCODER_CONVERSION_FACTOR = (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
 
-	// temporary variables to help with odometry
-	// ideally odometry should be reworked when we have time
+	// TODO: rework odometry so it doesn't have to go through drive
 
-	// instantiation of odometry object
+	// declaration of odometry object
 	private Odometry swerveOdometry;
 	// variable representing current position
 	private static PointDir currentPosition;
@@ -83,10 +82,20 @@ public class Drive extends Mechanism {
 		
 
 		// Initialize the encoders
-		e_FrontRight = new CANCoder(22, "Swervavore");
-		e_FrontLeft = new CANCoder(23, "Swervavore");
-		e_BackRight = new CANCoder(21, "Swervavore");
-		e_BackLeft = new CANCoder(24, "Swervavore");
+		e_FrontRight = new CANCoder(22, SwerveDriveConstants.SWERVE_CANBUS);
+		e_FrontLeft = new CANCoder(23, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackRight = new CANCoder(21, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackLeft = new CANCoder(24, SwerveDriveConstants.SWERVE_CANBUS);
+
+		// Current limit for motors to avoid breaker problems 
+		m_DriveFR.setCurrentLimit(35);
+		m_DriveFL.setCurrentLimit(35);
+		m_DriveBR.setCurrentLimit(35);
+		m_DriveBL.setCurrentLimit(35);
+		m_SteerFR.setCurrentLimit(30);
+		m_SteerFL.setCurrentLimit(30);
+		m_SteerBR.setCurrentLimit(30);
+		m_SteerBL.setCurrentLimit(30);
 
 		// Sets up odometry
 		currentPosition = new PointDir(0, 0, 0);
@@ -107,34 +116,41 @@ public class Drive extends Mechanism {
 	}
 
 	/**
-	 * Sets the motion for a specific module
-	 * @param drive the drive motor of this module
-	 * @param steer the steer motor of this module
+	 * Sets just the steer for a specific module
+	 * Can be used to turn the wheels without moving
+	 * @param steerMotor the steer motor of this module
 	 * @param vector the vector specifying the module's motion
 	 * @param offset the offset for this module
 	 */
-	public void setModuleSteer(MotorController steer, Vector2D vector, double offset) {
+	public void controlModuleSteer(MotorController steerMotor, Vector2D vector, double offset) {
 
 		// Calculates the angle of the vector from -180° to 180°
 		final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
 		// Add 360 * number of full rotations to vectorTheta, then add offset
-		final double angleDegrees = vectorTheta + 360*(Math.round((steer.getSensorPosition()/encoderConversionFactor - offset - vectorTheta)/360)) + offset;
+		final double angleDegrees = vectorTheta + 360*(Math.round((steerMotor.getSensorPosition()/ENCODER_CONVERSION_FACTOR - offset - vectorTheta)/360)) + offset;
 
 		// Sets the degree of the steer wheel
-		// Needs to multiply by encoderconversionfactor to translate into a language the motor understands
-		steer.set(ControlMode.Position, encoderConversionFactor*angleDegrees);
+		// Needs to multiply by encoderconversionfactor to translate into a unit the motor understands
+		steerMotor.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR*angleDegrees);
 
 		SmartDashboard.putNumber("Angle", angleDegrees);
 	}
 
-	public void setModule(MotorController drive, MotorController steer, Vector2D vector, double offset) {
+	/**
+	 * Sets the motion for a specific module
+	 * @param driveMotor the drive motor of this module
+	 * @param steerMotor the steer motor of this module
+	 * @param vector the vector specifying the module's motion
+	 * @param offset the offset for this module
+	 */
+	public void controlModuleSteerAndPower(MotorController driveMotor, MotorController steerMotor, Vector2D vector, double offset) {
 		checkContextOwnership();
 
-		setModuleSteer(steer, vector, offset);
+		controlModuleSteer(steerMotor, vector, offset);
 
 		// Sets the power to the magnitude of the vector
-		drive.set(vector.getNorm());
+		driveMotor.set(vector.getNorm());
 
 	}
 
@@ -147,10 +163,10 @@ public class Drive extends Mechanism {
 	public void controlRobotOriented(double x, double y, double turn) {
 		// Finds the vectors for turning and for translation of each module, and adds them
 		// Applies this for each module
-		setModule(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FL_X, SwerveDriveConstants.FL_Y).normalize()), offsetFL);
-		setModule(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FR_X, SwerveDriveConstants.FR_Y).normalize()), offsetFR);
-		setModule(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BR_X, SwerveDriveConstants.BR_Y).normalize()), offsetBR);
-		setModule(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BL_X, SwerveDriveConstants.BL_Y).normalize()), offsetBL);
+		controlModuleSteerAndPower(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FL_X, SwerveDriveConstants.FL_Y).normalize()), offsetFL);
+		controlModuleSteerAndPower(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FR_X, SwerveDriveConstants.FR_Y).normalize()), offsetFR);
+		controlModuleSteerAndPower(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BR_X, SwerveDriveConstants.BR_Y).normalize()), offsetBR);
+		controlModuleSteerAndPower(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BL_X, SwerveDriveConstants.BL_Y).normalize()), offsetBL);
 	}
 
 	/**
@@ -161,6 +177,8 @@ public class Drive extends Mechanism {
 	 * @param turn the turn value from the rotation joystick
 	 */
 	public void controlFieldOriented(double yawRad, double x, double y, double turn) {
+		// Applies a rotational translation to controlRobotOriented
+		// Counteracts the forward direction changing when the robot turns
 		controlRobotOriented(Math.cos(yawRad) * x - Math.sin(yawRad) * y, Math.cos(yawRad) * y + Math.sin(yawRad) * x, turn);
 	}
 
@@ -169,10 +187,10 @@ public class Drive extends Mechanism {
 	 * This helps each wheel to always be aligned
 	 */
 	public void setEncoderOffset() {
-		offsetFR = (m_SteerFR.getSensorPosition() / encoderConversionFactor) % 360 - e_FrontRight.getAbsolutePosition();
-		offsetFL = (m_SteerFL.getSensorPosition() / encoderConversionFactor) % 360 - e_FrontLeft.getAbsolutePosition();
-		offsetBR = (m_SteerBR.getSensorPosition() / encoderConversionFactor) % 360 - e_BackRight.getAbsolutePosition();
-		offsetBL = (m_SteerBL.getSensorPosition() / encoderConversionFactor) % 360 - e_BackLeft.getAbsolutePosition();
+		offsetFR = (m_SteerFR.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360 - e_FrontRight.getAbsolutePosition();
+		offsetFL = (m_SteerFL.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360 - e_FrontLeft.getAbsolutePosition();
+		offsetBR = (m_SteerBR.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360 - e_BackRight.getAbsolutePosition();
+		offsetBL = (m_SteerBL.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360 - e_BackLeft.getAbsolutePosition();
 	}
 
 	/*
@@ -186,14 +204,18 @@ public class Drive extends Mechanism {
 		m_DriveBL.stopMotor();
 	}
 
+	/*
+	 * Turns wheels in a cross formation to prevent robot from moving
+	 */
 	public void setCross() {
-		setModuleSteer(m_SteerFL, new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X), offsetFL);
-		setModuleSteer(m_SteerFR, new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X), offsetFR);
-		setModuleSteer(m_SteerBL, new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X), offsetBL);
-		setModuleSteer(m_SteerBR, new Vector2D(SwerveDriveConstants.BR_Y, -SwerveDriveConstants.BR_X), offsetBR);
+		controlModuleSteer(m_SteerFL, new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X), offsetFL);
+		controlModuleSteer(m_SteerFR, new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X), offsetFR);
+		controlModuleSteer(m_SteerBL, new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X), offsetBL);
+		controlModuleSteer(m_SteerBR, new Vector2D(SwerveDriveConstants.BR_Y, -SwerveDriveConstants.BR_X), offsetBR);
 	}
 
-	// temporary, should be cleaned up in odometry
+	// TODO: rework odometry so it doesn't have to go through drive
+	// TODO: figure out why odometry x and y are swapped
 	public PointDir getCurrentPosition() {
 		return currentPosition;
 	}
