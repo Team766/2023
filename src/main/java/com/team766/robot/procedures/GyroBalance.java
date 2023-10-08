@@ -61,13 +61,13 @@ public class GyroBalance extends Procedure {
 		context.takeOwnership(Robot.drive);
 
 		// curX is current robot x position
-		double curX = Robot.drive.getCurrentPosition().getX();
+		double curY = Robot.drive.getCurrentPosition().getY();
 
 		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
 
 		// Sets movement direction ground state if on ground
-		setDir(curX);
+		setDir(curY);
 
 		// sets starting state if not on ground
 		if (tilt < LEVEL && curState != State.GROUND) {
@@ -81,7 +81,7 @@ public class GyroBalance extends Procedure {
 		do {
 			// Sets prevState to the current state and calculates curState
 			prevState = curState;
-			curX = Robot.drive.getCurrentPosition().getX();
+			curY = Robot.drive.getCurrentPosition().getY();
 			tilt = Robot.gyro.getAbsoluteTilt();
 			//log("curX:" + curX);
 			//log("direction: " + direction);
@@ -95,7 +95,7 @@ public class GyroBalance extends Procedure {
 			}
 
 			// Drives the robot with the calculated speed and direction
-			Robot.drive.controlFieldOriented(Robot.gyro.getGyroYaw(), 0, -driveSpeed, 0);
+			Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, -driveSpeed, 0);
 			context.yield();
 		}
 		// Loops until robot is level or until a call to the abort() method
@@ -136,21 +136,21 @@ public class GyroBalance extends Procedure {
 	/**
 	 * Sets direction towards desired charge station
 	 * If robot is level and outside of charge station boundaries, sets state to ground
-	 * @param curX current robot x position
+	 * @param curY current robot x position
 	 */
-	private void setDir(double curX) {
+	private void setDir(double curY) {
 		switch (alliance) {
 			case Red:
 				// If to the right of the charge station, go left
-				if (curX > ChargeConstants.RED_BALANCE_TARGET_X) {
+				if (curY > ChargeConstants.RED_BALANCE_TARGET_X) {
 					// If level and outside of charge station boundaries, set state to ground
-					if (tilt < LEVEL && curX > ChargeConstants.RED_RIGHT_PT) {
+					if (tilt < LEVEL && curY > ChargeConstants.RED_RIGHT_PT) {
 						curState = State.GROUND;
 					}
 					direction = Direction.LEFT;
 				// If to the left of the charge station, go right
 				} else {
-					if (tilt < LEVEL && curX < ChargeConstants.RED_LEFT_PT) {
+					if (tilt < LEVEL && curY < ChargeConstants.RED_LEFT_PT) {
 						curState = State.GROUND;
 					}
 					direction = Direction.RIGHT;
@@ -158,13 +158,13 @@ public class GyroBalance extends Procedure {
 				break;
 			case Blue:
 				// Same logic for blue alliance coordinates
-				if (curX > ChargeConstants.BLUE_BALANCE_TARGET_X) {
-					if (tilt < LEVEL && curX > ChargeConstants.BLUE_RIGHT_PT) {
+				if (curY > ChargeConstants.BLUE_BALANCE_TARGET_X) {
+					if (tilt < LEVEL && curY > ChargeConstants.BLUE_RIGHT_PT) {
 						curState = State.GROUND;
 					}
 					direction = Direction.LEFT;
 				} else {
-					if (tilt < LEVEL && curX < ChargeConstants.BLUE_LEFT_PT) {
+					if (tilt < LEVEL && curY < ChargeConstants.BLUE_LEFT_PT) {
 						curState = State.GROUND;
 					}
 					direction = Direction.RIGHT;
