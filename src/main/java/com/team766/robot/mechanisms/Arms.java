@@ -45,6 +45,12 @@ public class Arms extends Mechanism {
 	private double firstJointCombo = 0;
 	private double secondJointCombo = 0;
 
+    // TODO: this offset is to factor in the difference between the
+    //       "zero" for alt encoder and the "zero" when we use degrees
+    //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
+    private static final double altEncoder1Offset = 0.25;
+    private static final double altEncoder2Offset = 0.0;
+
     // This sets the maximum locations so we can use them in code to make sure the arm joints dont go past there.
     private static final double FIRST_JOINT_MAX_LOCATION = 27.3;
     private static final double FIRST_JOINT_MIN_LOCATION = -45;
@@ -60,9 +66,10 @@ public class Arms extends Mechanism {
     }
 
     boolean jointOneCanContinue = false;
+    public boolean stowed = false;
 
-    ArmState theStateOf1 = ArmState.OFF;
-    ArmState theStateOf2 = ArmState.OFF;
+    ArmState theStateOf1 = ArmState.ANTIGRAV;
+    ArmState theStateOf2 = ArmState.ANTIGRAV;
 
 
     private ArmsAntiGrav antiGrav;
@@ -126,10 +133,9 @@ public class Arms extends Mechanism {
         // to avoid wrap-around errors
         // first joint zero is horizontal parallel to ground
         // second joint zero is when the relative angle is 0 degrees from the first arm segment
-		altEncoder1.setZeroOffset(0.655);    // TODO: these need tweaking from altEncoder1Offset
-		altEncoder2.setZeroOffset(0.627);
-        SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
-        SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
+		altEncoder1.setZeroOffset(0.64);    // TODO: these need tweaking from altEncoder1Offset
+		altEncoder2.setZeroOffset(0.19); //Old values: 0.807, 0.446
+        altEncoder2.setPositionConversionFactor(0.975); // 0.89
 
         antiGrav = new ArmsAntiGrav(firstJoint, secondJoint);
 
@@ -169,53 +175,46 @@ public class Arms extends Mechanism {
     public double nudgeArm2down(){
         return (ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()) -1);
     }
+
+    public double getSecondJointPosition() {
+        return ArmsUtil.EUTodegrees(secondJoint.getSensorPosition());
+    }
+
     // Resets encoders
     public void resetFirstEncoders() {
         checkContextOwnership();
 
-        // TODO: this offset is to factor in the difference between the
-        //       "zero" for alt encoder and the "zero" when we use degrees
-        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
-        final double altEncoder1Offset = 0.25;
-        // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.5;
-        //final double altEncoder2Offset = 0.493;
-
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
-        double firstJointAbsEncoder = altEncoder1.getPosition();
-        double firstJointRelEncoder = ArmsUtil.AbsToEU(firstJointAbsEncoder - altEncoder1Offset);
+        double firstJointAbsEncoder = Math.IEEEremainder(altEncoder1.getPosition() - altEncoder1Offset, 1.0);
+        double firstJointRelEncoder = ArmsUtil.AbsToEU(firstJointAbsEncoder);
 
         // set the sensor positions and setpoint of our rel encoders
         firstJoint.setSensorPosition(firstJointRelEncoder);
+        log("Reset Encoder 1 (in degrees): "+ArmsUtil.EUTodegrees(firstJointRelEncoder));
         firstJointPosition = ArmsUtil.EUTodegrees(firstJointRelEncoder);
     }
 
     public void resetSecondEncoders() {
         checkContextOwnership();
 
-        // TODO: this offset is to factor in the difference between the
-        //       "zero" for alt encoder and the "zero" when we use degrees
-        //       Offset tuning should be done above in `altEncoder1.setZeroOffset`
-        final double altEncoder1Offset = 0.25;
-        // final double altEncoder1Offset = 0.22calc5;
-        final double altEncoder2Offset = 0.5;
-        //final double altEncoder2Offset = 0.493;
-
         // altEncoder1Offset = what is the value of altEncoder1 when firstJoint is vertical
         // altEncoder2Offset = what is the value of altEncoder2 when secondJoint is colinear w/firstJoint
 
-        double firstJointAbsEncoder = altEncoder1.getPosition();
-        double secondJointAbsEncoder = altEncoder2.getPosition();
+        double firstJointAbsEncoder =
+            Math.IEEEremainder(altEncoder1.getPosition() - altEncoder1Offset, 1.0);
+        double secondJointAbsEncoder =
+            Math.IEEEremainder(altEncoder2.getPosition() - altEncoder2Offset, 1.0);
         double secondJointRelEncoder = ArmsUtil.AbsToEU(
-            firstJointAbsEncoder - altEncoder1Offset
-            + secondJointAbsEncoder - altEncoder2Offset);
+            firstJointAbsEncoder + secondJointAbsEncoder);
 
         // set the sensor positions and setpoint of our rel encoders
         secondJoint.setSensorPosition(secondJointRelEncoder);
+        log("Reset Encoder 2 (in degrees): "+ArmsUtil.EUTodegrees(secondJointRelEncoder));
         secondJointPosition = ArmsUtil.EUTodegrees(secondJointRelEncoder);
     }
 
     public void armStop(){
+        brake();
         theStateOf1 = ArmState.OFF;
         theStateOf2 = ArmState.OFF;
     }
@@ -302,20 +301,21 @@ public class Arms extends Mechanism {
     }
 
     public void logs(){
-        log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-        log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-        log("AE1: " + Math.toDegrees(altEncoder1.getPosition()));
-        log("AE2: " + Math.toDegrees(altEncoder2.getPosition()));
-        SmartDashboard.putNumber("Degree Val 1: ", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
-        SmartDashboard.putNumber("Degree Val 2: ", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
-        SmartDashboard.putNumber("Abs Encoder 1: ", Math.toDegrees(altEncoder1.getPosition()));
-        SmartDashboard.putNumber("Abs Encoder 2: ", Math.toDegrees(altEncoder2.getPosition()));
+        // log("E1: " + ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        // log("E2: " + ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        // log("AE1: " + altEncoder1.getPosition());
+        // log("AE2: " + altEncoder2.getPosition());
+        SmartDashboard.putNumber("Joint 1 Motor Encoder", ArmsUtil.EUTodegrees(firstJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Joint 2 Motor Encoder", ArmsUtil.EUTodegrees(secondJoint.getSensorPosition()));
+        SmartDashboard.putNumber("Joint 1 Abs Encoder", 360 * Math.IEEEremainder(altEncoder1.getPosition() - altEncoder1Offset, 1.0));
+        SmartDashboard.putNumber("Joint 2 Abs Encoder", 360 * Math.IEEEremainder(altEncoder2.getPosition() - altEncoder2Offset, 1.0));
 
     }
 	
     @Override
     public void run() {
 		if(!runRateLimiter.next()) return;
+        
         IdleMode idleMode = ((CANSparkMax) secondJoint).getIdleMode();
         SmartDashboard.putString("Idle Mode", (idleMode != null) ? idleMode.toString(): "null");
         if (theStateOf1 == ArmState.PID || theStateOf2 == ArmState.PID) {
@@ -333,13 +333,19 @@ public class Arms extends Mechanism {
             log("Second Joint Combo: " + secondJointCombo);
         }
 
+        logs();
+
 		// log("First Joint AntiGrav: "+getAntiGravFirstJoint());
 		// log("Second Joint AntiGrav: "+getAntiGravSecondJoint());
         switch(theStateOf1) {
         case OFF:
             break;
         case ANTIGRAV:
-            antiGravFirstJoint();
+            if (stowed){
+                firstJoint.set(0);
+            } else {
+                antiGravFirstJoint();
+            }
             break;
         case PID:
             firstJointPIDController.setReference(
@@ -356,10 +362,10 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-            if (firstJointCombo >= 6){
+            if (firstJointCombo >= 15){
 				firstJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetFirstEncoders();
+                //resetFirstEncoders();
                 theStateOf1 = ArmState.ANTIGRAV;
             }
 
@@ -370,7 +376,11 @@ public class Arms extends Mechanism {
         case OFF:
             break;
         case ANTIGRAV:
-            antiGravSecondJoint();
+            if (stowed){
+                secondJoint.set(0); //This will activate brake mode
+            } else {
+                antiGravSecondJoint();
+            }
             break;
         case PID:
             secondJointPIDController.setReference(
@@ -387,10 +397,10 @@ public class Arms extends Mechanism {
 
             // TODO: we can actually remove this 'combo' logic since we have found that the lack of EUTodegrees made the deadzone calculation wonky
 
-			if (secondJointCombo >= 6){
+			if (secondJointCombo >= 15){
                 secondJointCombo = 0;
                 // TODO: we do not want to do this here as arm may still be moving due to inertia
-                resetSecondEncoders();
+                //resetSecondEncoders();
 				theStateOf2 = ArmState.ANTIGRAV;
 			}
 
@@ -401,6 +411,10 @@ public class Arms extends Mechanism {
         // log(" Second" + EUTodegrees(secondJoint.getSensorPosition()));
         // log(theStateOf2 + "");
         // log("Difference: " + EUTodegrees(firstJoint.getSensorPosition()));
+
+        // update shuffleboard periodically
+        // SmartDashboard.putNumber("Alt Encoder 1", altEncoder1.getPosition());
+        // SmartDashboard.putNumber("Alt Encoder 2", altEncoder2.getPosition());
     }
 }
 

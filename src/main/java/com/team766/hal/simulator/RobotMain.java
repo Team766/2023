@@ -3,7 +3,6 @@ package com.team766.hal.simulator;
 import java.io.IOException;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Scheduler;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
@@ -26,8 +25,6 @@ public class RobotMain {
 			ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
 			RobotProvider.instance = new SimulationRobotProvider();
 			
-			Scheduler.getInstance().reset();
-			
 			robot = new GenericRobotMain();
 			
 			robot.robotInit();
@@ -44,7 +41,6 @@ public class RobotMain {
 								prevRobotMode = ProgramInterface.RobotMode.DISABLED;
 							}
 							robot.disabledPeriodic();
-							Scheduler.getInstance().run();
 							break;
 						case AUTON:
 							if (prevRobotMode != ProgramInterface.RobotMode.AUTON) {
@@ -52,7 +48,6 @@ public class RobotMain {
 								prevRobotMode = ProgramInterface.RobotMode.AUTON;
 							}
 							robot.autonomousPeriodic();
-							Scheduler.getInstance().run();
 							break;
 						case TELEOP:
 							if (prevRobotMode != ProgramInterface.RobotMode.TELEOP) {
@@ -60,7 +55,6 @@ public class RobotMain {
 								prevRobotMode = ProgramInterface.RobotMode.TELEOP;
 							}
 							robot.teleopPeriodic();
-							Scheduler.getInstance().run();
 							break;
 					}
 				}
