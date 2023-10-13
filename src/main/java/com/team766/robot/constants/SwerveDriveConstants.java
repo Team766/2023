@@ -15,4 +15,7 @@ public final class SwerveDriveConstants {
 
 	public static final String SWERVE_CANBUS = "Swervavore";
 	
+	public static final double DRIVE_MOTOR_CURRENT_LIMIT = 35;
+	public static final double STEER_MOTOR_CURRENT_LIMIT = 30;
+
 }

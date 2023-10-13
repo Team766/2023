@@ -88,14 +88,14 @@ public class Drive extends Mechanism {
 		e_BackLeft = new CANCoder(24, SwerveDriveConstants.SWERVE_CANBUS);
 
 		// Current limit for motors to avoid breaker problems 
-		m_DriveFR.setCurrentLimit(35);
-		m_DriveFL.setCurrentLimit(35);
-		m_DriveBR.setCurrentLimit(35);
-		m_DriveBL.setCurrentLimit(35);
-		m_SteerFR.setCurrentLimit(30);
-		m_SteerFL.setCurrentLimit(30);
-		m_SteerBR.setCurrentLimit(30);
-		m_SteerBL.setCurrentLimit(30);
+		m_DriveFR.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
+		m_DriveFL.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
+		m_DriveBR.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
+		m_DriveBL.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
+		m_SteerFR.setCurrentLimit(SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
+		m_SteerFL.setCurrentLimit(SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
+		m_SteerBR.setCurrentLimit(SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
+		m_SteerBL.setCurrentLimit(SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
 
 		// Sets up odometry
 		currentPosition = new PointDir(0, 0, 0);
