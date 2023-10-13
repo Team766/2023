@@ -8,8 +8,7 @@ public class setCross extends Procedure {
 
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		Robot.drive.stopDriveMotors();
-		Robot.drive.stopSteerMotors();
+		Robot.drive.stopDrive();
 		Robot.drive.setCross();
 	}
 	

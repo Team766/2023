@@ -83,10 +83,10 @@ public class OI extends Procedure {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
 
-			leftJoystickX = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
-			leftJoystickY = Drive.correctedJoysticks(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
-			rightJoystickX = Drive.correctedJoysticks(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT));
-			Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+			leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
+			rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+			//Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
 			
 			// if (DriverStation.getAlliance() == Alliance.Red) {
 			// 	SmartDashboard.putString("Alliance", "RED");
@@ -96,7 +96,7 @@ public class OI extends Procedure {
 			// 	SmartDashboard.putString("Alliance", "NULLLLLLLLL");
 			// }
 			
-			
+
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
 			}
@@ -187,18 +187,19 @@ public class OI extends Procedure {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
-					Robot.drive.swerveDrive((leftJoystickX * FINE_DRIVING_COEFFICIENT), (-leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (-rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
-					Robot.drive.swerveDrive((leftJoystickX), (-leftJoystickY), (rightJoystickX));
+          // On deafault, controls the robot field oriented
+          // Need negatives here, controls backwards otherwise (most likely specific to CLR)
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (-rightJoystickX));
 				}
 			} else if (!isCross) {
-				Robot.drive.stopDriveMotors();
-				Robot.drive.stopSteerMotors();				
+				Robot.drive.stopDrive();			
 			} 
 
-			// if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
-			// 	context.startAsync(new setCross());
-			// }
+			/* if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
+				context.startAsync(new setCross());
+			} */
 
 			if (controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				log("Arm cone high");

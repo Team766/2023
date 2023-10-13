@@ -116,7 +116,7 @@ public final class GenericRobotMain {
 		}
 
 		Robot.gyro.resetGyro180();
-		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+//		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
 
 		if (m_autonomous != null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Continuing previous autonomus procedure " + m_autonomous.getContextName());
