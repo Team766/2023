@@ -60,7 +60,7 @@ public class GyroBalance extends Procedure {
 		context.takeOwnership(Robot.gyro);
 		context.takeOwnership(Robot.drive);
 
-		// curX is current robot x position
+		// curY is current robot y position
 		double curY = Robot.drive.getCurrentPosition().getY();
 
 		// driveSpeed is actual value of speed passed into the swerveDrive method
