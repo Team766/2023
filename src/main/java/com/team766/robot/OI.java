@@ -6,9 +6,9 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
-import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
 import com.team766.robot.mechanisms.Drive;
+import com.team766.robot.mechanisms.Intake;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,7 +32,6 @@ public class OI extends Procedure {
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
 	private boolean isCross = false;
-	private IntakeState intakeState = IntakeState.IDLE;
 
 	private static final double HighConeArm1 = 0;
 	private static final double CHA2 = 0;
@@ -130,39 +129,25 @@ public class OI extends Procedure {
 
 			// Sets intake state based on button pressed
 			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
-				if (intakeState == IntakeState.IDLE) {
-					Robot.intake.startIntake();
-					intakeState = IntakeState.SPINNINGFWD;
+				if (Robot.intake.getState() == Intake.State.IDLE) {
+					Robot.intake.in();
 				} else {
-					Robot.intake.stopIntake();
-					intakeState = IntakeState.IDLE;
+					Robot.intake.stop();
 				}
 			}
-			/* if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
-				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakePistonless();
-					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGREV;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
-			} */
+
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
-				if (intakeState == IntakeState.IDLE) {
-					Robot.intake.reverseIntake();
-					intakeState = IntakeState.SPINNINGREV;
+				if (Robot.intake.getState() == Intake.State.IDLE) {
+					Robot.intake.out();
 				} else {
-					Robot.intake.stopIntake();
-					intakeState = IntakeState.IDLE;
+					Robot.intake.stop();
 				}
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed
 			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 				if (!isCross) {
-					context.startAsync(new setCross());
+					context.startAsync(new SetCross());
 				}
 				isCross = !isCross;
 			}

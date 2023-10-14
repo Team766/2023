@@ -26,7 +26,7 @@ public class OnePieceBalance extends Procedure {
 				return;
 
 		}
-		new ReverseIntake().run(context);
+		// new IntakeRelease().run(context);
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
 }

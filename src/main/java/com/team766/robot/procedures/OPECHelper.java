@@ -4,9 +4,6 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.Robot;
 import com.team766.robot.constants.FollowPointsInputConstants;
-import java.util.function.BooleanSupplier;
-import edu.wpi.first.wpilibj.DriverStation;
-import com.team766.odometry.*;
 
 public class OPECHelper extends Procedure {
 
@@ -18,7 +15,7 @@ public class OPECHelper extends Procedure {
 		double startY = Robot.drive.getCurrentPosition().getY();
 		// robot gyro is offset 90º from how we want, so we reset it to 90º to account for this
 		Robot.gyro.setGyro(90);
-		new ReverseIntake().run(context);
+		// new IntakeRelease().run(context);
 		Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, -FollowPointsInputConstants.SPEED, 0);
 		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getY() - startY) > DIST);
 		Robot.drive.stopDrive();
