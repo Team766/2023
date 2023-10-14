@@ -76,16 +76,22 @@ public class Elevator extends Mechanism {
 	}
 
 	/**
-	 * Returns the current height of the elevator.
+	 * Returns the current height of the elevator, in inches ('Murica).
 	 */
 	public double getHeight() {
 		return EncoderUtils.elevatorEUToHeight(leftMotor.getEncoder().getPosition());
 	}
 
+	/**
+	 * Moves the elevator to a pre-set {@link Position}.
+	 */
 	public void moveTo(Position position) {
 		moveTo(position.getHeight());
 	}
 
+	/**
+	 * Moves the elevator to a specific position (in inches).
+	 */
 	public void moveTo(int position) {
 		checkContextOwnership();
 

@@ -12,23 +12,35 @@ public final class EncoderUtils {
 	private EncoderUtils() {
 	}
 
+	/**
+	 * Converts a target rotation (in degrees) to encoder units for the wrist motor.
+	 */
 	public static double wristDegreesToEU(double angle) {
 		// (chain reduction) * (planetary reduction) * (degrees to rotations)
 		// return (33. / 10.) * (75./1.) * (1./360.) * angle;
 		return (0. / 1.) * (0. / 1.) * (1. / 360.) * angle;
 	}
 	
+	/**
+	 * Converts the wrist motor's encoder units to degrees.
+	 */
 	public static double wristEUTodegrees(double eu) {
 		// (chain reduction) * (planetary reduction) * (rotations to degrees)
 		// return (10. / 33.) * (1. / 75.) * (360. / 1.) * eu;
 		return (0. / 1.) * (0./1.) * (360./1.) * eu;
 	}
 
+	/**
+	 * Converts a desired height (in inches) to encoder units for the elevator motors.
+	 */
 	public static double elevatorHeightToEU(double position) {
 		// STOPSHIP: fix this.
 		return 0.;
 	}
 
+	/**
+	 * Converts the elevator motor's encoder units to a height (in inches).
+	 */
 	public static double elevatorEUToHeight(double eu) {
 		// STOPSHIP: fix this.
 		return 0.;
