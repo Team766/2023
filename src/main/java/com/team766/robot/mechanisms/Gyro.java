@@ -1,19 +1,9 @@
 package com.team766.robot.mechanisms;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.team766.framework.Mechanism;
-import com.team766.hal.EncoderReader;
-import com.team766.hal.RobotProvider;
-import com.team766.hal.MotorController;
-import com.team766.library.RateLimiter;
-import com.team766.hal.MotorController;
-import com.team766.logging.Category;
-//import edu.wpi.first.wpilibj.I2C.Port;
-//import com.team766.hal.GyroReader;
-//import com.kauailabs.navx.frc.*;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.team766.framework.Mechanism;
+import com.team766.library.RateLimiter;
+import com.team766.logging.Category;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro extends Mechanism {
 	Pigeon2 g_gyro = new Pigeon2(0, "Swervavore");
