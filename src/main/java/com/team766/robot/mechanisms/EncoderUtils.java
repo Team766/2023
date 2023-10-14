@@ -1,24 +1,37 @@
 package com.team766.robot.mechanisms;
 
 /**
- * Helper classes
+ * Utility class to convert between encoder units and physical units we use for different
+ * mechanisms.
  */
 public final class EncoderUtils {
 
 	/**
-	 * Static class only
+	 * Utility class.
 	 */
 	private EncoderUtils() {
 	}
 
 	public static double wristDegreesToEU(double angle) {
 		// (chain reduction) * (planetary reduction) * (degrees to rotations)
-		return (33. / 10.) * (75./1.) * (1./360.) * angle;
+		// return (33. / 10.) * (75./1.) * (1./360.) * angle;
+		return (0. / 1.) * (0. / 1.) * (1. / 360.) * angle;
 	}
 	
-	public static double wristEUTodegrees(double EU) {
+	public static double wristEUTodegrees(double eu) {
 		// (chain reduction) * (planetary reduction) * (rotations to degrees)
-		return (10. / 33.) * (1./75.) * (360./1.) * EU;
+		// return (10. / 33.) * (1. / 75.) * (360. / 1.) * eu;
+		return (0. / 1.) * (0./1.) * (360./1.) * eu;
+	}
+
+	public static double elevatorHeightToEU(double position) {
+		// STOPSHIP: fix this.
+		return 0.;
+	}
+
+	public static double elevatorEUToHeight(double eu) {
+		// STOPSHIP: fix this.
+		return 0.;
 	}
 
 	/**
@@ -38,9 +51,9 @@ public final class EncoderUtils {
 	}
 
 	public static double clampValueToRange(double value, double min, double max) {
-		if(value > max){ 
+		if (value > max){ 
 			value = max;
-		} else if( value < min){
+		} else if (value < min){
 			value = min;
 		}
 		return value;
