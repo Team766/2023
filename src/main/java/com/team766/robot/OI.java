@@ -66,15 +66,7 @@ public class OI extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.intake);
-		context.takeOwnership(Robot.arms);
-		context.takeOwnership(Robot.storage);
 		context.takeOwnership(Robot.gyro);
-		context.takeOwnership(Robot.grabber);
-		
-		// CameraServer.startAutomaticCapture();
-
-		Robot.arms.resetFirstEncoders();
-		Robot.arms.resetSecondEncoders();
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -140,11 +132,9 @@ public class OI extends Procedure {
 			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
 				if (intakeState == IntakeState.IDLE) {
 					Robot.intake.startIntake();
-					Robot.storage.beltIn();
 					intakeState = IntakeState.SPINNINGFWD;
 				} else {
 					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
 			}
@@ -162,11 +152,9 @@ public class OI extends Procedure {
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
 				if (intakeState == IntakeState.IDLE) {
 					Robot.intake.reverseIntake();
-					Robot.storage.beltOut();
 					intakeState = IntakeState.SPINNINGREV;
 				} else {
 					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
 					intakeState = IntakeState.IDLE;
 				}
 			} 
@@ -203,37 +191,17 @@ public class OI extends Procedure {
 
 			if (controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				log("Arm cone high");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(-17.379);
-				Robot.arms.pidForArmTwo(-56.61); //previously -66
 			}
 			if (controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
 				log("Arm cone mid");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(2.7765);
-				Robot.arms.pidForArmTwo(-83.813); //previously -93
 			}
 			if (controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
 				log("Arm ready");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(10.269);
-				Robot.arms.pidForArmTwo(-90);
 			}
 			if (controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
-				if (Robot.arms.getSecondJointPosition() < -100) {
-					log("Move arms to Ready position before moving to Pickup");
-				} else {
-					log("Arm pickup");
-					Robot.arms.stowed = false;
-					Robot.arms.pidForArmOne(22.73);
-					Robot.arms.pidForArmTwo(-62.529); // previously -72.529
-				}
 			}
 			if (controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
 				log("Arm unstowed");
-				Robot.arms.stowed = true;
-				Robot.arms.pidForArmOne(10.269);
-				Robot.arms.pidForArmTwo(-157.387);
 			}
 			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
 				Robot.arms.pidForArmOne(22.73);
@@ -241,35 +209,25 @@ public class OI extends Procedure {
 			} */
 			if (controlPanel.getButton(InputConstants.NUDGE_UP)) {
 				log("Arm nudge up");
-				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
 			}
 
 			if (controlPanel.getButton(InputConstants.NUDGE_DOWN)) {
 				log("Arm nudge down");
-				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2down());
 			}
 
 			if (controlPanel.getButton(InputConstants.GRAB_IN)) {
-				Robot.grabber.grabberPickUp();
 			} else if (rightJoystick.getButton(InputConstants.GRABBER_RELEASE)) {
-				Robot.grabber.grabberLetGo();
 			} else {
-				Robot.grabber.grabberStop();
 			} 
 
 			if (controlPanel.getButtonPressed(InputConstants.BRAKE)) {
-				Robot.arms.brake();
 			} else if (controlPanel.getButtonPressed(InputConstants.COAST)) {
-				Robot.arms.coast();
 			}
 
 			if (leftJoystick.getButtonPressed(InputConstants.ARM_STOP)) {
-				Robot.arms.armStop();
 			}
 
 			if (controlPanel.getButtonPressed(13)) {
-				Robot.arms.resetFirstEncoders();
-				Robot.arms.resetSecondEncoders();
 			}
 		}
 	}
