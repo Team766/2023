@@ -6,6 +6,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
+import static com.team766.robot.constants.ConfigConstants.*;
 import com.team766.robot.constants.SwerveDriveConstants;
 import com.team766.robot.constants.OdometryInputConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,18 +69,16 @@ public class Drive extends Mechanism {
 		// Initializations of motors
 
 		// Initialize the drive motors
-		m_DriveFR = RobotProvider.instance.getMotor("drive.DriveFrontRight");
-		m_DriveFL = RobotProvider.instance.getMotor("drive.DriveFrontLeft");
-		m_DriveBR = RobotProvider.instance.getMotor("drive.DriveBackRight");
-		m_DriveBL = RobotProvider.instance.getMotor("drive.DriveBackLeft");
+		m_DriveFR = RobotProvider.instance.getMotor(DRIVE_DRIVE_FRONT_RIGHT);
+		m_DriveFL = RobotProvider.instance.getMotor(DRIVE_DRIVE_FRONT_LEFT);
+		m_DriveBR = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_RIGHT);
+		m_DriveBL = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_LEFT);
 
 		// Initialize the steering motors
-		m_SteerFR = RobotProvider.instance.getMotor("drive.SteerFrontRight");
-		m_SteerFL = RobotProvider.instance.getMotor("drive.SteerFrontLeft");
-		m_SteerBR = RobotProvider.instance.getMotor("drive.SteerBackRight");
-		m_SteerBL = RobotProvider.instance.getMotor("drive.SteerBackLeft");
-
-		
+		m_SteerFR = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_RIGHT);
+		m_SteerFL = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_LEFT);
+		m_SteerBR = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_RIGHT);
+		m_SteerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
 		// Initialize the encoders
 		e_FrontRight = new CANCoder(22, SwerveDriveConstants.SWERVE_CANBUS);
