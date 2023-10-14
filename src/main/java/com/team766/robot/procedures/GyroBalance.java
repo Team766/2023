@@ -106,7 +106,7 @@ public class GyroBalance extends Procedure {
 		context.waitForSeconds(CORRECTION_DELAY);
 		
 		// Locks wheels once balanced
-		context.startAsync(new setCross());
+		context.startAsync(new SetCross());
 
 		context.releaseOwnership(Robot.drive);
 		context.releaseOwnership(Robot.gyro);

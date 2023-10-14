@@ -4,9 +4,11 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.Robot;
 
-public class IntakeOut extends Procedure{
+public class IntakeGrab extends Procedure{
 	public void run(Context context){
 		context.takeOwnership(Robot.intake);
-		Robot.intake.reverseIntake();
+		Robot.intake.in();
+		context.waitForSeconds(2);
+		Robot.intake.stop();
 	}
 }
