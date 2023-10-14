@@ -2,6 +2,7 @@ package com.team766.robot.mechanisms;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -46,6 +47,10 @@ public class Elevator extends Mechanism {
 	private final ValueProvider<Double> iGain;
 	private final ValueProvider<Double> dGain;
 	private final ValueProvider<Double> ffGain;
+	private final ValueProvider<Double> maxVelocity;
+	private final ValueProvider<Double> minOutputVelocity;
+	private final ValueProvider<Double> maxAccel;
+
 
 	private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 	
@@ -73,6 +78,9 @@ public class Elevator extends Mechanism {
 		iGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_IGAIN);
 		dGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_DGAIN);
 		ffGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_FFGAIN);
+		maxVelocity = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_VELOCITY);
+		minOutputVelocity = ConfigFileReader.getInstance().getDouble(ELEVATOR_MIN_OUTPUT_VELOCITY);
+		maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
 	}
 
 	/**
@@ -100,6 +108,13 @@ public class Elevator extends Mechanism {
 		pidController.setI(iGain.get());
 		pidController.setD(dGain.get());
 		pidController.setFF(ffGain.get());
+
+		pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+		pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
+		pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
+		pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
+
+		// TODO: do we need to set output range?
 
 		// convert the desired target degrees to encoder units
 		double encoderUnits = EncoderUtils.elevatorHeightToEU(position);
