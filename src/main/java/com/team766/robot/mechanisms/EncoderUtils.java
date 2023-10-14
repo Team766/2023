@@ -3,30 +3,22 @@ package com.team766.robot.mechanisms;
 /**
  * Helper classes
  */
-public final class ArmsUtil {
+public final class EncoderUtils {
 
 	/**
 	 * Static class only
 	 */
-	private ArmsUtil() {
+	private EncoderUtils() {
 	}
 
-	public static double degreesToEU(double angle) {
+	public static double wristDegreesToEU(double angle) {
 		// (chain reduction) * (planetary reduction) * (degrees to rotations)
 		return (33. / 10.) * (75./1.) * (1./360.) * angle;
 	}
 	
-	public static double EUTodegrees(double EU) {
+	public static double wristEUTodegrees(double EU) {
 		// (chain reduction) * (planetary reduction) * (rotations to degrees)
 		return (10. / 33.) * (1./75.) * (360./1.) * EU;
-	}
-
-	public static double AbsToEU(double abs) {
-		return degreesToEU(360 * abs);
-	}
-
-	public static double EUToAbs(double EU) {
-		return EUTodegrees(EU) / 360.0;
 	}
 
 	/**
