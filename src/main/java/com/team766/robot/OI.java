@@ -64,7 +64,7 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 
 		while (true) {
@@ -129,19 +129,19 @@ public class OI extends Procedure {
 
 			// Sets intake state based on button pressed
 			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
-				if (Robot.intake.getState() == Intake.State.IDLE) {
-					Robot.intake.in();
-				} else {
-					Robot.intake.stop();
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.in();
+				// } else {
+				// 	Robot.intake.stop();
+				//}
 			}
 
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
-				if (Robot.intake.getState() == Intake.State.IDLE) {
-					Robot.intake.out();
-				} else {
-					Robot.intake.stop();
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.out();
+				// } else {
+				// 	Robot.intake.stop();
+				// }
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed

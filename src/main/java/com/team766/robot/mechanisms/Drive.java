@@ -81,10 +81,10 @@ public class Drive extends Mechanism {
 		m_SteerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
 		// Initialize the encoders
-		e_FrontRight = new CANCoder(22, SwerveDriveConstants.SWERVE_CANBUS);
-		e_FrontLeft = new CANCoder(23, SwerveDriveConstants.SWERVE_CANBUS);
-		e_BackRight = new CANCoder(21, SwerveDriveConstants.SWERVE_CANBUS);
-		e_BackLeft = new CANCoder(24, SwerveDriveConstants.SWERVE_CANBUS);
+		e_FrontRight = new CANCoder(2, SwerveDriveConstants.SWERVE_CANBUS);
+		e_FrontLeft = new CANCoder(4, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackRight = new CANCoder(3, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackLeft = new CANCoder(1, SwerveDriveConstants.SWERVE_CANBUS);
 
 		// Current limit for motors to avoid breaker problems 
 		m_DriveFR.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);

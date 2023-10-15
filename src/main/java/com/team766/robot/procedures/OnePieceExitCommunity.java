@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class OnePieceExitCommunity extends Procedure {
 	public void run (Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		//context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 		Robot.gyro.setGyro(90);
 		switch (DriverStation.getAlliance()) {
