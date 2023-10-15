@@ -106,6 +106,8 @@ public class Wrist extends Mechanism {
 		pidController.setD(dGain.get());
 		pidController.setFF(ffGain.get());
 
+		pidController.setOutputRange(-1, 1);
+
 		// convert the desired target degrees to encoder units
 		double encoderUnits = EncoderUtils.wristDegreesToEU(angle);
 

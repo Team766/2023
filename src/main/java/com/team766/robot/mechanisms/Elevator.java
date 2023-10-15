@@ -109,6 +109,8 @@ public class Elevator extends Mechanism {
 		pidController.setD(dGain.get());
 		pidController.setFF(ffGain.get());
 
+		pidController.setOutputRange(-1, 1);
+
 		pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
 		pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
 		pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
