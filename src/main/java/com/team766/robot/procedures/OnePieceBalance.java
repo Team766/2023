@@ -12,7 +12,7 @@ public class OnePieceBalance extends Procedure {
 		context.takeOwnership(Robot.drive);
 		//context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
-		Robot.gyro.setGyro(90);
+		Robot.gyro.resetGyro();
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				Robot.drive.setCurrentPosition(new PointDir(2.7, 2));
