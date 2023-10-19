@@ -6,7 +6,7 @@ import com.team766.logging.Category;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro extends Mechanism {
-	Pigeon2 g_gyro = new Pigeon2(0, "Swervavore");
+	Pigeon2 g_gyro = new Pigeon2(0);
 	double[] gyroArray = new double[3];
 	private RateLimiter l_loggingRate = new RateLimiter(0.05);
 	public Gyro() {

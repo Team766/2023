@@ -64,7 +64,7 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 
 		while (true) {
@@ -129,19 +129,19 @@ public class OI extends Procedure {
 
 			// Sets intake state based on button pressed
 			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
-				if (Robot.intake.getState() == Intake.State.IDLE) {
-					Robot.intake.in();
-				} else {
-					Robot.intake.stop();
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.in();
+				// } else {
+				// 	Robot.intake.stop();
+				//}
 			}
 
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
-				if (Robot.intake.getState() == Intake.State.IDLE) {
-					Robot.intake.out();
-				} else {
-					Robot.intake.stop();
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.out();
+				// } else {
+				// 	Robot.intake.stop();
+				// }
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed
@@ -160,11 +160,10 @@ public class OI extends Procedure {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
-					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (-rightJoystickX * FINE_DRIVING_COEFFICIENT));
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
-          // On deafault, controls the robot field oriented
-          // Need negatives here, controls backwards otherwise (most likely specific to CLR)
-					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (-rightJoystickX));
+          	// On deafault, controls the robot field oriented
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX), (leftJoystickY), (rightJoystickX));
 				}
 			} else if (!isCross) {
 				Robot.drive.stopDrive();			

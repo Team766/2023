@@ -11,7 +11,7 @@ public class OPECHelper extends Procedure {
 
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		// context.takeOwnership(Robot.intake);
 		double startY = Robot.drive.getCurrentPosition().getY();
 		// robot gyro is offset 90º from how we want, so we reset it to 90º to account for this
 		Robot.gyro.setGyro(90);
