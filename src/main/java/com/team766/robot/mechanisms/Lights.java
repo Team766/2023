@@ -6,9 +6,10 @@ import com.team766.framework.Mechanism;
 public class Lights extends Mechanism{
 
 	private CANdle candle;
+	private static final int CANID = 5;
 
 	public Lights(){
-		candle = new CANdle(5);
+		candle = new CANdle(CANID);
 
 	}
 
