@@ -15,35 +15,36 @@ public final class EncoderUtils {
 	/**
 	 * Converts a target rotation (in degrees) to encoder units for the wrist motor.
 	 */
-	public static double wristDegreesToEU(double angle) {
-		// (chain reduction) * (planetary reduction) * (degrees to rotations)
-		// return (33. / 10.) * (75./1.) * (1./360.) * angle;
-		return (0. / 1.) * (0. / 1.) * (1. / 360.) * angle;
+	public static double wristDegreesToRotations(double angle) {
+		// angle * net gear ratio * (rotations / degrees)
+		// FIXME: replace 32 with actual # of teeth
+		return angle * (72. / 32.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
 	}
 	
 	/**
-	 * Converts the wrist motor's encoder units to degrees.
+	 * Converts the wrist motor's rotations to degrees.
 	 */
-	public static double wristEUTodegrees(double eu) {
-		// (chain reduction) * (planetary reduction) * (rotations to degrees)
-		// return (10. / 33.) * (1. / 75.) * (360. / 1.) * eu;
-		return (0. / 1.) * (0./1.) * (360./1.) * eu;
+	public static double wristRotationsToDegrees(double rotations) {
+		// rotations * net gear ratio * (degrees / rotations)
+		// FIXME: replace 32 with actual # of teeth
+		return rotations * (32. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
 	}
 
 	/**
-	 * Converts a desired height (in inches) to encoder units for the elevator motors.
+	 * Converts a desired height (in inches) to rotations for the elevator motors.
 	 */
-	public static double elevatorHeightToEU(double position) {
-		// STOPSHIP: fix this.
-		return 0.;
+	public static double elevatorHeightToRotations(double height) {
+		// height * net gear ratio * (rotations / height)
+		return height * (8./3.) * (1./(2 * 1.25 * Math.PI));
 	}
 
 	/**
-	 * Converts the elevator motor's encoder units to a height (in inches).
+	 * Converts the elevator motor's rotations to a height (in inches).
 	 */
-	public static double elevatorEUToHeight(double eu) {
-		// STOPSHIP: fix this.
-		return 0.;
+	public static double elevatorRotationsToHeight(double rotations) {
+		// rotations * net gear ratio * (height / rotations)
+		// FIXME: everything
+		return rotations * (3./8.) * ((2 * 1.25 * Math.PI)/1.);
 	}
 
 	/**
