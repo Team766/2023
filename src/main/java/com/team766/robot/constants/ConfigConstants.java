@@ -32,5 +32,10 @@ public final class ConfigConstants {
 	public static final String ELEVATOR_PGAIN = "elevator.pGain";
 	public static final String ELEVATOR_IGAIN = "elevator.iGain";
 	public static final String ELEVATOR_DGAIN = "elevator.dGain";
-	public static final String ELEVATOR_FFGAIN = "elevator.ffGain";	
+	public static final String ELEVATOR_FFGAIN = "elevator.ffGain";
+	public static final String ELEVATOR_MAX_VELOCITY = "elevator.maxVelocity";
+	public static final String ELEVATOR_MIN_OUTPUT_VELOCITY = "elevator.minOutputVelocity";
+	public static final String ELEVATOR_MAX_ACCEL = "elevator.maxAccel";
 }
+
+
