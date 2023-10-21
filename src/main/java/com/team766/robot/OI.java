@@ -90,7 +90,7 @@ public class OI extends Procedure {
 			// }
 			
 			if(DriverStation.isTeleop() && DriverStation.getMatchTime() < 30){
-				Robot.lights.red();
+				Robot.lights.signalMalfunction();
 			}
 
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
