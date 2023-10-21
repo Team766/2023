@@ -87,7 +87,7 @@ public class Elevator extends Mechanism {
 	 * Returns the current height of the elevator, in inches ('Murica).
 	 */
 	public double getHeight() {
-		return EncoderUtils.elevatorEUToHeight(leftMotor.getEncoder().getPosition());
+		return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
 	}
 
 	/**
@@ -119,10 +119,10 @@ public class Elevator extends Mechanism {
 		// TODO: do we need to set output range?
 
 		// convert the desired target degrees to encoder units
-		double encoderUnits = EncoderUtils.elevatorHeightToEU(position);
+		double rotations = EncoderUtils.elevatorHeightToRotations(position);
 
 		// set the reference point for the wrist
-		pidController.setReference(encoderUnits, ControlType.kSmartMotion);
+		pidController.setReference(rotations, ControlType.kSmartMotion);
 	}
 
 	@Override

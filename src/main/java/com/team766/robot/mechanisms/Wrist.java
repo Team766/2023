@@ -82,7 +82,7 @@ public class Wrist extends Mechanism {
 	 * Returns the current angle of the wrist.
 	 */
 	public double getAngle() {
-		return EncoderUtils.wristEUTodegrees(motor.getEncoder().getPosition());
+		return EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition());
 	}
 
 	/** 
@@ -108,11 +108,11 @@ public class Wrist extends Mechanism {
 
 		pidController.setOutputRange(-1, 1);
 
-		// convert the desired target degrees to encoder units
-		double encoderUnits = EncoderUtils.wristDegreesToEU(angle);
+		// convert the desired target degrees to rotations
+		double rotations = EncoderUtils.wristDegreesToRotations(angle);
 
 		// set the reference point for the wrist
-		pidController.setReference(encoderUnits, ControlType.kPosition);
+		pidController.setReference(rotations, ControlType.kPosition);
 	}
 
 	@Override
