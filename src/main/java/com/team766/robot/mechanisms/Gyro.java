@@ -3,10 +3,11 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.team766.framework.Mechanism;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
+import com.team766.robot.constants.SwerveDriveConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro extends Mechanism {
-	Pigeon2 g_gyro = new Pigeon2(0);
+	Pigeon2 g_gyro = new Pigeon2(0, SwerveDriveConstants.SWERVE_CANBUS);
 	double[] gyroArray = new double[3];
 	private RateLimiter l_loggingRate = new RateLimiter(0.05);
 	public Gyro() {
