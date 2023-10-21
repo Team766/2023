@@ -5,12 +5,12 @@ package com.team766.robot.constants;
  */
 public final class InputConstants {
 
-	//Joysticks
+	// Joysticks
 	public static final int LEFT_JOYSTICK = 0;
 	public static final int RIGHT_JOYSTICK = 1;
-	public static final int BOXOP_GAMEPAD = 2;
+	public static final int BOXOP_GAMEPAD = 2; // should be in Logitech Mode
 
-	//Navigation
+	// Navigation
 	public static final int AXIS_LEFT_RIGHT = 0;
 	public static final int AXIS_FORWARD_BACKWARD = 1;
 	public static final int AXIS_TWIST = 3;
@@ -23,23 +23,27 @@ public final class InputConstants {
 	public static final int RESET_POS = 15;
 
 	// Boxop Gamepad Buttons
-	// LB/RB
-	public static final int BUTTON_INTAKE_IN = 1;
-	public static final int BUTTON_HUMAN_PLAYER = 5;
 
+	// LT
+	public static final int BUTTON_INTAKE_IN = 7;
 	// RT
-	public static final int BUTTON_MOVE_INTAKE_TO_PLACEMENT = 6;
+	public static final int BUTTON_EXTEND_WRISTVATOR = 8;
+	// Start
+	public static final int BUTTON_INTAKE_STOP = 10; // used for development
 
 	// left axis
-	public static final int AXIS_WRIST_MOVEMENT = 4;
+	public static final int AXIS_WRIST_MOVEMENT = 1;
 	// right axis
-	public static final int AXIS_ELEVATOR_MOVEMENT = 5;
-	// dpad
-	public static final int AXIS_CONECUB_SELECT = 6;
+	public static final int AXIS_ELEVATOR_MOVEMENT = 3;
+
+
+	// pov
+	public static final int POV_UP = 0;
+	public static final int POV_DOWN = 180;
 
 	// X/A/B/Y
-	public static final int BUTTON_PLACEMENT_HIGH = 2; // Y
+	public static final int BUTTON_PLACEMENT_HUMAN_PLAYER = 1; // X
+	public static final int BUTTON_PLACEMENT_HIGH = 4; // Y
 	public static final int BUTTON_PLACEMENT_MID = 3;  // B
-	public static final int BUTTON_PLACEMENT_LOW = 4;  // A
-
+	public static final int BUTTON_PLACEMENT_LOW = 2;  // A
 }

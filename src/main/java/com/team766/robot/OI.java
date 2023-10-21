@@ -5,8 +5,10 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.logging.Severity;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import com.team766.robot.mechanisms.Drive;
 import com.team766.robot.mechanisms.Intake;
 
@@ -24,11 +26,8 @@ public class OI extends Procedure {
 	private JoystickReader rightJoystick;
 	private JoystickReader boxopGamepad;
 	private double rightJoystickX = 0;
-	private double rightJoystickY = 0;
 	private double leftJoystickX = 0;
 	private double leftJoystickY = 0;
-	private double leftJoystickTheta = 0;
-	private double rightJoystickTheta = 0;
 	private boolean isCross = false;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
@@ -48,9 +47,13 @@ public class OI extends Procedure {
 		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 
+		PlacementPosition placementPosition = null;
+
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+
+			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
@@ -59,16 +62,13 @@ public class OI extends Procedure {
 			leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			//Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
-			
-			// if (DriverStation.getAlliance() == Alliance.Red) {
-			// 	SmartDashboard.putString("Alliance", "RED");
-			// } else if (DriverStation.getAlliance() == Alliance.Blue) {
-			// 	SmartDashboard.putString("Alliance", "BLUE");
-			// } else {
-			// 	SmartDashboard.putString("Alliance", "NULLLLLLLLL");
-			// }
-			
 
+			if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
+				new IntakeOut().run(context);
+			} else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
+				new IntakeStop().run(context);
+			}
+			
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
 			}
@@ -77,21 +77,12 @@ public class OI extends Procedure {
 				Robot.drive.resetCurrentPosition();
 			}
 
-			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
-				rightJoystickY = rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-			} else {
-				rightJoystickY = 0;
-			}
 			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
 				rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT) / 2;
 			} else {
 				rightJoystickX = 0;	
 			}
-			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
-				rightJoystickTheta = rightJoystick.getAxis(InputConstants.AXIS_TWIST);
-			} else {
-				rightJoystickTheta = 0;
-			}
+
 			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
 				leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
@@ -102,11 +93,6 @@ public class OI extends Procedure {
 			} else {
 				leftJoystickX = 0;
 			}
-			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
-				leftJoystickTheta = leftJoystick.getAxis(InputConstants.AXIS_TWIST);
-			} else {
-				leftJoystickTheta = 0;
-			}
 
 			// Sets the wheels to the cross position if the cross button is pressed
 			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
@@ -115,9 +101,6 @@ public class OI extends Procedure {
 				}
 				isCross = !isCross;
 			}
-			
-
-			SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 			
 			// Moves the robot if there are joystick inputs
 			if (!isCross && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX) > 0) {
@@ -131,7 +114,100 @@ public class OI extends Procedure {
 				}
 			} else if (!isCross) {
 				Robot.drive.stopDrive();			
-			} 
+			}
+			
+			// Respond to boxop commands
+
+			// first, check if the boxop is making a cone or cube selection
+			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
+				new GoForCubes().run(context);
+			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
+				new GoForCubes().run(context);
+			}
+
+			// look for button presses to queue placement of intake/wrist/elevator superstructure
+			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
+				placementPosition = PlacementPosition.LOW_NODE;
+				// TODO: update lights
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
+				placementPosition = PlacementPosition.MID_NODE;
+				// TODO: update lights
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
+				placementPosition = PlacementPosition.HIGH_NODE;
+				// TODO: update lights
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
+				placementPosition = PlacementPosition.HUMAN_PLAYER;
+				// TODO: update lights
+			}
+
+			// look for button hold to start intake, release to idle intake
+			if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_INTAKE_IN)) {
+				new IntakeIn().run(context);
+			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
+				new IntakeIdle().run(context);
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
+				new IntakeStop().run(context);
+			}
+
+			// look for button hold to extend intake/wrist/elevator superstructure,
+			// release to retract
+			if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
+				switch (placementPosition) {
+					case LOW_NODE:
+						new ExtendWristvatorToLow().run(context);
+						break;
+					case MID_NODE:
+						new ExtendWristvatorToMid().run(context);
+						break;
+					case HIGH_NODE:
+						new ExtendWristvatorToHigh().run(context);
+						break;
+					case HUMAN_PLAYER:
+						new ExtendWristvatorToHuman().run(context);
+						break;
+					default:
+					// warn, ignore
+					log(Severity.WARNING, "Unexpected placement position: " + placementPosition.toString());
+					break;
+				}
+			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
+				new RetractWristvator().run(context);
+			}
+
+			// look for manual nudges
+			// we only allow these if the extend elevator trigger is extended
+			if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
+
+				// look for elevator nudges
+				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
+				if (Math.abs(elevatorNudgeAxis) > 0.05) {
+					context.takeOwnership(Robot.elevator);
+					try {
+						if (elevatorNudgeAxis > 0) {
+							Robot.elevator.nudgeUp();
+						} else if (elevatorNudgeAxis < 0) {
+							Robot.elevator.nudgeDown();
+						}
+					} finally {
+						context.releaseOwnership(Robot.elevator);
+					}
+				}
+
+				// look for wrist nudges
+				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+				if (Math.abs(wristNudgeAxis) > 0.05) {
+					context.takeOwnership(Robot.wrist);
+					try {
+						if (wristNudgeAxis > 0) {
+							Robot.wrist.nudgeUp();
+						} else if (wristNudgeAxis < 0) {
+							Robot.wrist.nudgeDown();
+						}
+					} finally {
+						context.releaseOwnership(Robot.wrist);
+					}
+				}
+			}
 		}
 	}
 }
