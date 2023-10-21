@@ -62,6 +62,10 @@ public class OI extends Procedure {
 			leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			//Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+
+			if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
+				new IntakeOut().run(context);
+			}
 			
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
