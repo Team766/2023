@@ -10,20 +10,38 @@ import static com.team766.robot.constants.ConfigConstants.*;
  * pull a game piece in via {@link #in}, release a contained game piece via {@link #out}, or stop
  * moving via {@link #stop}.
  * 
- * Note: the Intake does not maintain any state as to whether or not it contains a game piece.
+ * 
+ * While the Intake does not maintain any state as to whether or not it contains a game piece,
+ * it does have different modes of operation based on what kind of game piece it is prepared to
+ * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
+ * versus cones.
  */
 public class Intake extends Mechanism {
+
+	private static final double POWER_IN = 1.0;
+	private static final double POWER_OUT = 1.0;
+	private static final double POWER_IDLE = 0.1;
+
+	/**
+	 * The current type of game piece the Intake is preparing to hold or is holding.
+	 */
+	public enum GamePieceType {
+		CONE,
+		CUBE
+	}
 
 	/**
 	 * The current movement state for the intake.
 	 */
 	public enum State {
+		STOPPED,
 		IDLE,
 		IN,
 		OUT
 	}
 	
 	private MotorController motor;
+	private GamePieceType gamePieceType = GamePieceType.CONE;
 	private State state = State.IDLE;
 	
 	/**
@@ -31,6 +49,21 @@ public class Intake extends Mechanism {
 	 */
 	public Intake() {
 		motor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
+	}
+
+	/**
+	 * Returns the type of game piece the Intake is preparing to hold or is holding.
+	 * @return The current game piece type.
+	 */
+	public GamePieceType getGamePieceType() {
+		return gamePieceType;
+	}
+
+	/**
+	 * Sets the type of game piece type the Intake is preparing to hold or is holding.
+	 */
+	public void setGamePieceType(GamePieceType type) {
+		this.gamePieceType = type;
 	}
 
 	/**
@@ -47,7 +80,9 @@ public class Intake extends Mechanism {
 	 */
 	public void in() {
 		checkContextOwnership();
-		motor.set(1.0);
+
+		double power = (gamePieceType == GamePieceType.CONE) ? POWER_IN : (-1 * POWER_IN);
+		motor.set(power);
 		state = State.IN;
 	}
 
@@ -56,7 +91,9 @@ public class Intake extends Mechanism {
 	 */
 	public void out() {
 		checkContextOwnership();
-		motor.set(-1.0);	
+
+		double power = (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_IN) : POWER_IN;
+		motor.set(power);	
 		state = State.OUT;
 	}
 
@@ -66,6 +103,17 @@ public class Intake extends Mechanism {
 	public void stop() {
 		checkContextOwnership();
 		motor.set(0.0);
+		state = State.STOPPED;
+	}
+
+	/**
+	 * Turns the intake to idle - run at low power to keep the game piece contained.
+	 */
+	public void idle() {
+		checkContextOwnership();
+
+		double power = (gamePieceType == GamePieceType.CONE) ? POWER_IDLE : (-1 * POWER_IDLE);
+		motor.set(power);
 		state = State.IDLE;
 	}
 }
