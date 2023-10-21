@@ -18,8 +18,10 @@ public class Elevator extends Mechanism {
 
 		// TODO: do we need separate heights for cones vs cubes?
 
-		/** Elevator is at lowest (start) position. */
-		LOW(0), 
+		/** Elevator is fully retracted. */
+		RETRACTED(0),
+		/** Elevator is the appropriate height to place game pieces at the low node. */
+		LOW(25), 
 		/** Elevator is the appropriate height to place game pieces at the mid node. */
 		MID(45),
 		/** Elevator is at appropriate height to place game pieces at the high node. */
@@ -27,7 +29,9 @@ public class Elevator extends Mechanism {
 		/** Elevator is at appropriate height to grab cubes from the human player. */
 		HUMAN_CUBES(200),
 		/** Elevator is at appropriate height to grab cones from the human player. */
-		HUMAN_CONES(200);
+		HUMAN_CONES(200),
+		/** Elevator is fully extended. */
+		EXTENDED(250);
 
 		private final int height;
 
@@ -39,6 +43,8 @@ public class Elevator extends Mechanism {
 			return height;
 		}
 	}
+
+	private static final double NUDGE_INCREMENT = 5.0;
 
 	private final CANSparkMax leftMotor;
 	private final CANSparkMax rightMotor;
@@ -90,6 +96,24 @@ public class Elevator extends Mechanism {
 		return EncoderUtils.elevatorEUToHeight(leftMotor.getEncoder().getPosition());
 	}
 
+	public void nudgeUp() {
+		double height = getHeight();
+		// NOTE: this could articially limit nudge range
+		double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
+		if (targetHeight > height) {
+			moveTo(targetHeight);
+		}
+	}
+
+	public void nudgeDown() {
+		double height = getHeight();
+		// NOTE: this could articially limit nudge range
+		double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
+		if (targetHeight < height) {
+			moveTo(targetHeight);
+		}
+	}
+
 	/**
 	 * Moves the elevator to a pre-set {@link Position}.
 	 */
@@ -100,7 +124,7 @@ public class Elevator extends Mechanism {
 	/**
 	 * Moves the elevator to a specific position (in inches).
 	 */
-	public void moveTo(int position) {
+	public void moveTo(double position) {
 		checkContextOwnership();
 
 		// set the PID controller values with whatever the latest is in the config

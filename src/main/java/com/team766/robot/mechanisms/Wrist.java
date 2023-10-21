@@ -47,6 +47,8 @@ public class Wrist extends Mechanism {
 		}
 	}
 
+	private static final double NUDGE_INCREMENT = 5.0;
+
 	private final CANSparkMax motor;
 	private final SparkMaxPIDController pidController;
 	private final ValueProvider<Double> pGain;
@@ -83,6 +85,22 @@ public class Wrist extends Mechanism {
 	 */
 	public double getAngle() {
 		return EncoderUtils.wristEUTodegrees(motor.getEncoder().getPosition());
+	}
+
+	public void nudgeUp() {
+		double angle = getAngle();
+		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.UP.getAngle());
+		if (targetAngle > angle) {
+			rotate(angle);
+		}
+	}
+
+	public void nudgeDown() {
+		double angle = getAngle();
+		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.DOWN.getAngle());
+		if (targetAngle < angle) {
+			rotate(angle);
+		}
 	}
 
 	/** 
