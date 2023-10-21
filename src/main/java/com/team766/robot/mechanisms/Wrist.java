@@ -136,7 +136,7 @@ public class Wrist extends Mechanism {
 	@Override
 	public void run() {
 		if (rateLimiter.next()) {
-			SmartDashboard.putNumber("WristAngle", getAngle());
+			SmartDashboard.putNumber("[WRIST] Angle", getAngle());
 		}
 	}
 }

@@ -28,7 +28,7 @@ public final class InputConstants {
 	public static final int BUTTON_HUMAN_PLAYER = 5;
 
 	// RT
-	public static final int BUTTON_MOVE_INTAKE_TO_PLACEMENT = 6;
+	public static final int BUTTON_EXTEND_WRISTVATOR = 6;
 
 	// left axis
 	public static final int AXIS_WRIST_MOVEMENT = 4;

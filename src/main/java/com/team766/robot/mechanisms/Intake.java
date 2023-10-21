@@ -3,6 +3,9 @@ package com.team766.robot.mechanisms;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.library.RateLimiter;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static com.team766.robot.constants.ConfigConstants.*;
 
 /**
@@ -43,6 +46,7 @@ public class Intake extends Mechanism {
 	private MotorController motor;
 	private GamePieceType gamePieceType = GamePieceType.CONE;
 	private State state = State.IDLE;
+	private RateLimiter rateLimiter = new RateLimiter(5 /* seconds */);
 	
 	/**
 	 * Constructs a new Intake.
@@ -92,7 +96,7 @@ public class Intake extends Mechanism {
 	public void out() {
 		checkContextOwnership();
 
-		double power = (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_IN) : POWER_IN;
+		double power = (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_OUT) : POWER_OUT;
 		motor.set(power);	
 		state = State.OUT;
 	}
@@ -115,5 +119,13 @@ public class Intake extends Mechanism {
 		double power = (gamePieceType == GamePieceType.CONE) ? POWER_IDLE : (-1 * POWER_IDLE);
 		motor.set(power);
 		state = State.IDLE;
+	}
+
+	@Override
+	public void run() {
+		if (rateLimiter.next()) {
+			SmartDashboard.putString("[INTAKE] Game Piece", gamePieceType.toString());
+			SmartDashboard.putString("[INTAKE] State", state.toString());
+		}
 	}
 }

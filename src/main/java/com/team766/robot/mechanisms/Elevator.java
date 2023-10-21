@@ -152,7 +152,7 @@ public class Elevator extends Mechanism {
 	@Override
 	public void run() {
 		if (rateLimiter.next()) {
-			SmartDashboard.putNumber("ElevatorHeight", getHeight());
+			SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
 		}
 	}
 }
