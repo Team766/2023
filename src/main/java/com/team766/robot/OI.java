@@ -65,6 +65,8 @@ public class OI extends Procedure {
 
 			if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
 				new IntakeOut().run(context);
+			} else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
+				new IntakeStop().run(context);
 			}
 			
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
