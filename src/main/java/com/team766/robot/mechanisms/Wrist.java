@@ -80,6 +80,10 @@ public class Wrist extends Mechanism {
 		ffGain = ConfigFileReader.getInstance().getDouble(WRIST_FFGAIN);
 	}
 
+	public double getRotations() {
+		return motor.getEncoder().getPosition();
+	}
+
 	/**
 	 * Returns the current angle of the wrist.
 	 */
@@ -137,6 +141,7 @@ public class Wrist extends Mechanism {
 	public void run() {
 		if (rateLimiter.next()) {
 			SmartDashboard.putNumber("[WRIST] Angle", getAngle());
+			SmartDashboard.putNumber("[WRIST] Rotations", getRotations());
 		}
 	}
 }

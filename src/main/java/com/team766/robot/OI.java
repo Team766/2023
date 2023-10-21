@@ -130,67 +130,34 @@ public class OI extends Procedure {
 			// Respond to boxop commands
 
 			// first, check if the boxop is making a cone or cube selection
-			// TODO: consider moving these to button so target selection is a more discrete event
-			double coneCubeAxis = boxopGamepad.getAxis(InputConstants.AXIS_CONECUB_SELECT);
-			if (Math.abs(coneCubeAxis) > 0.05) {
-				if (coneCubeAxis > 0) {
-					new GoForCones().run(context);
-				} else if (coneCubeAxis < 0) {
-					new GoForCubes().run(context);
-				}
-			}
-
-			// look for manual nudges to the elevator
-			double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
-			if (Math.abs(elevatorNudgeAxis) > 0.05) {
-				context.takeOwnership(Robot.elevator);
-				try {
-					if (elevatorNudgeAxis > 0) {
-						Robot.elevator.nudgeUp();
-					} else if (elevatorNudgeAxis < 0) {
-						Robot.elevator.nudgeDown();
-					} 
-				} finally {
-					context.releaseOwnership(Robot.elevator);
-				}
-			}
-
-			// look for manual nudges to the wrist
-			double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
-			if (Math.abs(wristNudgeAxis) > 0.05) {
-				context.takeOwnership(Robot.wrist);
-				try {
-					if (wristNudgeAxis > 0) {
-						Robot.wrist.nudgeUp();
-					} else if (wristNudgeAxis < 0) {
-						Robot.wrist.nudgeDown();
-					}
-				} finally {
-					context.releaseOwnership(Robot.wrist);
-				}
+			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
+				new GoForCubes().run(context);
+			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
+				new GoForCubes().run(context);
 			}
 
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
 			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
-				// TODO: update lights, use haptics
+				// TODO: update lights
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
 				placementPosition = PlacementPosition.MID_NODE;
-				// TODO: update lights, use haptics
+				// TODO: update lights
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
 				placementPosition = PlacementPosition.HIGH_NODE;
-				// TODO: update lights, use haptics
-			} else if (boxopGamepad.getButton(InputConstants.BUTTON_HUMAN_PLAYER)) {
+				// TODO: update lights
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
 				placementPosition = PlacementPosition.HUMAN_PLAYER;
-				// TODO: update lights, use haptics
+				// TODO: update lights
 			}
 
 			// look for button hold to start intake, release to idle intake
-			// TODO: do we want a button to stop intake altogether?
 			if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_INTAKE_IN)) {
 				new IntakeIn().run(context);
 			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
 				new IntakeIdle().run(context);
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
+				new IntakeStop().run(context);
 			}
 
 			// look for button hold to extend intake/wrist/elevator superstructure,
@@ -216,6 +183,41 @@ public class OI extends Procedure {
 				}
 			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
 				new RetractWristvator().run(context);
+			}
+
+			// look for manual nudges
+			// we only allow these if the extend elevator trigger is extended
+			if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
+
+				// look for elevator nudges
+				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
+				if (Math.abs(elevatorNudgeAxis) > 0.05) {
+					context.takeOwnership(Robot.elevator);
+					try {
+						if (elevatorNudgeAxis > 0) {
+							Robot.elevator.nudgeUp();
+						} else if (elevatorNudgeAxis < 0) {
+							Robot.elevator.nudgeDown();
+						}
+					} finally {
+						context.releaseOwnership(Robot.elevator);
+					}
+				}
+
+				// look for wrist nudges
+				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+				if (Math.abs(wristNudgeAxis) > 0.05) {
+					context.takeOwnership(Robot.wrist);
+					try {
+						if (wristNudgeAxis > 0) {
+							Robot.wrist.nudgeUp();
+						} else if (wristNudgeAxis < 0) {
+							Robot.wrist.nudgeDown();
+						}
+					} finally {
+						context.releaseOwnership(Robot.wrist);
+					}
+				}
 			}
 		}
 	}

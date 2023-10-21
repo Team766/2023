@@ -35,7 +35,7 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorHeightToRotations(double height) {
 		// height * net gear ratio * (rotations / height)
-		return height * (8./3.) * (1./(2 * 1.25 * Math.PI));
+		return height * (8./3.) * (1./(1.641 * Math.PI));
 	}
 
 	/**
@@ -44,7 +44,7 @@ public final class EncoderUtils {
 	public static double elevatorRotationsToHeight(double rotations) {
 		// rotations * net gear ratio * (height / rotations)
 		// FIXME: everything
-		return rotations * (3./8.) * ((2 * 1.25 * Math.PI)/1.);
+		return rotations * (3./8.) * ((1.641 * Math.PI)/1.);
 	}
 
 	/**

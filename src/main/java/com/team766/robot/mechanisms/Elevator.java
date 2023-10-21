@@ -89,6 +89,10 @@ public class Elevator extends Mechanism {
 		maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
 	}
 
+	public double getRotations() {
+		return leftMotor.getEncoder().getPosition();
+	}
+
 	/**
 	 * Returns the current height of the elevator, in inches ('Murica).
 	 */
@@ -153,6 +157,7 @@ public class Elevator extends Mechanism {
 	public void run() {
 		if (rateLimiter.next()) {
 			SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
+			SmartDashboard.putNumber("[ELEVATOR] Rotations", getRotations());
 		}
 	}
 }
