@@ -26,11 +26,8 @@ public class OI extends Procedure {
 	private JoystickReader rightJoystick;
 	private JoystickReader boxopGamepad;
 	private double rightJoystickX = 0;
-	private double rightJoystickY = 0;
 	private double leftJoystickX = 0;
 	private double leftJoystickY = 0;
-	private double leftJoystickTheta = 0;
-	private double rightJoystickTheta = 0;
 	private boolean isCross = false;
 
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
@@ -74,21 +71,12 @@ public class OI extends Procedure {
 				Robot.drive.resetCurrentPosition();
 			}
 
-			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
-				rightJoystickY = rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-			} else {
-				rightJoystickY = 0;
-			}
 			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
 				rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT) / 2;
 			} else {
 				rightJoystickX = 0;	
 			}
-			if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
-				rightJoystickTheta = rightJoystick.getAxis(InputConstants.AXIS_TWIST);
-			} else {
-				rightJoystickTheta = 0;
-			}
+
 			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
 				leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
 			} else {
@@ -98,11 +86,6 @@ public class OI extends Procedure {
 				leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
 			} else {
 				leftJoystickX = 0;
-			}
-			if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_TWIST)) > 0.05) {
-				leftJoystickTheta = leftJoystick.getAxis(InputConstants.AXIS_TWIST);
-			} else {
-				leftJoystickTheta = 0;
 			}
 
 			// Sets the wheels to the cross position if the cross button is pressed
