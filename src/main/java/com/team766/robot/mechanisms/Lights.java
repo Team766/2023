@@ -27,4 +27,9 @@ public class Lights extends Mechanism{
 		checkContextOwnership();
 		candle.setLEDs(255, 255, 0);
 	}
+
+	public void red(){
+		checkContextOwnership();
+		candle.setLEDs(255, 0, 0);
+	}
 }

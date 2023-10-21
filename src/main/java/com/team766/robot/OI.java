@@ -14,6 +14,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
@@ -66,6 +67,7 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
+		context.takeOwnership(Robot.lights);
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -87,6 +89,9 @@ public class OI extends Procedure {
 			// 	SmartDashboard.putString("Alliance", "NULLLLLLLLL");
 			// }
 			
+			if(DriverStation.isTeleop() && DriverStation.getMatchTime() < 30){
+				Robot.lights.red();
+			}
 
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
