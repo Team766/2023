@@ -102,7 +102,7 @@ public class Elevator extends Mechanism {
 
 	public void nudgeUp() {
 		double height = getHeight();
-		// NOTE: this could articially limit nudge range
+		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
 		if (targetHeight > height) {
 			moveTo(targetHeight);
@@ -111,7 +111,7 @@ public class Elevator extends Mechanism {
 
 	public void nudgeDown() {
 		double height = getHeight();
-		// NOTE: this could articially limit nudge range
+		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
 		if (targetHeight < height) {
 			moveTo(targetHeight);
