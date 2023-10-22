@@ -104,6 +104,7 @@ public class Elevator extends Mechanism {
 	public void nudgeNoPID(double value) {
 		checkContextOwnership();
 		double clampedValue = MathUtil.clamp(value, -1, 1);
+		clampedValue *= 0.25; // make nudges less forceful.  TODO: make this non-linear
 		leftMotor.set(clampedValue);
 	}
 
