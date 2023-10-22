@@ -120,7 +120,7 @@ public class OI extends Procedure {
 
 			// first, check if the boxop is making a cone or cube selection
 			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
-				new GoForCubes().run(context);
+				new GoForCones().run(context);
 			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
 				new GoForCubes().run(context);
 			}
