@@ -112,7 +112,7 @@ public class OI extends Procedure {
           	// On deafault, controls the robot field oriented
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX), (leftJoystickY), (rightJoystickX));
 				}
-			} else if (!isCross) {
+			} else {
 				Robot.drive.stopDrive();			
 			}
 			
