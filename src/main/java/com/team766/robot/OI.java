@@ -37,6 +37,7 @@ public class OI extends Procedure {
 	private static final double HighConeArm1 = 0;
 	private static final double CHA2 = 0;
 	private static final double CMA1 = 0;
+	private int state = 0;
 	// enum generalControl{
 	// 	CONE_HIGH_NODE,
 	// 	CUBE_HIGH_NODE,
@@ -72,6 +73,49 @@ public class OI extends Procedure {
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+
+			//TODO: ADD CODE DEPENDING ON WHAT THE STATE SHOULD BE FOR WHICH BUTTONS
+			if(DriverStation.getMatchTime() < 30 && DriverStation.getMatchTime() > 29){
+				Robot.lights.rainbow();
+				log("" + DriverStation.getMatchTime());
+				ignoreState = true;
+			}
+
+			if(DriverStation.getMatchTime() <29 && DriverStation.getMatchTime() > 28.7){
+				Robot.lights.clearAnimation();
+				ignoreState = false;
+			}
+			switch (state){
+				case 1:
+					if(ignoreState){ break;}
+					Robot.lights.signalCube();
+					break;
+				case 2:
+					if(ignoreState){ break;}
+					Robot.lights.signalCone();
+					break;
+				case 3:
+					if(ignoreState){ break;}
+					Robot.lights.rainbow();
+					break;
+				case 4:
+					if(ignoreState){ break;}
+					Robot.lights.hybridScore();
+					break;
+				case 5:
+					if(ignoreState){ break;}
+					Robot.lights.midScore();
+					break;
+				case 6:
+					if(ignoreState){ break;}
+					Robot.lights.highScore();
+					break;
+				default:
+					if(!ignoreState){
+					Robot.lights.resetLights();
+					}
+			}
+
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
