@@ -6,6 +6,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
+import static com.team766.robot.constants.ConfigConstants.*;
 import com.team766.robot.constants.SwerveDriveConstants;
 import com.team766.robot.constants.OdometryInputConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,24 +69,22 @@ public class Drive extends Mechanism {
 		// Initializations of motors
 
 		// Initialize the drive motors
-		m_DriveFR = RobotProvider.instance.getMotor("drive.DriveFrontRight");
-		m_DriveFL = RobotProvider.instance.getMotor("drive.DriveFrontLeft");
-		m_DriveBR = RobotProvider.instance.getMotor("drive.DriveBackRight");
-		m_DriveBL = RobotProvider.instance.getMotor("drive.DriveBackLeft");
+		m_DriveFR = RobotProvider.instance.getMotor(DRIVE_DRIVE_FRONT_RIGHT);
+		m_DriveFL = RobotProvider.instance.getMotor(DRIVE_DRIVE_FRONT_LEFT);
+		m_DriveBR = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_RIGHT);
+		m_DriveBL = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_LEFT);
 
 		// Initialize the steering motors
-		m_SteerFR = RobotProvider.instance.getMotor("drive.SteerFrontRight");
-		m_SteerFL = RobotProvider.instance.getMotor("drive.SteerFrontLeft");
-		m_SteerBR = RobotProvider.instance.getMotor("drive.SteerBackRight");
-		m_SteerBL = RobotProvider.instance.getMotor("drive.SteerBackLeft");
-
-		
+		m_SteerFR = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_RIGHT);
+		m_SteerFL = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_LEFT);
+		m_SteerBR = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_RIGHT);
+		m_SteerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
 		// Initialize the encoders
-		e_FrontRight = new CANCoder(22, SwerveDriveConstants.SWERVE_CANBUS);
-		e_FrontLeft = new CANCoder(23, SwerveDriveConstants.SWERVE_CANBUS);
-		e_BackRight = new CANCoder(21, SwerveDriveConstants.SWERVE_CANBUS);
-		e_BackLeft = new CANCoder(24, SwerveDriveConstants.SWERVE_CANBUS);
+		e_FrontRight = new CANCoder(2, SwerveDriveConstants.SWERVE_CANBUS);
+		e_FrontLeft = new CANCoder(4, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackRight = new CANCoder(3, SwerveDriveConstants.SWERVE_CANBUS);
+		e_BackLeft = new CANCoder(1, SwerveDriveConstants.SWERVE_CANBUS);
 
 		// Current limit for motors to avoid breaker problems 
 		m_DriveFR.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
@@ -163,10 +162,10 @@ public class Drive extends Mechanism {
 	public void controlRobotOriented(double x, double y, double turn) {
 		// Finds the vectors for turning and for translation of each module, and adds them
 		// Applies this for each module
-		controlModuleSteerAndPower(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FL_X, SwerveDriveConstants.FL_Y).normalize()), offsetFL);
-		controlModuleSteerAndPower(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FR_X, SwerveDriveConstants.FR_Y).normalize()), offsetFR);
-		controlModuleSteerAndPower(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BR_X, SwerveDriveConstants.BR_Y).normalize()), offsetBR);
-		controlModuleSteerAndPower(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BL_X, SwerveDriveConstants.BL_Y).normalize()), offsetBL);
+		controlModuleSteerAndPower(m_DriveFL, m_SteerFL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FL_Y, SwerveDriveConstants.FL_X).normalize()), offsetFL);
+		controlModuleSteerAndPower(m_DriveFR, m_SteerFR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.FR_Y, SwerveDriveConstants.FR_X).normalize()), offsetFR);
+		controlModuleSteerAndPower(m_DriveBR, m_SteerBR, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BR_Y, SwerveDriveConstants.BR_X).normalize()), offsetBR);
+		controlModuleSteerAndPower(m_DriveBL, m_SteerBL, new Vector2D(x, y).add(turn, new Vector2D(SwerveDriveConstants.BL_Y, SwerveDriveConstants.BL_X).normalize()), offsetBL);
 	}
 
 	/**
@@ -179,7 +178,8 @@ public class Drive extends Mechanism {
 	public void controlFieldOriented(double yawRad, double x, double y, double turn) {
 		// Applies a rotational translation to controlRobotOriented
 		// Counteracts the forward direction changing when the robot turns
-		controlRobotOriented(Math.cos(yawRad) * x - Math.sin(yawRad) * y, Math.cos(yawRad) * y + Math.sin(yawRad) * x, turn);
+		// TODO: change to inverse rotation matrix (rather than negative angle)
+		controlRobotOriented(Math.cos(-yawRad) * x - Math.sin(-yawRad) * y, Math.sin(-yawRad) * x + Math.cos(-yawRad) * y, turn);
 	}
 
 	/*

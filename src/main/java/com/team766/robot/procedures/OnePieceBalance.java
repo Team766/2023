@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class OnePieceBalance extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
+		//context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
-		Robot.gyro.setGyro(90);
+		Robot.gyro.resetGyro();
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				Robot.drive.setCurrentPosition(new PointDir(2.7, 2));
@@ -26,7 +26,7 @@ public class OnePieceBalance extends Procedure {
 				return;
 
 		}
-		new ReverseIntake().run(context);
+		// new IntakeRelease().run(context);
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
 }

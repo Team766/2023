@@ -14,8 +14,8 @@ public final class OdometryInputConstants {
 	public static final double GEAR_RATIO = 6.75;
 	//Unique to the type of swerve module we have. For every revolution of the wheel, the encoders will increase by 2048.
 	public static final int ENCODER_TO_REVOLUTION_CONSTANT = 2048;
-	//The distance between the centers of the wheels on each side of the robot. This was measured as 22 inches, then converted to meters.
-	public static final double DISTANCE_BETWEEN_WHEELS = 22 * 2.54 / 100;
+	//The distance between the centers of the wheels on each side of the robot. This was measured as 20.5 inches, then converted to meters.
+	public static final double DISTANCE_BETWEEN_WHEELS = 20.5 * 2.54 / 100;
 	//How often odometry updates, in seconds.
 	public static final double RATE_LIMITER_TIME = 0.05;
 

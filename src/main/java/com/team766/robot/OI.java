@@ -6,13 +6,14 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.constants.InputConstants;
-import com.team766.robot.constants.InputConstants.IntakeState;
 import com.team766.robot.procedures.*;
 import com.team766.robot.mechanisms.Drive;
+import com.team766.robot.mechanisms.Intake;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -32,11 +33,13 @@ public class OI extends Procedure {
 	private double LeftJoystick_Z = 0;
 	private double LeftJoystick_Theta = 0;
 	private boolean isCross = false;
-	private IntakeState intakeState = IntakeState.IDLE;
 
 	private static final double HighConeArm1 = 0;
 	private static final double CHA2 = 0;
 	private static final double CMA1 = 0;
+
+	private int state = 0;
+	private boolean ignoreState = false;
 	// enum generalControl{
 	// 	CONE_HIGH_NODE,
 	// 	CUBE_HIGH_NODE,
@@ -65,20 +68,56 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		context.takeOwnership(Robot.intake);
-		context.takeOwnership(Robot.arms);
-		context.takeOwnership(Robot.storage);
+		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
-		context.takeOwnership(Robot.grabber);
-		
-		// CameraServer.startAutomaticCapture();
-
-		Robot.arms.resetFirstEncoders();
-		Robot.arms.resetSecondEncoders();
+		context.takeOwnership(Robot.lights);
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 			RobotProvider.instance.refreshDriverStationData();
+
+			//TODO: ADD CODE DEPENDING ON WHAT THE STATE SHOULD BE FOR WHICH BUTTONS
+			if(DriverStation.getMatchTime() < 30 && DriverStation.getMatchTime() > 29){
+				Robot.lights.rainbow();
+				log("" + DriverStation.getMatchTime());
+				ignoreState = true;
+			}
+
+			if(DriverStation.getMatchTime() <29 && DriverStation.getMatchTime() > 28.7){
+				Robot.lights.clearAnimation();
+				ignoreState = false;
+			}
+			switch (state){
+				case 1:
+					if(ignoreState){ break;}
+					Robot.lights.signalCube();
+					break;
+				case 2:
+					if(ignoreState){ break;}
+					Robot.lights.signalCone();
+					break;
+				case 3:
+					if(ignoreState){ break;}
+					Robot.lights.rainbow();
+					break;
+				case 4:
+					if(ignoreState){ break;}
+					Robot.lights.hybridScore();
+					break;
+				case 5:
+					if(ignoreState){ break;}
+					Robot.lights.midScore();
+					break;
+				case 6:
+					if(ignoreState){ break;}
+					Robot.lights.highScore();
+					break;
+				default:
+					if(!ignoreState){
+					Robot.lights.resetLights();
+					}
+			}
+
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
@@ -96,6 +135,9 @@ public class OI extends Procedure {
 			// 	SmartDashboard.putString("Alliance", "NULLLLLLLLL");
 			// }
 			
+			if(DriverStation.isTeleop() && DriverStation.getMatchTime() < 30){
+				Robot.lights.signalMalfunction();
+			}
 
 			if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
 				Robot.gyro.resetGyro();
@@ -138,43 +180,25 @@ public class OI extends Procedure {
 
 			// Sets intake state based on button pressed
 			if (controlPanel.getButtonPressed(InputConstants.INTAKE)) {
-				if (intakeState == IntakeState.IDLE) {
-					Robot.intake.startIntake();
-					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGFWD;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.in();
+				// } else {
+				// 	Robot.intake.stop();
+				//}
 			}
-			/* if (controlPanel.getButtonPressed(InputConstants.INTAKE_PISTONLESS)){
-				if (intakeState == IntakeState.IDLE){
-					Robot.intake.intakePistonless();
-					Robot.storage.beltIn();
-					intakeState = IntakeState.SPINNINGREV;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
-			} */
+
 			if (controlPanel.getButtonPressed(InputConstants.OUTTAKE)) {
-				if (intakeState == IntakeState.IDLE) {
-					Robot.intake.reverseIntake();
-					Robot.storage.beltOut();
-					intakeState = IntakeState.SPINNINGREV;
-				} else {
-					Robot.intake.stopIntake();
-					Robot.storage.beltIdle();
-					intakeState = IntakeState.IDLE;
-				}
+				// if (Robot.intake.getState() == Intake.State.IDLE) {
+				// 	Robot.intake.out();
+				// } else {
+				// 	Robot.intake.stop();
+				// }
 			} 
 
 			// Sets the wheels to the cross position if the cross button is pressed
 			if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
 				if (!isCross) {
-					context.startAsync(new setCross());
+					context.startAsync(new SetCross());
 				}
 				isCross = !isCross;
 			}
@@ -187,11 +211,10 @@ public class OI extends Procedure {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
-					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (-rightJoystickX * FINE_DRIVING_COEFFICIENT));
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
-          // On deafault, controls the robot field oriented
-          // Need negatives here, controls backwards otherwise (most likely specific to CLR)
-					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (-leftJoystickX), (leftJoystickY), (-rightJoystickX));
+          	// On deafault, controls the robot field oriented
+					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX), (leftJoystickY), (rightJoystickX));
 				}
 			} else if (!isCross) {
 				Robot.drive.stopDrive();			
@@ -203,37 +226,17 @@ public class OI extends Procedure {
 
 			if (controlPanel.getButtonPressed(InputConstants.CONE_HIGH)) {
 				log("Arm cone high");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(-17.379);
-				Robot.arms.pidForArmTwo(-56.61); //previously -66
 			}
 			if (controlPanel.getButtonPressed(InputConstants.CONE_MID)) {
 				log("Arm cone mid");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(2.7765);
-				Robot.arms.pidForArmTwo(-83.813); //previously -93
 			}
 			if (controlPanel.getButtonPressed(InputConstants.ARM_READY)) {
 				log("Arm ready");
-				Robot.arms.stowed = false;
-				Robot.arms.pidForArmOne(10.269);
-				Robot.arms.pidForArmTwo(-90);
 			}
 			if (controlPanel.getButtonPressed(InputConstants.HUMANPLAYER_PICKUP)) {
-				if (Robot.arms.getSecondJointPosition() < -100) {
-					log("Move arms to Ready position before moving to Pickup");
-				} else {
-					log("Arm pickup");
-					Robot.arms.stowed = false;
-					Robot.arms.pidForArmOne(22.73);
-					Robot.arms.pidForArmTwo(-62.529); // previously -72.529
-				}
 			}
 			if (controlPanel.getButtonPressed(InputConstants.UNSTOWED)) {
 				log("Arm unstowed");
-				Robot.arms.stowed = true;
-				Robot.arms.pidForArmOne(10.269);
-				Robot.arms.pidForArmTwo(-157.387);
 			}
 			/* if(controlPanel.getButton(InputConstants.IN_CHASSIS)){
 				Robot.arms.pidForArmOne(22.73);
@@ -241,35 +244,25 @@ public class OI extends Procedure {
 			} */
 			if (controlPanel.getButton(InputConstants.NUDGE_UP)) {
 				log("Arm nudge up");
-				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2up());
 			}
 
 			if (controlPanel.getButton(InputConstants.NUDGE_DOWN)) {
 				log("Arm nudge down");
-				Robot.arms.pidForArmTwo(Robot.arms.nudgeArm2down());
 			}
 
 			if (controlPanel.getButton(InputConstants.GRAB_IN)) {
-				Robot.grabber.grabberPickUp();
 			} else if (rightJoystick.getButton(InputConstants.GRABBER_RELEASE)) {
-				Robot.grabber.grabberLetGo();
 			} else {
-				Robot.grabber.grabberStop();
 			} 
 
 			if (controlPanel.getButtonPressed(InputConstants.BRAKE)) {
-				Robot.arms.brake();
 			} else if (controlPanel.getButtonPressed(InputConstants.COAST)) {
-				Robot.arms.coast();
 			}
 
 			if (leftJoystick.getButtonPressed(InputConstants.ARM_STOP)) {
-				Robot.arms.armStop();
 			}
 
 			if (controlPanel.getButtonPressed(13)) {
-				Robot.arms.resetFirstEncoders();
-				Robot.arms.resetSecondEncoders();
 			}
 		}
 	}
