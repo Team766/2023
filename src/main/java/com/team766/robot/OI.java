@@ -37,7 +37,9 @@ public class OI extends Procedure {
 	private static final double HighConeArm1 = 0;
 	private static final double CHA2 = 0;
 	private static final double CMA1 = 0;
+
 	private int state = 0;
+	private boolean ignoreState = false;
 	// enum generalControl{
 	// 	CONE_HIGH_NODE,
 	// 	CUBE_HIGH_NODE,
