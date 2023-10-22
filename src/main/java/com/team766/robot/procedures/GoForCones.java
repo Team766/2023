@@ -10,9 +10,8 @@ public class GoForCones extends Procedure {
 	@Override
 	public void run(Context context) {
 		context.takeOwnership(Robot.intake);
-		// TODO: grab ownership of the Lights, as well
-
+		context.takeOwnership(Robot.lights);
 		Robot.intake.setGamePieceType(GamePieceType.CONE);
-		// TODO: turn lights to cone color
+		Robot.lights.signalCone();
 	}
 }

@@ -8,11 +8,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
-import com.team766.simulator.interfaces.ElectricalDevice.Input;
-import com.team766.robot.mechanisms.Drive;
-import com.team766.robot.mechanisms.Intake;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -109,7 +105,7 @@ public class OI extends Procedure {
 				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
-          	// On deafault, controls the robot field oriented
+          	// On default, controls the robot field oriented
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX), (leftJoystickY), (rightJoystickX));
 				}
 			} else if (!isCross) {
@@ -120,7 +116,7 @@ public class OI extends Procedure {
 
 			// first, check if the boxop is making a cone or cube selection
 			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
-				new GoForCubes().run(context);
+				new GoForCones().run(context);
 			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
 				new GoForCubes().run(context);
 			}
@@ -128,16 +124,33 @@ public class OI extends Procedure {
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
 			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
-				// TODO: update lights
+				context.takeOwnership(Robot.lights);
+				try {
+					Robot.lights.signalLowNode();
+				} finally {
+					context.releaseOwnership(Robot.lights);
+				}
+
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
 				placementPosition = PlacementPosition.MID_NODE;
-				// TODO: update lights
+				context.takeOwnership(Robot.lights);
+				try {
+					Robot.lights.signalMidNode();
+				} finally {
+					context.releaseOwnership(Robot.lights);
+				}
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
 				placementPosition = PlacementPosition.HIGH_NODE;
-				// TODO: update lights
+				context.takeOwnership(Robot.lights);
+				try {
+					Robot.lights.signalHighNode();
+				} finally {
+					context.releaseOwnership(Robot.lights);
+				}
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
 				placementPosition = PlacementPosition.HUMAN_PLAYER;
-				// TODO: update lights
+				// do not signal anything with lights - let the lights reflect the
+				// cone or cube selection.
 			}
 
 			// look for button hold to start intake, release to idle intake
