@@ -47,7 +47,7 @@ public class OI extends Procedure {
 		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 
-		PlacementPosition placementPosition = null;
+		PlacementPosition placementPosition = PlacementPosition.NONE;
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -126,7 +126,9 @@ public class OI extends Procedure {
 			}
 
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
-			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
+			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
+				placementPosition = PlacementPosition.NONE;
+			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
 				// TODO: update lights
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
@@ -153,6 +155,8 @@ public class OI extends Procedure {
 			// release to retract
 			if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
 				switch (placementPosition) {
+					case NONE:
+						break;
 					case LOW_NODE:
 						new ExtendWristvatorToLow().run(context);
 						break;
@@ -182,11 +186,7 @@ public class OI extends Procedure {
 				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
 				if (Math.abs(elevatorNudgeAxis) > 0.05) {
 					context.takeOwnership(Robot.elevator);
-					if (elevatorNudgeAxis > 0) {
-						Robot.elevator.nudgeUp();
-					} else if (elevatorNudgeAxis < 0) {
-						Robot.elevator.nudgeDown();
-					}
+					Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
 					context.releaseOwnership(Robot.elevator);
 				}
 
@@ -194,11 +194,7 @@ public class OI extends Procedure {
 				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
 				if (Math.abs(wristNudgeAxis) > 0.05) {
 					context.takeOwnership(Robot.wrist);
-					if (wristNudgeAxis > 0) {
-						Robot.wrist.nudgeUp();
-					} else if (wristNudgeAxis < 0) {
-						Robot.wrist.nudgeDown();
-					}
+					Robot.wrist.nudgeNoPID(wristNudgeAxis);
 					context.releaseOwnership(Robot.wrist);
 				}
 			}

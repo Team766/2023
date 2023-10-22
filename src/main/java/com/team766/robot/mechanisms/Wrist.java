@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
@@ -89,6 +90,12 @@ public class Wrist extends Mechanism {
 	 */
 	public double getAngle() {
 		return EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition());
+	}
+
+	public void nudgeNoPID(double value) {
+		checkContextOwnership();
+		double clampedValue = MathUtil.clamp(value, -1, 1);
+		motor.set(clampedValue);	
 	}
 
 	public void nudgeUp() {
