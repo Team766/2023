@@ -182,30 +182,24 @@ public class OI extends Procedure {
 				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
 				if (Math.abs(elevatorNudgeAxis) > 0.05) {
 					context.takeOwnership(Robot.elevator);
-					try {
-						if (elevatorNudgeAxis > 0) {
-							Robot.elevator.nudgeUp();
-						} else if (elevatorNudgeAxis < 0) {
-							Robot.elevator.nudgeDown();
-						}
-					} finally {
-						context.releaseOwnership(Robot.elevator);
+					if (elevatorNudgeAxis > 0) {
+						Robot.elevator.nudgeUp();
+					} else if (elevatorNudgeAxis < 0) {
+						Robot.elevator.nudgeDown();
 					}
+					context.releaseOwnership(Robot.elevator);
 				}
 
 				// look for wrist nudges
 				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
 				if (Math.abs(wristNudgeAxis) > 0.05) {
 					context.takeOwnership(Robot.wrist);
-					try {
-						if (wristNudgeAxis > 0) {
-							Robot.wrist.nudgeUp();
-						} else if (wristNudgeAxis < 0) {
-							Robot.wrist.nudgeDown();
-						}
-					} finally {
-						context.releaseOwnership(Robot.wrist);
+					if (wristNudgeAxis > 0) {
+						Robot.wrist.nudgeUp();
+					} else if (wristNudgeAxis < 0) {
+						Robot.wrist.nudgeDown();
 					}
+					context.releaseOwnership(Robot.wrist);
 				}
 			}
 		}
