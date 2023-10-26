@@ -49,6 +49,7 @@ public class Wrist extends Mechanism {
 	}
 
 	private static final double NUDGE_INCREMENT = 5.0;
+	private static final double NUDGE_DAMPENER = 0.25;
 
 	private final CANSparkMax motor;
 	private final SparkMaxPIDController pidController;
@@ -95,8 +96,13 @@ public class Wrist extends Mechanism {
 	public void nudgeNoPID(double value) {
 		checkContextOwnership();
 		double clampedValue = MathUtil.clamp(value, -1, 1);
-		clampedValue *= 0.25; // make nudges less forceful. TODO: make this non-linear
+		clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
 		motor.set(clampedValue);	
+	}
+
+	public void stopWrist() {
+		checkContextOwnership();
+		motor.set(0);
 	}
 
 	public void nudgeUp() {

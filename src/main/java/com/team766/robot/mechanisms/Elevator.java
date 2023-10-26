@@ -46,6 +46,7 @@ public class Elevator extends Mechanism {
 	}
 
 	private static final double NUDGE_INCREMENT = 5.0;
+	private static final double NUDGE_DAMPENER = 0.25;
 
 	private final CANSparkMax leftMotor;
 	private final CANSparkMax rightMotor;
@@ -104,8 +105,13 @@ public class Elevator extends Mechanism {
 	public void nudgeNoPID(double value) {
 		checkContextOwnership();
 		double clampedValue = MathUtil.clamp(value, -1, 1);
-		clampedValue *= 0.25; // make nudges less forceful.  TODO: make this non-linear
+		clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
 		leftMotor.set(clampedValue);
+	}
+
+	public void stopElevator() {
+		checkContextOwnership();
+		leftMotor.set(0);
 	}
 
 	public void nudgeUp() {

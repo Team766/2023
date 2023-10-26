@@ -48,6 +48,8 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.gyro);
 
 		PlacementPosition placementPosition = PlacementPosition.NONE;
+		boolean elevatorManual = false;
+		boolean wristManual = false;
 
 		while (true) {
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -185,17 +187,25 @@ public class OI extends Procedure {
 				// look for elevator nudges
 				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
 				if (Math.abs(elevatorNudgeAxis) > 0.05) {
+					elevatorManual = true;
 					context.takeOwnership(Robot.elevator);
 					Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
 					context.releaseOwnership(Robot.elevator);
+				} else if (elevatorManual) {
+					Robot.elevator.stopElevator();
+					elevatorManual = false;
 				}
 
 				// look for wrist nudges
 				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
 				if (Math.abs(wristNudgeAxis) > 0.05) {
+					wristManual = true;
 					context.takeOwnership(Robot.wrist);
 					Robot.wrist.nudgeNoPID(wristNudgeAxis);
 					context.releaseOwnership(Robot.wrist);
+				} else if (wristManual) {
+					Robot.wrist.stopWrist();
+					wristManual = true;
 				}
 			}
 		}
