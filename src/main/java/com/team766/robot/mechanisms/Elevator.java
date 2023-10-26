@@ -77,7 +77,7 @@ public class Elevator extends Mechanism {
 		leftMotor = (CANSparkMax) halLeftMotor;
 		rightMotor = (CANSparkMax) halRightMotor;
 
-		rightMotor.follow(leftMotor);
+		rightMotor.follow(leftMotor, true);
 
 		pidController = leftMotor.getPIDController();
 		pidController.setFeedbackDevice(leftMotor.getEncoder());
