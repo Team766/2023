@@ -185,25 +185,36 @@ public class OI extends Procedure {
 			if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
 
 				// look for elevator nudges
-				double elevatorNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
+				double elevatorNudgeAxis = -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
 				if (Math.abs(elevatorNudgeAxis) > 0.05) {
-					elevatorManual = true;
+					// elevatorManual = true;
 					context.takeOwnership(Robot.elevator);
-					Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
+					// Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
+					if (elevatorNudgeAxis > 0) {
+						Robot.elevator.nudgeUp();
+					} else {
+						Robot.elevator.nudgeDown();
+					}
 					context.releaseOwnership(Robot.elevator);
-				} else if (elevatorManual) {
+				} else if (false && elevatorManual) {
 					Robot.elevator.stopElevator();
 					elevatorManual = false;
 				}
 
 				// look for wrist nudges
-				double wristNudgeAxis = boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+				double wristNudgeAxis = -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+				SmartDashboard.putNumber("WRIST AXIS", wristNudgeAxis);
 				if (Math.abs(wristNudgeAxis) > 0.05) {
-					wristManual = true;
+					// wristManual = true;
 					context.takeOwnership(Robot.wrist);
-					Robot.wrist.nudgeNoPID(wristNudgeAxis);
+					// Robot.wrist.nudgeNoPID(wristNudgeAxis);
+					if (wristNudgeAxis > 0) {
+						Robot.wrist.nudgeUp();
+					} else {
+						Robot.wrist.nudgeDown();
+					}
 					context.releaseOwnership(Robot.wrist);
-				} else if (wristManual) {
+				} else if (false && wristManual) {
 					Robot.wrist.stopWrist();
 					wristManual = true;
 				}

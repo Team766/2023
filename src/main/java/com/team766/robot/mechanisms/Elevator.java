@@ -22,17 +22,17 @@ public class Elevator extends Mechanism {
 		/** Elevator is fully retracted. */
 		RETRACTED(0),
 		/** Elevator is the appropriate height to place game pieces at the low node. */
-		LOW(25), 
+		LOW(5), 
 		/** Elevator is the appropriate height to place game pieces at the mid node. */
-		MID(45),
+		MID(18),
 		/** Elevator is at appropriate height to place game pieces at the high node. */
-		HIGH(180), 
+		HIGH(40), 
 		/** Elevator is at appropriate height to grab cubes from the human player. */
-		HUMAN_CUBES(200),
+		HUMAN_CUBES(35),
 		/** Elevator is at appropriate height to grab cones from the human player. */
-		HUMAN_CONES(200),
+		HUMAN_CONES(35),
 		/** Elevator is fully extended. */
-		EXTENDED(250);
+		EXTENDED(40);
 
 		private final int height;
 
@@ -79,6 +79,8 @@ public class Elevator extends Mechanism {
 
 		rightMotor.follow(leftMotor, true);
 
+		leftMotor.getEncoder().setPosition(EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
+
 		pidController = leftMotor.getPIDController();
 		pidController.setFeedbackDevice(leftMotor.getEncoder());
 
@@ -115,21 +117,21 @@ public class Elevator extends Mechanism {
 	}
 
 	public void nudgeUp() {
+		System.err.println("Nudging up.");
+
 		double height = getHeight();
 		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-		if (targetHeight > height) {
-			moveTo(targetHeight);
-		}
+		System.err.println("Target: " + targetHeight);
+
+		moveTo(targetHeight);
 	}
 
 	public void nudgeDown() {
 		double height = getHeight();
 		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
-		if (targetHeight < height) {
-			moveTo(targetHeight);
-		}
+		moveTo(targetHeight);
 	}
 
 	/**
@@ -145,26 +147,30 @@ public class Elevator extends Mechanism {
 	public void moveTo(double position) {
 		checkContextOwnership();
 
+		System.err.println("Setting target position to " + position);
 		// set the PID controller values with whatever the latest is in the config
 		pidController.setP(pGain.get());
 		pidController.setI(iGain.get());
 		pidController.setD(dGain.get());
-		pidController.setFF(ffGain.get());
+		// pidController.setFF(ffGain.get());
+		double ff = ffGain.get();
 
-		pidController.setOutputRange(-1, 1);
 
-		pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-		pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
-		pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
-		pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
+		pidController.setOutputRange(-0.4, 0.4);
 
-		// TODO: do we need to set output range?
+		// pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+		// pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
+		// pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
+		// pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
 
 		// convert the desired target degrees to encoder units
 		double rotations = EncoderUtils.elevatorHeightToRotations(position);
 
+		// SmartDashboard.putNumber("[ELEVATOR] ff", ff);
+		SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
+
 		// set the reference point for the wrist
-		pidController.setReference(rotations, ControlType.kSmartMotion);
+		pidController.setReference(rotations, ControlType.kPosition, 0, ff);
 	}
 
 	@Override

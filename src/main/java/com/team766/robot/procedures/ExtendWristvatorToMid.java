@@ -14,6 +14,6 @@ public class ExtendWristvatorToMid extends Procedure {
 		context.takeOwnership(Robot.elevator);
 
 		Robot.elevator.moveTo(Elevator.Position.MID);
-		Robot.wrist.rotate(Wrist.Position.UP);
+		Robot.wrist.rotate(Wrist.Position.MID_NODE);
 	}
 }
