@@ -7,7 +7,6 @@ public class Robot {
 	public static Intake intake;
 	public static Wrist wrist;
 	public static Elevator elevator;
-
 	public static Drive drive;
 	public static Gyro gyro;
 
