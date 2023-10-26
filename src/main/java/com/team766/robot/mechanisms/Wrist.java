@@ -55,6 +55,8 @@ public class Wrist extends Mechanism {
 	private static final double NUDGE_INCREMENT = 5.0;
 	private static final double NUDGE_DAMPENER = 0.15;
 
+	private static final double NEAR_THRESHOLD = 5.0;
+
 	private final CANSparkMax motor;
 	private final SparkMaxPIDController pidController;
 	private final ValueProvider<Double> pGain;
@@ -97,6 +99,14 @@ public class Wrist extends Mechanism {
 	 */
 	public double getAngle() {
 		return EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition());
+	}
+
+	public boolean isNearTo(Position position) {
+		return isNearTo(position.getAngle());
+	}
+
+	public boolean isNearTo(double angle) {
+		return Math.abs(angle - getAngle()) < NEAR_THRESHOLD;
 	}
 
 	public void nudgeNoPID(double value) {
