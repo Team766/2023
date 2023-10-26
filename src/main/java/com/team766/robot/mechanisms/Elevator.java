@@ -10,6 +10,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static com.team766.robot.constants.ConfigConstants.*;
 
@@ -45,6 +46,7 @@ public class Elevator extends Mechanism {
 	}
 
 	private static final double NUDGE_INCREMENT = 5.0;
+	private static final double NUDGE_DAMPENER = 0.25;
 
 	private final CANSparkMax leftMotor;
 	private final CANSparkMax rightMotor;
@@ -98,6 +100,18 @@ public class Elevator extends Mechanism {
 	 */
 	public double getHeight() {
 		return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
+	}
+
+	public void nudgeNoPID(double value) {
+		checkContextOwnership();
+		double clampedValue = MathUtil.clamp(value, -1, 1);
+		clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
+		leftMotor.set(clampedValue);
+	}
+
+	public void stopElevator() {
+		checkContextOwnership();
+		leftMotor.set(0);
 	}
 
 	public void nudgeUp() {

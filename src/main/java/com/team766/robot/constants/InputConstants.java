@@ -41,6 +41,8 @@ public final class InputConstants {
 	public static final int POV_UP = 0;
 	public static final int POV_DOWN = 180;
 
+	// RB
+	public static final int BUTTON_PLACEMENT_NONE = 6;
 	// X/A/B/Y
 	public static final int BUTTON_PLACEMENT_HUMAN_PLAYER = 1; // X
 	public static final int BUTTON_PLACEMENT_HIGH = 4; // Y
