@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.robot.constants.InputConstants;
@@ -11,7 +12,7 @@ import com.team766.robot.procedures.*;
 import com.team766.simulator.interfaces.ElectricalDevice.Input;
 import com.team766.robot.mechanisms.Drive;
 import com.team766.robot.mechanisms.Intake;
-
+import com.team766.robot.mechanisms.Intake.GamePieceType;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,9 @@ public class OI extends Procedure {
 	private static final double FINE_DRIVING_COEFFICIENT = 0.25;
 	double turningValue = 0;
 	boolean manualControl = true;
+	PlacementPosition placementPosition = PlacementPosition.NONE;
+
+	private RateLimiter lightsRateLimit = new RateLimiter(1.3);
 	
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
@@ -46,8 +50,8 @@ public class OI extends Procedure {
 		context.takeOwnership(Robot.drive);
 		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
+		context.takeOwnership(Robot.lights);
 
-		PlacementPosition placementPosition = PlacementPosition.NONE;
 		boolean elevatorManual = false;
 		boolean wristManual = false;
 
@@ -123,25 +127,28 @@ public class OI extends Procedure {
 			// first, check if the boxop is making a cone or cube selection
 			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
 				new GoForCones().run(context);
+				setLightsForGamePiece();
 			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
 				new GoForCubes().run(context);
+				setLightsForGamePiece();
 			}
 
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
 			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
 				placementPosition = PlacementPosition.NONE;
+				setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
-				// TODO: update lights
+				setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
 				placementPosition = PlacementPosition.MID_NODE;
-				// TODO: update lights
+				setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
 				placementPosition = PlacementPosition.HIGH_NODE;
-				// TODO: update lights
+				setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
 				placementPosition = PlacementPosition.HUMAN_PLAYER;
-				// TODO: update lights
+				setLightsForPlacement();
 			}
 
 			// look for button hold to start intake, release to idle intake
@@ -219,6 +226,52 @@ public class OI extends Procedure {
 					wristManual = true;
 				}
 			}
+
+			if (lightsRateLimit.next()) {
+				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 10) {
+					Robot.lights.rainbow();
+				} else {
+					setLightsForPlacement();
+				}
+			}
 		}
+	}
+
+	private void setLightsForPlacement() {
+		switch (placementPosition) {
+			case NONE:
+				Robot.lights.white();
+				break;
+			case LOW_NODE:
+				Robot.lights.green();
+				break;
+			case MID_NODE:
+				Robot.lights.red();
+				break;
+			case HIGH_NODE:
+				Robot.lights.orange();
+				break;
+			case HUMAN_PLAYER:
+				setLightsForGamePiece();
+				break;
+			default:
+				// warn, ignore
+				log(Severity.WARNING, "Unexpected placement position: " + placementPosition.toString());
+				break;
+		}
+		
+		lightsRateLimit.reset();
+		lightsRateLimit.next();
+	}
+
+	private void setLightsForGamePiece() {
+		if (Robot.intake.getGamePieceType() == GamePieceType.CUBE) {
+			Robot.lights.purple();
+		} else {
+			Robot.lights.yellow();
+		}
+
+		lightsRateLimit.reset();
+		lightsRateLimit.next();
 	}
 }

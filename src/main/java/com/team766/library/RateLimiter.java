@@ -10,6 +10,10 @@ public class RateLimiter {
 		this.periodSeconds = periodSeconds;
 	}
 
+	public void reset() {
+		nextTime = 0;
+	}
+
 	public boolean next() {
 		final double now = RobotProvider.getTimeProvider().get();
 		if (now > nextTime) {
