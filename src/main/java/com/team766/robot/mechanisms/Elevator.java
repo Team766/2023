@@ -28,9 +28,9 @@ public class Elevator extends Mechanism {
 		/** Elevator is at appropriate height to place game pieces at the high node. */
 		HIGH(40), 
 		/** Elevator is at appropriate height to grab cubes from the human player. */
-		HUMAN_CUBES(35),
+		HUMAN_CUBES(40),
 		/** Elevator is at appropriate height to grab cones from the human player. */
-		HUMAN_CONES(35),
+		HUMAN_CONES(40),
 		/** Elevator is fully extended. */
 		EXTENDED(40);
 

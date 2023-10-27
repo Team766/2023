@@ -8,11 +8,6 @@ import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
-import com.team766.simulator.interfaces.ElectricalDevice.Input;
-import com.team766.robot.mechanisms.Drive;
-import com.team766.robot.mechanisms.Intake;
-
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -44,7 +39,6 @@ public class OI extends Procedure {
 	
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
-		// context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
 
 		PlacementPosition placementPosition = PlacementPosition.NONE;
@@ -203,7 +197,6 @@ public class OI extends Procedure {
 
 				// look for wrist nudges
 				double wristNudgeAxis = -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
-				SmartDashboard.putNumber("WRIST AXIS", wristNudgeAxis);
 				if (Math.abs(wristNudgeAxis) > 0.05) {
 					// wristManual = true;
 					context.takeOwnership(Robot.wrist);
