@@ -15,10 +15,10 @@ public class OnePieceExitCommunity extends Procedure {
 		Robot.gyro.resetGyro();
 		switch (DriverStation.getAlliance()) {
 			case Blue:
-				Robot.drive.setCurrentPosition(new PointDir(2, 0.75));
+				Robot.drive.setCurrentPosition(new PointDir(0.75, 2));
 				break;
 			case Red:
-				Robot.drive.setCurrentPosition(new PointDir(14.5, 0.75));
+				Robot.drive.setCurrentPosition(new PointDir(0.75, 14.5));
 				break;
 			case Invalid: //drop down
 			default: 
