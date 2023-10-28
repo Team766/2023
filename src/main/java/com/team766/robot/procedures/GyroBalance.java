@@ -66,6 +66,9 @@ public class GyroBalance extends Procedure {
 		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
 
+		// extend wristvator to put CG in a place where robot can climb ramp
+		new ExtendWristvatorToMid().run(context);
+
 		// Sets movement direction ground state if on ground
 		setDir(curY);
 
@@ -85,7 +88,7 @@ public class GyroBalance extends Procedure {
 			tilt = Robot.gyro.getAbsoluteTilt();
 			//log("curX:" + curX);
 			//log("direction: " + direction);
-			setState();
+			setState(context);
 
 			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
@@ -113,7 +116,7 @@ public class GyroBalance extends Procedure {
 	} 
 
 	// Sets state in state machine, see more details in GyroBalance.md
-	private void setState() { 
+	private void setState(Context context) { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
 			absSpeed = SPEED_TRANSITION;
@@ -121,6 +124,7 @@ public class GyroBalance extends Procedure {
 		} else if (prevState == State.RAMP_TRANSITION && tilt < TOP_TILT && tilt > FLAP_TILT) {
 			curState = State.RAMP_TILT;
 			absSpeed = SPEED_TILT;
+			context.startAsync(new RetractWristvator());
 			log("Tilt, prevState: " + prevState + ", curState: " + curState);
 		} else if (prevState == State.RAMP_TILT && tilt < LEVEL) {
 			curState = State.RAMP_LEVEL;
