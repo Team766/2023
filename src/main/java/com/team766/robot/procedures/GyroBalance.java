@@ -43,7 +43,7 @@ public class GyroBalance extends Procedure {
 
 	// Tweak these values to adjust how the robot balances
 	private final double LEVEL = 7;
-	private final double CORRECTION_DELAY = 0.7;
+	private final double CORRECTION_DELAY = 1.0;
 	private final double SPEED_GROUND = .3;
 	private final double SPEED_TRANSITION = .25;
 	private final double SPEED_TILT = .18;
@@ -92,9 +92,9 @@ public class GyroBalance extends Procedure {
 
 			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
-				driveSpeed = absSpeed; 
+				driveSpeed = -absSpeed; 
 			} else {
-				driveSpeed = -absSpeed;
+				driveSpeed = absSpeed;
 			}
 
 			// Drives the robot with the calculated speed and direction

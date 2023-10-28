@@ -26,7 +26,7 @@ public class OnePieceBalance extends Procedure {
 				return;
 
 		}
-		new ScoreHighCone().run(context);
+		new ScoreHighCube().run(context);
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
 }

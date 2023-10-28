@@ -135,19 +135,19 @@ public class OI extends Procedure {
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
 			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
 				placementPosition = PlacementPosition.NONE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
 				placementPosition = PlacementPosition.MID_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
 				placementPosition = PlacementPosition.HIGH_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
 				placementPosition = PlacementPosition.HUMAN_PLAYER;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			}
 
 			// look for button hold to start intake, release to idle intake
@@ -241,18 +241,18 @@ public class OI extends Procedure {
 
 	private void setLightsForPlacement() {
 		switch (placementPosition) {
-			case NONE:
-				Robot.lights.white();
-				break;
-			case LOW_NODE:
-				Robot.lights.green();
-				break;
-			case MID_NODE:
-				Robot.lights.red();
-				break;
-			case HIGH_NODE:
-				Robot.lights.orange();
-				break;
+			// case NONE:
+			// 	Robot.lights.white();
+			// 	break;
+			// case LOW_NODE:
+			// 	Robot.lights.green();
+			// 	break;
+			// case MID_NODE:
+			// 	Robot.lights.red();
+			// 	break;
+			// case HIGH_NODE:
+			// 	Robot.lights.orange();
+			// 	break;
 			case HUMAN_PLAYER:
 				setLightsForGamePiece();
 				break;
