@@ -175,7 +175,7 @@ public class OI extends Procedure {
 						context.startAsync(new ExtendWristvatorToHigh());
 						break;
 					case HUMAN_PLAYER:
-						context.startAsync(new ExtendWristvatorToHuman(Robot.intake.getGamePieceType()));
+						context.startAsync(new ExtendToHumanWithIntake(Robot.intake.getGamePieceType()));
 						break;
 					default:
 					// warn, ignore
@@ -183,7 +183,11 @@ public class OI extends Procedure {
 					break;
 				}
 			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-				context.startAsync(new RetractWristvator());
+				if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
+					context.startAsync(new RetractWristvatorIdleIntake());
+				} else {
+					context.startAsync(new RetractWristvator());
+				}
 			}
 
 			// look for manual nudges
