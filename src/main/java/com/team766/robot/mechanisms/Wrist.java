@@ -30,12 +30,16 @@ public class Wrist extends Mechanism {
 
 		// TODO: adjust these values.
 
-		/** Wrist is fully up. */
-		UP(0.0),
-		/** Wrist is level with ground. */ 
-		LEVEL(90.0),
+		/** Wrist is in top position.  Starting position. */
+		TOP(-135),
+		/** Wrist is in the position for moving around the field. */ 
+		RETRACTED(-120.0),
+		/** Wrist is level with ground. */
+		LEVEL(0.0),
+		HIGH_NODE(-30),
+		MID_NODE(-25.5),
 		/** Wrist is fully down. */ 
-		DOWN(180.0);
+		BOTTOM(60);
 
 		private final double angle;
 		
@@ -49,7 +53,7 @@ public class Wrist extends Mechanism {
 	}
 
 	private static final double NUDGE_INCREMENT = 5.0;
-	private static final double NUDGE_DAMPENER = 0.25;
+	private static final double NUDGE_DAMPENER = 0.15;
 
 	private final CANSparkMax motor;
 	private final SparkMaxPIDController pidController;
@@ -69,6 +73,8 @@ public class Wrist extends Mechanism {
 			throw new IllegalStateException("Motor is not a CANSparkMax!");
 		}
 		motor = (CANSparkMax) halMotor;
+
+		motor.getEncoder().setPosition(EncoderUtils.wristDegreesToRotations(Position.TOP.getAngle()));
 
 		// stash the PIDController for convenience.  will update the PID values to the latest from the config
 		// file each time we use the motor.
@@ -106,19 +112,19 @@ public class Wrist extends Mechanism {
 	}
 
 	public void nudgeUp() {
+		System.err.println("Nudging up.");
 		double angle = getAngle();
-		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.UP.getAngle());
-		if (targetAngle > angle) {
-			rotate(angle);
-		}
+		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.TOP.getAngle());
+		System.err.println("Target: " + targetAngle);
+
+		rotate(targetAngle);
 	}
 
 	public void nudgeDown() {
+		System.err.println("Nudging down.");
 		double angle = getAngle();
-		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.DOWN.getAngle());
-		if (targetAngle < angle) {
-			rotate(angle);
-		}
+		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.BOTTOM.getAngle());
+		rotate(targetAngle);
 	}
 
 	/** 
@@ -136,11 +142,15 @@ public class Wrist extends Mechanism {
 	public void rotate(double angle) {
 		checkContextOwnership();
 
+		System.err.println("Setting target angle to " + angle);
 		// set the PID controller values with whatever the latest is in the config
 		pidController.setP(pGain.get());
 		pidController.setI(iGain.get());
 		pidController.setD(dGain.get());
-		pidController.setFF(ffGain.get());
+		// pidController.setFF(ffGain.get());
+		double ff = ffGain.get() * Math.cos(Math.toRadians(angle));
+		SmartDashboard.putNumber("[WRIST] ff", ff);
+		SmartDashboard.putNumber("[WRIST] reference", angle);
 
 		pidController.setOutputRange(-1, 1);
 
@@ -148,7 +158,7 @@ public class Wrist extends Mechanism {
 		double rotations = EncoderUtils.wristDegreesToRotations(angle);
 
 		// set the reference point for the wrist
-		pidController.setReference(rotations, ControlType.kPosition);
+		pidController.setReference(rotations, ControlType.kPosition, 0, ff);
 	}
 
 	@Override

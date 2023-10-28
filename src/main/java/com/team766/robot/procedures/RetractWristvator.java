@@ -14,6 +14,6 @@ public class RetractWristvator extends Procedure {
 		context.takeOwnership(Robot.elevator);
 
 		Robot.elevator.moveTo(Elevator.Position.RETRACTED);
-		Robot.wrist.rotate(Wrist.Position.UP);
+		Robot.wrist.rotate(Wrist.Position.RETRACTED);
 	}
 }

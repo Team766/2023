@@ -14,6 +14,6 @@ public class ExtendWristvatorToLow extends Procedure {
 		context.takeOwnership(Robot.elevator);
 
 		Robot.elevator.moveTo(Elevator.Position.LOW);
-		Robot.wrist.rotate(Wrist.Position.UP);
+		Robot.wrist.rotate(Wrist.Position.LEVEL);
 	}
 }

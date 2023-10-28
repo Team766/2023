@@ -10,9 +10,7 @@ public class GoForCubes extends Procedure {
 	@Override
 	public void run(Context context) {
 		context.takeOwnership(Robot.intake);
-		// TODO: grab ownership of the Lights, as well
 		
 		Robot.intake.setGamePieceType(GamePieceType.CUBE);
-		// TODO: turn lights to cube color
 	}
 }

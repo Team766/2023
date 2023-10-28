@@ -9,6 +9,7 @@ public class Robot {
 	public static Elevator elevator;
 	public static Drive drive;
 	public static Gyro gyro;
+	public static Lights lights;
 
 	public static void robotInit() {
 		// Initialize mechanisms here
@@ -17,5 +18,6 @@ public class Robot {
 		elevator = new Elevator();
 		drive = new Drive();
 		gyro = new Gyro();
+		lights = new Lights();
 	}
 }

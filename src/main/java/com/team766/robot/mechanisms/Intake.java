@@ -21,9 +21,9 @@ import static com.team766.robot.constants.ConfigConstants.*;
  */
 public class Intake extends Mechanism {
 
-	private static final double POWER_IN = 1.0;
-	private static final double POWER_OUT = 1.0;
-	private static final double POWER_IDLE = 0.1;
+	private static final double POWER_IN = 0.3;
+	private static final double POWER_OUT = 0.25;
+	private static final double POWER_IDLE = 0.02;
 
 	/**
 	 * The current type of game piece the Intake is preparing to hold or is holding.
