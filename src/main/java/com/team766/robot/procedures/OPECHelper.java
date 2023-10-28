@@ -14,9 +14,9 @@ public class OPECHelper extends Procedure {
 		// context.takeOwnership(Robot.intake);
 		double startY = Robot.drive.getCurrentPosition().getY();
 		// robot gyro is offset 90º from how we want, so we reset it to 90º to account for this
-		Robot.gyro.resetGyro();
+		Robot.gyro.resetGyro180();
 		new ScoreHighCone().run(context);
-		Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, FollowPointsInputConstants.SPEED, 0);
+		Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), 0, -FollowPointsInputConstants.SPEED, 0);
 		context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getY() - startY) > DIST);
 		Robot.drive.stopDrive();
 	}

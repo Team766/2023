@@ -12,7 +12,7 @@ public class OnePieceExitCommunity extends Procedure {
 		context.takeOwnership(Robot.drive);
 		//context.takeOwnership(Robot.intake);
 		context.takeOwnership(Robot.gyro);
-		Robot.gyro.resetGyro();
+		Robot.gyro.resetGyro180();
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				Robot.drive.setCurrentPosition(new PointDir(0.75, 2));
@@ -26,6 +26,6 @@ public class OnePieceExitCommunity extends Procedure {
 				return;
 		}
 		log("exiting");
-		// new OPECHelper().run(context);
+		new OPECHelper().run(context);
 	}
 }
