@@ -127,9 +127,11 @@ public class OI extends Procedure {
 			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
 				new GoForCones().run(context);
 				setLightsForGamePiece();
+				SmartDashboard.putBoolean("Game Piece", true);
 			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
 				new GoForCubes().run(context);
 				setLightsForGamePiece();
+				SmartDashboard.putBoolean("Game Piece", false);
 			}
 
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
@@ -233,7 +235,7 @@ public class OI extends Procedure {
 				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
 					Robot.lights.rainbow();
 				} else {
-					setLightsForPlacement();
+					setLightsForGamePiece();
 				}
 			}
 		}
