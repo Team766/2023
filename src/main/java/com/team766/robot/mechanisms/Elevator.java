@@ -34,19 +34,21 @@ public class Elevator extends Mechanism {
 		/** Elevator is fully extended. */
 		EXTENDED(40);
 
-		private final int height;
+		private final double height;
 
-		Position(int position) {
+		Position(double position) {
 			this.height = position;
 		}
 
-		private int getHeight() {
+		private double getHeight() {
 			return height;
 		}
 	}
 
 	private static final double NUDGE_INCREMENT = 5.0;
 	private static final double NUDGE_DAMPENER = 0.25;
+
+	private static final double NEAR_THRESHOLD = 2.0;
 
 	private final CANSparkMax leftMotor;
 	private final CANSparkMax rightMotor;
@@ -102,6 +104,14 @@ public class Elevator extends Mechanism {
 	 */
 	public double getHeight() {
 		return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
+	}
+
+	public boolean isNearTo(Position position) {
+		return isNearTo(position.getHeight());
+	}
+
+	public boolean isNearTo(double position) {
+		return Math.abs(position - getHeight()) < NEAR_THRESHOLD;
 	}
 
 	public void nudgeNoPID(double value) {

@@ -166,16 +166,16 @@ public class OI extends Procedure {
 					case NONE:
 						break;
 					case LOW_NODE:
-						new ExtendWristvatorToLow().run(context);
+						context.startAsync(new ExtendWristvatorToLow());
 						break;
 					case MID_NODE:
-						new ExtendWristvatorToMid().run(context);
+						context.startAsync(new ExtendWristvatorToMid());
 						break;
 					case HIGH_NODE:
-						new ExtendWristvatorToHigh().run(context);
+						context.startAsync(new ExtendWristvatorToHigh());
 						break;
 					case HUMAN_PLAYER:
-						new ExtendWristvatorToHuman().run(context);
+						context.startAsync(new ExtendWristvatorToHuman(Robot.intake.getGamePieceType()));
 						break;
 					default:
 					// warn, ignore
@@ -183,7 +183,7 @@ public class OI extends Procedure {
 					break;
 				}
 			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-				new RetractWristvator().run(context);
+				context.startAsync(new RetractWristvator());
 			}
 
 			// look for manual nudges

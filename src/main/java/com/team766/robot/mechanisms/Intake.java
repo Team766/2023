@@ -67,6 +67,8 @@ public class Intake extends Mechanism {
 	 * Sets the type of game piece type the Intake is preparing to hold or is holding.
 	 */
 	public void setGamePieceType(GamePieceType type) {
+		checkContextOwnership();
+
 		this.gamePieceType = type;
 	}
 
