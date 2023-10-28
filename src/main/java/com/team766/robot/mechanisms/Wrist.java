@@ -38,6 +38,8 @@ public class Wrist extends Mechanism {
 		LEVEL(0.0),
 		HIGH_NODE(-30),
 		MID_NODE(-25.5),
+		HUMAN_CONES(-15.5),
+		HUMAN_CUBES(-19),
 		/** Wrist is fully down. */ 
 		BOTTOM(60);
 

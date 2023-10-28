@@ -28,7 +28,7 @@ public class OnePieceExitCommunityBalance extends Procedure {
 		log("exiting");
 		new OPECHelper().run(context);
 		log("Transitioning");
-		new GyroBalance(DriverStation.getAlliance()).run(context);
+		// new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
 	
 }

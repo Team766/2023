@@ -111,7 +111,7 @@ public class OI extends Procedure {
 			if (!isCross && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX) > 0) {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
-				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
+				if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
           	// On deafault, controls the robot field oriented

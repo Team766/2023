@@ -26,6 +26,6 @@ public class OnePieceExitCommunity extends Procedure {
 				return;
 		}
 		log("exiting");
-		new OPECHelper().run(context);
+		// new OPECHelper().run(context);
 	}
 }

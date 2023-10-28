@@ -89,9 +89,9 @@ public class GyroBalance extends Procedure {
 
 			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
-				driveSpeed = -absSpeed; 
+				driveSpeed = absSpeed; 
 			} else {
-				driveSpeed = absSpeed;
+				driveSpeed = -absSpeed;
 			}
 
 			// Drives the robot with the calculated speed and direction

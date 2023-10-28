@@ -17,10 +17,10 @@ public class ExtendWristvatorToHuman extends Procedure {
 
 		if (Robot.intake.getGamePieceType() == GamePieceType.CONE) {
 			Robot.elevator.moveTo(Elevator.Position.HUMAN_CONES);
-			Robot.wrist.rotate(Wrist.Position.LEVEL);
+			Robot.wrist.rotate(Wrist.Position.HUMAN_CONES);
 		} else {
 			Robot.elevator.moveTo(Elevator.Position.HUMAN_CUBES);
-			Robot.wrist.rotate(Wrist.Position.LEVEL);
+			Robot.wrist.rotate(Wrist.Position.HUMAN_CUBES);
 		}
 	}
 }
