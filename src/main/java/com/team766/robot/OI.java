@@ -226,7 +226,7 @@ public class OI extends Procedure {
 			}
 
 			if (lightsRateLimit.next()) {
-				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 10) {
+				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
 					Robot.lights.rainbow();
 				} else {
 					setLightsForPlacement();
