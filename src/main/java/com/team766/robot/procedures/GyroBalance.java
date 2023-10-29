@@ -18,7 +18,8 @@ public class GyroBalance extends Procedure {
 		GROUND,
 		RAMP_TRANSITION,
 		RAMP_TILT,
-		RAMP_LEVEL
+		RAMP_LEVEL,
+		OVERSHOOT
 	}
 
 	// Direction determines which direction the robot moves
@@ -47,6 +48,8 @@ public class GyroBalance extends Procedure {
 	private final double SPEED_GROUND = .3;
 	private final double SPEED_TRANSITION = .25;
 	private final double SPEED_TILT = .12;
+	private final double SPEED_OVERSHOOT = .08;
+	private final double OVERSHOOT_INCORRECT_MULT = 0.5;
 
 	/** 
 	 * Constructor to create a new GyroBalance instance
@@ -107,9 +110,6 @@ public class GyroBalance extends Procedure {
 		// After the robot is level, drives for correctionDelay seconds.
 		// Direction is opposite due to inversion of speed in setState() so it corrects for overshooting
 		context.waitForSeconds(CORRECTION_DELAY);
-		
-		// Locks wheels once balanced
-		context.startAsync(new SetCross());
 
 		context.releaseOwnership(Robot.drive);
 		context.releaseOwnership(Robot.gyro);
@@ -127,11 +127,21 @@ public class GyroBalance extends Procedure {
 			context.startAsync(new RetractWristvator());
 			log("Tilt, prevState: " + prevState + ", curState: " + curState);
 		} else if (prevState == State.RAMP_TILT && tilt < LEVEL) {
-			curState = State.RAMP_LEVEL;
+			curState = State.OVERSHOOT;
 			// If level, sets speed to negative to correct for overshooting
+			absSpeed = SPEED_OVERSHOOT;
 			absSpeed = -absSpeed;
+			log("Overshoot, prevState: " + prevState + ", curState: " + curState);
+		}  else if (prevState == State.OVERSHOOT && tilt < LEVEL) {
+			context.startAsync(new SetCross());
 			log("Level, prevState: " + prevState + ", curState: " + curState);
-		} 
+			context.waitForSeconds(1);
+			if (tilt < LEVEL) {
+				curState = State.RAMP_LEVEL;
+			} else {
+				absSpeed *= -OVERSHOOT_INCORRECT_MULT;
+			}
+		}
 		if (curState == State.GROUND) {
 			absSpeed = SPEED_GROUND;
 		}

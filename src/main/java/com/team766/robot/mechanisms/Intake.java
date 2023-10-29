@@ -23,7 +23,7 @@ public class Intake extends Mechanism {
 
 	private static final double POWER_IN = 0.3;
 	private static final double POWER_OUT = 0.25;
-	private static final double POWER_IDLE = 0.02;
+	private static final double POWER_IDLE = 0.05;
 
 	/**
 	 * The current type of game piece the Intake is preparing to hold or is holding.

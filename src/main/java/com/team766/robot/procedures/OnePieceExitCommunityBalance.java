@@ -4,10 +4,16 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.odometry.PointDir;
 import com.team766.robot.Robot;
+import com.team766.robot.mechanisms.Intake.GamePieceType;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class OnePieceExitCommunityBalance extends Procedure {
+	private final GamePieceType type;
+
+	public OnePieceExitCommunityBalance(GamePieceType type) {
+		this.type = type;
+	}
 	public void run (Context context) {
 		context.takeOwnership(Robot.drive);
 		//context.takeOwnership(Robot.intake);
@@ -26,7 +32,8 @@ public class OnePieceExitCommunityBalance extends Procedure {
 				return;
 		}
 		log("exiting");
-		new OPECHelper().run(context);
+		new ScoreHigh(type).run(context);
+		new ExitCommunity().run(context);
 		log("Transitioning");
 		new GyroBalance(DriverStation.getAlliance()).run(context);
 	}
