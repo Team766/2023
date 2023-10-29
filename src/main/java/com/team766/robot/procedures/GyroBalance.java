@@ -106,13 +106,6 @@ public class GyroBalance extends Procedure {
 		}
 		// Loops until robot is level or until a call to the abort() method
 		while (!(curState == State.RAMP_LEVEL));
-
-		// After the robot is level, drives for correctionDelay seconds.
-		// Direction is opposite due to inversion of speed in setState() so it corrects for overshooting
-		context.waitForSeconds(CORRECTION_DELAY);
-
-		context.releaseOwnership(Robot.drive);
-		context.releaseOwnership(Robot.gyro);
 	} 
 
 	// Sets state in state machine, see more details in GyroBalance.md
@@ -136,6 +129,7 @@ public class GyroBalance extends Procedure {
 			context.startAsync(new SetCross());
 			log("Level, prevState: " + prevState + ", curState: " + curState);
 			context.waitForSeconds(1);
+			tilt = Robot.gyro.getAbsoluteTilt();
 			if (tilt < LEVEL) {
 				curState = State.RAMP_LEVEL;
 			} else {
