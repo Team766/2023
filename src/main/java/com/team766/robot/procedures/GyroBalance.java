@@ -18,7 +18,8 @@ public class GyroBalance extends Procedure {
 		GROUND,
 		RAMP_TRANSITION,
 		RAMP_TILT,
-		RAMP_LEVEL
+		RAMP_LEVEL,
+		OVERSHOOT
 	}
 
 	// Direction determines which direction the robot moves
@@ -46,7 +47,9 @@ public class GyroBalance extends Procedure {
 	private final double CORRECTION_DELAY = 0.7;
 	private final double SPEED_GROUND = .3;
 	private final double SPEED_TRANSITION = .25;
-	private final double SPEED_TILT = .18;
+	private final double SPEED_TILT = .12;
+	private final double SPEED_OVERSHOOT = .08;
+	private final double OVERSHOOT_INCORRECT_MULT = 0.5;
 
 	/** 
 	 * Constructor to create a new GyroBalance instance
@@ -65,6 +68,9 @@ public class GyroBalance extends Procedure {
 
 		// driveSpeed is actual value of speed passed into the swerveDrive method
 		double driveSpeed = 1;
+
+		// extend wristvator to put CG in a place where robot can climb ramp
+		new ExtendWristvatorToMid().run(context);
 
 		// Sets movement direction ground state if on ground
 		setDir(curY);
@@ -85,7 +91,7 @@ public class GyroBalance extends Procedure {
 			tilt = Robot.gyro.getAbsoluteTilt();
 			//log("curX:" + curX);
 			//log("direction: " + direction);
-			setState();
+			setState(context);
 
 			// Both being on Red alliance and needing to move right would make the movement direction negative, so this expression corrects for that
 			if ((alliance == Alliance.Red) ^ (direction == Direction.RIGHT)) {
@@ -100,20 +106,10 @@ public class GyroBalance extends Procedure {
 		}
 		// Loops until robot is level or until a call to the abort() method
 		while (!(curState == State.RAMP_LEVEL));
-
-		// After the robot is level, drives for correctionDelay seconds.
-		// Direction is opposite due to inversion of speed in setState() so it corrects for overshooting
-		context.waitForSeconds(CORRECTION_DELAY);
-		
-		// Locks wheels once balanced
-		context.startAsync(new SetCross());
-
-		context.releaseOwnership(Robot.drive);
-		context.releaseOwnership(Robot.gyro);
 	} 
 
 	// Sets state in state machine, see more details in GyroBalance.md
-	private void setState() { 
+	private void setState(Context context) { 
 		if (prevState == State.GROUND && tilt > LEVEL) {
 			curState = State.RAMP_TRANSITION;
 			absSpeed = SPEED_TRANSITION;
@@ -121,13 +117,25 @@ public class GyroBalance extends Procedure {
 		} else if (prevState == State.RAMP_TRANSITION && tilt < TOP_TILT && tilt > FLAP_TILT) {
 			curState = State.RAMP_TILT;
 			absSpeed = SPEED_TILT;
+			context.startAsync(new RetractWristvator());
 			log("Tilt, prevState: " + prevState + ", curState: " + curState);
 		} else if (prevState == State.RAMP_TILT && tilt < LEVEL) {
-			curState = State.RAMP_LEVEL;
+			curState = State.OVERSHOOT;
 			// If level, sets speed to negative to correct for overshooting
+			absSpeed = SPEED_OVERSHOOT;
 			absSpeed = -absSpeed;
+			log("Overshoot, prevState: " + prevState + ", curState: " + curState);
+		}  else if (prevState == State.OVERSHOOT && tilt < LEVEL) {
+			context.startAsync(new SetCross());
 			log("Level, prevState: " + prevState + ", curState: " + curState);
-		} 
+			context.waitForSeconds(1);
+			tilt = Robot.gyro.getAbsoluteTilt();
+			if (tilt < LEVEL) {
+				curState = State.RAMP_LEVEL;
+			} else {
+				absSpeed *= -OVERSHOOT_INCORRECT_MULT;
+			}
+		}
 		if (curState == State.GROUND) {
 			absSpeed = SPEED_GROUND;
 		}

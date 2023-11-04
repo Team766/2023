@@ -111,7 +111,7 @@ public class OI extends Procedure {
 			if (!isCross && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX) > 0) {
 				context.takeOwnership(Robot.drive);
 				// If a button is pressed, drive is just fine adjustment
-				if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
+				if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
 					Robot.drive.controlFieldOriented(Math.toRadians(Robot.gyro.getGyroYaw()), (leftJoystickX * FINE_DRIVING_COEFFICIENT), (leftJoystickY * FINE_DRIVING_COEFFICIENT), (rightJoystickX * FINE_DRIVING_COEFFICIENT));
 				} else {
           	// On deafault, controls the robot field oriented
@@ -127,27 +127,29 @@ public class OI extends Procedure {
 			if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
 				new GoForCones().run(context);
 				setLightsForGamePiece();
+				SmartDashboard.putBoolean("Game Piece", true);
 			} else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
 				new GoForCubes().run(context);
 				setLightsForGamePiece();
+				SmartDashboard.putBoolean("Game Piece", false);
 			}
 
 			// look for button presses to queue placement of intake/wrist/elevator superstructure
 			if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
 				placementPosition = PlacementPosition.NONE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
 				placementPosition = PlacementPosition.LOW_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
 				placementPosition = PlacementPosition.MID_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
 				placementPosition = PlacementPosition.HIGH_NODE;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			} else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
 				placementPosition = PlacementPosition.HUMAN_PLAYER;
-				setLightsForPlacement();
+				// setLightsForPlacement();
 			}
 
 			// look for button hold to start intake, release to idle intake
@@ -175,7 +177,7 @@ public class OI extends Procedure {
 						context.startAsync(new ExtendWristvatorToHigh());
 						break;
 					case HUMAN_PLAYER:
-						context.startAsync(new ExtendWristvatorToHuman(Robot.intake.getGamePieceType()));
+						context.startAsync(new ExtendToHumanWithIntake(Robot.intake.getGamePieceType()));
 						break;
 					default:
 					// warn, ignore
@@ -183,7 +185,11 @@ public class OI extends Procedure {
 					break;
 				}
 			} else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-				context.startAsync(new RetractWristvator());
+				if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
+					context.startAsync(new RetractWristvatorIdleIntake());
+				} else {
+					context.startAsync(new RetractWristvator());
+				}
 			}
 
 			// look for manual nudges
@@ -226,10 +232,10 @@ public class OI extends Procedure {
 			}
 
 			if (lightsRateLimit.next()) {
-				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 10) {
+				if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
 					Robot.lights.rainbow();
 				} else {
-					setLightsForPlacement();
+					setLightsForGamePiece();
 				}
 			}
 		}
@@ -237,18 +243,18 @@ public class OI extends Procedure {
 
 	private void setLightsForPlacement() {
 		switch (placementPosition) {
-			case NONE:
-				Robot.lights.white();
-				break;
-			case LOW_NODE:
-				Robot.lights.green();
-				break;
-			case MID_NODE:
-				Robot.lights.red();
-				break;
-			case HIGH_NODE:
-				Robot.lights.orange();
-				break;
+			// case NONE:
+			// 	Robot.lights.white();
+			// 	break;
+			// case LOW_NODE:
+			// 	Robot.lights.green();
+			// 	break;
+			// case MID_NODE:
+			// 	Robot.lights.red();
+			// 	break;
+			// case HIGH_NODE:
+			// 	Robot.lights.orange();
+			// 	break;
 			case HUMAN_PLAYER:
 				setLightsForGamePiece();
 				break;

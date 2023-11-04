@@ -9,7 +9,9 @@ public class ExtendWristvatorToHuman extends MoveWristvator {
 	public ExtendWristvatorToHuman(GamePieceType gamePieceType) {
 		super(gamePieceType == GamePieceType.CONE
 				? Elevator.Position.HUMAN_CONES
-				: Elevator.Position.HUMAN_CUBES,
-			Wrist.Position.LEVEL);
+				: Elevator.Position.HUMAN_CUBES, 
+				gamePieceType == GamePieceType.CONE
+				? Wrist.Position.HUMAN_CONES
+				: Wrist.Position.HUMAN_CUBES);
 	}
 }

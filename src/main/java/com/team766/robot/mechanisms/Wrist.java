@@ -38,7 +38,9 @@ public class Wrist extends Mechanism {
 		LEVEL(0.0),
 		HIGH_NODE(-30),
 		MID_NODE(-25.5),
-		/** Wrist is fully down. */ 
+		HUMAN_CONES(-17.5),
+		HUMAN_CUBES(-17.5),
+		/** Wrist is fully down. **/
 		BOTTOM(60);
 
 		private final double angle;

@@ -24,17 +24,17 @@ public final class InputConstants {
 
 	// Boxop Gamepad Buttons
 
-	// LT
-	public static final int BUTTON_INTAKE_IN = 7;
 	// RT
-	public static final int BUTTON_EXTEND_WRISTVATOR = 8;
+	public static final int BUTTON_INTAKE_IN = 8;
+	// LT
+	public static final int BUTTON_EXTEND_WRISTVATOR = 7;
 	// Start
 	public static final int BUTTON_INTAKE_STOP = 10; // used for development
 
-	// left axis
-	public static final int AXIS_WRIST_MOVEMENT = 1;
 	// right axis
-	public static final int AXIS_ELEVATOR_MOVEMENT = 3;
+	public static final int AXIS_WRIST_MOVEMENT = 3;
+	// left axis
+	public static final int AXIS_ELEVATOR_MOVEMENT = 1;
 
 
 	// pov
